@@ -4,6 +4,15 @@
 
 package com.ekhonni.backend.model;
 
-public class Transaction {
+import com.ekhonni.backend.abstractentity.AbstractEntity;
+import jakarta.persistence.Entity;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Transaction extends AbstractEntity {
+    private double amount;
 }

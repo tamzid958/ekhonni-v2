@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-public class abstractEntity {
+public class AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)

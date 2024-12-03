@@ -4,18 +4,25 @@
 
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.abstractentity.abstractEntity;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.ekhonni.backend.abstractentity.AbstractEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 
-@Data  // Annotation contains @Getter, @Setter, @RequiredArgsConstructor, @ToString, @EqualsAndHashCode
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account extends abstractEntity {
+@Entity
+public class Account extends AbstractEntity {
     @OneToOne
     private User user;
-    private double balance = 0.0;
+
+    @Column(nullable = false)
+    @Value("${account.balance:0.0}")
+    private double balance;
+
+    @Column(nullable = false)
     private String status;
+
 }
