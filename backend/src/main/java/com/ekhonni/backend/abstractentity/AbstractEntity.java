@@ -4,15 +4,21 @@
 
 package com.ekhonni.backend.abstractentity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Entity
-public class AbstractEntity {
+@Getter
+@Setter
+public abstract class AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)
@@ -25,5 +31,5 @@ public class AbstractEntity {
     private LocalDate updatedAt;
 
     @Column(nullable = false)
-    private boolean delete;
+    private boolean deleted;
 }

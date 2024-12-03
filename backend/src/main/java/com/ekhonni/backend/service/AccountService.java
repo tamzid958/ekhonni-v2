@@ -17,7 +17,11 @@ import java.util.UUID;
 public record AccountService(AccountRepository accountRepository, UserRepository userRepository) {
 
     public double getBalance(UUID accountId) {
-        return 0.0;
+        Optional<Account> account = accountRepository.findById(accountId);
+        if (account.isEmpty()) {
+            throw new RuntimeException("Account does not exist.");
+        }
+        return account.get().getBalance();
     }
 
     public void create(UUID userId) {
@@ -42,7 +46,7 @@ public record AccountService(AccountRepository accountRepository, UserRepository
         if (account.isEmpty()) {
             throw new RuntimeException("Account does not exist.");
         }
-        account.setStatus("DELETED");
-        account.setDeleted(false);
+        account.get().setStatus("DELETED");
+        account.get().setDeleted(false);
     }
 }
