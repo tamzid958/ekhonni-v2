@@ -23,4 +23,7 @@ public class AbstractEntity {
 
     @LastModifiedDate
     private LocalDate updatedAt;
+
+    @Column(nullable = false)
+    private boolean delete;
 }

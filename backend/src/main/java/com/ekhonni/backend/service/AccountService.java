@@ -36,4 +36,13 @@ public record AccountService(AccountRepository accountRepository, UserRepository
 
         accountRepository.save(account);
     }
+
+    public void delete(UUID id) {
+        Optional<Account> account = accountRepository.findById(id);
+        if (account.isEmpty()) {
+            throw new RuntimeException("Account does not exist.");
+        }
+        account.setStatus("DELETED");
+        account.setDeleted(false);
+    }
 }

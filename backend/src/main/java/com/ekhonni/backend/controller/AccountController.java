@@ -19,8 +19,22 @@ public record AccountController(AccountService accountService) {
 
     @PostMapping("/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") UUID user_id) {
-//        accountService.create(user_id);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            accountService.create(user_id);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") UUID id) {
+        try {
+            accountService.delete(id);
+            return ResponseEntity.ok("Account successfully deleted.");
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/{id}/balance")
