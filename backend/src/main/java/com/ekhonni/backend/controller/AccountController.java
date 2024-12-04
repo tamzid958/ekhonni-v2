@@ -17,9 +17,8 @@ import java.util.UUID;
 @RequestMapping("api/v2/account")
 public record AccountController(AccountService accountService) {
 
-    @PostMapping("/{user_id}")
-    public ResponseEntity<?> create(@PathVariable("user_id") UUID user_id) {
-//        accountService.create(user_id);
+    @PostMapping("/{user_id}") // 201 for created
+    public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -28,7 +27,7 @@ public record AccountController(AccountService accountService) {
         return 0.0;
     }
 
-    public List<Transaction> getAllTransactions() {
+    public List<Transaction> getAll() {
         return null;
     }
 }

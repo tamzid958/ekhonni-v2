@@ -5,9 +5,13 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.abstractentity.AbstractEntity;
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -19,8 +23,7 @@ public class Account extends AbstractEntity {
     private User user;
 
     @Column(nullable = false)
-    @Value("${account.balance:0.0}")
-    private double balance;
+    private double balance = 0.0;
 
     @Column(nullable = false)
     private String status;
