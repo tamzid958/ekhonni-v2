@@ -13,5 +13,4 @@ public interface UserProjection {
 
     String getAddress();
 
-
 }

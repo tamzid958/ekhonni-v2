@@ -4,7 +4,6 @@ import com.ekhonni.backend.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +11,11 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.util.UUID;
-
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE user SET deleted=true WHERE id=?")
 @Where(clause = "deleted=false")
@@ -37,8 +34,7 @@ public class User extends BaseEntity {
     private String phone;
     @NotBlank
     private String address;
-    @NotNull
-    private UUID account_id;
+
 
 }
 
