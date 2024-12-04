@@ -17,14 +17,10 @@ import java.util.UUID;
 @RequestMapping("api/v2/account")
 public record AccountController(AccountService accountService) {
 
-    @PostMapping("/{user_id}") // 201 for created
+    @PostMapping("/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
-        try {
-            accountService.create(userId);
-            return new ResponseEntity<>(HttpStatus.valueOf(201));
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.valueOf(400));
-        }
+        accountService.create(userId);
+        return new ResponseEntity<>(HttpStatus.valueOf(201));
     }
 
     @GetMapping("/{id}/balance")
