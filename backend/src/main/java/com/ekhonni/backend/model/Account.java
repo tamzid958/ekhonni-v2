@@ -4,7 +4,7 @@
 
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.abstractentity.AbstractEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Account extends AbstractEntity {
+public class Account extends BaseEntity<Long> {
     @OneToOne
     private User user;
 
