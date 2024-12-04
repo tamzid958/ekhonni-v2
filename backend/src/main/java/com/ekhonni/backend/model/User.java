@@ -8,12 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User extends BaseEntity {
+public class User extends BaseEntity<UUID> {
     @OneToOne(mappedBy = "user")
     private Account account;
 }

@@ -19,7 +19,12 @@ public record AccountController(AccountService accountService) {
 
     @PostMapping("/{user_id}") // 201 for created
     public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            accountService.create(userId);
+            return new ResponseEntity<>(HttpStatus.valueOf(201));
+        } catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.valueOf(400));
+        }
     }
 
     @GetMapping("/{id}/balance")
@@ -27,7 +32,7 @@ public record AccountController(AccountService accountService) {
         return 0.0;
     }
 
-    public List<Transaction> getAll() {
+    public List<Transaction> getAllTransactions() {
         return null;
     }
 }

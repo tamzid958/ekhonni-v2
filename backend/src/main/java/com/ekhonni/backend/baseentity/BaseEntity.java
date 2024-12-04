@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-public abstract class BaseEntity<T extends Serializable> {  // make it generic
+public abstract class BaseEntity<T extends Serializable> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
