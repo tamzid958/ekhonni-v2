@@ -1,40 +1,41 @@
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.base.BaseEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import java.util.UUID;
 
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE user SET deleted=true WHERE id=?")
 @Where(clause = "deleted=false")
-public class User extends BaseEntity {
+public class User extends BaseEntity<UUID> {
 
-    @NotBlank
+    @NonNull
     private String name;
-    @NotBlank
-    @Email
+    @NonNull
     private String email;
-    @NotBlank
+    @NonNull
     private String password;
-    @NotBlank
+    @NonNull
     private String role;
-    @NotBlank
+    @NonNull
     private String phone;
-    @NotBlank
+    @NonNull
     private String address;
 
-
+    @OneToOne
+    private Account account;
 }
 

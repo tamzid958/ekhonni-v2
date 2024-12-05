@@ -7,7 +7,9 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.exception.AccountNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
+import com.ekhonni.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,7 +23,7 @@ public record AccountService(AccountRepository accountRepository, UserRepository
         return account.getBalance();
     }
 
-    public void create(UUID userId) {
+    public Account create(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -29,6 +31,6 @@ public record AccountService(AccountRepository accountRepository, UserRepository
         account.setUser(user);
         account.setStatus("ACTIVE");
 
-        accountRepository.save(account);
+        return accountRepository.save(account);
     }
 }

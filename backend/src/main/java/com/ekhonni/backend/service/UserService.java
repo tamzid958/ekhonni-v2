@@ -3,6 +3,7 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Setter
 public class UserService {
     private final UserRepository userRepository;
-
+    private final AccountService accountService;
 
     public List<UserProjection> getAll() {
         return userRepository.findAllProjection();
@@ -36,6 +37,7 @@ public class UserService {
                 "user",
                 userDTO.phone(),
                 userDTO.address());
+        user.setAccount(accountService.create(user.getId()));
         userRepository.save(user);
         return userDTO;
     }
