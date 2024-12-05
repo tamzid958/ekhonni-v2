@@ -24,8 +24,8 @@ public record AccountController(AccountService accountService) {
     }
 
     @GetMapping("/{id}/balance")
-    public double getBalance(@PathVariable("id") UUID id) {
-        return 0.0;
+    public double getBalance(@PathVariable("id") Long id) {
+        return accountService.getBalance(id);
     }
 
     public List<Transaction> getAllTransactions() {

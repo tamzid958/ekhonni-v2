@@ -2,12 +2,12 @@ package com.ekhonni.backend.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class ErrorResponse {
     private String message;
