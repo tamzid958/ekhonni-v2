@@ -1,16 +1,16 @@
 HELP.md.gradle
-build/
+build
+.gradle
+gradle
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.Ds_Store
-.gradle/
-application.properties
-resources/application.properties
-compose.yaml
-gradlew
-gradlew.bat
-build.gradle
+backend/src/main/resources/application.properties
+backend/build.gradle
+backend/compose.yaml
+backend/gradlew
+backend/gradlew.bat
+backend/settings.gradle
 
 ### STS ###
 .apt_generated
@@ -25,7 +25,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iws
 *.iml
 *.ipr
