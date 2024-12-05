@@ -1,16 +1,20 @@
 HELP.md.gradle
-build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.Ds_Store
+
+# Ignore folders
+.idea/
+build/
 .gradle/
-application.properties
-resources/application.properties
+gradle/
+
+# Ignore specific files
+build.gradle
 compose.yaml
 gradlew
 gradlew.bat
-build.gradle
+
 
 ### STS ###
 .apt_generated
@@ -25,7 +29,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iws
 *.iml
 *.ipr
