@@ -1,7 +1,6 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserDTO;
-import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.UserRepository;
@@ -26,7 +25,7 @@ public class UserService {
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
         return userRepository.findProjectionById(id);
     }
 
@@ -42,13 +41,13 @@ public class UserService {
     }
 
     public void delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
         userRepository.deleteById(id);
     }
 
     @Transactional
     public UserDTO updateUserInfo(UUID id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
         if (userDTO.name() != null && !userDTO.name().isBlank()) {
             user.setName(userDTO.name());
         }
