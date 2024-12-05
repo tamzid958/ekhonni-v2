@@ -4,6 +4,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 .Ds_Store
+.gradle/
+application.properties
+resources/application.properties
+compose.yaml
+gradlew
+gradlew.bat
+build.gradle
 
 ### STS ###
 .apt_generated
@@ -18,7 +25,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
