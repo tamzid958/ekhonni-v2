@@ -1,8 +1,13 @@
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.abstractEntity.AbstractEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import com.ekhonni.backend.baseentity.BaseEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -11,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Bid extends AbstractEntity {
+public class Bid extends BaseEntity<Long> {
 
     @OneToOne
     private User buyer;
