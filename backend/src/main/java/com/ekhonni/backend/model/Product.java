@@ -39,12 +39,9 @@ public class Product extends BaseEntity {
 
 
 
-    @OneToMany
-    @JoinColumn(
-            name = "product_id",
-            referencedColumnName = "id"
-    )
-    private List<Category> categories;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
 
 }
