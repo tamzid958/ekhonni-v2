@@ -7,7 +7,7 @@
 
 package com.ekhonni.backend.enums;
 
-public enum UsedState {
+public enum ProductCondition {
     NEW,
     USED
 }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/ekhonni-v2/products")
+@RequestMapping("/products")
 public record ProductController(ProductService productService){
 
     @GetMapping
@@ -29,9 +29,9 @@ public record ProductController(ProductService productService){
     }
 
 
-    @GetMapping("/{product_id}")
-    public ResponseEntity<Optional<Product>> getOne(@PathVariable("product_id") Long productId) {
-        Optional<Product> product = productService.getOne(productId);
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<Product>> getOne(@PathVariable("id") Long id) {
+        Optional<Product> product = productService.getOne(id);
         if (product.isPresent()) {
             return ResponseEntity.ok(product);
         }
@@ -50,25 +50,19 @@ public record ProductController(ProductService productService){
 
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> create(@RequestBody Product product) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(product));
     }
 
 
-    @DeleteMapping("/{product_id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("product_id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
         boolean isDeleted = productService.delete(id);
         if (isDeleted) return ResponseEntity.ok("Product deleted successfully");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
 
     }
 
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long id){
-//        Product product = ProductService.update(id);
-//        return ResponseEntity.status(HttpStatus.OK).body(product);
-//    }
 
 
 

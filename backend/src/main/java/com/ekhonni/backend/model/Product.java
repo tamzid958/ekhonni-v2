@@ -8,54 +8,30 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.base.BaseEntity;
-import com.ekhonni.backend.enums.UsedState;
+import com.ekhonni.backend.enums.ProductCondition;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-import java.util.Date;
-import java.util.UUID;
-
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "Product")
-
-// do not use data, why?
 public class Product extends BaseEntity {
 
 
-    // solve product attribute names
-    @Column(name = "product_name")
-    private String productName;
 
-    @Column(name = "product_price")
-    private Long productPrice;
-
-
-    @Column(name = "product_description")
-    private String productDescription;
-
-    @Column(name = "product_approved")
-    private boolean productApproved = false;
-
-
-    @Column(name = "product_sold")
-    private boolean productSold = false;
+    private String name;
+    private Long price;
+    private String description;
+    private boolean approved = false;
+    private boolean sold = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "used_state")
-    private UsedState usedState;
+    private ProductCondition condition;
 
 
-
-
-    @Column(name = "category_id")
-    private Long categoryId;
-
-
-
-
-//    @Column(name = "product_image_path")
-//    private String productImagePath;
 
 
 }
