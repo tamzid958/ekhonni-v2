@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Product")
+@Table(name = "product")
 public class Product extends BaseEntity {
 
 
@@ -37,13 +37,14 @@ public class Product extends BaseEntity {
     private ProductCondition condition;
 
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_categories",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
+
+
+    @OneToMany
+    @JoinColumn(
+            name = "product_id",
+            referencedColumnName = "id"
     )
-    private List<Category>categories;
+    private List<Category> categories;
 
 
 }

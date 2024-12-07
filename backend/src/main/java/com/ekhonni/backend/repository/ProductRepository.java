@@ -19,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 //    @Query("SELECT p FROM Product p where p.categoryId=?1 AND p.productApproved=false")
 //    List<Product> findAllProductByCategoryId(Long Id);
+
+    List<Product> findByCategoriesId(Long categoryId);
 }

@@ -9,6 +9,7 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,24 +29,29 @@ public record CategoryController(CategoryService categoryService) {
         return ResponseEntity.status(HttpStatus.CREATED).body("category created");
     }
 
+
+    @GetMapping
+    public List<Category> getAll(){
+        return categoryService.getAll();
+    }
+
+
 //    @GetMapping
-//    public ResponseEntity<List<Category>> getAll() {
-//        List<Category> categories = categoryService.getAll();
-//        return ResponseEntity.ok(categories);
+//    public ResponseEntity<List<CategoryDTO>> getAll(){
+//        List<CategoryDTO> categoryDTOs = categoryService.getAll();
+//        return ResponseEntity.ok(categoryDTOs);
+//    }
+//
+//    @GetMapping("/{id}")
+//    public CategoryDTO getById(@PathVariable Long id) {
+//        return categoryService.getById(id);
 //    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable Long id) {
-        return categoryService.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        categoryService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> delete(@PathVariable Long id) {
+//        categoryService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
     //    @PatchMapping("/{id}")
     //    update information

@@ -8,12 +8,15 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.base.BaseEntity;
+import com.ekhonni.backend.service.ProductService;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -42,6 +45,7 @@ public class Category extends BaseEntity {
     @JsonIgnore
     private List<Category> childrenCategory;
 
-    @ManyToMany(mappedBy = "categories")
-    private List<Product>products;
+
+
+
 }

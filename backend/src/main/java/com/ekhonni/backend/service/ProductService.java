@@ -7,8 +7,11 @@
 
 package com.ekhonni.backend.service;
 
+
+import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.repository.ProductRepository;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,32 +22,52 @@ public record ProductService(ProductRepository productRepository) {
 
 
        public Product create(Product product){
+           //System.out.println();
+         //  return product;
            return  productRepository.save(product);
        }
 
        public List<Product> getAll(){
-           return productRepository.findAll();
+           return  productRepository.findAll();
        }
+
+       public List<Product> getAllByCategoryId(Long categoryId){
+           return productRepository.findByCategoriesId(categoryId);
+       }
+
+//       public List<ProductDTO> getAll(){
+//           List<Product> products = productRepository.findAll();
+//           return products.stream()
+//                   .map(ProductDTO::new)
+//                   .toList();
+//
+//           //return productRepository.findAll();
+//       }
 
 
 //       public List<Product> getAllByCategory(Long categoryId){
 //           return productRepository.findAllProductByCategoryId(categoryId);
 //       }
-       public Optional<Product> getOne(Long id){
-           return productRepository.findById(id);
-       }
+//       public ProductDTO getOne(Long id){
+//
+//           Product product = productRepository.findById(id)
+//                   .orElseThrow(() -> new ResourceNotFoundException("product not found"));
+//           return new ProductDTO(product);
+//
+//           //return productRepository.findById(id);
+//       }
 
 
 
-       public boolean delete(Long id){
-           Optional<Product> product = productRepository.findById(id);
-           if(product.isPresent()){
-               productRepository.deleteById(id);
-               return  true;
-           }
-           return false;
-
-       }
+//       public boolean delete(Long id){
+//           Optional<Product> product = productRepository.findById(id);
+//           if(product.isPresent()){
+//               productRepository.deleteById(id);
+//               return  true;
+//           }
+//           return false;
+//
+//       }
 
 
 

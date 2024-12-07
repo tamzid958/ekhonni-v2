@@ -7,6 +7,7 @@
 
 package com.ekhonni.backend.controller;
 
+
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.service.ProductService;
 import org.apache.coyote.Response;
@@ -23,20 +24,26 @@ import java.util.Optional;
 public record ProductController(ProductService productService){
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAll() {
-        List<Product> products = productService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(products);
+    public List<Product> getAll(){
+        return productService.getAll();
     }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<Product>> getOne(@PathVariable("id") Long id) {
-        Optional<Product> product = productService.getOne(id);
-        if (product.isPresent()) {
-            return ResponseEntity.ok(product);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @GetMapping("/{category_id}")
+    public List<Product> getByCategoryId(@PathVariable("category_id") Long categoryId){
+        return productService.getAllByCategoryId(categoryId);
     }
+
+//    @GetMapping
+//    public ResponseEntity<List<ProductDTO>> getAll() {
+//        List<ProductDTO> productDTOs = productService.getAll();
+//        return ResponseEntity.status(HttpStatus.OK).body(productDTOs);
+//    }
+
+
+//    @GetMapping("/{id}")
+//    public ProductDTO getOne(@PathVariable("id") Long id) {
+//        return productService.getOne(id);
+//    }
 
 
 //    @GetMapping("/by/{category_id}")
@@ -55,13 +62,15 @@ public record ProductController(ProductService productService){
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
-        boolean isDeleted = productService.delete(id);
-        if (isDeleted) return ResponseEntity.ok("Product deleted successfully");
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
 
-    }
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
+//        boolean isDeleted = productService.delete(id);
+//        if (isDeleted) return ResponseEntity.ok("Product deleted successfully");
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+//
+//    }
 
 
 
