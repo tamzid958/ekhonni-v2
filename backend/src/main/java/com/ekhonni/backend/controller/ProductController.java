@@ -39,12 +39,12 @@ public record ProductController(ProductService productService){
     }
 
 
-    @GetMapping("/by/{category_id}")
-    public ResponseEntity<List<Product>> getAllByCategory(@PathVariable("category_id") Long categoryId) {
-//        System.out.println(categoryId);
-        List<Product> products = productService.getAllByCategory(categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(products);
-    }
+//    @GetMapping("/by/{category_id}")
+//    public ResponseEntity<List<Product>> getAllByCategory(@PathVariable("category_id") Long categoryId) {
+////        System.out.println(categoryId);
+//        List<Product> products = productService.getAllByCategory(categoryId);
+//        return ResponseEntity.status(HttpStatus.OK).body(products);
+//    }
 
 
 

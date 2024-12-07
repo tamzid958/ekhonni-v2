@@ -9,8 +9,13 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.base.BaseEntity;
 import com.ekhonni.backend.enums.ProductCondition;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,6 +37,13 @@ public class Product extends BaseEntity {
     private ProductCondition condition;
 
 
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category>categories;
 
 
 }

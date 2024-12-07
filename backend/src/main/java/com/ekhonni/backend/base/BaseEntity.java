@@ -10,6 +10,8 @@ package com.ekhonni.backend.base;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,7 +19,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-@Data
+
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class BaseEntity {
     @Id
