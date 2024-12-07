@@ -32,7 +32,7 @@ public record ProductService(ProductRepository productRepository) {
        }
 
        public List<Product> getAllByCategoryId(Long categoryId){
-           return productRepository.findByCategoryId(categoryId);
+           return productRepository.findByCategoriesId(categoryId);
        }
 
 //       public List<ProductDTO> getAll(){
