@@ -1,4 +1,5 @@
 # Build tool-specific files
+/gradle/
 /.gradle/
 /build/
 /target/
