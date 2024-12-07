@@ -1,13 +1,14 @@
 # Build tool-specific files
-.gradle/                         # Gradle folder
-build/                           # Build output
-!gradle/wrapper/gradle-wrapper.jar # Include Gradle wrapper jar
-!**/src/main/**/build/           # Exclude build folders under source directories
-!**/src/test/**/build/           # Exclude test build folders
+/.gradle/
+/build/
+/target/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
 
 # Operating system-specific files
-.DS_Store                        # macOS system file
-Thumbs.db                        # Windows thumbnail cache
+.DS_Store
+Thumbs.db
 
 # Spring Tool Suite (STS) files
 .apt_generated
@@ -18,17 +19,17 @@ Thumbs.db                        # Windows thumbnail cache
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/             # Exclude bin folders under source directories
-!**/src/test/**/bin/             # Exclude bin folders under test directories
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
 # IntelliJ IDEA-specific files
-.idea/                           # IntelliJ project settings
-*.iws                            # IntelliJ workspace file
-*.iml                            # IntelliJ module file
-*.ipr                            # IntelliJ project file
-out/                             # IntelliJ output folder
-!**/src/main/**/out/             # Exclude output folders under source directories
-!**/src/test/**/out/             # Exclude output folders under test directories
+.idea/
+*.iws
+*.iml
+*.ipr
+/out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 # NetBeans IDE-specific files
 /nbproject/private/
@@ -41,30 +42,26 @@ nbdist/
 .vscode/
 
 # Logs
-*.log                            # Log files
+*.log
 
 # Temporary files
-*.tmp                            # Temporary files
+*.tmp
 
-# Application-specific sensitive files
-application.properties           # Spring Boot configuration
-application.yml                  # Spring Boot YAML configuration
-.env                             # Environment files
-config/                          # Config folder if used for sensitive data
+# Sensitive and environment-specific files
+/src/main/resources/application-*.properties
+.env
+/config/
 
 # Editor-specific files
-*.swp                            # Swap files (e.g., vim)
+*.swp
 *.swo
 
 # Java-specific files
-*.class                          # Compiled class files
-*.jar                            # Compiled JAR files
-*.war                            # Compiled WAR files
-*.ear                            # Compiled EAR files
-
-# Ignore target directories (Maven builds)
-target/
+*.class
+*.jar
+*.war
+*.ear
 
 # Ignore backups and caches
-*.bak                            # Backup files
-*.cache                          # Cache files
+*.bak
+*.cache

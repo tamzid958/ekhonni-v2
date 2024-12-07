@@ -1,6 +1,6 @@
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.abstractEntity.AbstractEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product extends AbstractEntity {
+public class Product extends BaseEntity<Long> {
 
     private String name;
 
