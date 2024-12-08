@@ -29,16 +29,19 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private boolean active = true;
 
+
     @ManyToOne
-    @JoinColumn(name = "cat_parent_id")
+    @JoinColumn(name = "parent_category_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Category parent;
+    private Category parentCategory;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentCategory")
     @JsonIgnore
-    private List<Category> children;
+    private List<Category> subCategories;
 
-    @ManyToMany(mappedBy = "categories")
+    @OneToMany(mappedBy = "category")
     @JsonIgnore
-    private List<Product>products;
+    private List<Product> products;
+
+
 }

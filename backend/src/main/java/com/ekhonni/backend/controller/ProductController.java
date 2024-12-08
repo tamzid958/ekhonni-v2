@@ -28,10 +28,10 @@ public record ProductController(ProductService productService){
         return productService.getAll();
     }
 
-    @GetMapping("/by-categories")
-    public List<Product> getByCategoryId(@RequestParam List<Long> categoryIds){
-        System.out.println(categoryIds);
-        return productService.getAllByCategoryId(categoryIds);
+    @GetMapping("/by-categories/{category_id}")
+    public List<Product> getByCategoryId(@PathVariable("category_id") Long categoryId){
+        System.out.println(categoryId);
+        return productService.getAllByCategoryId(categoryId);
     }
 
 //    @GetMapping

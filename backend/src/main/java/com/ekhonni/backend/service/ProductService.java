@@ -29,8 +29,12 @@ public record ProductService(ProductRepository productRepository) {
            return  productRepository.findAll();
        }
 
-       public List<Product> getAllByCategoryId(List<Long> categoryIds){
-           return productRepository.findByCategoriesId(categoryIds);
+
+
+       public List<Product> getAllByCategoryId(Long categoryId){
+           System.out.println(productRepository.findAll());
+           //return productRepository.findAllProductsByCategoryAndSubCategories(categoryId);
+           return productRepository.findAllProductsInCategoryTree(categoryId);
        }
 
 //       public List<ProductDTO> getAll(){
