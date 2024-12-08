@@ -10,7 +10,6 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,7 @@ import java.util.List;
 @RequestMapping("/category")
 @RestController
 public record CategoryController(CategoryService categoryService) {
+
 
 
 
@@ -36,6 +36,16 @@ public record CategoryController(CategoryService categoryService) {
         return categoryService.getAll();
     }
 
+    @GetMapping("/{id}")
+    public CategoryDTO getOne(@PathVariable Long id) {
+        return categoryService.getOne(id);
+    }
+
+//    @GetMapping
+//    public ApiResponse<List<CategoryDTO>> getAll(){
+//       return new ApiResponse<>(true, "ok", categoryService.getAll(), HttpStatus.);
+//    }
+//
 
 //    @GetMapping
 //    public ResponseEntity<List<CategoryDTO>> getAll(){
@@ -43,10 +53,7 @@ public record CategoryController(CategoryService categoryService) {
 //        return ResponseEntity.ok(categoryDTOs);
 //    }
 //
-//    @GetMapping("/{id}")
-//    public CategoryDTO getById(@PathVariable Long id) {
-//        return categoryService.getById(id);
-//    }
+
 
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Void> delete(@PathVariable Long id) {

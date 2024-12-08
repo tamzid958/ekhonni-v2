@@ -41,6 +41,13 @@ public record CategoryService(CategoryRepository categoryRepository){
                 .collect(Collectors.toList());
     }
 
+    public CategoryDTO getOne(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElse(null);
+        return category != null ? new CategoryDTO(category) : null;
+    }
+
+
 //    public List<CategoryDTO> getAll() {
 //        List<Category> categories = categoryRepository.findAll();
 //        return categories.stream()
