@@ -25,18 +25,6 @@ public record CategoryService(CategoryRepository categoryRepository){
     }
 
     public List<CategoryDTO> getAll(){
-       // return categoryRepository.findTopLevelCategories();
-
-//        List<Category> categories = categoryRepository.findAll();
-//        if (categories.isEmpty()) {
-//            throw new RuntimeException("No categories found!");
-//        }
-//
-//        return categories.stream()
-//                .filter(category -> category.getParentCategory() == null)
-//                .map(CategoryDTO::new)
-//                .collect(Collectors.toList());
-
 
         List<Category> categories = categoryRepository.findTopLevelCategories();
         if (categories.isEmpty()) {
