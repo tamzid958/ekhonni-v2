@@ -1,6 +1,8 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.AccountRepository;
@@ -19,14 +21,14 @@ import java.util.UUID;
 @Setter
 public class UserService {
     private final UserRepository userRepository;
-    private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
     public List<UserProjection> getAll() {
         return userRepository.findAllProjection();
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return userRepository.findProjectionById(id);
     }
 
@@ -37,19 +39,20 @@ public class UserService {
                 "user",
                 userDTO.phone(),
                 userDTO.address());
-        user.setAccount(accountService.create(user.getId()));
         userRepository.save(user);
+        Account account = new Account(user, 0.0, "active");
+        accountRepository.save(account);
         return userDTO;
     }
 
     public void delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         userRepository.deleteById(id);
     }
 
     @Transactional
-    public UserDTO updateUserInfo(UUID id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public UserDTO update(UUID id, UserDTO userDTO) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if (userDTO.name() != null && !userDTO.name().isBlank()) {
             user.setName(userDTO.name());
         }

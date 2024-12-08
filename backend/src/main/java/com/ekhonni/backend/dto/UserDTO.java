@@ -4,15 +4,15 @@ package com.ekhonni.backend.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record UserDTO(@NotBlank
+public record UserDTO(@NotBlank(message = "name cannot be blank")
                       String name,
-                      @NotBlank
-                      @Email
+                      @NotBlank(message = "email cannot be blank")
+                      @Email(message = "Not a valid email")
                       String email,
-                      @NotBlank
+                      @NotBlank(message = "password cannot be blank")
                       String password,
-                      @NotBlank
+                      @NotBlank(message = "phone cannot be blank")
                       String phone,
-                      @NotBlank
+                      @NotBlank(message = "address cannot be blank")
                       String address) {
 }
