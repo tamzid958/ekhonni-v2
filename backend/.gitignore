@@ -2,6 +2,7 @@
 /gradle/
 /.gradle/
 /build/
+resources/application-prod.properties
 /target/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/

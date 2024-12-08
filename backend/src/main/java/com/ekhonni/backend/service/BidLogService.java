@@ -1,16 +1,44 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.BidLogDTO;
 import com.ekhonni.backend.model.BidLog;
 import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.repository.BidLogRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+@Setter
+@Getter
 @Service
-public record BidLogService(BidLogRepository bidLogRepository) {
+public class BidLogService {
 
-    // create new bidLog
-    public BidLog create(BidLog bidLog) {
+    private final BidLogRepository bidLogRepository;
 
-        return bidLogRepository.save(bidLog);
+    public BidLogDTO create(BidLogDTO bidLogDTO) {
+
+        BidLog bidLog = new BidLog(
+                bidLogDTO.amount(),
+                bidLogDTO.status()
+        );
+
+        bidLogRepository.save(bidLog);
+        return bidLogDTO;
+    }
+
+    public BidLogProjection getById(Long id){
+        BidLog bidLog = bidLogRepository.findById(id)
+                .orElseThrow( () -> new RuntimeException("Bid Log not found for id: " + id));
+
+        return bidLogRepository.findProjectionById(id);
+    }
+
+    public List<BidLogProjection> getAll(){
+        return bidLogRepository.findAllProjection();
     }
 }

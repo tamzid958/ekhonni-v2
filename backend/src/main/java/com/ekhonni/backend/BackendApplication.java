@@ -10,18 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 public class BackendApplication {
 
-    @Autowired
-    private UserRepository userRepository;
-
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
     }
 
-//    @Bean
-//    public CommandLineRunner commandLineRunner() {
-//        return args -> {
-//            var list = userRepository.findAllUser();
-//            list.forEach(u -> System.out.println(u.getName() + ", " + u.getEmail()));
-//        };
-//    }
 }
