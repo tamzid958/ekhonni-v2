@@ -8,6 +8,7 @@
 package com.ekhonni.backend.controller;
 
 
+import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.service.CategoryService;
@@ -31,7 +32,7 @@ public record CategoryController(CategoryService categoryService) {
 
 
     @GetMapping
-    public List<Category> getAll(){
+    public List<CategoryDTO> getAll(){
         return categoryService.getAll();
     }
 

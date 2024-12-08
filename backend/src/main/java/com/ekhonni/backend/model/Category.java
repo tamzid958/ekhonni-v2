@@ -31,11 +31,12 @@ public class Category extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "cat_parent_id")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+//    @JsonManagedReference
     @JsonIgnore
     private List<Category> childrenCategory;
 

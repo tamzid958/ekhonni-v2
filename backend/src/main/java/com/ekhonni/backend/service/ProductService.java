@@ -22,8 +22,6 @@ public record ProductService(ProductRepository productRepository) {
 
 
        public Product create(Product product){
-           //System.out.println();
-         //  return product;
            return  productRepository.save(product);
        }
 
