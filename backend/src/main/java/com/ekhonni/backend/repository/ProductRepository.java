@@ -18,13 +18,14 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+
 //    @Query("SELECT p FROM Product p where p.parentCategoryId=?1 AND p.productApproved=false")
 //    List<Product> findAllProductByCategoryId(Long Id);
 
-    List<Product> findByCategoryId(Long categoryId);
+//    List<Product> findByCategoryId(Long categoryId);
 
-    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId OR p.category.parentCategory.id = :categoryId")
-    List<Product> findAllProductsByCategoryAndSubCategories(Long categoryId);
+//    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId OR p.category.parentCategory.id = :categoryId")
+//    List<Product> findAllProductsByCategoryAndSubCategories(Long categoryId);
 
 
     @Query(value = """
@@ -64,7 +65,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllApprovedProductsInCategoryTree(Long categoryId);
 
 
-    @Query(value = "SELECT * FROM product WHERE approved = true", nativeQuery = true)
-    List<Product> findApprovedProducts();
+//    @Query(value = "SELECT * FROM product WHERE approved = true", nativeQuery = true)
+//    List<Product> findApprovedProducts();
 
 }

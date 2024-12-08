@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 
 public class CategoryDTO {
+
     private Long id;
     private String name;
     private boolean active;
@@ -36,8 +37,10 @@ public class CategoryDTO {
         this.id = category.getId();
         this.name = category.getName();
         this.active = category.isActive();
-        this.subCategories = category.getSubCategories().stream()
+        this.subCategories = category.getSubCategories() != null ?
+                 category.getSubCategories().stream()
                 .map(CategoryDTO::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : null;
     }
 }

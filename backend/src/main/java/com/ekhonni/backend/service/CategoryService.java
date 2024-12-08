@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 @Service
 public record CategoryService(CategoryRepository categoryRepository){
+
+
     public Category save(Category category) {
         return categoryRepository.save(category);
     }
@@ -27,6 +29,9 @@ public record CategoryService(CategoryRepository categoryRepository){
     public List<CategoryDTO> getAll(){
 
         List<Category> categories = categoryRepository.findTopLevelCategories();
+        System.out.println(categories);
+
+
         if (categories.isEmpty()) {
             throw new RuntimeException("No categories found!");
         }
