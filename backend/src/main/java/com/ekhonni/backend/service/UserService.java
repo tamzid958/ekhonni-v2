@@ -60,7 +60,7 @@ public class UserService {
             );
             userRepository.save(user);
 
-            Account account = new Account(user, 0.0, "active");
+            Account account = new Account(user, 0.0, "Active");
             accountRepository.save(account);
         }
 

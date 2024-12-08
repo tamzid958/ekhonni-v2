@@ -32,8 +32,7 @@ public class AccountService {
     public Account create(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-
-        Account account = new Account(user, 0.0, "ACTIVE");
+        Account account = new Account(user, 0.0, "Active");
         accountRepository.save(account);
         return account;
     }
@@ -42,7 +41,7 @@ public class AccountService {
     public void softDelete(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(AccountNotFoundException::new);
-        account.setStatus("DELETED");
+        account.setStatus("Deleted");
         account.setDeletedAt(LocalDateTime.now());
         accountRepository.save(account);
     }

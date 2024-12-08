@@ -18,7 +18,6 @@ import java.util.UUID;
 public record AccountController(AccountService accountService) {
 
     @PostMapping("/{user_id}")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
         return new ResponseEntity<>(accountService.create(userId), HttpStatus.CREATED);
     }
@@ -31,13 +30,13 @@ public record AccountController(AccountService accountService) {
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> softDelete(@PathVariable("id") Long id) {
         accountService.softDelete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}/hard-delete")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         accountService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     public List<Transaction> getAllTransactions() {
