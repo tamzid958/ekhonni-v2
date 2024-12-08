@@ -11,7 +11,7 @@ import java.util.UUID;
 
 
 @Repository
-public interface UserRepository extends BaseRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u")
     List<UserProjection> findAllProjection();

@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+HELP.md.gradle
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Ignore folders
+.idea/
+build/
+.gradle/
+gradle/
+
+# Ignore specific files
+build.gradle
+compose.yaml
+gradlew
+gradlew.bat
+
+=======
 # Build tool-specific files
 /gradle/
 /.gradle/
@@ -6,6 +25,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+>>>>>>> 93f99a86e268630171569360e145fb11ba886ecb
 
 # Operating system-specific files
 .DS_Store

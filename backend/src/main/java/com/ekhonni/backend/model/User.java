@@ -7,33 +7,36 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.util.UUID;
 
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "user")
-//@SQLDelete(sql = "UPDATE user SET deleted=true WHERE id=?")
-//@Where(clause = "deleted=false")
+@Table(name = "users")
 public class User extends BaseEntity<UUID> {
 
+    @NotBlank
     private String name;
+    @NotBlank
+    @Email
     private String email;
+    @NotBlank
     private String password;
+    @NotBlank
     private String role;
+    @NotBlank
     private String phone;
+    @NotBlank
     private String address;
-
-    @OneToOne (mappedBy = "user")
+    @OneToOne(mappedBy = "user")
     private Account account;
 
     public User(String name, String email, String password, String role, String phone, String address) {
+        super();
         this.name = name;
         this.email = email;
         this.password = password;
@@ -41,5 +44,6 @@ public class User extends BaseEntity<UUID> {
         this.phone = phone;
         this.address = address;
     }
+
 }
 

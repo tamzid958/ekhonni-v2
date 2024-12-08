@@ -1,10 +1,12 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -13,8 +15,7 @@ import java.util.List;
 @Entity
 public class Product extends BaseEntity<Long> {
 
-    private String name;
-
     @OneToOne(mappedBy = "product")
     Bid bid;
+    private String name;
 }

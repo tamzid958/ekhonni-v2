@@ -34,7 +34,7 @@ public record UserController(UserService userService) {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PutMapping("/{id}/update")
+    @PatchMapping("/{id}/update")
     public UserDTO updateUserInfo(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
         return userService.update(id, userDTO);
     }
