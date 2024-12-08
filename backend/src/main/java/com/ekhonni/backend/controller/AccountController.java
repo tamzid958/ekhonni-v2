@@ -14,18 +14,30 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v2/account")
+@RequestMapping("/api/v2/account")
 public record AccountController(AccountService accountService) {
 
     @PostMapping("/{user_id}")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
-        accountService.create(userId);
-        return new ResponseEntity<>(HttpStatus.valueOf(201));
+        return new ResponseEntity<>(accountService.create(userId), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/balance")
-    public double getBalance(@PathVariable("id") Long id) {
-        return accountService.getBalance(id);
+    public ResponseEntity<?> getBalance(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(accountService.getBalance(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> softDelete(@PathVariable("id") Long id) {
+        accountService.softDelete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/hard-delete")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        accountService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
     public List<Transaction> getAllTransactions() {

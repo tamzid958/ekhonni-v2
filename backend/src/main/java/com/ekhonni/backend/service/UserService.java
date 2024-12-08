@@ -32,21 +32,39 @@ public class UserService {
     }
 
     public UserDTO create(UserDTO userDTO) {
-    User user = new User(
-            userDTO.name(),
-            userDTO.email(),
-            userDTO.password(),
-            "USER",
-            userDTO.phone(),
-            userDTO.address()
-    );
-    userRepository.save(user);
+        User user = new User(
+                userDTO.name(),
+                userDTO.email(),
+                userDTO.password(),
+                "USER",
+                userDTO.phone(),
+                userDTO.address()
+        );
+        userRepository.save(user);
 
-    Account account = new Account(user, 0.0, "active");
-    accountRepository.save(account);
+        Account account = new Account(user, 0.0, "active");
+        accountRepository.save(account);
 
-    return userDTO;
-}
+        return userDTO;
+    }
+
+    public void createAll(List<UserDTO> userDTOs) {
+        for (UserDTO userDTO : userDTOs) {
+            User user = new User(
+                    userDTO.name(),
+                    userDTO.email(),
+                    userDTO.password(),
+                    "USER",
+                    userDTO.phone(),
+                    userDTO.address()
+            );
+            userRepository.save(user);
+
+            Account account = new Account(user, 0.0, "active");
+            accountRepository.save(account);
+        }
+
+    }
 
 
     public void delete(UUID id) {
