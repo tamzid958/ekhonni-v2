@@ -27,7 +27,7 @@ public record UserController(UserService userService) {
         return userService.getById(id);
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
         return userService.create(userDTO);
@@ -40,9 +40,9 @@ public record UserController(UserService userService) {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PutMapping("/{id}/update")
+    @PatchMapping("/{id}/update")
     public UserDTO updateUserInfo(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
-        return userService.updateUserInfo(id, userDTO);
+        return userService.update(id, userDTO);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

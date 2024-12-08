@@ -12,5 +12,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query("DELETE FROM Account a WHERE a.id = :id")
     void deleteAccountById(@Param("id") Long id);
-
 }

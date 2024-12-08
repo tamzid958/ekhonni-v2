@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
@@ -27,7 +28,7 @@ public class UserService {
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return userRepository.findProjectionById(id);
     }
 
@@ -66,22 +67,30 @@ public class UserService {
 
     }
 
-
     public void delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        userRepository.softDeleteById(id);
     }
 
+
     @Transactional
-    public UserDTO updateUserInfo(UUID id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public UserDTO update(UUID id, UserDTO userDTO) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if (userDTO.name() != null && !userDTO.name().isBlank()) {
             user.setName(userDTO.name());
         }
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
-        user.setPhone(userDTO.phone());
-        user.setAddress(userDTO.address());
+        if (userDTO.email() != null && !userDTO.email().isBlank()) {
+            user.setEmail(userDTO.email());
+        }
+        if (userDTO.password() != null && !userDTO.password().isBlank()) {
+            user.setPassword(userDTO.password());
+        }
+        if (userDTO.phone() != null && !userDTO.phone().isBlank()) {
+            user.setPhone(userDTO.phone());
+        }
+        if (userDTO.address() != null && !userDTO.address().isBlank()) {
+            user.setAddress(userDTO.address());
+        }
 
         return userDTO;
     }
