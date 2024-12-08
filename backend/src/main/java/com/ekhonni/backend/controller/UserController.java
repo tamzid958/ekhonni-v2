@@ -27,7 +27,7 @@ public record UserController(UserService userService) {
         return userService.getById(id);
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
         return userService.create(userDTO);

@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
@@ -27,43 +28,52 @@ public class UserService {
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return userRepository.findProjectionById(id);
     }
 
     public UserDTO create(UserDTO userDTO) {
-    User user = new User(
-            userDTO.name(),
-            userDTO.email(),
-            userDTO.password(),
-            "USER",
-            userDTO.phone(),
-            userDTO.address()
-    );
-    userRepository.save(user);
+        User user = new User(
+                userDTO.name(),
+                userDTO.email(),
+                userDTO.password(),
+                "USER",
+                userDTO.phone(),
+                userDTO.address()
+        );
+        userRepository.save(user);
 
-    Account account = new Account(user, 0.0, "active");
-    accountRepository.save(account);
+        Account account = new Account(user, 0.0, "active");
+        accountRepository.save(account);
 
-    return userDTO;
-}
+        return userDTO;
+    }
 
 
     public void delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         userRepository.deleteById(id);
     }
 
+
     @Transactional
     public UserDTO update(UUID id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if (userDTO.name() != null && !userDTO.name().isBlank()) {
             user.setName(userDTO.name());
         }
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
-        user.setPhone(userDTO.phone());
-        user.setAddress(userDTO.address());
+        if (userDTO.email() != null && !userDTO.email().isBlank()) {
+            user.setEmail(userDTO.email());
+        }
+        if (userDTO.password() != null && !userDTO.password().isBlank()) {
+            user.setPassword(userDTO.password());
+        }
+        if (userDTO.phone() != null && !userDTO.phone().isBlank()) {
+            user.setPhone(userDTO.phone());
+        }
+        if (userDTO.address() != null && !userDTO.address().isBlank()) {
+            user.setAddress(userDTO.address());
+        }
 
         return userDTO;
     }
