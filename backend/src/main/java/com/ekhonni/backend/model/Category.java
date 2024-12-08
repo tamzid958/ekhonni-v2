@@ -36,7 +36,6 @@ public class Category extends BaseEntity<Long> {
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
-    @JsonIgnore
     private List<Category> subCategories;
 
     @OneToMany(mappedBy = "category")

@@ -8,6 +8,7 @@
 package com.ekhonni.backend.controller;
 
 
+import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.service.ProductService;
 import org.apache.coyote.Response;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public record ProductController(ProductService productService){
 
     @GetMapping
-    public List<Product> getAll(){
+    public List<ProductDTO> getAll(){
         return productService.getAll();
     }
 

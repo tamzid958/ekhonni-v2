@@ -8,6 +8,8 @@
 package com.ekhonni.backend.service;
 
 
+import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.repository.ProductRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public record ProductService(ProductRepository productRepository) {
@@ -25,8 +28,17 @@ public record ProductService(ProductRepository productRepository) {
            return  productRepository.save(product);
        }
 
-       public List<Product> getAll(){
-           return  productRepository.findAll();
+       public List<ProductDTO> getAll(){
+           // return  productRepository.findAll();
+           List<Product> products =   productRepository.findAll();
+
+           if (products.isEmpty()) {
+               throw new RuntimeException("No products found!");
+           }
+
+           return products.stream()
+                   .map(ProductDTO::new)
+                   .collect(Collectors.toList());
        }
 
 
