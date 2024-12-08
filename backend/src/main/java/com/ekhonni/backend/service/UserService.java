@@ -52,7 +52,7 @@ public class UserService {
 
     public void delete(UUID id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        userRepository.deleteById(id);
+        userRepository.softDeleteById(id);
     }
 
 
