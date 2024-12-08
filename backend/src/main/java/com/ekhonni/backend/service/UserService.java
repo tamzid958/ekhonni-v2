@@ -49,6 +49,23 @@ public class UserService {
         return userDTO;
     }
 
+    public void createAll(List<UserDTO> userDTOs) {
+        for (UserDTO userDTO : userDTOs) {
+            User user = new User(
+                    userDTO.name(),
+                    userDTO.email(),
+                    userDTO.password(),
+                    "USER",
+                    userDTO.phone(),
+                    userDTO.address()
+            );
+            userRepository.save(user);
+
+            Account account = new Account(user, 0.0, "Active");
+            accountRepository.save(account);
+        }
+
+    }
 
     public void delete(UUID id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);

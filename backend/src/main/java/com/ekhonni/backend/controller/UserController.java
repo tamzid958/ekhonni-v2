@@ -34,6 +34,12 @@ public record UserController(UserService userService) {
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/create-all")
+    public void createAll(@RequestBody List<UserDTO> userDTOs) {
+        userService.createAll(userDTOs);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping("/{id}/update")
     public UserDTO updateUserInfo(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
         return userService.update(id, userDTO);
