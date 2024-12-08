@@ -2,7 +2,6 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.BidLogDTO;
-import com.ekhonni.backend.model.BidLog;
 import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.service.BidLogService;
 
@@ -33,4 +32,12 @@ public record BidLogController(BidLogService bidLogService) {
     public List<BidLogProjection> getAll(){
         return bidLogService.getAll();
     }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PutMapping("/{id}/update")
+    public BidLogDTO update(@PathVariable Long id, @RequestBody BidLogDTO bidLogDTO){
+        return bidLogService.update(id, bidLogDTO);
+    }
+
+
 }

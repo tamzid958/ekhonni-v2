@@ -4,6 +4,7 @@ import com.ekhonni.backend.dto.BidLogDTO;
 import com.ekhonni.backend.model.BidLog;
 import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.repository.BidLogRepository;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -40,5 +41,15 @@ public class BidLogService {
 
     public List<BidLogProjection> getAll(){
         return bidLogRepository.findAllProjection();
+    }
+
+    @Transactional
+    public BidLogDTO update(Long id, BidLogDTO bidLogDTO){
+        BidLog bidLog = bidLogRepository.findById(id)
+                .orElseThrow( () -> new RuntimeException("Bid Log not found for id: " + id));
+
+        bidLog.setStatus(bidLogDTO.status());
+
+        return bidLogDTO;
     }
 }
