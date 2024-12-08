@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.util.List;
@@ -23,24 +25,28 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "product")
-public class Product extends BaseEntity {
 
+public class Product extends BaseEntity<Long> {
 
-
+    @NotBlank
     private String name;
+
+    @Positive
+    @Column(nullable = false)
     private Long price;
+
+    @NotBlank
     private String description;
+
     private boolean approved = false;
     private boolean sold = false;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProductCondition condition;
 
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-
 
 }

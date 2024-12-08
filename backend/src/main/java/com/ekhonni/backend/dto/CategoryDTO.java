@@ -36,9 +36,6 @@ public class CategoryDTO {
         this.id = category.getId();
         this.name = category.getName();
         this.active = category.isActive();
-
-
-
         this.subCategories = category.getSubCategories().stream()
                 .map(CategoryDTO::new)
                 .collect(Collectors.toList());
