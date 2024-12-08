@@ -5,6 +5,8 @@
 package com.ekhonni.backend.baseentity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -18,10 +20,10 @@ public abstract class BaseEntity<T extends Serializable> {
     @Column(nullable = false, updatable = false)
     private T id;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column
