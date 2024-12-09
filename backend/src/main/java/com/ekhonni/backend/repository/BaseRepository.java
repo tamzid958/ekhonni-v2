@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 /**
  * Author: Md Jahid Hasan
  * Date: 12/8/24
@@ -17,5 +15,8 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} u SET u.deletedAt=CURRENT_TIMESTAMP() WHERE u.id = :id")
-    void softDeleteById(UUID id);
+    void softDeleteById(ID id);
+
+    @Query("SELECT CASE WHEN u.deletedAt IS NOT NULL THEN true ELSE false END FROM #{#entityName} u WHERE u.id = :id")
+    boolean isDeleted(ID id);
 }
