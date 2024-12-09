@@ -43,10 +43,16 @@ public record ProductService(ProductRepository productRepository) {
 
 
 
-       public List<Product> getAllByCategoryId(Long categoryId){
-           System.out.println(productRepository.findAll());
-           //return productRepository.findAllProductsByCategoryAndSubCategories(categoryId);
-           return productRepository.findAllProductsInCategoryTree(categoryId);
+       public List<ProductDTO> getAllByCategoryId(Long categoryId){
+
+           List<Product> products =  productRepository.findAllProductsInCategoryTree(categoryId);
+           if (products.isEmpty()) {
+               throw new RuntimeException("No products found!");
+           }
+
+           return products.stream()
+                   .map(ProductDTO::new)
+                   .collect(Collectors.toList());
        }
 
 //       public List<ProductDTO> getAll(){

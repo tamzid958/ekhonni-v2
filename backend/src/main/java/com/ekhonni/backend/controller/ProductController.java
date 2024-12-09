@@ -30,8 +30,8 @@ public record ProductController(ProductService productService){
     }
 
     @GetMapping("/by-categories/{category_id}")
-    public List<Product> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        System.out.println(categoryId);
+    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
+        //System.out.println(categoryId);
         return productService.getAllByCategoryId(categoryId);
     }
 
