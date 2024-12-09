@@ -1,84 +1,37 @@
-HELP.md.gradle
+HELP.md
+.gradle
+build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-# Ignore folders
-.idea/
-build/
-.gradle/
-gradle/
-
-# Ignore specific files
-build.gradle
-compose.yaml
-gradlew
-gradlew.bat
-compose.yaml
-
-# Build tool-specific files
-/.idea/
-/gradle/
-/.gradle/
-/build/
-resources/application-prod.properties
-/target/
-
-# Operating system-specific files
-.DS_Store
-Thumbs.db
-
-# Spring Tool Suite (STS) files
+### STS ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings/
+.settings
 .springBeans
 .sts4-cache
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-# IntelliJ IDEA-specific files
+### IntelliJ IDEA ###
+.idea
 *.iws
 *.iml
 *.ipr
-/out/
+out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-# NetBeans IDE-specific files
+### NetBeans ###
 /nbproject/private/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-# Visual Studio Code-specific files
+### VS Code ###
 .vscode/
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-
-# Sensitive and environment-specific files
-/src/main/resources/application-*.properties
-.env
-/config/
-
-# Editor-specific files
-*.swp
-*.swo
-
-# Java-specific files
-*.class
-*.jar
-*.war
-*.ear
-
-# Ignore backups and caches
-*.bak
-*.cache
