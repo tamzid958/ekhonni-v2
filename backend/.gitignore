@@ -14,12 +14,14 @@ build.gradle
 compose.yaml
 gradlew
 gradlew.bat
+compose.yaml
 
 # Build tool-specific files
 /.idea/
 /gradle/
 /.gradle/
 /build/
+resources/application-prod.properties
 /target/
 
 # Operating system-specific files
