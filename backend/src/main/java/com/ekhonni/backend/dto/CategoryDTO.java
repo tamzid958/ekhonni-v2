@@ -27,9 +27,6 @@ public class CategoryDTO {
     private Long id;
     private String name;
     private boolean active;
-
-
-    @JsonProperty("subCategories")
     private List<CategoryDTO> subCategories;
 
 
