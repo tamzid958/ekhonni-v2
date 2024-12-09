@@ -27,16 +27,22 @@ public record UserController(UserService userService) {
         return userService.getById(id);
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
         return userService.create(userDTO);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PutMapping("/{id}/update")
+    @PostMapping("/create-all")
+    public void createAll(@RequestBody List<UserDTO> userDTOs) {
+        userService.createAll(userDTOs);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PatchMapping("/{id}/update")
     public UserDTO updateUserInfo(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
-        return userService.updateUserInfo(id, userDTO);
+        return userService.update(id, userDTO);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

@@ -11,11 +11,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Account extends BaseEntity<Long> {
     @NonNull
     @OneToOne

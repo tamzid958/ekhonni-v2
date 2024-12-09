@@ -5,15 +5,17 @@
 package com.ekhonni.backend.baseentity;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Getter
 @MappedSuperclass
+@Setter
 public abstract class BaseEntity<T extends Serializable> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,4 +30,5 @@ public abstract class BaseEntity<T extends Serializable> {
 
     @Column
     private LocalDateTime deletedAt;
+
 }

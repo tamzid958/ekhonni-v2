@@ -1,12 +1,24 @@
+HELP.md.gradle
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Ignore folders
+.idea/
+build/
+.gradle/
+gradle/
+
+# Ignore specific files
+compose.yaml
+
 # Build tool-specific files
+/.idea/
 /gradle/
 /.gradle/
 /build/
 resources/application-prod.properties
 /target/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 # Operating system-specific files
 .DS_Store
@@ -25,7 +37,6 @@ bin/
 !**/src/test/**/bin/
 
 # IntelliJ IDEA-specific files
-.idea/
 *.iws
 *.iml
 *.ipr
