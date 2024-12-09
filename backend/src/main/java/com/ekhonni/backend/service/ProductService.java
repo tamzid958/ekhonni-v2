@@ -30,16 +30,11 @@ public record ProductService(ProductRepository productRepository) {
        }
 
        public List<ProductProjection> getAll(){
-           List<ProductProjection> productProjections =   productRepository.findAllProjected();
-           return productProjections;
+           return productRepository.findAllProjected();
        }
 
-
-
        public List<ProductProjection> getAllByCategoryId(Long categoryId){
-
-           List<ProductProjection> products =  productRepository.findAllByCategoryId(categoryId);
-           return products;
+           return productRepository.findAllByCategoryId(categoryId);
        }
 
 //       public List<ProductDTO> getAll(){

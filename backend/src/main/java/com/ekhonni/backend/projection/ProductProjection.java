@@ -17,17 +17,11 @@ import java.time.LocalDateTime;
 public interface ProductProjection {
     Long getId();
     Long getPrice();
-
     String getName();
     String getDescription();
-
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
-
-
-
     ProductCondition getCondition();
-
     @JsonIgnoreProperties({"subCategories", "parentCategory"})
     Category getCategory();
 }
