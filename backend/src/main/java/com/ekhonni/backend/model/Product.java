@@ -7,7 +7,7 @@
 
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.base.BaseEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;

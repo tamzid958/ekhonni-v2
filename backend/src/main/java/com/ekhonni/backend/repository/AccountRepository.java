@@ -1,6 +1,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.projection.AccountProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,8 +17,12 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     void deleteAccountById(@Param("id") Long id);
 
     @Query("SELECT a FROM Account a WHERE a.deletedAt IS NULL")
-    List<Account> getAll();
+    List<AccountProjection> getAll();
+
+    @Query("SELECT a FROM Account a WHERE a.deletedAt IS NOT NULL")
+    List<AccountProjection> getAllDeleted();
 
     @Query("SELECT a FROM Account a")
-    List<Account> getAllIncludingDeleted();
+    List<AccountProjection> getAllIncludingDeleted();
+
 }

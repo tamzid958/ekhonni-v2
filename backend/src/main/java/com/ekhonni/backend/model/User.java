@@ -41,7 +41,7 @@ public class User extends BaseEntity<UUID> {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Account account;
     @OneToMany(mappedBy = "bidder")
-    private List<BidLog> bidlog;
+    private List<BidLog> bidLog;
 
     public User(String name, String email, String password, String role, String phone, String address) {
         super();
