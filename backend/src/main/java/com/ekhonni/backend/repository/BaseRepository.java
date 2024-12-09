@@ -17,6 +17,4 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("UPDATE #{#entityName} u SET u.deletedAt=CURRENT_TIMESTAMP() WHERE u.id = :id")
     void softDeleteById(ID id);
 
-    @Query("SELECT CASE WHEN u.deletedAt IS NOT NULL THEN true ELSE false END FROM #{#entityName} u WHERE u.id = :id")
-    boolean isDeleted(ID id);
 }

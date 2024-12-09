@@ -7,11 +7,14 @@
 
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.base.BaseEntity;
-import com.fasterxml.jackson.annotation.*;
+import com.ekhonni.backend.baseentity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 

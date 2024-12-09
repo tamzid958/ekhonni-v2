@@ -26,31 +26,26 @@ public record UserController(UserService userService) {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/{id}")
-    public UserProjection getUserById(@PathVariable UUID id) {
+    public UserProjection getById(@PathVariable UUID id) {
         return userService.getById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
-    public UserDTO createUser(@RequestBody UserDTO userDTO) {
+    public UserDTO create(@RequestBody UserDTO userDTO) {
         return userService.create(userDTO);
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping("/create-all")
-    public void createAll(@RequestBody List<UserDTO> userDTOs) {
-        userService.createAll(userDTOs);
-    }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PatchMapping("/{id}/update")
-    public UserDTO updateUserInfo(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
+    public UserDTO update(@PathVariable UUID id, @RequestBody UserDTO userDTO) {
         return userService.update(id, userDTO);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
