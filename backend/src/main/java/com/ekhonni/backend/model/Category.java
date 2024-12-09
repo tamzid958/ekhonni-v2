@@ -23,7 +23,6 @@ import java.util.List;
 
 public class Category extends BaseEntity<Long> {
 
-
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -34,12 +33,12 @@ public class Category extends BaseEntity<Long> {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory")
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories;
 
-    @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    private List<Product> products;
+//    @OneToMany(mappedBy = "category")
+//    @JsonIgnore
+//    private List<Product> products;
 
 
 }

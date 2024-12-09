@@ -29,13 +29,7 @@ public record ProductService(ProductRepository productRepository) {
        }
 
        public List<ProductDTO> getAll(){
-           // return  productRepository.findAll();
            List<Product> products =   productRepository.findAll();
-
-           if (products.isEmpty()) {
-               throw new RuntimeException("No products found!");
-           }
-
            return products.stream()
                    .map(ProductDTO::new)
                    .collect(Collectors.toList());
@@ -46,10 +40,6 @@ public record ProductService(ProductRepository productRepository) {
        public List<ProductDTO> getAllByCategoryId(Long categoryId){
 
            List<Product> products =  productRepository.findAllProductsInCategoryTree(categoryId);
-           if (products.isEmpty()) {
-               throw new RuntimeException("No products found!");
-           }
-
            return products.stream()
                    .map(ProductDTO::new)
                    .collect(Collectors.toList());
