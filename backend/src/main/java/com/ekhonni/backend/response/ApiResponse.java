@@ -18,19 +18,26 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-
-
 public class ApiResponse<T> {
+    
     private HttpStatusCodes httpStatusCode;
-    private boolean success;
+    private boolean isSuccess;
     private String message;
     private T data;
 
 
-    public static <T> ApiResponse<T> setResponse(HttpStatusCodes httpStatusCode, boolean success, T data, String message) {
-        return new ApiResponse<>(httpStatusCode, success, message, data);
+    public ApiResponse(HttpStatusCodes httpStatusCode, boolean isSuccess, String message, T data) {
+        this.httpStatusCode = httpStatusCode;
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.data = data;
     }
+
+    public static <T> ApiResponse<T> setResponse(HttpStatusCodes httpStatusCode, boolean isSuccess, T data, String message) {
+        return new ApiResponse<>(httpStatusCode, isSuccess, message, data);
+    }
+
+
 
 
 }
