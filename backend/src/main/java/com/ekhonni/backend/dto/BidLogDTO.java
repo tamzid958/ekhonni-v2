@@ -1,5 +1,7 @@
 package com.ekhonni.backend.dto;
 
-public record BidLogDTO(Double amount, String status) {
+import jakarta.validation.constraints.*;
+
+public record BidLogDTO(@NotNull @Positive Double amount, String status) {
 
 }

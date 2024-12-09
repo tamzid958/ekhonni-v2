@@ -6,6 +6,7 @@ import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.service.BidLogService;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,5 +40,10 @@ public record BidLogController(BidLogService bidLogService) {
         return bidLogService.update(id, bidLogDTO);
     }
 
-
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        bidLogService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

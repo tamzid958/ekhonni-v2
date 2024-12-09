@@ -5,13 +5,10 @@ import com.ekhonni.backend.model.BidLog;
 import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.repository.BidLogRepository;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Setter
@@ -51,5 +48,12 @@ public class BidLogService {
         bidLog.setStatus(bidLogDTO.status());
 
         return bidLogDTO;
+    }
+
+    public void delete(Long id){
+        BidLog bidLog = bidLogRepository.findById(id)
+                .orElseThrow( () -> new RuntimeException("Bid Log Not Found"));
+
+        bidLogRepository.deleteById(id);
     }
 }
