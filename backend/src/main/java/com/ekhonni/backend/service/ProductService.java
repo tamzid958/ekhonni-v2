@@ -8,18 +8,13 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
-import com.ekhonni.backend.dto.ProductDTO;
-import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public record ProductService(ProductRepository productRepository) {
@@ -37,27 +32,13 @@ public record ProductService(ProductRepository productRepository) {
            return productRepository.findAllByCategoryId(categoryId);
        }
 
-//       public List<ProductDTO> getAll(){
-//           List<Product> products = productRepository.findAll();
-//           return products.stream()
-//                   .map(ProductDTO::new)
-//                   .toList();
-//
-//           //return productRepository.findAll();
-//       }
+       public Optional<ProductProjection> getOne(Long Id){
+           return Optional.ofNullable(productRepository.findProductProjectionById(Id));
+       }
 
 
-//       public List<Product> getAllByCategory(Long categoryId){
-//           return productRepository.findAllProductByCategoryId(categoryId);
-//       }
-//       public ProductDTO getOne(Long id){
-//
-//           Product product = productRepository.findById(id)
-//                   .orElseThrow(() -> new ResourceNotFoundException("product not found"));
-//           return new ProductDTO(product);
-//
-//           //return productRepository.findById(id);
-//       }
+
+
 
 
 

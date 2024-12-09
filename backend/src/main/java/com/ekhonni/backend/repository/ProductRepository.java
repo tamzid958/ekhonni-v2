@@ -24,6 +24,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM Product p")
     List<ProductProjection> findAllProjected();
 
+
+    ProductProjection findProductProjectionById(Long id);
+
     @Query(value = """
         WITH RECURSIVE category_tree AS (
             SELECT id, parent_category_id
@@ -39,29 +42,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         JOIN category_tree ct ON p.category_id = ct.id
     """, nativeQuery = true)
     List<ProductProjection> findAllByCategoryId(Long categoryId);
-
-
-
-
-    @Query(value = """
-    WITH RECURSIVE category_tree AS (
-        SELECT id, parent_category_id
-        FROM category
-        WHERE id = :categoryId
-        UNION ALL
-        SELECT c.id, c.parent_category_id
-        FROM category c
-        INNER JOIN category_tree ct ON c.parent_category_id = ct.id
-    )
-    SELECT p.*
-    FROM product p
-    JOIN category_tree ct ON p.category_id = ct.id
-    WHERE p.approved = true;
-""", nativeQuery = true)
-    List<Product> findAllApprovedProductsInCategoryTree(Long categoryId);
-
-
-//    @Query(value = "SELECT * FROM product WHERE approved = true", nativeQuery = true)
-//    List<Product> findApprovedProducts();
 
 }

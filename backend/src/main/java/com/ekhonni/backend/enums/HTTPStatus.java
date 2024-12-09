@@ -9,7 +9,7 @@ package com.ekhonni.backend.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum HttpStatusCodes {
+public enum HTTPStatus {
 
     FOUND(200),
     CREATED(201),
@@ -25,7 +25,7 @@ public enum HttpStatusCodes {
     NOT_IMPLEMENTED(501);
 
     private final int code;
-    HttpStatusCodes(int code) {
+    HTTPStatus(int code) {
         this.code = code;
     }
 

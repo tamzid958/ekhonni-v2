@@ -16,6 +16,5 @@ public interface CategoryProjection {
     Long getId();
     String getName();
     boolean isActive();
-
     List<CategoryProjection> getSubCategories();
 }

@@ -8,7 +8,6 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
@@ -16,8 +15,6 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public record CategoryService(CategoryRepository categoryRepository){
@@ -31,10 +28,8 @@ public record CategoryService(CategoryRepository categoryRepository){
      return categoryRepository.findAllProjected();
     }
 
-    public CategoryDTO getOne(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElse(null);
-        return category != null ? new CategoryDTO(category) : null;
+    public CategoryProjection getOne(Long id) {
+       return categoryRepository.findCategoryProjectionById(id);
     }
 
 
@@ -50,7 +45,7 @@ public record CategoryService(CategoryRepository categoryRepository){
 //                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 //        return new CategoryDTO(category);
 //    }
-
+//
 
 //
 //    public Optional<Category> getById(Long id) {

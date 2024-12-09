@@ -8,14 +8,12 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
-import com.ekhonni.backend.enums.HttpStatusCodes;
+
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public record CategoryController(CategoryService categoryService) {
     @PostMapping
     public ApiResponse<?> create(@RequestBody Category category) {
         Category savedCategory = categoryService.save(category);
-        return ApiResponse.setResponse(HttpStatusCodes.CREATED, true, null, "Category Created");
+        return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "Category Created");
         //return ResponseEntity.status(HttpStatus.CREATED).body("category created");
     }
 
@@ -38,13 +36,13 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping
     public ApiResponse<?> getAll(){
         List<CategoryProjection> categoryProjections =  categoryService.getAll();
-        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryProjections, "Categories retrieved successfully");
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "Categories retrieved successfully");
     }
 
     @GetMapping("/{id}")
     public ApiResponse<?> getOne(@PathVariable Long id) {
-         CategoryDTO categoryDTO = categoryService.getOne(id);
-         return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryDTO, "Category Tree given");
+         CategoryProjection categoryProjection = categoryService.getOne(id);
+         return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjection, "Category Tree given");
     }
 
 //    @GetMapping

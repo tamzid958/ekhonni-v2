@@ -12,10 +12,13 @@ import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.projection.ProductProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface CategoryRepository extends JpaRepository<Category,Long> {
+
     @Query("SELECT c FROM Category c WHERE c.parentCategory IS NULL AND c.active=true")
     List<Category> findTopLevelCategories();
 
@@ -23,4 +26,6 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     @Query("SELECT c.id AS id, c.name AS name, c.active AS active, c.subCategories AS subCategories " +
             "FROM Category c WHERE c.parentCategory IS NULL")
     List<CategoryProjection> findAllProjected();
+
+    CategoryProjection findCategoryProjectionById(Long id);
 }
