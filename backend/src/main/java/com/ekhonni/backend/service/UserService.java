@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.exception.UserAlreadyDeletedException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
@@ -28,7 +29,8 @@ public class UserService {
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        if (userRepository.findById(id).isEmpty()) throw new UserNotFoundException();
+        if (userRepository.isDeleted(id)) throw new UserAlreadyDeletedException();
         return userRepository.findProjectionById(id);
     }
 
@@ -68,13 +70,15 @@ public class UserService {
     }
 
     public void delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        if (userRepository.isDeleted(id)) throw new UserAlreadyDeletedException();
+        if (userRepository.findById(id).isEmpty()) throw new UserNotFoundException();
         userRepository.softDeleteById(id);
     }
 
 
     @Transactional
-    public UserDTO update(UUID id, UserDTO userDTO) {
+    public UserDTO update(UUID id, UserDTO userDTO) throws UserAlreadyDeletedException {
+        if (userRepository.isDeleted(id)) throw new UserAlreadyDeletedException();
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         if (userDTO.name() != null && !userDTO.name().isBlank()) {
             user.setName(userDTO.name());
