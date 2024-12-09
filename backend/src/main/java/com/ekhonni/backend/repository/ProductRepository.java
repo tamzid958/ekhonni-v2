@@ -8,6 +8,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.ProductProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,15 +19,10 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-
-//    @Query("SELECT p FROM Product p where p.parentCategoryId=?1 AND p.productApproved=false")
-//    List<Product> findAllProductByCategoryId(Long Id);
-
-//    List<Product> findByCategoryId(Long categoryId);
-
-//    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId OR p.category.parentCategory.id = :categoryId")
-//    List<Product> findAllProductsByCategoryAndSubCategories(Long categoryId);
-
+    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
+            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category AS category " +
+            "FROM Product p")
+    List<ProductProjection> findAllProjected();
 
     @Query(value = """
         WITH RECURSIVE category_tree AS (
@@ -42,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         FROM product p
         JOIN category_tree ct ON p.category_id = ct.id
     """, nativeQuery = true)
-    List<Product> findAllProductsInCategoryTree(Long categoryId);
+    List<ProductProjection> findAllByCategoryId(Long categoryId);
 
 
 

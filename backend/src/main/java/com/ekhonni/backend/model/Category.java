@@ -30,15 +30,11 @@ public class Category extends BaseEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories;
 
-//    @OneToMany(mappedBy = "category")
-//    @JsonIgnore
-//    private List<Product> products;
 
 
 }

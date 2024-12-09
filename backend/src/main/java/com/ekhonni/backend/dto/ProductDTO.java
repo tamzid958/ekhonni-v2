@@ -38,7 +38,7 @@ public class ProductDTO {
     private ProductCondition condition;
 
 
-    @JsonIgnoreProperties({"subCategories"})
+    @JsonIgnoreProperties({"subCategories", "parentCategory"})
     private Category category;
 
     public ProductDTO(Product product) {

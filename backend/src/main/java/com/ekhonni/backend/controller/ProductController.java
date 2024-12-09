@@ -11,6 +11,7 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.enums.HttpStatusCodes;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
 import org.apache.coyote.Response;
@@ -29,14 +30,14 @@ public record ProductController(ProductService productService){
 
     @GetMapping
     public ApiResponse<?> getAll(){
-        List<ProductDTO>productDTOs =  productService.getAll();
+        List<ProductProjection>productDTOs =  productService.getAll();
         return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, productDTOs, "products fetched successfully");
     }
 
 
     @GetMapping("/by-categories/{category_id}")
     public ApiResponse<?> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        List<ProductDTO>productDTOs = productService.getAllByCategoryId(categoryId);
+        List<ProductProjection>productDTOs = productService.getAllByCategoryId(categoryId);
         return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, productDTOs, "all products given under one category");
     }
 
