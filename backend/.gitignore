@@ -17,6 +17,7 @@ compose.yaml
 /gradle/
 /.gradle/
 /build/
+resources/application-prod.properties
 /target/
 
 # Operating system-specific files

@@ -5,10 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -30,5 +27,11 @@ public class BidLog extends BaseEntity<Long> {
 
     @Column
     private String status;
+
+    public BidLog(Double amount, String status){
+        this.amount = amount;
+        this.status = status;
+    }
+
 }
 
