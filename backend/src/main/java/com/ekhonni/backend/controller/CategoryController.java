@@ -9,7 +9,9 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.enums.HttpStatusCodes;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +27,23 @@ public record CategoryController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Category category) {
+    public ApiResponse<?> create(@RequestBody Category category) {
         Category savedCategory = categoryService.save(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body("category created");
+        return ApiResponse.setResponse(HttpStatusCodes.CREATED, true, null, "Category Created");
+        //return ResponseEntity.status(HttpStatus.CREATED).body("category created");
     }
 
 
     @GetMapping
-    public List<CategoryDTO> getAll(){
-        return categoryService.getAll();
+    public ApiResponse<?> getAll(){
+        List<CategoryDTO> categoryDTOs =  categoryService.getAll();
+        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryDTOs, "Categories retrieved successfully");
     }
 
     @GetMapping("/{id}")
-    public CategoryDTO getOne(@PathVariable Long id) {
-        return categoryService.getOne(id);
+    public ApiResponse<?> getOne(@PathVariable Long id) {
+         CategoryDTO categoryDTO = categoryService.getOne(id);
+         return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryDTO, "Category Tree given");
     }
 
 //    @GetMapping

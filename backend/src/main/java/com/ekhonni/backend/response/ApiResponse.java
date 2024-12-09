@@ -8,29 +8,29 @@
 package com.ekhonni.backend.response;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.enums.HttpStatusCodes;
+import lombok.*;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@Builder
 
 
-public class ApiResponse<T>{
-    private HttpStatus httpStatus;
+public class ApiResponse<T> {
+    private HttpStatusCodes httpStatusCode;
     private boolean success;
     private String message;
     private T data;
 
-    public ApiResponse(boolean success, String message, T data, HttpStatus httpStatus) {
-        this.success = success;
-        this.message = message;
-        this.data = data;
-        this.httpStatus = httpStatus;
+
+    public static <T> ApiResponse<T> setResponse(HttpStatusCodes httpStatusCode, boolean success, T data, String message) {
+        return new ApiResponse<>(httpStatusCode, success, message, data);
     }
+
 
 }

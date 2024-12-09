@@ -7,7 +7,7 @@
 
 package com.ekhonni.backend.projection;
 
-import com.ekhonni.backend.base.BaseEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 
 public class ProductProjection extends BaseEntity {
 }

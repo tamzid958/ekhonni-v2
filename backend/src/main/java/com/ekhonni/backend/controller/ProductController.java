@@ -9,7 +9,9 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.enums.HttpStatusCodes;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,24 @@ import java.util.Optional;
 @RequestMapping("/products")
 public record ProductController(ProductService productService){
 
+
     @GetMapping
-    public List<ProductDTO> getAll(){
-        return productService.getAll();
+    public ApiResponse<?> getAll(){
+        List<ProductDTO>productDTOs =  productService.getAll();
+        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, productDTOs, "products fetched successfully");
     }
 
+
     @GetMapping("/by-categories/{category_id}")
-    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        //System.out.println(categoryId);
-        return productService.getAllByCategoryId(categoryId);
+    public ApiResponse<?> getByCategoryId(@PathVariable("category_id") Long categoryId){
+        List<ProductDTO>productDTOs = productService.getAllByCategoryId(categoryId);
+        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, productDTOs, "all products given under one category");
+    }
+
+    @PostMapping
+    public ApiResponse<?> create(@RequestBody Product product) {
+       // return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(product));
+        return ApiResponse.setResponse(HttpStatusCodes.CREATED, true, null, "successfully created product");
     }
 
 //    @GetMapping
@@ -58,10 +69,7 @@ public record ProductController(ProductService productService){
 
 
 
-    @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(product));
-    }
+
 
 
 
