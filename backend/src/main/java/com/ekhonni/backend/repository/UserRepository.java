@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Author: Md Jahid Hasan
+ */
 
 @Repository
 public interface UserRepository extends BaseRepository<User, UUID> {
