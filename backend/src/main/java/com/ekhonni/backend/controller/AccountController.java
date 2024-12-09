@@ -17,6 +17,16 @@ import java.util.UUID;
 @RequestMapping("/api/v2/account")
 public record AccountController(AccountService accountService) {
 
+    @GetMapping("/get")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(accountService.getAll());
+    }
+
+    @GetMapping("/get-including-deleted")
+    public ResponseEntity<?> getAllIncludingDeleted() {
+        return ResponseEntity.ok(accountService.getAllIncludingDeleted());
+    }
+
     @PostMapping("/{user_id}")
     public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
         return new ResponseEntity<>(accountService.create(userId), HttpStatus.CREATED);

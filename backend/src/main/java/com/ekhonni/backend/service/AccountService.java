@@ -13,6 +13,7 @@ import com.ekhonni.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -22,6 +23,14 @@ import java.util.UUID;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+
+    public List<Account> getAll() {
+        return accountRepository.getAll();
+    }
+
+    public List<Account> getAllIncludingDeleted() {
+        return accountRepository.getAllIncludingDeleted();
+    }
 
     public double getBalance(Long id) {
         Account account = accountRepository.findById(id)
