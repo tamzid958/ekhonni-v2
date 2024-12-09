@@ -11,6 +11,7 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.enums.HttpStatusCodes;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,8 @@ public record CategoryController(CategoryService categoryService) {
 
     @GetMapping
     public ApiResponse<?> getAll(){
-        List<CategoryDTO> categoryDTOs =  categoryService.getAll();
-        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryDTOs, "Categories retrieved successfully");
+        List<CategoryProjection> categoryProjections =  categoryService.getAll();
+        return ApiResponse.setResponse(HttpStatusCodes.FOUND, true, categoryProjections, "Categories retrieved successfully");
     }
 
     @GetMapping("/{id}")

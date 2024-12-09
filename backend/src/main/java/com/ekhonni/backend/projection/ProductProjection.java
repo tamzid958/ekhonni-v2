@@ -22,6 +22,6 @@ public interface ProductProjection {
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
     ProductCondition getCondition();
-    @JsonIgnoreProperties({"subCategories", "parentCategory"})
+    @JsonIgnoreProperties({"subCategories", "parentCategory", "createdAt", "updatedAt", "active","deletedAt"})
     Category getCategory();
 }
