@@ -1,6 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,14 +33,26 @@ public class User extends BaseEntity<UUID> {
     @NotBlank
     private String password;
     @NotBlank
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @NotBlank
     private String phone;
     @NotBlank
     private String address;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Account account;
+    @OneToMany(mappedBy = "bidder")
+    private List<BidLog> bidLog;
+
+    public User(String name, String email, String password, Role role, String phone, String address) {
+        super();
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.phone = phone;
+        this.address = address;
+    }
 
 }
 

@@ -15,13 +15,7 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
-
-    @ExceptionHandler(UserAlreadyDeletedException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyDeletedException(UserAlreadyDeletedException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
-    }
-
+    
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
