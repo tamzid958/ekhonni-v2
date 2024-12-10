@@ -11,6 +11,7 @@ import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.model.Category;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,8 @@ public interface ProductProjection {
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
     ProductCondition getCondition();
-    @JsonIgnoreProperties({"subCategories", "parentCategory", "createdAt", "updatedAt", "active","deletedAt"})
-    Category getCategory();
+//    @JsonIgnoreProperties({"subCategories", "parentCategory", "createdAt", "updatedAt", "active","deletedAt"})
+//    Category getCategory();
+    @Value("#{target.category.name}")
+    String getCategoryName();
 }

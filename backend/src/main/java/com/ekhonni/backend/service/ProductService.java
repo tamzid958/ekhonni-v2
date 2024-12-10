@@ -11,9 +11,13 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,18 +25,19 @@ import java.util.Optional;
 public record ProductService(ProductRepository productRepository) {
 
 
-       public Product create(Product product){
+       public void create(Product product){
            System.out.println(product);
-           return  productRepository.save(product);
+           productRepository.save(product);
        }
 
        public List<ProductProjection> getAll(){
-           return productRepository.findAllProjected();
+           return productRepository.findAllProjection();
        }
 
-    public List<ProductProjection> getAllWithSorting(String field){
-        return productRepository.findAllProjectedWithSorting(Sort.by(field));
+    public Page<ProductProjection> getProductWithPage(Pageable pageable) {
+        return productRepository.findAllProjectionWithPage(pageable);
     }
+
 
        public List<ProductProjection> getAllByCategoryId(Long categoryId){
            return productRepository.findAllByCategoryId(categoryId);

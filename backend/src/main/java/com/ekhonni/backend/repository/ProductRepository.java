@@ -8,10 +8,14 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.projection.ProductProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,17 +26,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
             "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category AS category " +
             "FROM Product p")
-    List<ProductProjection> findAllProjected();
+    List<ProductProjection> findAllProjection();
+
 
     @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
             "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category AS category " +
             "FROM Product p")
-    List<ProductProjection> findAllProjectedWithSorting(Sort by);
-
+    Page<ProductProjection> findAllProjectionWithPage(Pageable pageable);
 
 
 
     ProductProjection findProductProjectionById(Long id);
+
+
 
     @Query(value = """
         WITH RECURSIVE category_tree AS (
@@ -48,6 +54,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         FROM product p
         JOIN category_tree ct ON p.category_id = ct.id
     """, nativeQuery = true)
-    List<ProductProjection> findAllByCategoryId(Long categoryId);
+    List<ProductProjection> findAllByCategoryId(@Param("categoryId") Long categoryId);
 
 }

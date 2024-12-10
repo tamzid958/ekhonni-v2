@@ -25,7 +25,7 @@ public record CategoryService(CategoryRepository categoryRepository){
     }
 
     public List<CategoryProjection> getAll(){
-     return categoryRepository.findAllProjected();
+     return categoryRepository.findAllProjection();
     }
 
     public CategoryProjection getOne(Long id) {

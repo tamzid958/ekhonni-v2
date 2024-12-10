@@ -9,13 +9,17 @@ package com.ekhonni.backend.controller;
 
 
 
+import com.ekhonni.backend.dto.ProductPageDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +31,15 @@ public record ProductController(ProductService productService){
 
     @GetMapping
     public ApiResponse<?> getAll(){
-        List<ProductProjection>productDTOs =  productService.getAll();
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productDTOs, "products fetched successfully");
+        List<ProductProjection>productProjections =  productService.getAll();
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products fetched successfully");
     }
 
-    @GetMapping("/sorted/{field}")
-    public ApiResponse<?> getAllWithSorting(@PathVariable String field){
-        List<ProductProjection>productDTOs =  productService.getAllWithSorting(field);
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productDTOs, "products fetched successfully");
+    @GetMapping("/pagination")
+    public ApiResponse<?> getAllWithPage(@RequestBody ProductPageDTO dto){
+        Pageable pageable = dto.getPageable(dto);
+        Page<ProductProjection> productProjections =  productService.getProductWithPage(pageable);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products fetched successfully");
     }
 
 
