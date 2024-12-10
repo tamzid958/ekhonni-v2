@@ -23,10 +23,8 @@ public interface ProductProjection {
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
     ProductCondition getCondition();
-//    @JsonIgnoreProperties({"subCategories", "parentCategory", "createdAt", "updatedAt", "active","deletedAt"})
-//    Category getCategory();
-//    @Value("#{target.category.name}")
-//    String getCategoryName();
     Long getCategoryId();
     String getCategoryName();
+
+
 }

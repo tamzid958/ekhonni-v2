@@ -24,12 +24,11 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
-    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
-            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, " +
-            "p.category.id AS categoryId, p.category.name AS categoryName " +
-            "FROM Product p")
-    Page<ProductProjection> findAllProjectionPage(Pageable pageable);
 
+    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
+            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category.id AS categoryId, p.category.name AS categoryName " +
+            "FROM Product p")
+    Page<ProductProjection> findAllProjection(Pageable pageable);
 
 
 
@@ -47,21 +46,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             FROM category c
             INNER JOIN category_tree ct ON c.parent_category_id = ct.id
         )
-        SELECT
-            p.id AS id,
-            p.price AS price,
-            p.name AS name,
-            p.description AS description,
-            p.created_at AS createdAt,
-            p.updated_at AS updatedAt,
-            p.condition AS condition,
-            c.id AS categoryId,
-            c.name AS categoryName
+        SELECT p.*,
+        c.id AS categoryId,
+        c.name AS categoryName
         FROM product p
         JOIN category_tree ct ON p.category_id = ct.id
         JOIN category c ON p.category_id = c.id
     """, nativeQuery = true)
-    List<ProductProjection> findAllByCategoryId(@Param("categoryId") Long categoryId);
-
+    Page<ProductProjection> findAllProjectionByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
 }

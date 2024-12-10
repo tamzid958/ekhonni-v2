@@ -38,18 +38,18 @@ public record ProductController(ProductService productService){
     }
 
 
-    @GetMapping("/by-categories/{category_id}")
-    public ApiResponse<?> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        List<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId);
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
-    }
-
 //    @GetMapping("/by-categories/{category_id}")
-//    public ApiResponse<?> getByCategoryId(@RequestParam(name = "pageNo",required = true) Integer pageNo, @PathVariable("category_id")Long categoryId){
-//        Pageable pageable = new ProductPageDTO().getPageable(pageNo);
-//        Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
+//    public ApiResponse<?> getByCategoryId(@PathVariable("category_id") Long categoryId){
+//        List<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId);
 //        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
 //    }
+
+    @GetMapping("/by-categories/{category_id}")
+    public ApiResponse<?> getByCategoryId(@RequestParam(name = "pageNo",required = true) Integer pageNo, @PathVariable("category_id")Long categoryId){
+        Pageable pageable = new ProductPageDTO().getPageable(pageNo);
+        Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
+    }
 
     @PostMapping
     public ApiResponse<?> create(@RequestBody Product product) {

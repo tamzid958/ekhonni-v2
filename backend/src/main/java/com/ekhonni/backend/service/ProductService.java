@@ -26,21 +26,16 @@ public record ProductService(ProductRepository productRepository) {
 
 
        public void create(Product product){
-           System.out.println(product);
            productRepository.save(product);
        }
 
-//       public List<ProductProjection> getAll(){
-//           return productRepository.findAllProjection();
-//       }
-
-    public Page<ProductProjection> getAll(Pageable pageable) {
-        return productRepository.findAllProjectionPage(pageable);
-    }
+       public Page<ProductProjection> getAll(Pageable pageable) {
+           return productRepository.findAllProjection(pageable);
+       }
 
 
-       public List<ProductProjection> getAllByCategoryId(Long categoryId){
-           return productRepository.findAllByCategoryId(categoryId);
+       public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable){
+           return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
        }
 
        public Optional<ProductProjection> getOne(Long Id){
