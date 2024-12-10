@@ -7,7 +7,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +40,7 @@ public class User extends BaseEntity<UUID> {
     @OneToOne(mappedBy = "user")
     private Account account;
     @OneToMany(mappedBy = "bidder")
-    private List<BidLog> bidlog;
+    private List<BidLog> bidLog;
 
     public User(String name, String email, String password, String role, String phone, String address) {
         super();
