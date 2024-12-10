@@ -19,16 +19,14 @@ import java.util.Objects;
 @Getter
 @Setter
 public class ProductPageDTO {
-    private Integer pageNo= 0;
-    private Integer pageSize= 10;
 
-    public Pageable getPageable(ProductPageDTO dto){
+    private final Integer pageNo= 0;
+    private final Integer pageSize= 10;
 
-         Integer page = this.pageNo;
-         Integer size = this.pageSize;
+    public Pageable getPageable(Integer pageNo){
 
-        PageRequest request =  PageRequest.of(page,size);
-        return request;
+        Integer page =  pageNo>100? this.pageNo : pageNo;
+        return PageRequest.of(page, this.pageSize);
 
     }
 

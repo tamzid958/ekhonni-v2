@@ -30,12 +30,12 @@ public record ProductService(ProductRepository productRepository) {
            productRepository.save(product);
        }
 
-       public List<ProductProjection> getAll(){
-           return productRepository.findAllProjection();
-       }
+//       public List<ProductProjection> getAll(){
+//           return productRepository.findAllProjection();
+//       }
 
-    public Page<ProductProjection> getProductWithPage(Pageable pageable) {
-        return productRepository.findAllProjectionWithPage(pageable);
+    public Page<ProductProjection> getAll(Pageable pageable) {
+        return productRepository.findAllProjectionPage(pageable);
     }
 
 
