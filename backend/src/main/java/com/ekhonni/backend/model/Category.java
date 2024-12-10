@@ -25,7 +25,6 @@ public class Category extends BaseEntity<Long> {
 
     @Column(nullable = false, unique = true)
     private String name;
-
     private boolean active = true;
 
     @ManyToOne
@@ -34,7 +33,5 @@ public class Category extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories;
-
-
 
 }

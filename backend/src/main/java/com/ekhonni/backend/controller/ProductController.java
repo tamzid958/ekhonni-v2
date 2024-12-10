@@ -31,6 +31,12 @@ public record ProductController(ProductService productService){
         return ApiResponse.setResponse(HTTPStatus.FOUND, true, productDTOs, "products fetched successfully");
     }
 
+    @GetMapping("/sorted/{field}")
+    public ApiResponse<?> getAllWithSorting(@PathVariable String field){
+        List<ProductProjection>productDTOs =  productService.getAllWithSorting(field);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productDTOs, "products fetched successfully");
+    }
+
 
     @GetMapping("/by-categories/{category_id}")
     public ApiResponse<?> getByCategoryId(@PathVariable("category_id") Long categoryId){
@@ -41,6 +47,7 @@ public record ProductController(ProductService productService){
 
     @PostMapping
     public ApiResponse<?> create(@RequestBody Product product) {
+        productService.create(product);
         return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "successfully created product");
     }
 

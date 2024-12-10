@@ -45,25 +45,12 @@ public record CategoryController(CategoryService categoryService) {
          return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjection, "Category Tree given");
     }
 
-//    @GetMapping
-//    public ApiResponse<List<CategoryDTO>> getAll(){
-//       return new ApiResponse<>(true, "ok", categoryService.getAll(), HttpStatus.);
-//    }
-//
 
-//    @GetMapping
-//    public ResponseEntity<List<CategoryDTO>> getAll(){
-//        List<CategoryDTO> categoryDTOs = categoryService.getAll();
-//        return ResponseEntity.ok(categoryDTOs);
-//    }
-//
-
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        categoryService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> delete(@PathVariable Long id) {
+        categoryService.delete(id);
+        return ApiResponse.setResponse(HTTPStatus.DELETED, true, null, "successfully deleted");
+    }
 
     //    @PatchMapping("/{id}")
     //    update information

@@ -32,6 +32,10 @@ public record CategoryService(CategoryRepository categoryRepository){
        return categoryRepository.findCategoryProjectionById(id);
     }
 
+    public void delete(Long id) {
+        categoryRepository.deleteById(id);
+    }
+
 
 //    public List<CategoryDTO> getAll() {
 //        List<Category> categories = categoryRepository.findAll();
@@ -52,9 +56,7 @@ public record CategoryService(CategoryRepository categoryRepository){
 //        return categoryRepository.findById(id);
 //    }
 //
-//    public void delete(Long id) {
-//        categoryRepository.deleteById(id);
-//    }
+
 
 
 }

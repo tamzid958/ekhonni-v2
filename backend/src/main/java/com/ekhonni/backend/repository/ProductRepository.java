@@ -9,9 +9,9 @@ package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,6 +23,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category AS category " +
             "FROM Product p")
     List<ProductProjection> findAllProjected();
+
+    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
+            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category AS category " +
+            "FROM Product p")
+    List<ProductProjection> findAllProjectedWithSorting(Sort by);
+
+
 
 
     ProductProjection findProductProjectionById(Long id);

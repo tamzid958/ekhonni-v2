@@ -11,6 +11,7 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +22,17 @@ public record ProductService(ProductRepository productRepository) {
 
 
        public Product create(Product product){
+           System.out.println(product);
            return  productRepository.save(product);
        }
 
        public List<ProductProjection> getAll(){
            return productRepository.findAllProjected();
        }
+
+    public List<ProductProjection> getAllWithSorting(String field){
+        return productRepository.findAllProjectedWithSorting(Sort.by(field));
+    }
 
        public List<ProductProjection> getAllByCategoryId(Long categoryId){
            return productRepository.findAllByCategoryId(categoryId);
