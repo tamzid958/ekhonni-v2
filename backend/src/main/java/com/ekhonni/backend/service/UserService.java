@@ -1,7 +1,9 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.enums.Role;
+import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
@@ -40,17 +42,20 @@ public class UserService {
 
 
     public UserDTO create(UserDTO userDTO) {
+        if (userRepository.findUserByEmail(userDTO.email()).isPresent()) throw new UserAlreadyExistsException();
+
+        Account account = new Account(0.0, "Active");
+
         User user = new User(
                 userDTO.name(),
                 userDTO.email(),
                 userDTO.password(),
                 Role.USER,
                 userDTO.phone(),
-                userDTO.address()
+                userDTO.address(),
+                account
         );
         userRepository.save(user);
-
-        Account account = new Account(user, 0.0, "active");
         accountRepository.save(account);
 
         return userDTO;
@@ -86,4 +91,6 @@ public class UserService {
     }
 
 
+    public void signIn(AuthDTO authDTO) {
+    }
 }

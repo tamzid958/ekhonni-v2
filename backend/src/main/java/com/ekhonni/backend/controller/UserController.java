@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
@@ -18,6 +19,11 @@ import java.util.UUID;
 @RequestMapping("/api/v2/user")
 public record UserController(UserService userService) {
 
+    @PostMapping("/sign-in")
+    public void signIn(@RequestBody AuthDTO authDTO) {
+        userService.signIn(authDTO);
+    }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping
     public List<UserProjection> getAll() {
@@ -31,7 +37,7 @@ public record UserController(UserService userService) {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/create")
+    @PostMapping("/sign-up")
     public UserDTO create(@RequestBody UserDTO userDTO) {
         return userService.create(userDTO);
     }

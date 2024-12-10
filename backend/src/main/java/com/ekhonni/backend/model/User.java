@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,19 +39,9 @@ public class User extends BaseEntity<UUID> {
     @NotBlank
     private String address;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JoinColumn(name = "account", referencedColumnName = "id")
     private Account account;
-    @OneToMany(mappedBy = "bidder")
-    private List<BidLog> bidLog;
 
-    public User(String name, String email, String password, Role role, String phone, String address) {
-        super();
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.phone = phone;
-        this.address = address;
-    }
 
 }
 
