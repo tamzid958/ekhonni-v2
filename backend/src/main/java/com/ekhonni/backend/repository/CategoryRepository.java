@@ -20,15 +20,10 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category,Long> {
 
-//    @Query("SELECT c FROM Category c WHERE c.parentCategory IS NULL AND c.active=true")
-//    List<Category> findTopLevelCategories();
-
 
     @Query("SELECT c.id AS id, c.name AS name, c.active AS active, c.subCategories AS subCategories " +
             "FROM Category c WHERE c.parentCategory IS NULL")
     List<CategoryProjection> findAllProjection();
-
-
 
 
     CategoryProjection findCategoryProjectionById(Long id);

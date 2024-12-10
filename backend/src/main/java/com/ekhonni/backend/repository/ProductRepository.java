@@ -37,21 +37,35 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     @Query(value = """
-        WITH RECURSIVE category_tree AS (
-            SELECT id, parent_category_id
-            FROM category
-            WHERE id = :categoryId
-            UNION ALL
-            SELECT c.id, c.parent_category_id
-            FROM category c
-            INNER JOIN category_tree ct ON c.parent_category_id = ct.id
-        )
-        SELECT p.*,
-        c.id AS categoryId,
-        c.name AS categoryName
-        FROM product p
-        JOIN category_tree ct ON p.category_id = ct.id
-        JOIN category c ON p.category_id = c.id
+    WITH RECURSIVE category_tree AS (
+        SELECT id, parent_category_id
+        FROM category
+        WHERE id = :categoryId
+        UNION ALL
+        SELECT c.id, c.parent_category_id
+        FROM category c
+        INNER JOIN category_tree ct ON c.parent_category_id = ct.id
+    )
+    SELECT p.*,
+           c.id AS categoryId,
+           c.name AS categoryName
+    FROM product p
+    JOIN category_tree ct ON p.category_id = ct.id
+    JOIN category c ON p.category_id = c.id
+    """,
+            countQuery = """
+    WITH RECURSIVE category_tree AS (
+        SELECT id, parent_category_id
+        FROM category
+        WHERE id = :categoryId
+        UNION ALL
+        SELECT c.id, c.parent_category_id
+        FROM category c
+        INNER JOIN category_tree ct ON c.parent_category_id = ct.id
+    )
+    SELECT COUNT(*)
+    FROM product p
+    JOIN category_tree ct ON p.category_id = ct.id
     """, nativeQuery = true)
     Page<ProductProjection> findAllProjectionByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
