@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v2/account")
@@ -27,10 +26,6 @@ public record AccountController(AccountService accountService) {
         return ResponseEntity.ok(accountService.getAllIncludingDeleted());
     }
 
-    @PostMapping("/{user_id}")
-    public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
-        return new ResponseEntity<>(accountService.create(userId), HttpStatus.CREATED);
-    }
 
     @GetMapping("/{id}/balance")
     public ResponseEntity<?> getBalance(@PathVariable("id") Long id) {

@@ -13,9 +13,9 @@ import com.ekhonni.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -41,7 +41,7 @@ public class AccountService {
     public Account create(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        Account account = new Account(user, 0.0, "Active");
+        Account account = new Account(0.0, "Active");
         accountRepository.save(account);
         return account;
     }
