@@ -16,24 +16,22 @@ import lombok.*;
 @NoArgsConstructor
 public class ApiResponse<T> {
     
-    private HTTPStatus httpStatusCode;
+    private HTTPStatus StatusCode;
     private boolean isSuccess;
     private String message;
     private T data;
 
 
-    public ApiResponse(HTTPStatus httpStatusCode, boolean isSuccess, String message, T data) {
-        this.httpStatusCode = httpStatusCode;
+    public ApiResponse(HTTPStatus StatusCode, boolean isSuccess, String message, T data) {
+        this.StatusCode = StatusCode;
         this.isSuccess = isSuccess;
         this.message = message;
         this.data = data;
     }
 
-    public static <T> ApiResponse<T> setResponse(HTTPStatus httpStatusCode, boolean isSuccess, T data, String message) {
-        return new ApiResponse<>(httpStatusCode, isSuccess, message, data);
+    public static <T> ApiResponse<T> setResponse(HTTPStatus statusCode, boolean isSuccess, T data, String message) {
+        return new ApiResponse<>(statusCode, isSuccess, message, data);
     }
-
-
 
 
 }
