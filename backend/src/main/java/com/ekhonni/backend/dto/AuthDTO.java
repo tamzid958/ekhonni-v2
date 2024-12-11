@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
  * Author: Md Jahid Hasan
  * Date: 12/10/24
  */
+
 public record AuthDTO(@NotNull @NotBlank @Email
                       String email,
                       @NotNull @NotBlank
