@@ -16,8 +16,6 @@ public record UserDetailsServiceImpl(UserRepository userRepository) implements U
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("SECURITY USER DETAIL SERVICE");
-
         return userRepository.findByEmail(email);
     }
 }
