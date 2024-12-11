@@ -1,7 +1,6 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import com.ekhonni.backend.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -37,8 +36,7 @@ public class User extends BaseEntity<UUID> implements UserDetails {
     @NotBlank
     private String password;
     @NotBlank
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String role;
     @NotBlank
     private String phone;
     @NotBlank
@@ -48,24 +46,26 @@ public class User extends BaseEntity<UUID> implements UserDetails {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    public User(String name, String email, String password, Role role, String phone, String address) {
-        super();
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.phone = phone;
-        this.address = address;
-    }
+//    public User(String name, String email, String password, Role role, String phone, String address) {
+//        super();
+//        this.name = name;
+//        this.email = email;
+//        this.password = password;
+//        this.role = role;
+//        this.phone = phone;
+//        this.address = address;
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
+        return List.of(new SimpleGrantedAuthority(this.getRole()));
     }
 
     @Override
     public String getUsername() {
         return this.getEmail();
     }
+
+
 }
 
