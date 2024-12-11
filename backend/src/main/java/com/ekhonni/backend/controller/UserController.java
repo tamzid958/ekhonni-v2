@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Author: Md Jahid Hasan
- */
 
 @RestController
 @RequestMapping("/api/v2/user")

@@ -16,9 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Author: Md Jahid Hasan
- */
 
 @Service
 @RequiredArgsConstructor

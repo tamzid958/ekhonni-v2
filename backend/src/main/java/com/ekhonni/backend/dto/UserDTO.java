@@ -4,10 +4,6 @@ package com.ekhonni.backend.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-/**
- * Author: Md Jahid Hasan
- */
-
 public record UserDTO(@NotBlank(message = "name cannot be blank")
                       String name,
                       @NotBlank(message = "email cannot be blank")
