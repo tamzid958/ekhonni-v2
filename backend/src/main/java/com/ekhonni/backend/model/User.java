@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +41,7 @@ public class User extends BaseEntity<UUID> {
     @OneToOne(mappedBy = "user")
     private Account account;
     @OneToMany(mappedBy = "bidder")
-    private List<BidLog> bidLog;
+    private List<BidLog> bidLog = new ArrayList<>();
 
     public User(String name, String email, String password, String role, String phone, String address) {
         super();

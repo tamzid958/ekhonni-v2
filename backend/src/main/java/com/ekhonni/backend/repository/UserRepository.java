@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u WHERE u.id = :id")
     UserProjection findProjectionById(UUID id);
+
 }

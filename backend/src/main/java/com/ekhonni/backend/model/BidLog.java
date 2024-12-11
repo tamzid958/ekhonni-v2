@@ -19,7 +19,6 @@ public class BidLog extends BaseEntity<Long> {
     @ManyToOne
     private Bid bid;
 
-
     @ManyToOne
     private User bidder;
 
@@ -35,3 +34,4 @@ public class BidLog extends BaseEntity<Long> {
         this.bidder = bidder;
     }
 }
+
