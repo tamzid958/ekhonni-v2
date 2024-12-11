@@ -8,6 +8,11 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.CategoryProjection;
+import com.ekhonni.backend.projection.ProductProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,31 +24,15 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
-//    @Query("SELECT p FROM Product p where p.parentCategoryId=?1 AND p.productApproved=false")
-//    List<Product> findAllProductByCategoryId(Long Id);
 
-//    List<Product> findByCategoryId(Long categoryId);
-
-//    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId OR p.category.parentCategory.id = :categoryId")
-//    List<Product> findAllProductsByCategoryAndSubCategories(Long categoryId);
+    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
+            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category.id AS categoryId, p.category.name AS categoryName " +
+            "FROM Product p")
+    Page<ProductProjection> findAllProjection(Pageable pageable);
 
 
-    @Query(value = """
-        WITH RECURSIVE category_tree AS (
-            SELECT id, parent_category_id
-            FROM category
-            WHERE id = :categoryId
-            UNION ALL
-            SELECT c.id, c.parent_category_id
-            FROM category c
-            INNER JOIN category_tree ct ON c.parent_category_id = ct.id
-        )
-        SELECT p.*
-        FROM product p
-        JOIN category_tree ct ON p.category_id = ct.id
-    """, nativeQuery = true)
-    List<Product> findAllProductsInCategoryTree(Long categoryId);
 
+    ProductProjection findProductProjectionById(Long id);
 
 
 
@@ -57,15 +46,27 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         FROM category c
         INNER JOIN category_tree ct ON c.parent_category_id = ct.id
     )
-    SELECT p.*
+    SELECT p.*,
+           c.id AS categoryId,
+           c.name AS categoryName
     FROM product p
     JOIN category_tree ct ON p.category_id = ct.id
-    WHERE p.approved = true;
-""", nativeQuery = true)
-    List<Product> findAllApprovedProductsInCategoryTree(Long categoryId);
-
-
-//    @Query(value = "SELECT * FROM product WHERE approved = true", nativeQuery = true)
-//    List<Product> findApprovedProducts();
+    JOIN category c ON p.category_id = c.id
+    """,
+            countQuery = """
+    WITH RECURSIVE category_tree AS (
+        SELECT id, parent_category_id
+        FROM category
+        WHERE id = :categoryId
+        UNION ALL
+        SELECT c.id, c.parent_category_id
+        FROM category c
+        INNER JOIN category_tree ct ON c.parent_category_id = ct.id
+    )
+    SELECT COUNT(*)
+    FROM product p
+    JOIN category_tree ct ON p.category_id = ct.id
+    """, nativeQuery = true)
+    Page<ProductProjection> findAllProjectionByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
 }

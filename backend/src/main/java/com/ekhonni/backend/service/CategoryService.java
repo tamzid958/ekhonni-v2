@@ -8,15 +8,13 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public record CategoryService(CategoryRepository categoryRepository){
@@ -26,25 +24,16 @@ public record CategoryService(CategoryRepository categoryRepository){
         return categoryRepository.save(category);
     }
 
-    public List<CategoryDTO> getAll(){
-
-        List<Category> categories = categoryRepository.findTopLevelCategories();
-        System.out.println(categories);
-
-
-        if (categories.isEmpty()) {
-            throw new RuntimeException("No categories found!");
-        }
-
-        return categories.stream()
-                .map(CategoryDTO::new)
-                .collect(Collectors.toList());
+    public List<CategoryProjection> getAll(){
+     return categoryRepository.findAllProjection();
     }
 
-    public CategoryDTO getOne(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElse(null);
-        return category != null ? new CategoryDTO(category) : null;
+    public CategoryProjection getOne(Long id) {
+       return categoryRepository.findCategoryProjectionById(id);
+    }
+
+    public void delete(Long id) {
+        categoryRepository.deleteById(id);
     }
 
 
@@ -60,16 +49,14 @@ public record CategoryService(CategoryRepository categoryRepository){
 //                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 //        return new CategoryDTO(category);
 //    }
-
+//
 
 //
 //    public Optional<Category> getById(Long id) {
 //        return categoryRepository.findById(id);
 //    }
 //
-//    public void delete(Long id) {
-//        categoryRepository.deleteById(id);
-//    }
+
 
 
 }

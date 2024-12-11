@@ -7,10 +7,9 @@
 
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.base.BaseEntity;
+import com.ekhonni.backend.baseentity.BaseEntity;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -24,23 +23,15 @@ import java.util.List;
 
 public class Category extends BaseEntity<Long> {
 
-
     @Column(nullable = false, unique = true)
     private String name;
-
     private boolean active = true;
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory")
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories;
-
-    @OneToMany(mappedBy = "category")
-    @JsonIgnore
-    private List<Product> products;
-
 
 }

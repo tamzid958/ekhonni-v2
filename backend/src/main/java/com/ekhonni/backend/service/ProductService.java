@@ -8,74 +8,43 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
-import com.ekhonni.backend.dto.ProductDTO;
-import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public record ProductService(ProductRepository productRepository) {
 
 
-       public Product create(Product product){
-           return  productRepository.save(product);
+       public void create(Product product){
+           productRepository.save(product);
        }
 
-       public List<ProductDTO> getAll(){
-           // return  productRepository.findAll();
-           List<Product> products =   productRepository.findAll();
-
-           if (products.isEmpty()) {
-               throw new RuntimeException("No products found!");
-           }
-
-           return products.stream()
-                   .map(ProductDTO::new)
-                   .collect(Collectors.toList());
+       public Page<ProductProjection> getAll(Pageable pageable) {
+           return productRepository.findAllProjection(pageable);
        }
 
 
-
-       public List<ProductDTO> getAllByCategoryId(Long categoryId){
-
-           List<Product> products =  productRepository.findAllProductsInCategoryTree(categoryId);
-           if (products.isEmpty()) {
-               throw new RuntimeException("No products found!");
-           }
-
-           return products.stream()
-                   .map(ProductDTO::new)
-                   .collect(Collectors.toList());
+       public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable){
+           return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
        }
 
-//       public List<ProductDTO> getAll(){
-//           List<Product> products = productRepository.findAll();
-//           return products.stream()
-//                   .map(ProductDTO::new)
-//                   .toList();
-//
-//           //return productRepository.findAll();
-//       }
+       public Optional<ProductProjection> getOne(Long Id){
+           return Optional.ofNullable(productRepository.findProductProjectionById(Id));
+       }
 
 
-//       public List<Product> getAllByCategory(Long categoryId){
-//           return productRepository.findAllProductByCategoryId(categoryId);
-//       }
-//       public ProductDTO getOne(Long id){
-//
-//           Product product = productRepository.findById(id)
-//                   .orElseThrow(() -> new ResourceNotFoundException("product not found"));
-//           return new ProductDTO(product);
-//
-//           //return productRepository.findById(id);
-//       }
+
+
 
 
 

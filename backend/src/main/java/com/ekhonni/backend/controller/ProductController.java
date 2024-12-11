@@ -8,73 +8,53 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.ProductDTO;
+
+import com.ekhonni.backend.dto.PageDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/products")
 public record ProductController(ProductService productService){
 
+
     @GetMapping
-    public List<ProductDTO> getAll(){
-        return productService.getAll();
+    public ApiResponse<?> getPage(@RequestParam(name = "pageNo", required = true) Integer pageNo){
+        Pageable pageable = new PageDTO().getPageable(pageNo);
+        Page<ProductProjection> productProjections =  productService.getAll(pageable);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products fetched successfully");
     }
+
 
     @GetMapping("/by-categories/{category_id}")
-    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        //System.out.println(categoryId);
-        return productService.getAllByCategoryId(categoryId);
+    public ApiResponse<?> getByCategoryId(@RequestParam(name = "pageNo",required = true) Integer pageNo, @PathVariable("category_id")Long categoryId){
+        Pageable pageable = new PageDTO().getPageable(pageNo);
+        Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
     }
-
-//    @GetMapping
-//    public ResponseEntity<List<ProductDTO>> getAll() {
-//        List<ProductDTO> productDTOs = productService.getAll();
-//        return ResponseEntity.status(HttpStatus.OK).body(productDTOs);
-//    }
-
-
-//    @GetMapping("/{id}")
-//    public ProductDTO getOne(@PathVariable("id") Long id) {
-//        return productService.getOne(id);
-//    }
-
-
-//    @GetMapping("/by/{category_id}")
-//    public ResponseEntity<List<Product>> getAllByCategory(@PathVariable("category_id") Long categoryId) {
-////        System.out.println(categoryId);
-//        List<Product> products = productService.getAllByCategory(categoryId);
-//        return ResponseEntity.status(HttpStatus.OK).body(products);
-//    }
-
-
-
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(product));
+    public ApiResponse<?> create(@RequestBody Product product) {
+        productService.create(product);
+        return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "successfully created product");
     }
 
 
-
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
-//        boolean isDeleted = productService.delete(id);
-//        if (isDeleted) return ResponseEntity.ok("Product deleted successfully");
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
-//
-//    }
-
-
+    @GetMapping("/{id}")
+    public ApiResponse<?> getOne(@PathVariable("id") Long id) {
+        Optional<ProductProjection> productProjection = productService.getOne(id);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjection, "product information fetched" );
+    }
 
 
 }
