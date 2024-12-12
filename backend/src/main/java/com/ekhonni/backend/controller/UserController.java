@@ -27,11 +27,6 @@ public record UserController(UserService userService) {
         return userService.getById(id);
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PostMapping("/create")
-    public UserDTO createUser(@RequestBody UserDTO userDTO) {
-        return userService.create(userDTO);
-    }
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{id}/update")
