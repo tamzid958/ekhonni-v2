@@ -44,7 +44,7 @@ public class UserService {
                 userDTO.name(),
                 userDTO.email(),
                 passwordEncoder.encode(userDTO.password()),
-                "ADMIN",
+                "USER",
                 userDTO.phone(),
                 userDTO.address()
         );
