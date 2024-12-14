@@ -39,30 +39,24 @@ public class JWTFilter extends OncePerRequestFilter {
 
         try {
             String email = jwtUtil.extractSubject(jwt);
-            if (email == null) {
-                filterChain.doFilter(request, response);
-                return;
-            }
 
             Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
 
-            if (currentAuth != null) {
-                if (jwtUtil.isValid(jwt, (UserDetails) currentAuth.getPrincipal())) {
-                    filterChain.doFilter(request, response);
-                    return;
+            if (email != null && currentAuth == null) {
+                if (!jwtUtil.isExpired(jwt)) {
+                    UserDetails user = userDetailsServiceImpl.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                } else {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token Expired");
                 }
             }
 
-            UserDetails user = userDetailsServiceImpl.loadUserByUsername(email);
-            if (jwtUtil.isValid(jwt, user)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                filterChain.doFilter(request, response);
-            } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token");
-            }
+            filterChain.doFilter(request, response);
+
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error processing JWT Token");
+            logger.error("JWT validation error: ", e);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid JWT Token");
         }
 
     }
