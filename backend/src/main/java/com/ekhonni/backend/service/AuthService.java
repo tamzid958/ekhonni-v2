@@ -11,6 +11,7 @@ import com.ekhonni.backend.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,6 +57,8 @@ public class AuthService {
     public String signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
+
+        if (userRepository.findByEmail(email) == null) throw new BadCredentialsException("Bad credentials");
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
 

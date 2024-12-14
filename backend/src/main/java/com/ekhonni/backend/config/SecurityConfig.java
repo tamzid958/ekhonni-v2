@@ -1,5 +1,6 @@
 package com.ekhonni.backend.config;
 
+import com.ekhonni.backend.filter.JWTFilter;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -29,6 +32,9 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
+    @Autowired
+    private JWTFilter jwtFilter;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,7 +44,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable);
 
 
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.authenticationProvider(authenticationProvider());
+
 
         return http.build();
     }
