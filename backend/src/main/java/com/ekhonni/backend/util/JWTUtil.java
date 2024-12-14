@@ -6,7 +6,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -37,7 +36,6 @@ public class JWTUtil {
     }
 
     public String generate(String email) {
-        System.out.println(new Date(System.currentTimeMillis()));
         return Jwts
                 .builder()
                 .setSubject(email)
@@ -47,7 +45,7 @@ public class JWTUtil {
                 .compact();
     }
 
-    public SecretKey generateKey() {
+    private SecretKey generateKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -56,15 +54,8 @@ public class JWTUtil {
         return Jwts.parserBuilder().setSigningKey(generateKey()).build().parseClaimsJws(jwt).getBody().getSubject();
     }
 
-    public boolean isValid(String jwt, UserDetails user) {
-        //checking if subject (email) found from jwt and user email found from
-        // existing authentication token same or not, then checking is the token
-        // is not expired yet
-        return extractSubject(jwt).equals(user.getUsername()) && !isExpired(jwt);
-    }
 
-
-    private boolean isExpired(String jwt) {
+    public boolean isExpired(String jwt) {
         return extractExpiration(jwt).before(new Date());
     }
 
