@@ -1,20 +1,18 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.model.User;
-import lombok.*;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+/**
+ * Author: Asif Iqbal
+ * Date: 12/15/24
+ */
 
 @Component
 @Getter

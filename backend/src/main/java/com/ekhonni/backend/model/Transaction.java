@@ -16,6 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Transaction extends BaseEntity<String> {
+public class Transaction extends BaseEntity<Long> {
     private double amount;
 }

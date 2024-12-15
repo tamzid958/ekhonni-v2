@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,21 +18,22 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Component
 public class Util {
 
-    public static SSLCommerzInitResponse extractInitResponse(String response) throws IOException {
+    public SSLCommerzInitResponse extractInitResponse(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(response, SSLCommerzInitResponse.class);
     }
 
-    public static SSLCommerzValidatorResponse extractValidatorResponse(String response) throws IOException {
+    public SSLCommerzValidatorResponse extractValidatorResponse(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(response, SSLCommerzValidatorResponse.class);
     }
 
-    public static String getByOpeningJavaUrlConnection(String stringUrl) throws IOException {
+    public String getByOpeningJavaUrlConnection(String stringUrl) throws IOException {
         String output = "";
         URL url = new URL(stringUrl);
         URLConnection conn = url.openConnection();
@@ -47,7 +49,7 @@ public class Util {
         return output;
     }
 
-    public static void constructRequestParameters(PaymentRequest paymentRequest, User buyer, Product product, Long trxId) {
+    public void constructRequestParameters(PaymentRequest paymentRequest, User buyer, Product product, Long trxId) {
         paymentRequest.setTranId(String.valueOf(trxId));
         paymentRequest.setTotalAmount(String.valueOf(product.getPrice()));
 
@@ -64,7 +66,7 @@ public class Util {
         paymentRequest.setProductProfile("General");
     }
 
-    public static String getParamsString(PaymentRequest paymentRequest, User buyer, Product product, Long trxId, boolean urlEncode) throws UnsupportedEncodingException {
+    public String getParamsString(PaymentRequest paymentRequest, User buyer, Product product, Long trxId, boolean urlEncode) throws UnsupportedEncodingException {
         constructRequestParameters(paymentRequest, buyer, product, trxId);
         StringBuilder result = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
