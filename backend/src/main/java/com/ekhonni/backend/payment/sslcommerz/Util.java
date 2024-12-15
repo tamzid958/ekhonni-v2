@@ -34,7 +34,7 @@ public class Util {
     }
 
     public String getByOpeningJavaUrlConnection(String stringUrl) throws IOException {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         URL url = new URL(stringUrl);
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(5000);
@@ -43,10 +43,10 @@ public class Util {
                 new InputStreamReader(conn.getInputStream()));
         String outputLine;
         while ((outputLine = br.readLine()) != null) {
-            output = output + outputLine;
+            output.append(outputLine);
         }
         br.close();
-        return output;
+        return output.toString();
     }
 
     public void constructRequestParameters(PaymentRequest paymentRequest, User buyer, Product product, Long trxId) {
