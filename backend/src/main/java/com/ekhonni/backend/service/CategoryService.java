@@ -24,39 +24,17 @@ public record CategoryService(CategoryRepository categoryRepository){
         return categoryRepository.save(category);
     }
 
-    public List<CategoryProjection> getAll(){
-     return categoryRepository.findAllProjection();
-    }
-
-    public CategoryProjection getOne(Long id) {
-       return categoryRepository.findCategoryProjectionById(id);
+    public List<CategoryProjection> getSub(Long id) {
+       return categoryRepository.findSub(id);
     }
 
     public void delete(Long id) {
-        categoryRepository.deleteById(id);
+        categoryRepository.deleteCategoryById(id);
     }
 
-
-//    public List<CategoryDTO> getAll() {
-//        List<Category> categories = categoryRepository.findAll();
-//        return categories.stream()
-//                .map(CategoryDTO::new)
-//                .toList();
-//    }
-//
-//    public CategoryDTO getById(Long id) {
-//        Category category = categoryRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-//        return new CategoryDTO(category);
-//    }
-//
-
-//
-//    public Optional<Category> getById(Long id) {
-//        return categoryRepository.findById(id);
-//    }
-//
-
+    public List<CategoryProjection> getFeatured(){
+        return categoryRepository.findFeatured();
+    }
 
 
 }

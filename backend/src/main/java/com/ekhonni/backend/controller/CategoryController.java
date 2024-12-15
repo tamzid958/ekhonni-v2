@@ -29,36 +29,35 @@ public record CategoryController(CategoryService categoryService) {
     public ApiResponse<?> create(@RequestBody Category category) {
         Category savedCategory = categoryService.save(category);
         return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "Category Created");
-        //return ResponseEntity.status(HttpStatus.CREATED).body("category created");
+
     }
 
 
-    @GetMapping
-    public ApiResponse<?> getAll(){
-        List<CategoryProjection> categoryProjections =  categoryService.getAll();
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "Categories retrieved successfully");
-    }
+
+//
+//    @GetMapping
+//    public ApiResponse<?> getAll(){
+//        List<CategoryProjection> categoryProjections =  categoryService.getAll();
+//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "Categories retrieved successfully");
+//    }
 
     @GetMapping("/{id}")
-    public ApiResponse<?> getOne(@PathVariable Long id) {
-         CategoryProjection categoryProjection = categoryService.getOne(id);
+    public ApiResponse<?> getSub(@PathVariable Long id) {
+         List<CategoryProjection> categoryProjection = categoryService.getSub(id);
          return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjection, "Category Tree given");
     }
 
+    @GetMapping("/featured")
+    public ApiResponse<?> getFeatured(){
+        List<CategoryProjection> categoryProjections = categoryService.getFeatured();
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "featured categories");
+    }
 
     @DeleteMapping("/{id}")
     public ApiResponse<?> delete(@PathVariable Long id) {
         categoryService.delete(id);
         return ApiResponse.setResponse(HTTPStatus.DELETED, true, null, "successfully deleted");
     }
-
-    //    @PatchMapping("/{id}")
-    //    update information
-
-
-
-
-
 
 
 
