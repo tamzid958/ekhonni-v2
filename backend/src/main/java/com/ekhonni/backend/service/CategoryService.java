@@ -11,10 +11,11 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public record CategoryService(CategoryRepository categoryRepository){
@@ -35,6 +36,7 @@ public record CategoryService(CategoryRepository categoryRepository){
     public List<CategoryProjection> getFeatured(){
         return categoryRepository.findFeatured();
     }
+
 
 
 }

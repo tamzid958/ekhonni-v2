@@ -25,15 +25,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
 
-//    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
-//            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category.id AS categoryId, p.category.name AS categoryName " +
-//            "FROM Product p")
-//    Page<ProductProjection> findAllProjection(Pageable pageable);
-//
-//
-//
+    @Query("SELECT p.id AS id, p.price AS price, p.name AS name, p.description AS description, " +
+            "p.createdAt AS createdAt, p.updatedAt AS updatedAt, p.condition AS condition, p.category.id AS categoryId, p.category.name AS categoryName " +
+            "FROM Product p")
+    Page<ProductProjection> findAllProjection(Pageable pageable);
+
 
     ProductProjection findProductProjectionById(Long id);
+
 
     @Query(value = """
     WITH RECURSIVE category_tree AS (

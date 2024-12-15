@@ -28,12 +28,12 @@ public record ProductService(ProductRepository productRepository) {
        public void create(Product product){
            productRepository.save(product);
        }
-//
-//       public Page<ProductProjection> getAll(Pageable pageable) {
-//           return productRepository.findAllProjection(pageable);
-//       }
-//
-//
+
+       public Page<ProductProjection> getAll(Pageable pageable) {
+           return productRepository.findAllProjection(pageable);
+       }
+
+
        public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable){
            return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
        }
@@ -50,15 +50,15 @@ public record ProductService(ProductRepository productRepository) {
 
 
 
-//       public boolean delete(Long id){
-//           Optional<Product> product = productRepository.findById(id);
-//           if(product.isPresent()){
-//               productRepository.deleteById(id);
-//               return  true;
-//           }
-//           return false;
-//
-//       }
+       public boolean delete(Long id){
+           Optional<Product> product = productRepository.findById(id);
+           if(product.isPresent()){
+               productRepository.deleteById(id);
+               return  true;
+           }
+           return false;
+
+       }
 
 
 

@@ -30,13 +30,14 @@ import java.util.Optional;
 public record ProductController(ProductService productService){
 
 
-//    @GetMapping
-//    public ApiResponse<?> getAll(Pageable pageable ){
-//        Page<ProductProjection> productProjections =  productService.getAll(pageable);
-//     //   PageDTO<ProductProjection> pageDTOS = new PageDTO<>(productProjections);
-//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, new PageDTO<>(productProjections), "products fetched successfully");
-//    }
-//
+    @GetMapping
+    public ApiResponse<?> getAll(Pageable pageable ){
+        Page<ProductProjection> productProjections =  productService.getAll(pageable);
+        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products fetched successfully");
+    }
+
+
+
     @GetMapping("/{id}")
     public ApiResponse<?> getOne(@PathVariable("id") Long id) {
         Optional<ProductProjection> productProjection = productService.getOne(id);
@@ -53,6 +54,13 @@ public record ProductController(ProductService productService){
     public ApiResponse<?> create(@RequestBody Product product) {
         productService.create(product);
         return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "successfully created product");
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> delete(@PathVariable("id") Long id){
+        boolean isDeleted = productService.delete(id);
+        return ApiResponse.setResponse(HTTPStatus.DELETED, isDeleted, null, "deleted");
     }
 
 

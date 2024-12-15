@@ -34,13 +34,6 @@ public record CategoryController(CategoryService categoryService) {
 
 
 
-//
-//    @GetMapping
-//    public ApiResponse<?> getAll(){
-//        List<CategoryProjection> categoryProjections =  categoryService.getAll();
-//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "Categories retrieved successfully");
-//    }
-
     @GetMapping("/{id}")
     public ApiResponse<?> getSub(@PathVariable Long id) {
          List<CategoryProjection> categoryProjection = categoryService.getSub(id);

@@ -14,6 +14,7 @@ import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,9 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
         DELETE FROM category WHERE id IN (SELECT id FROM category_tree) OR id = :parentId
         """, nativeQuery = true)
     void deleteCategoryById(Long parentId);
+
+
+
 
 
 }
