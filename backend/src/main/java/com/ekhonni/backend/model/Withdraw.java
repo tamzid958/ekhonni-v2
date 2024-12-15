@@ -23,8 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Withdraw extends BaseEntity<Long> {
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
     private double amount;

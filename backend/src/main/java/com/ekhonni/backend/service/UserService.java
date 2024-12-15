@@ -24,44 +24,43 @@ public class UserService {
     private final AccountRepository accountRepository;
 
     public List<UserProjection> getAll() {
-        return userRepository.findAllProjection();
+        return userRepository.findBy(UserProjection.class);
     }
 
     public UserProjection getById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-        return userRepository.findProjectionById(id);
+        return userRepository.findById(id, UserProjection.class)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public UserDTO create(UserDTO userDTO) {
+        Account account = new Account(0.0, "Active");
         User user = new User(
                 userDTO.name(),
                 userDTO.email(),
                 userDTO.password(),
                 "USER",
                 userDTO.phone(),
-                userDTO.address()
+                userDTO.address(),
+                account
         );
         userRepository.save(user);
-
-        Account account = new Account(user, 0.0, "Active");
         accountRepository.save(account);
-
         return userDTO;
     }
 
     public void createAll(List<UserDTO> userDTOs) {
         for (UserDTO userDTO : userDTOs) {
+            Account account = new Account(0.0, "Active");
             User user = new User(
                     userDTO.name(),
                     userDTO.email(),
                     userDTO.password(),
                     "USER",
                     userDTO.phone(),
-                    userDTO.address()
+                    userDTO.address(),
+                    account
             );
             userRepository.save(user);
-
-            Account account = new Account(user, 0.0, "Active");
             accountRepository.save(account);
         }
 

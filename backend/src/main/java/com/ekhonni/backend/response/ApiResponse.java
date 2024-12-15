@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 @Builder
 
 @JsonPropertyOrder({"success", "status_code", "message", "data"})
-public class ApiResponse<T>{
+public class ApiResponse<T> {
     @JsonProperty("status_code")
     private int statusCode;
     private boolean success;

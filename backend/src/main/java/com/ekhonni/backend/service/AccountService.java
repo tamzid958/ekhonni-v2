@@ -73,7 +73,7 @@ public class AccountService {
     public Account create(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
-        Account account = new Account(user, 0.0, "Active");
+        Account account = new Account(0.0, "Active");
         accountRepository.save(account);
         return account;
     }

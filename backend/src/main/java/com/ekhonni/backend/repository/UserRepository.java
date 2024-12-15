@@ -12,11 +12,11 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends BaseRepository<User, UUID> {
 
-    @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u WHERE u.deletedAt IS NULL")
-    List<UserProjection> findAllProjection();
+//    @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u WHERE u.deletedAt IS NULL")
+//    List<UserProjection> findAllProjection();
 
-    @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u WHERE u.id = :id AND u.deletedAt IS NULL")
-    UserProjection findProjectionById(UUID id);
+//    @Query("SELECT u.id AS id, u.name AS name, u.email AS email, u.address AS address FROM User u WHERE u.id = :id AND u.deletedAt IS NULL")
+//    UserProjection findProjectionById(UUID id);
 
 
 }

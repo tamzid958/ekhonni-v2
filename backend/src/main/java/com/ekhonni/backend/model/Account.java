@@ -21,14 +21,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account extends BaseEntity<Long> {
-    @NotNull
-    @OneToOne
-    private User user;
-
     @Column(nullable = false)
     private double balance = 0.0;
-
     @NotBlank
     private String status;
-
 }

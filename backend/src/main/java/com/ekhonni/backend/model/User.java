@@ -1,11 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -38,12 +34,13 @@ public class User extends BaseEntity<UUID> {
     private String phone;
     @NotBlank
     private String address;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
     @OneToMany(mappedBy = "bidder")
     private List<BidLog> bidLog;
 
-    public User(String name, String email, String password, String role, String phone, String address) {
+    public User(String name, String email, String password, String role, String phone, String address, Account account) {
         super();
         this.name = name;
         this.email = email;
@@ -51,6 +48,7 @@ public class User extends BaseEntity<UUID> {
         this.role = role;
         this.phone = phone;
         this.address = address;
+        this.account = account;
     }
 
 }
