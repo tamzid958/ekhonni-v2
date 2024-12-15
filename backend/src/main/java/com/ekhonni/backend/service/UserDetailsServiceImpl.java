@@ -1,6 +1,8 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,9 +14,13 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public record UserDetailsServiceImpl(UserRepository userRepository) implements UserDetailsService {
+@AllArgsConstructor
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+    UserRepository userRepository;
 
     @Override
+    @Cacheable(value = "user", key = "#email")
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email);
     }
