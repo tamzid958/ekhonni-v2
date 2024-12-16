@@ -6,68 +6,99 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.AccountDTO;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v2/account")
+@RequestMapping("/account")
 @Tag(name = "Accounts", description = "Manage account operations")
 public record AccountController(AccountService accountService) {
 
     @GetMapping("/")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(accountService.getAll());
+    public ApiResponse<?> getAll() {
+        return new ApiResponse<>(true, "Success", accountService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable Long id) {
-        return ResponseEntity.ok(accountService.get(id));
+    public ApiResponse<?> get(@PathVariable Long id) {
+        return new ApiResponse<>(true, "Success", accountService.get(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/user")
+    public ApiResponse<?> getUser(@PathVariable("id") Long id) {
+        return new ApiResponse<>(true, "Success", accountService.getUser(id), HttpStatus.OK);
     }
 
     @GetMapping("/deleted")
-    public ResponseEntity<?> getAllDeleted() {
-        return ResponseEntity.ok(accountService.getAllDeleted());
+    public ApiResponse<?> getAllDeleted() {
+        return new ApiResponse<>(true, "Success", accountService.getAllDeleted(), HttpStatus.OK);
     }
 
     @GetMapping("/including-deleted")
-    public ResponseEntity<?> getAllIncludingDeleted() {
-        return ResponseEntity.ok(accountService.getAllIncludingDeleted());
+    public ApiResponse<?> getAllIncludingDeleted() {
+        return new ApiResponse<>(true, "Success", accountService.getAllIncludingDeleted(), HttpStatus.OK);
     }
 
     @PostMapping("/{user_id}")
-    public ResponseEntity<?> create(@PathVariable("user_id") UUID userId) {
-        return new ResponseEntity<>(accountService.create(userId), HttpStatus.CREATED);
+    public ApiResponse<?> create(@PathVariable("user_id") UUID userId) {
+        return new ApiResponse<>(true, "Success", accountService.create(userId), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AccountDTO accountDto) {
-        return new ResponseEntity<>(accountService.update(id, accountDto), HttpStatus.OK);
+    public ApiResponse<?> update(@PathVariable("id") Long id, @Valid @RequestBody AccountDTO accountDto) {
+        return new ApiResponse<>(true, "Success", accountService.update(id, accountDto), HttpStatus.OK);
     }
 
     @GetMapping("/{id}/balance")
-    public ResponseEntity<?> getBalance(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(accountService.getBalance(id), HttpStatus.OK);
+    public ApiResponse<?> getBalance(@PathVariable("id") Long id) {
+        return new ApiResponse<>(true, "Success", accountService.getBalance(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/soft-delete")
-    public ResponseEntity<?> softDelete(@PathVariable("id") Long id) {
+    @DeleteMapping("/")
+    public ApiResponse<?> softDelete(@RequestBody List<Long> ids) {
+        accountService.softDelete(ids);
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> softDelete(@PathVariable("id") Long id) {
         accountService.softDelete(id);
-        return ResponseEntity.noContent().build();
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}/delete-permanently")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    public ApiResponse<?> delete(@PathVariable("id") Long id) {
         accountService.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/restore")
+    public ApiResponse<?> restore(@PathVariable("id") Long id) {
+        accountService.restore(id);
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
+    }
+
+    @PatchMapping("/restore")
+    public ApiResponse<?> restore(@RequestBody List<Long> ids) {
+        accountService.restore(ids);
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
+    }
+
+    @PatchMapping("/restore-all")
+    public ApiResponse<?> restoreAll() {
+        accountService.restore();
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
     public List<Transaction> getAllTransactions() {
         return null;
     }
+
 }

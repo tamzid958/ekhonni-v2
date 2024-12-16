@@ -12,10 +12,14 @@ import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.AccountProjection;
+import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -26,42 +30,22 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class AccountService {
+public class AccountService extends BaseService<Account, Long> {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
-    public AccountDTO get(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(AccountNotFoundException::new);
-        return new AccountDTO(account.getBalance(), account.getStatus());
-    }
-
-    public List<AccountProjection> getAll() {
-        return accountRepository.getAll();
-    }
-
-    public List<AccountProjection> getAllDeleted() {
-        return accountRepository.getAllDeleted();
-    }
-
-    public List<AccountProjection> getAllIncludingDeleted() {
-        return accountRepository.getAllIncludingDeleted();
+    public UserProjection getUser(Long id) {
+        return accountRepository.findUser(id);
     }
 
     @Transactional
-    public AccountDTO update(Long id, AccountDTO accountDTO) {
-        if (accountDTO.balance() < 0) {
-            throw new NegativeAmountException();
-        }
-        List<String> statusList = Arrays.asList("Active", "Pending", "Deleted", "Frozen");
-        if (!statusList.contains(accountDTO.status())) {
-            throw new InvalidAccountStatusException();
-        }
-        Account account = accountRepository.findById(id)
-                .orElseThrow(AccountNotFoundException::new);
-        account.setBalance(accountDTO.balance());
-        account.setStatus(accountDTO.status());
-        return accountDTO;
+    public Account create(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        Account account = new Account(0.0, "Active");
+        user.setAccount(account);
+        accountRepository.save(account);
+        return account;
     }
 
     public double getBalance(Long id) {
@@ -70,26 +54,14 @@ public class AccountService {
         return account.getBalance();
     }
 
-    public Account create(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-        Account account = new Account(0.0, "Active");
-        accountRepository.save(account);
-        return account;
-    }
-
+    @Modifying
     @Transactional
+    @Override
     public void softDelete(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(AccountNotFoundException::new);
         account.setStatus("Deleted");
-        account.setDeletedAt(LocalDateTime.now());
-        accountRepository.save(account);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        accountRepository.deleteAccountById(id);
+        accountRepository.softDelete(id);
     }
 
 }
