@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/account")
-@Tag(name = "Accounts", description = "Manage account operations")
+@RequestMapping("/api/v2/account")
+@Tag(name = "Account", description = "Manage account operations")
 public record AccountController(AccountService accountService) {
 
-    @GetMapping("/")
+    @GetMapping
     public ApiResponse<?> getAll() {
         return new ApiResponse<>(true, "Success", accountService.getAll(), HttpStatus.OK);
     }
@@ -61,15 +61,15 @@ public record AccountController(AccountService accountService) {
         return new ApiResponse<>(true, "Success", accountService.getBalance(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/")
-    public ApiResponse<?> softDelete(@RequestBody List<Long> ids) {
-        accountService.softDelete(ids);
-        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
-    }
-
     @DeleteMapping("/{id}")
     public ApiResponse<?> softDelete(@PathVariable("id") Long id) {
         accountService.softDelete(id);
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/")
+    public ApiResponse<?> softDeleteSelected(@RequestBody List<Long> ids) {
+        accountService.softDelete(ids);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
@@ -86,7 +86,7 @@ public record AccountController(AccountService accountService) {
     }
 
     @PatchMapping("/restore")
-    public ApiResponse<?> restore(@RequestBody List<Long> ids) {
+    public ApiResponse<?> restoreSelected(@RequestBody List<Long> ids) {
         accountService.restore(ids);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }

@@ -2,6 +2,8 @@ package com.ekhonni.backend.repository;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +20,11 @@ import java.util.Optional;
  */
 @NoRepositoryBean
 public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
+    /**
+     * =============================
+     * Soft Delete Operations
+     * =============================
+     */
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
@@ -28,6 +35,11 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("UPDATE #{#entityName} e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id IN :ids")
     void softDelete(List<ID> ids);
 
+    /**
+     * =============================
+     * Restore Operations
+     * =============================
+     */
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=NULL WHERE e.id = :id")
@@ -43,22 +55,46 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("UPDATE #{#entityName} e SET e.deletedAt=NULL WHERE e.deletedAt IS NOT NULL")
     void restore();
 
-    // Soft-deleted and non soft-deleted
-    <P> Optional<P> findById(ID id, Class<P> projection);
-    <P> List<P> findBy(Class<P> projection);
-
-    // Non soft-deleted
+    /**
+     * ================================================
+     * Non soft deleted (Default) entity and projection
+     * ================================================
+     */
+    // Entity
     Optional<T> findByIdAndDeletedAtIsNull(ID id);
     List<T> findAllByDeletedAtIsNull();
+    Page<T> findAllByDeletedAtIsNull(Pageable pageable);
+    // Projection
     <P> List<P> findAllByDeletedAtIsNull(Class<P> projection);
     <P> Optional<P> findByIdAndDeletedAtIsNull(ID id, Class<P> projection);
+    <P> Page<P> findAllByDeletedAtIsNull(Class<P> projection, Pageable pageable);
+    // Helper
     long countByDeletedAtIsNull();
 
-    // Soft-deleted
+    /**
+     * ===========================================
+     * Soft deleted(default) entity and projection
+     * ===========================================
+     */
+    // Entity
     Optional<T> findByIdAndDeletedAtIsNotNull(ID id);
     List<T> findAllByDeletedAtIsNotNull();
+    Page<T> findAllByDeletedAtIsNotNull(Pageable pageable);
+    // Projection
     <P> List<P> findAllByDeletedAtIsNotNull(Class<P> projection);
     <P> Optional<P> findByIdAndDeletedAtIsNotNull(ID id, Class<P> projection);
+    <P> Page<P> findAllByDeletedAtIsNotNull(Class<P> projection, Pageable pageable);
+    // Helper
     long countByDeletedAtIsNotNull();
+
+    /**
+     * ===============================================
+     * All including soft-deleted
+     * ===============================================
+     * Methods for entity is provided by JpaRepository
+     */
+    <P> Optional<P> findById(ID id, Class<P> projection);
+    <P> List<P> findBy(Class<P> projection);
+    <P> Page<P> findBy(Class<P> projection, Pageable pageable);
 
 }

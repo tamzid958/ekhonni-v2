@@ -1,6 +1,5 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.dto.GatewayResponseDTO;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Product;
@@ -13,9 +12,7 @@ import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.response.ApiResponse;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,13 +29,13 @@ import java.util.UUID;
  */
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PaymentService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final PaymentRequest paymentRequest;
     private final ProjectionFactory projectionFactory;
     private final Util util;
-    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
     private final String sslcommerzApiUrl;
 
     public ApiResponse<?> initiatePayment(UUID buyerId, Long productId) {
@@ -56,7 +53,7 @@ public class PaymentService {
 
             RestTemplate restTemplate = new RestTemplate();
             SSLCommerzInitResponse response = restTemplate.postForEntity(sslcommerzApiUrl, requestEntity, SSLCommerzInitResponse.class).getBody();
-            logger.info("Response: {}", response);
+            log.info("Response: {}", response);
 
             if (response != null && "SUCCESS".equals(response.getStatus())) {
                 GatewayResponseProjection responseProjection = projectionFactory.createProjection(GatewayResponseProjection.class, response);
