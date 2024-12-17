@@ -45,15 +45,6 @@ public class JwtProvider {
                 .getSubject();
     }
 
-    private Date getExpiration(String jwt) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(generateKey())
-                .build()
-                .parseClaimsJws(jwt)
-                .getBody()
-                .getExpiration();
-    }
 
     public boolean validateToken(String jwt) {
         try {

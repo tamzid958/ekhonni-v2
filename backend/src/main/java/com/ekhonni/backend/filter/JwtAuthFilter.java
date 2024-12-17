@@ -33,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String jwt = getTokenFromRequest(request);
 
-        if (jwt == null || jwt.isBlank()) {
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,7 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
 
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        if (bearerToken != null && !bearerToken.isBlank() && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
