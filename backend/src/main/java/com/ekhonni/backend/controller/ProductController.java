@@ -44,11 +44,13 @@ public record ProductController(ProductService productService){
         return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjection, "product information fetched" );
     }
 
+
     @GetMapping("/by-categories/{category_id}")
     public ApiResponse<?> getByCategoryId( @PathVariable("category_id")Long categoryId, @NotNull final Pageable pageable){
         Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
         return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
     }
+
 
     @PostMapping
     public ApiResponse<?> create(@RequestBody Product product) {

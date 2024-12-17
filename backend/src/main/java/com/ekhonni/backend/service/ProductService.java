@@ -46,10 +46,6 @@ public record ProductService(ProductRepository productRepository) {
 
 
 
-
-
-
-
        public boolean delete(Long id){
            Optional<Product> product = productRepository.findById(id);
            if(product.isPresent()){
