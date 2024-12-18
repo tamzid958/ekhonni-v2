@@ -1,15 +1,16 @@
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
 import React from 'react';
+import { CardDemo } from '@/components/Card';
+import { dataDemo } from '@/data/products';
 
 export default function Home() {
   return (
     <div className="flex mt-6 justify-center align-middle min-h-screen">
-      This is Homepage
-      {/*<Button>Hello</Button>*/}
-      {/*<Alert> New Alert</Alert>*/}
+      {/* Render each card using map */}
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {dataDemo.map((item, index) => (
+          <CardDemo key={index} {...item} />
+        ))}
+      </div>
     </div>
   );
 }
