@@ -1,6 +1,26 @@
 'use client';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { Button } from '@/components/ui/button';
+import { Input } from 'postcss';
+import { bidData } from '../mockData/bidData';
+import { event } from 'next/dist/build/output/log';
+
 
 interface ImageState {
   img1: string;
@@ -9,6 +29,10 @@ interface ImageState {
   img4: string;
   img5: string;
   img6: string;
+}
+
+function Label(props: { htmlFor: string, children: ReactNode }) {
+  return null;
 }
 
 const ProductPage: React.FC = () => {
@@ -23,6 +47,15 @@ const ProductPage: React.FC = () => {
 
   const [activeImg, setActiveImage] = useState<string>(images.img1);
   const [bidAmount, setBidAmount] = useState<number>(105);
+  const [currentProductIndex, setCurrentProductIndex] = useState(0);
+  const [biddingAmount, setBiddingAmount] = useState("");
+
+  const handleBidSubmit = (productId: number) => {
+    console.log(`Bid submitted for product ID: ${productId}`);
+    alert(`Your bid has been submitted for product ID: ${productId}`);
+
+    setBiddingAmount("");
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-16 lg:items-center">
@@ -84,15 +117,96 @@ const ProductPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="my-4">
-            <button className="bg-violet-800 text-white font-semibold py-3 px-16 rounded-xl w-full">
-              Bid Now
-            </button>
+          <div className="w-full sm:w-1/2 md:w-1/3 lg:w-64 ">
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="flex items-center justify-center h-full">
+                  <Button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Bid Now
+                  </Button>
+                </div>
+              </PopoverTrigger>
+
+                <PopoverContent className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 2xl:w-96">
+                  <div>
+                    <div>
+                      <h1>Place your Bid</h1>
+                    </div>
+                    <div>
+                      <div key={bidData[currentProductIndex].id}>
+                        <p className="mb-2">
+                          <strong>{bidData[currentProductIndex].price}৳ (BDT)</strong> +{" "}
+                          <strong>{bidData[currentProductIndex].delivery}৳ (BDT)</strong> Delivery
+                        </p>
+                        <p className="text-sm ">
+                          {bidData[currentProductIndex].bids} bids,{" "}
+                          {bidData[currentProductIndex].timeLeft} left
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-2">
+                      <Carousel
+                        opts={{
+                          align: "start",
+                        }}
+                        className="w-full max-w-sm"
+                      >
+                        <CarouselContent>
+                          {/* Map through products */}
+                          {bidData.map((product) =>
+                            product.suggestedBids.map((bid, index) => (
+                              <CarouselItem key={`${product.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
+                                <div className="p-1">
+                                  <Card className="h-1/5">
+                                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                                      <div className=" text-black rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap">
+                                        Bid {bid}৳
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              </CarouselItem>
+                            ))
+                          )}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                      </Carousel>
+
+                    </div>
+                    <div className="mt-6">
+                      <input
+                        type="text"
+                        placeholder="Enter Bid (৳)"
+                        className="w-full p-3 border rounded-md mb-2"
+                        value={biddingAmount}
+                        onChange={(e) => setBiddingAmount(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-center justify-center h-full">
+                      <Button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                      onClick={() => handleBidSubmit(bidData[currentProductIndex].id)}>
+                        Submit
+                      </Button>
+                    </div>
+
+                    <div className="mt-4">
+                      <p>By selecting bid, you are committing to buy
+                        this item if you are the winning bidder.</p>
+                    </div>
+                    </div>
+
+                </PopoverContent>
+
+            </Popover>
+
           </div>
         </div>
       </div>
     </div>
-  );
+)
+;
 };
 
 export default ProductPage;
