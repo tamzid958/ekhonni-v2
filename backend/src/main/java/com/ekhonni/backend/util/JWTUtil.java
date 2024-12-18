@@ -5,6 +5,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,15 @@ public class JWTUtil {
     @Value(("${spring.security.jwt.expiration}"))
     private long expiration;
 
+    @Cacheable(value = "jwtBlackList", key = "#jwt", unless = "#result == null")
+    public String getBlackListed(String jwt) {
+        return null;
+    }
+
+    @CachePut(value = "jwtBlackList", key = "#jwt")
+    public String blacklistToken(String jwt) {
+        return jwt;
+    }
 
     public String generate(Authentication authenticated) {
         return Jwts
@@ -35,15 +46,6 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String generate(String email) {
-        return Jwts
-                .builder()
-                .setSubject(email)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(generateKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
 
     private SecretKey generateKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
