@@ -6,6 +6,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.AccountDTO;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.projection.AccountProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,7 @@ public record AccountController(AccountService accountService) {
 
     @GetMapping
     public ApiResponse<?> getAll() {
-        return new ApiResponse<>(true, "Success", accountService.getAll(), HttpStatus.OK);
+        return new ApiResponse<>(true, "Success", accountService.getAll(AccountProjection.class), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

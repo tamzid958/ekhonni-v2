@@ -15,7 +15,7 @@ import lombok.*;
 public class BidLog extends BaseEntity<Long> {
 
     @ManyToOne
-    @JoinColumn(name = "bid_id") // Ensures proper foreign key mapping
+    @JoinColumn(name = "bid_id")
     private Bid bid;
 
     @ManyToOne
@@ -23,15 +23,10 @@ public class BidLog extends BaseEntity<Long> {
     private User bidder;
 
     @Column
-    private Double amount;
+    private Double amount = 0.0;
 
     @Column
-    private String status;
-
-    public BidLog(Double amount, String status){
-        this.amount = amount;
-        this.status = status;
-    }
+    private String status = "Pending";
 
 }
 

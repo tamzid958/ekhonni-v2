@@ -3,10 +3,7 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -36,6 +33,11 @@ public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/cancel")
     public ApiResponse<?> paymentCancel() {
+        return new ApiResponse<>(false, "Cancel", "Payment canceled.", HttpStatus.PAYMENT_REQUIRED);
+    }
+
+    @PostMapping("/ipn")
+    public ApiResponse<?> paymentIpn(@RequestBody String ipn) {
         return new ApiResponse<>(false, "Cancel", "Payment canceled.", HttpStatus.PAYMENT_REQUIRED);
     }
 

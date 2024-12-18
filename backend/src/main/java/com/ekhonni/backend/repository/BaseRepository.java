@@ -72,9 +72,9 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     long countByDeletedAtIsNull();
 
     /**
-     * ===========================================
-     * Soft deleted(default) entity and projection
-     * ===========================================
+     * ============================================
+     * Soft deleted (Default) entity and projection
+     * ============================================
      */
     // Entity
     Optional<T> findByIdAndDeletedAtIsNotNull(ID id);

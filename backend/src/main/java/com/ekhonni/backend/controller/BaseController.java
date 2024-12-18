@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * Date: 12/17/24
  */
 @AllArgsConstructor
-public class BaseController<T, ID> {
+public class BaseController<T, ID, P> {
     private final BaseService<T, ID> service;
 
     /**
@@ -42,10 +42,5 @@ public class BaseController<T, ID> {
         return new ApiResponse<>(true, "Success", service.get(id, projection), HttpStatus.OK);
     }
 
-    /**
-     * ==========================
-     * Delete mapping
-     * ==========================
-     */
 
 }
