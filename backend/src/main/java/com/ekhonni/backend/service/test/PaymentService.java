@@ -64,28 +64,21 @@ public class PaymentService  {
         map.add("cus_name", "Customer Name");
         map.add("cus_email", "cust@yahoo.com");
         map.add("cus_add1", "Dhaka");
-        map.add("cus_add2", "Dhaka");
         map.add("cus_city", "Dhaka");
-        map.add("cus_state", "Dhaka");
         map.add("cus_postcode", "1000");
         map.add("cus_country", "Bangladesh");
         map.add("cus_phone", "01711111111");
-        map.add("cus_fax", "01711111111");
-        map.add("ship_name", "Customer Name");
-        map.add("ship_add1", "Dhaka");
-        map.add("ship_add2", "Dhaka");
-        map.add("ship_city", "Dhaka");
-        map.add("ship_state", "Dhaka");
-        map.add("shipping_method", "YES");
-        map.add("ship_postcode", "1000");
-        map.add("ship_country", "Bangladesh");
-        map.add("multi_card_name", "mastercard,visacard,amexcard");
+
+        map.add("shipping_method", "NO");
+        map.add("multi_card_name", "bkash");
         map.add("value_a", "ref001_A");
         map.add("value_b", "ref002_B");
         map.add("value_c", "ref003_C");
         map.add("value_d", "ref004_D");
         map.add("product_category", "others");
         map.add("product_profile", "general");
+
+        System.out.println(map);
 
 
         HttpHeaders headers = new HttpHeaders();
@@ -102,7 +95,12 @@ public class PaymentService  {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonResponse = objectMapper.readTree(responseBody);
-        System.out.println(jsonResponse);
+        // Convert to pretty-printed JSON string
+        String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonResponse);
+
+// Print the nicely formatted JSON
+        System.out.println(prettyJson);
+        //System.out.println(jsonResponse);
         String gatewayPageURL = jsonResponse.path("GatewayPageURL").asText();
 
         return gatewayPageURL;

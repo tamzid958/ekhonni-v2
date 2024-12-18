@@ -33,7 +33,6 @@ public record CategoryController(CategoryService categoryService) {
     }
 
 
-
     @GetMapping("/{id}")
     public ApiResponse<?> getSub(@PathVariable Long id) {
          List<CategoryProjection> categoryProjection = categoryService.getSub(id);

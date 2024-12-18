@@ -28,7 +28,7 @@ public class Product extends BaseEntity<Long> {
 
     @Positive
     @Column(nullable = false)
-    private Long price;
+    private Double price;
 
     @NotBlank
     private String description;

@@ -7,6 +7,11 @@
 
 package com.ekhonni.backend.dto;
 
-public class ProductDTO {
+import java.time.LocalTime;
 
+public class ProductDTO {
+//    private Long id;
+//    private LocalTime
 }
+
+
