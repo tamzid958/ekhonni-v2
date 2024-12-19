@@ -10,7 +10,7 @@ const Navbar = () => {
           Home
         </Link>
         <Link href="/products" className="hover:text-blue-200">
-          Product
+          Products
         </Link>
       </div>
     </nav>
