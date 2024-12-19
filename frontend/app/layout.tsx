@@ -1,10 +1,10 @@
 import localFont from 'next/font/local';
 import './globals.css';
 import React from 'react';
-import Footer from '@/components/Footer';
 import {NavBar} from "@/components/NavBar";
 import {Inter} from 'next/font/google'
 import {CategoryMenu} from "@/components/Category";
+import Footer from "@/components/Footer";
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',

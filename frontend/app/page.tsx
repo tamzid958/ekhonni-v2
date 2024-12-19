@@ -4,7 +4,7 @@ import {Ads} from "@/components/Ads"
 
 export default function Home() {
     return (
-        <div className="flex justify-center align-middle min-h-screen poppins.classname ">
+        <div className="flex min-h-screen poppins.classname bg-white">
             <Ads/>
         </div>
     );
