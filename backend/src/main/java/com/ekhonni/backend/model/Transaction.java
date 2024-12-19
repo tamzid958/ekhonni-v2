@@ -6,8 +6,7 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.TransactionStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +18,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 public class Transaction extends BaseEntity<Long> {
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 
-    private TransactionStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransactionStatus status = TransactionStatus.PENDING;
 }

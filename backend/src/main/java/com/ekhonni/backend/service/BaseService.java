@@ -120,8 +120,8 @@ public class BaseService<T, ID> {
         repository.softDelete(id);
     }
 
-    public void softDelete(List<ID> ids) {
-        repository.softDelete(ids);
+    public void softDeleteSelected(List<ID> ids) {
+        repository.softDeleteSelected(ids);
     }
 
     public void delete(ID id) {     // delete permanently
@@ -138,12 +138,12 @@ public class BaseService<T, ID> {
         repository.restore(id);
     }
 
-    public void restore(List<ID> ids) {
-        repository.restore(ids);
+    public void restoreSelected(List<ID> ids) {
+        repository.restoreSelected(ids);
     }
 
-    public void restore() {
-        repository.restore();
+    public void restoreAll() {
+        repository.restoreAll();
     }
 
     /**

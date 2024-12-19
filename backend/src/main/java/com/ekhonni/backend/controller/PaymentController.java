@@ -1,10 +1,14 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.payment.sslcommerz.SSLCommerzValidatorResponse;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -14,31 +18,33 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v2/payment")
+@Slf4j
 public record PaymentController(PaymentService paymentService) {
 
-    @PostMapping("/initiate/{buyer_id}/{product_id}")
-    public ApiResponse<?> initiatePayment(@PathVariable("buyer_id") UUID buyerId, @PathVariable("product_id") Long productId) {
-        return paymentService.initiatePayment(buyerId, productId);
+    @PostMapping("/initiate/bid_id")
+    public ApiResponse<?> initiatePayment(@PathVariable("bid_id") Long bidId) {
+        return paymentService.initiatePayment(bidId);
     }
 
     @PostMapping("/success")
-    public ApiResponse<?> paymentSuccess() {
+    public ApiResponse<?> success(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Validator Response: {}", validatorResponse);
         return new ApiResponse<>(true, "Success", "Payment successful.", HttpStatus.OK);
     }
 
     @PostMapping("/fail")
-    public ApiResponse<?> paymentFail() {
+    public ApiResponse<?> fail() {
         return new ApiResponse<>(false, "Fail", "Payment failed.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PostMapping("/cancel")
-    public ApiResponse<?> paymentCancel() {
+    public ApiResponse<?> cancel() {
         return new ApiResponse<>(false, "Cancel", "Payment canceled.", HttpStatus.PAYMENT_REQUIRED);
     }
 
     @PostMapping("/ipn")
-    public ApiResponse<?> paymentIpn(@RequestBody String ipn) {
-        return new ApiResponse<>(false, "Cancel", "Payment canceled.", HttpStatus.PAYMENT_REQUIRED);
+    public ApiResponse<?> handleIpn(@RequestBody SSLCommerzValidatorResponse ipnData) {
+        return new ApiResponse<>(false, "Success", ipnData, HttpStatus.PAYMENT_REQUIRED);
     }
 
 }

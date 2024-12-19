@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.BidLogDTO;
+import com.ekhonni.backend.enums.BidLogStatus;
 import com.ekhonni.backend.model.BidLog;
 import com.ekhonni.backend.projection.BidLogProjection;
 import com.ekhonni.backend.repository.BidLogRepository;
@@ -24,8 +25,7 @@ public class BidLogService {
     public BidLogDTO create(BidLogDTO bidLogDTO) {
 
         BidLog bidLog = new BidLog(
-                bidLogDTO.amount(),
-                bidLogDTO.status()
+                bidLogDTO.amount()
         );
 
         bidLogRepository.save(bidLog);
@@ -47,8 +47,6 @@ public class BidLogService {
     public BidLogDTO update(Long id, BidLogDTO bidLogDTO){
         BidLog bidLog = bidLogRepository.findById(id)
                 .orElseThrow( () -> new RuntimeException("Bid Log not found for id: " + id));
-
-        bidLog.setStatus(bidLogDTO.status());
 
         return bidLogDTO;
     }

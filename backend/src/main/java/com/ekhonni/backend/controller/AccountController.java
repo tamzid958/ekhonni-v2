@@ -70,7 +70,7 @@ public record AccountController(AccountService accountService) {
 
     @DeleteMapping("/")
     public ApiResponse<?> softDeleteSelected(@RequestBody List<Long> ids) {
-        accountService.softDelete(ids);
+        accountService.softDeleteSelected(ids);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
@@ -88,13 +88,13 @@ public record AccountController(AccountService accountService) {
 
     @PatchMapping("/restore")
     public ApiResponse<?> restoreSelected(@RequestBody List<Long> ids) {
-        accountService.restore(ids);
+        accountService.restoreSelected(ids);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
     @PatchMapping("/restore-all")
     public ApiResponse<?> restoreAll() {
-        accountService.restore();
+        accountService.restoreAll();
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 

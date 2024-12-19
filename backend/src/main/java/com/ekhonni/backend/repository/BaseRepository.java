@@ -33,7 +33,7 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id IN :ids")
-    void softDelete(List<ID> ids);
+    void softDeleteSelected(List<ID> ids);
 
     /**
      * =============================
@@ -48,12 +48,12 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=NULL WHERE e.id IN :ids")
-    void restore(List<ID> ids);
+    void restoreSelected(List<ID> ids);
 
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=NULL WHERE e.deletedAt IS NOT NULL")
-    void restore();
+    void restoreAll();
 
     /**
      * ================================================

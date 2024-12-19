@@ -38,14 +38,8 @@ public class PaymentService {
     private final Util util;
     private final String sslcommerzApiUrl;
 
-    public ApiResponse<?> initiatePayment(UUID buyerId, Long productId) {
+    public ApiResponse<?> initiatePayment(Long bidId) {
         try {
-            User buyer = userRepository.findById(buyerId)
-                    .orElseThrow(UserNotFoundException::new);
-
-            Product product = productRepository.findById(productId)
-                    .orElseThrow(ProductNotFoundException::new);
-
             String requestBody = util.getParamsString(paymentRequest, buyer, product, 100000L, true);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
@@ -71,4 +65,5 @@ public class PaymentService {
             return new ApiResponse<>(false, "Error", null, HttpStatus.BAD_REQUEST);
         }
     }
+    
 }
