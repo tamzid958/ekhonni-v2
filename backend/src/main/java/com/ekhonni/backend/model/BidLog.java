@@ -1,14 +1,9 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.ekhonni.backend.enums.BidLogStatus;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
@@ -17,24 +12,23 @@ import lombok.Setter;
 @Entity
 public class BidLog extends BaseEntity<Long> {
 
-    @ManyToOne
-    @JoinColumn(name = "bid_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 
     @ManyToOne
     @JoinColumn(name = "bidder_id")
     private User bidder;
 
-    @Column
     private Double amount = 0.0;
 
-    @Column
-    private String status = "Pending";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BidLogStatus status = BidLogStatus.PENDING;
 
-    public BidLog(Double amount, String status) {
+    public BidLog(Double amount) {
         super();
         this.amount = amount;
-        this.status = status;
     }
 }
 
