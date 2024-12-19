@@ -9,6 +9,7 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.ProductCondition;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

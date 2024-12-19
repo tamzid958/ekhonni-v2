@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AdminRepository;
 import lombok.AllArgsConstructor;
@@ -19,12 +20,12 @@ public class AdminService {
     @Transactional
     public void add(String email) {
         User user = adminRepository.findByEmail(email);
-        user.setRole("ADMIN");
+        user.setRole(Role.ADMIN);
     }
 
     @Transactional
     public void remove(String email) {
         User user = adminRepository.findByEmail(email);
-        user.setRole("USER");
+        user.setRole(Role.USER);
     }
 }

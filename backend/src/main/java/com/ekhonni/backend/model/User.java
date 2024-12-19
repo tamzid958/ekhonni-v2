@@ -1,9 +1,11 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,8 +38,9 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     private String email;
     @NotBlank
     private String password;
-    @NotBlank
-    private String role;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @NotBlank
     private String phone;
     @NotBlank
@@ -48,7 +51,7 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getRole()));
+        return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
     }
 
     @Override

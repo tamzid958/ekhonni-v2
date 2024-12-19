@@ -1,8 +1,8 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.config.UserRequestScopedBean;
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final UserRequestScopedBean userRequestScopedBean;
 
     public String create(UserDTO userDTO) {
         if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
@@ -44,7 +42,7 @@ public class AuthService {
                 userDTO.name(),
                 userDTO.email(),
                 passwordEncoder.encode(userDTO.password()),
-                userDTO.name().equals("Jahid Hasan") ? "ADMIN" : "USER",
+                userDTO.name().equals("Jahid Hasan") ? Role.ADMIN : Role.USER,
                 userDTO.phone(),
                 userDTO.address(),
                 account
@@ -70,11 +68,5 @@ public class AuthService {
         return jwtUtil.generate(authenticated);
     }
 
-    public String signOut() {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) return "User Not Signed in";
 
-        jwtUtil.blacklistToken(userRequestScopedBean.getJwt());
-
-        return "Sign Out Successful";
-    }
 }

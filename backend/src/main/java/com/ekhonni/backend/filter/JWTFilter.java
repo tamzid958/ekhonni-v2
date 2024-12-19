@@ -1,6 +1,5 @@
 package com.ekhonni.backend.filter;
 
-import com.ekhonni.backend.config.UserRequestScopedBean;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import com.ekhonni.backend.util.JWTUtil;
 import jakarta.servlet.FilterChain;
@@ -30,7 +29,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     UserDetailsServiceImpl userDetailsServiceImpl;
 
-    UserRequestScopedBean userRequestScopedBean;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -61,7 +59,6 @@ public class JWTFilter extends OncePerRequestFilter {
                     UserDetails user = userDetailsServiceImpl.loadUserByUsername(email);
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    userRequestScopedBean.setJwt(jwt);
                 } else {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token Expired");
                 }

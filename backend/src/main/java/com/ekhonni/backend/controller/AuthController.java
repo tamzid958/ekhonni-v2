@@ -34,8 +34,4 @@ public record AuthController(AuthService authService, ResponseUtil responseUtil)
 
     }
 
-    @PostMapping("/sign-out")
-    public ResponseEntity<?> signOut() {
-        return ResponseEntity.ok(authService.signOut());
-    }
 }
