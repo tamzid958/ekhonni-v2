@@ -4,11 +4,12 @@ import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,14 +26,14 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<UserProjection> getAll() {
-        return userService.getAll();
+    public Page<UserProjection> getAll(Pageable pageable) {
+        return userService.getAll(UserProjection.class, pageable);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id or hasAuthority('ADMIN')")
     public UserProjection getById(@PathVariable UUID id) {
-        return userService.getById(id);
+        return userService.get(id, UserProjection.class);
     }
 
 
@@ -45,7 +46,9 @@ public class UserController {
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("#id == authentication.principal.id or hasAuthority('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        userService.delete(id);
+        userService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }
