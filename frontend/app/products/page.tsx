@@ -2,6 +2,7 @@
 import React, { ReactNode, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Popover,
   PopoverContent,
@@ -57,7 +58,13 @@ const ProductPage: React.FC = () => {
     setBiddingAmount("");
   };
 
-  return (
+  const router = useRouter();
+
+  const closeModal = () => {
+    router.back();
+  };
+
+    return (
     <div className="flex flex-col lg:flex-row gap-16 lg:items-center">
       <div className="flex flex-col gap-6 lg:w-2/4">
         <Image
@@ -127,14 +134,22 @@ const ProductPage: React.FC = () => {
                 </div>
               </PopoverTrigger>
 
-                <PopoverContent className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 2xl:w-96">
-                  <div>
-                    <div>
-                      <h1>Place your Bid</h1>
+                <PopoverContent className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2  xl:w-1/3 2xl:w-96">
+                  <div >
+                    <div className="flex  items-center justify-between p-0.5 ">
+                      <h1 className="text-lg font-semibold">Place your Bid</h1>
+                      <button
+                        onClick={closeModal}
+                        className="text-xl text-gray-700 hover:text-red-500 focus:outline-none"
+                      >
+                        &times;
+                      </button>
                     </div>
+
+
                     <div>
                       <div key={bidData[currentProductIndex].id}>
-                        <p className="mb-2">
+                        <p className="mb-1.5 mt-2">
                           <strong>{bidData[currentProductIndex].price}৳ (BDT)</strong> +{" "}
                           <strong>{bidData[currentProductIndex].delivery}৳ (BDT)</strong> Delivery
                         </p>
@@ -145,22 +160,23 @@ const ProductPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2 relative">
                       <Carousel
                         opts={{
                           align: "start",
                         }}
-                        className="w-full max-w-sm"
+                        className="w-full max-w-sm px-10"
                       >
                         <CarouselContent>
                           {/* Map through products */}
                           {bidData.map((product) =>
                             product.suggestedBids.map((bid, index) => (
-                              <CarouselItem key={`${product.id}-${index}`} className="md:basis-1/2 lg:basis-1/3">
-                                <div className="p-1">
-                                  <Card className="h-1/5">
-                                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                                      <div className=" text-black rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap">
+                              <CarouselItem key={`${product.id}-${index}`} className="md:basis-1/5 lg:basis-1/3">
+                                <div className="flex space-x-1 items-center">
+                                  <Card className="h-1/4 space-x-5 bg-blue-300 w-20">
+                                    <CardContent className="flex items-center justify-center p-4">
+                                      <div
+                                        className=" text-black rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap">
                                         Bid {bid}৳
                                       </div>
                                     </CardContent>
@@ -173,8 +189,9 @@ const ProductPage: React.FC = () => {
                         <CarouselPrevious />
                         <CarouselNext />
                       </Carousel>
-
                     </div>
+
+
                     <div className="mt-6">
                       <input
                         type="text"
@@ -186,16 +203,15 @@ const ProductPage: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-center h-full">
                       <Button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                      onClick={() => handleBidSubmit(bidData[currentProductIndex].id)}>
+                              onClick={() => handleBidSubmit(bidData[currentProductIndex].id)}>
                         Submit
                       </Button>
                     </div>
 
-                    <div className="mt-4">
-                      <p>By selecting bid, you are committing to buy
-                        this item if you are the winning bidder.</p>
+                    <div className="mt-4 flex justify-center items-center">
+                      <p className="text-s text-black-300">By bidding, you commit to buy if you win.</p>
                     </div>
-                    </div>
+                  </div>
 
                 </PopoverContent>
 
@@ -205,8 +221,8 @@ const ProductPage: React.FC = () => {
         </div>
       </div>
     </div>
-)
-;
+  )
+    ;
 };
 
 export default ProductPage;
