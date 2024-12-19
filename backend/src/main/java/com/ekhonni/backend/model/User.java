@@ -42,20 +42,9 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     private String phone;
     @NotBlank
     private String address;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
-
-//    public User(String name, String email, String password, Role role, String phone, String address) {
-//        super();
-//        this.name = name;
-//        this.email = email;
-//        this.password = password;
-//        this.role = role;
-//        this.phone = phone;
-//        this.address = address;
-//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

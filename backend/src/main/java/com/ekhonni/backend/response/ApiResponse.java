@@ -8,6 +8,8 @@
 package com.ekhonni.backend.response;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +21,10 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Builder
 
-
-public class ApiResponse<T>{
-    private HttpStatus httpStatus;
+@JsonPropertyOrder({"success", "status_code", "message", "data"})
+public class ApiResponse<T> {
+    @JsonProperty("status_code")
+    private int statusCode;
     private boolean success;
     private String message;
     private T data;
@@ -30,7 +33,7 @@ public class ApiResponse<T>{
         this.success = success;
         this.message = message;
         this.data = data;
-        this.httpStatus = httpStatus;
+        this.statusCode = httpStatus.value();
     }
 
 }
