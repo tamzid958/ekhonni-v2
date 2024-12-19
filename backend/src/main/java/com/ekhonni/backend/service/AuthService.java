@@ -9,7 +9,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.JWTUtil;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Setter
 public class AuthService {
     private final UserRepository userRepository;
