@@ -1,5 +1,7 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.EmailDTO;
+import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,24 +21,22 @@ public class UserService extends BaseService<User, UUID> {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         super(userRepository);
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @Transactional
-    public String updateEmail(UUID id, String email) {
-        return "To be implemented";
-//        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-//        user.setEmail(email);
-//        return "Email Updated";
+    public String updateEmail(UUID id, EmailDTO emailDTO) {
+        // email to be verified
+        this.update(id, emailDTO);
+        return "Email Updated";
     }
 
     @Transactional
-    public String updatePassword(UUID id, String password) {
+    public String updatePassword(UUID id, PasswordDTO passwordDTO) {
         return "To be implemented";
-//        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
-//        user.setPassword(passwordEncoder.encode(password));
-//        return "Password Updated";
     }
 }

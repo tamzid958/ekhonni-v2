@@ -1,5 +1,7 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.EmailDTO;
+import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
@@ -37,14 +39,14 @@ public class UserController {
 
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id")
-    public String updateUserEmail(@PathVariable UUID id, @RequestBody String email) {
-        return userService.updateEmail(id, email);
+    public String updateUserEmail(@PathVariable UUID id, @RequestBody EmailDTO emailDTO) {
+        return userService.updateEmail(id, emailDTO);
     }
 
     @PatchMapping("/{id}/change-password")
     @PreAuthorize("#id == authentication.principal.id")
-    public String updateUserPassword(@PathVariable UUID id, @RequestBody String password) {
-        return userService.updatePassword(id, password);
+    public String updateUserPassword(@PathVariable UUID id, @RequestBody PasswordDTO passwordDTO) {
+        return userService.updatePassword(id, passwordDTO);
     }
 
 
