@@ -75,7 +75,7 @@ public record ProductService(ProductRepository productRepository) {
 
 
 
-//       public boolean delete(Long id){
+//       public boolean deletePermanently(Long id){
 //           Optional<Product> product = productRepository.findById(id);
 //           if(product.isPresent()){
 //               productRepository.deleteById(id);

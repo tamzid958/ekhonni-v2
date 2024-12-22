@@ -88,7 +88,7 @@ class BaseServiceTest {
     }
 
     @Test
-    void testSoftDelete_ShouldCallRepositorySoftDelete() {
+    void testSoftDelete_ShouldCallRepositorySoftDeletePermanently() {
         // Act
         baseService.softDelete(1L);
 

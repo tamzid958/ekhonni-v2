@@ -56,8 +56,8 @@ public record CategoryController(CategoryService categoryService) {
 
 
 //    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        categoryService.delete(id);
+//    public ResponseEntity<Void> deletePermanently(@PathVariable Long id) {
+//        categoryService.deletePermanently(id);
 //        return ResponseEntity.noContent().build();
 //    }
 

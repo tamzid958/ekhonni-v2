@@ -2,6 +2,8 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.repository.BaseRepository;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +17,15 @@ import java.util.List;
  * Date: 12/16/24
  */
 
-public class BaseService<T, ID> {
+@NoArgsConstructor
+public abstract class BaseService<T, ID> {
+
     private BaseRepository<T, ID> repository;
+
+    public BaseService(BaseRepository<T, ID> repository) {
+        this.repository = repository;
+    }
+
     /**
      * ==================================================
      * Non soft-deleted (Default)
@@ -120,11 +129,11 @@ public class BaseService<T, ID> {
         repository.softDelete(id);
     }
 
-    public void softDeleteSelected(List<ID> ids) {
+    public void softDelete(List<ID> ids) {
         repository.softDeleteSelected(ids);
     }
 
-    public void delete(ID id) {     // delete permanently
+    public void deletePermanently(ID id) {     // deletePermanently permanently
         repository.deleteById(id);
     }
 
@@ -138,7 +147,7 @@ public class BaseService<T, ID> {
         repository.restore(id);
     }
 
-    public void restoreSelected(List<ID> ids) {
+    public void restore(List<ID> ids) {
         repository.restoreSelected(ids);
     }
 

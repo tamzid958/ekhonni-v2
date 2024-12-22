@@ -35,6 +35,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
+    @ExceptionHandler(BidLogNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidLogNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+    }
+
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {

@@ -21,9 +21,9 @@ import java.util.UUID;
 @Slf4j
 public record PaymentController(PaymentService paymentService) {
 
-    @PostMapping("/initiate/bid_id")
-    public ApiResponse<?> initiatePayment(@PathVariable("bid_id") Long bidId) {
-        return paymentService.initiatePayment(bidId);
+    @PostMapping("/initiate/{bidlog_id}")
+    public ApiResponse<?> initiatePayment(@PathVariable("bidlog_id") Long bidLogId) {
+        return paymentService.initiatePayment(bidLogId);
     }
 
     @PostMapping("/success")

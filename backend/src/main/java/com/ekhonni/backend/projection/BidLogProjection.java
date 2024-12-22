@@ -1,13 +1,11 @@
 package com.ekhonni.backend.projection;
 
+import java.util.UUID;
+
 public interface BidLogProjection {
-
-    // BidProjection getBid();
-
-    // UserProjection getUser();
-
-    Double getAmount();
-
+    Long getId();
+    Long getBidId();
+    UUID getBidderId();
+    double getAmount();
     String getStatus();
-
 }

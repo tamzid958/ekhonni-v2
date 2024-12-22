@@ -65,7 +65,7 @@ public record CategoryService(CategoryRepository categoryRepository){
 //        return categoryRepository.findById(id);
 //    }
 //
-//    public void delete(Long id) {
+//    public void deletePermanently(Long id) {
 //        categoryRepository.deleteById(id);
 //    }
 

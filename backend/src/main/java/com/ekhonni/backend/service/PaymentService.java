@@ -3,12 +3,14 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.payment.sslcommerz.PaymentRequest;
 import com.ekhonni.backend.payment.sslcommerz.SSLCommerzInitResponse;
 import com.ekhonni.backend.payment.sslcommerz.Util;
 import com.ekhonni.backend.projection.GatewayResponseProjection;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.repository.TransactionRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.response.ApiResponse;
 import lombok.AllArgsConstructor;
@@ -31,16 +33,20 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 public class PaymentService {
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    TransactionService transactionService;
     private final PaymentRequest paymentRequest;
     private final ProjectionFactory projectionFactory;
     private final Util util;
     private final String sslcommerzApiUrl;
 
-    public ApiResponse<?> initiatePayment(Long bidId) {
+    public ApiResponse<?> initiatePayment(Long bidLogId) {
         try {
-            String requestBody = util.getParamsString(paymentRequest, buyer, product, 100000L, true);
+            Transaction transaction = transactionService.create(bidLogId);
+            String requestBody = util.getParamsString(paymentRequest,
+                    transaction.getBuyer(),
+                    transaction.getProduct(),
+                    transaction.getId(),
+                    true);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
