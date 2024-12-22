@@ -2,7 +2,6 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.repository.BaseRepository;
-import com.ekhonni.backend.util.BeanUtilHelper;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -18,10 +17,14 @@ import java.util.List;
  * Date: 12/16/24
  */
 
-@AllArgsConstructor
 @NoArgsConstructor
-public class BaseService<T, ID> {
+public abstract class BaseService<T, ID> {
+
     private BaseRepository<T, ID> repository;
+
+    public BaseService(BaseRepository<T, ID> repository) {
+        this.repository = repository;
+    }
 
     /**
      * ==================================================
@@ -96,7 +99,6 @@ public class BaseService<T, ID> {
         return repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }
-
     public <P> P getIncludingDeleted(ID id, Class<P> projection) {
         return repository.findById(id, projection)
                 .orElseThrow(EntityNotFoundException::new);
@@ -127,11 +129,11 @@ public class BaseService<T, ID> {
         repository.softDelete(id);
     }
 
-    public void softDeleteSelected(List<ID> ids) {
+    public void softDelete(List<ID> ids) {
         repository.softDeleteSelected(ids);
     }
 
-    public void delete(ID id) {     // delete permanently
+    public void deletePermanently(ID id) {     // deletePermanently permanently
         repository.deleteById(id);
     }
 
@@ -145,7 +147,7 @@ public class BaseService<T, ID> {
         repository.restore(id);
     }
 
-    public void restoreSelected(List<ID> ids) {
+    public void restore(List<ID> ids) {
         repository.restoreSelected(ids);
     }
 
@@ -163,7 +165,7 @@ public class BaseService<T, ID> {
     public <D> D update(ID id, D dto) {
         T entity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
-        BeanUtils.copyProperties(dto, entity, BeanUtilHelper.getNullPropertyNames(dto));
+        BeanUtils.copyProperties(dto, entity);
         repository.save(entity);
         return dto;
     }

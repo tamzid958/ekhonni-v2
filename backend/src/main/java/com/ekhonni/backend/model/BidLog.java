@@ -16,19 +16,16 @@ public class BidLog extends BaseEntity<Long> {
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 
-    @ManyToOne
-    @JoinColumn(name = "bidder_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "bidder_id", nullable = false)
     private User bidder;
 
+    @Column(nullable = false)
     private Double amount = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BidLogStatus status = BidLogStatus.PENDING;
+    private BidLogStatus status;
 
-    public BidLog(Double amount) {
-        super();
-        this.amount = amount;
-    }
 }
 
