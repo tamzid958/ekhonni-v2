@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import Image from 'next/image';
 import Loading from '@/components/Loading';
-import Error from '@/components/Error';
+import Error from '@/components/ErrorBoundary';
 import { Inter } from 'next/font/google';
 import { Button } from '@/components/ui/button';
 

@@ -5,8 +5,8 @@ import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Loading from '@/components/Loading';
-import Error from '@/components/Error';
-import process from 'next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss';
+import Error from '@/components/ErrorBoundary';
+import CustomErrorBoundary from '@/components/ErrorBoundary';
 
 interface UnsplashPhoto {
   id: string;
@@ -17,6 +17,7 @@ interface UnsplashPhoto {
   alt_description: string;
 }
 
+// Fetcher function to get data from Unsplash API
 const fetcher = async (url: string): Promise<UnsplashPhoto[]> => {
   const res = await fetch(url, {
     headers: {
@@ -32,16 +33,20 @@ const fetcher = async (url: string): Promise<UnsplashPhoto[]> => {
 
 const ProductsPage: React.FC = () => {
   const router = useRouter();
+
+  // SWR hook to fetch data
   const { data, error, isLoading } = useSWR<UnsplashPhoto[]>(
     'https://api.unsplash.com/photos?per_page=20',
     fetcher,
   );
 
+  // Handle loading state
   if (isLoading) return <Loading />;
+  // Handle error state
   if (error) return <Error message="Failed to load product details." />;
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="min-h-screen" style={{ padding: '20px' }}>
       <h1>All Products</h1>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {data?.map((photo) => (
@@ -85,4 +90,13 @@ const ProductsPage: React.FC = () => {
   );
 };
 
-export default ProductsPage;
+
+const ProductsPageWithErrorBoundary: React.FC = () => {
+  return (
+    <CustomErrorBoundary>
+      <ProductsPage />
+    </CustomErrorBoundary>
+  );
+};
+
+export default ProductsPageWithErrorBoundary;
