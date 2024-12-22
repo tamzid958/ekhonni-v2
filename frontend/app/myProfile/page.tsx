@@ -1,13 +1,8 @@
 import * as React from 'react';
-import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
 import { CardDemo } from '@/components/Card';
 import { dataDemo } from '@/data/products';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import WatchlistPage from '../watchlist/page';
 
 // Mock data for products
 const watchlistItems = [
@@ -31,75 +26,19 @@ export default function MyProfile() {
           My Profile
         </header>
       </div>
-      <div className="mt-40">
+      <div className="mt-10">
         <Tabs defaultValue="summary" className="flex flex-row ">
-          <TabsList className="flexbox flex-col space-y-2 items-start">
+          <div className="mr-10"><TabsList className="flexbox flex-col space-y-2 items-start h-auto">
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="recently-viewed">Recently Viewed</TabsTrigger>
             <TabsTrigger value="bids">Bids & Offers</TabsTrigger>
             <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
             <TabsTrigger value="purchases">Purchases</TabsTrigger>
             <TabsTrigger value="selling">Selling</TabsTrigger>
-          </TabsList>
+          </TabsList></div>
 
           <TabsContent value="summary">
-            {/* Section Title */}
-            <h1 className="text-2xl font-bold mb-4">Watchlist</h1>
-            <Separator className="mb-6" />
-            {/* Product Watchlist */}
-            <div className="space-y-6">
-              {watchlistItems.map((item) => (
-                <Card key={item.id} className="flex items-center gap-4">
-                  {/* Checkbox */}
-                  <Checkbox className="ml-4" />
-
-                  {/* Product Image */}
-                  <CardContent className="w-24 h-24 relative">
-                    <Image
-                      src={item.img}
-                      alt={item.title}
-                      layout="fill"
-                      className="rounded-md object-cover"
-                    />
-                  </CardContent>
-
-                  {/* Product Details */}
-                  <div className="flex-1 flex flex-col space-y-2">
-                    {/* Title */}
-                    <h2 className="text-lg font-semibold">{item.title}</h2>
-
-                    {/* Details */}
-                    <div className="flex justify-between text-gray-500 text-sm">
-                      <div className="mr-10">
-                        <p>Condition: {item.condition}</p>
-                        <p>{item.timeLeft}</p>
-                      </div>
-                      <Separator className="mx-12" orientation="vertical" />
-                      <div className="mx-20">
-                        <p className="text-lg font-bold text-gray-800">
-                          ${item.price}
-                        </p>
-                        <p>+ ${item.shipping} shipping</p>
-                      </div>
-                      <div className="mx-20">
-                        <p> Seller Name</p>
-                        <p className="text-lg font-bold text-gray-800 py-1">
-                          Seller Profile
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <CardFooter>
-                    <div className="flex flex-col mt-5 space-y-2">
-                      <Button>Bid now</Button>
-                      <Button variant="secondary">
-                        View seller&#39;s other items
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+            <WatchlistPage />
           </TabsContent>
 
           <TabsContent
@@ -127,61 +66,7 @@ export default function MyProfile() {
 
           <TabsContent value="watchlist">
             {/* Product Watchlist */}
-            <div className="space-y-6">
-              {watchlistItems.map((item) => (
-                <Card key={item.id} className="flex items-center gap-4">
-                  {/* Checkbox */}
-                  <Checkbox className="ml-4" />
-
-                  {/* Product Image */}
-                  <CardContent className="w-24 h-24 relative">
-                    <AspectRatio ratio={1} className="bg-muted">
-                      <Image
-                        src={item.img}
-                        alt={item.title}
-                        layout="fill"
-                        className="rounded-md object-cover h-full w-full"
-                      />
-                    </AspectRatio>
-                  </CardContent>
-
-                  {/* Product Details */}
-                  <div className="flex-1 flex flex-col space-y-2">
-                    {/* Title */}
-                    <h2 className="text-lg font-semibold">{item.title}</h2>
-
-                    {/* Details */}
-                    <div className="flex justify-between text-gray-500 text-sm">
-                      <div className="mr-10">
-                        <p>Condition: {item.condition}</p>
-                        <p>{item.timeLeft}</p>
-                      </div>
-                      <Separator className="mx-12" orientation="vertical" />
-                      <div className="mx-20">
-                        <p className="text-lg font-bold text-gray-800">
-                          ${item.price}
-                        </p>
-                        <p>+ ${item.shipping} shipping</p>
-                      </div>
-                      <div className="mx-20">
-                        <p> Seller Name</p>
-                        <p className="text-lg font-bold text-gray-800 py-1">
-                          Seller Profile
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <CardFooter>
-                    <div className="flex flex-col mt-4 space-y-2">
-                      <Button>Bid now</Button>
-                      <Button variant="secondary">
-                        View seller&#39;s other items
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+            <WatchlistPage />
           </TabsContent>
 
           <TabsContent value="purchases">

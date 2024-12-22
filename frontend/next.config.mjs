@@ -1,8 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['static.nike.com', 'images.unsplash.com'], // Allow images from static.nike.com
-  },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'static.nike.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+                pathname: '/**',
+            },
+        ],
+    },
 };
 
 export default nextConfig;
