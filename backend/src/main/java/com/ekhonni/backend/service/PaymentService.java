@@ -33,6 +33,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 public class PaymentService {
+
     TransactionService transactionService;
     private final PaymentRequest paymentRequest;
     private final ProjectionFactory projectionFactory;
@@ -40,35 +41,34 @@ public class PaymentService {
     private final String sslcommerzApiUrl;
 
     public ApiResponse<?> initiatePayment(Long bidLogId) {
+        Transaction transaction = transactionService.create(bidLogId);
+        String requestBody = null;
         try {
-            Transaction transaction = transactionService.create(bidLogId);
-            String requestBody = util.getParamsString(paymentRequest,
+            requestBody = util.getParamsString(paymentRequest,
                     transaction.getBuyer(),
                     transaction.getProduct(),
                     transaction.getId(),
                     true);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-            RestTemplate restTemplate = new RestTemplate();
-            SSLCommerzInitResponse response = restTemplate.postForEntity(sslcommerzApiUrl, requestEntity, SSLCommerzInitResponse.class).getBody();
-            log.info("Response: {}", response);
-
-            if (response != null && "SUCCESS".equals(response.getStatus())) {
-                GatewayResponseProjection responseProjection = projectionFactory.createProjection(GatewayResponseProjection.class, response);
-                return new ApiResponse<>(true, "Success", responseProjection, HttpStatus.OK);
-            } else {
-                String message = "Unknown error";
-                if (response != null) {
-                    message = response.getFailedReason();
-                }
-                return new ApiResponse<>(false, message, null, HttpStatus.BAD_REQUEST);
-            }
         } catch (UnsupportedEncodingException e) {
-            return new ApiResponse<>(false, "Unsupported encoding", null, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ApiResponse<>(false, "Error", null, HttpStatus.BAD_REQUEST);
+            return new ApiResponse<>(false, "Error", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        SSLCommerzInitResponse response = restTemplate.postForEntity(sslcommerzApiUrl, requestEntity, SSLCommerzInitResponse.class).getBody();
+        log.info("Response: {}", response);
+
+        if (response != null && "SUCCESS".equals(response.getStatus())) {
+            GatewayResponseProjection responseProjection = projectionFactory.createProjection(GatewayResponseProjection.class, response);
+            return new ApiResponse<>(true, "Success", responseProjection, HttpStatus.OK);
+        } else {
+            String message = "Unknown error";
+            if (response != null) {
+                message = response.getFailedReason();
+            }
+            return new ApiResponse<>(false, message, null, HttpStatus.BAD_REQUEST);
         }
     }
     
