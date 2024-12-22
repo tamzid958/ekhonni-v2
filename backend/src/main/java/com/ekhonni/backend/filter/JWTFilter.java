@@ -41,13 +41,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
-
-        String blackListedToken = jwtUtil.getBlackListed(jwt);
-
-        if (blackListedToken != null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token");
-        }
-
+        
 
         try {
             String email = jwtUtil.extractSubject(jwt);

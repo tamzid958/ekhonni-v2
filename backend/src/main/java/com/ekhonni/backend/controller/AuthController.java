@@ -3,8 +3,9 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.service.AuthService;
-import com.ekhonni.backend.util.ResponseUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v2/auth")
-public record AuthController(AuthService authService, ResponseUtil responseUtil) {
+@Validated
+@AllArgsConstructor
+public class AuthController {
 
+
+    AuthService authService;
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {

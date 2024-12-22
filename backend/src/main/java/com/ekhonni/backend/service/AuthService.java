@@ -33,18 +33,18 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    public String create(UserDTO userDTO) {
-        if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
+    public String create(UserDTO userRegDTO) {
+        if (userRepository.findByEmail(userRegDTO.email()) != null) throw new UserAlreadyExistsException();
 
         Account account = new Account(0.0, "Active");
 
         User user = new User(
-                userDTO.name(),
-                userDTO.email(),
-                passwordEncoder.encode(userDTO.password()),
-                userDTO.name().equals("Jahid Hasan") ? Role.ADMIN : Role.USER,
-                userDTO.phone(),
-                userDTO.address(),
+                userRegDTO.name(),
+                userRegDTO.email(),
+                passwordEncoder.encode(userRegDTO.password()),
+                Role.USER,
+                userRegDTO.phone(),
+                userRegDTO.address(),
                 account
         );
 
