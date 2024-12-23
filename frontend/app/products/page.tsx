@@ -1,4 +1,5 @@
 'use client';
+<<<<<<< HEAD
 import React, { ReactNode, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,16 +25,27 @@ import { event } from 'next/dist/build/output/log';
 import { Checkbox } from "@/components/ui/checkbox"
 
 
+=======
+>>>>>>> ed5903386eadd24ea1a4a2589b3f748c907a3a41
 
-interface ImageState {
-  img1: string;
-  img2: string;
-  img3: string;
-  img4: string;
-  img5: string;
-  img6: string;
+import React from 'react';
+import useSWR from 'swr';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Loading from '@/components/Loading';
+import Error from '@/components/ErrorBoundary';
+import CustomErrorBoundary from '@/components/ErrorBoundary';
+
+interface UnsplashPhoto {
+  id: string;
+  urls: {
+    regular: string;
+    thumb: string;
+  };
+  alt_description: string;
 }
 
+<<<<<<< HEAD
 function Label(props: { htmlFor: string, children: ReactNode }) {
   return null;
 }
@@ -78,15 +90,58 @@ const ProductPage: React.FC = () => {
         />
         <div className="flex gap-3 mt-4">
           {Object.values(images).map((img, index) => (
+=======
+// Fetcher function to get data from Unsplash API
+const fetcher = async (url: string): Promise<UnsplashPhoto[]> => {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Client-ID ${process.env.NEXT_PUBLIC_UNSPLASH_CLIENT_ID}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch data');
+  }
+  return res.json();
+};
+
+const ProductsPage: React.FC = () => {
+  const router = useRouter();
+
+  // SWR hook to fetch data
+  const { data, error, isLoading } = useSWR<UnsplashPhoto[]>(
+    'https://api.unsplash.com/photos?per_page=20',
+    fetcher,
+  );
+
+  // Handle loading state
+  if (isLoading) return <Loading />;
+  // Handle error state
+  if (error) return <Error message="Failed to load product details." />;
+
+  return (
+    <div className="min-h-screen" style={{ padding: '20px' }}>
+      <h1>All Products</h1>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+        {data?.map((photo) => (
+          <div
+            key={photo.id}
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: '10px',
+              padding: '10px',
+              maxWidth: '200px',
+            }}
+          >
+>>>>>>> ed5903386eadd24ea1a4a2589b3f748c907a3a41
             <Image
-              key={index}
-              src={img}
-              alt={`Thumbnail ${index + 1}`}
-              width={80}
-              height={80}
-              className="w-24 h-24 border-2 rounded-md cursor-pointer"
-              onClick={() => setActiveImage(img)}
+              src={photo.urls.thumb}
+              alt={photo.alt_description || 'Unsplash Photo'}
+              width={150}
+              height={150}
+              style={{ borderRadius: '8px' }}
             />
+<<<<<<< HEAD
           ))}
         </div>
       </div>
@@ -220,12 +275,40 @@ const ProductPage: React.FC = () => {
 
             </Popover>
 
+=======
+            <h2 style={{ fontSize: '1rem', marginTop: '10px' }}>
+              {photo.alt_description || 'No description available'}
+            </h2>
+            <button
+              onClick={() => router.push(`/products/${photo.id}`)}
+              style={{
+                marginTop: '10px',
+                padding: '5px 10px',
+                backgroundColor: '#0070f3',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+              }}
+            >
+              View Details
+            </button>
+>>>>>>> ed5903386eadd24ea1a4a2589b3f748c907a3a41
           </div>
-        </div>
+        ))}
       </div>
     </div>
   )
     ;
 };
 
-export default ProductPage;
+
+const ProductsPageWithErrorBoundary: React.FC = () => {
+  return (
+    <CustomErrorBoundary>
+      <ProductsPage />
+    </CustomErrorBoundary>
+  );
+};
+
+export default ProductsPageWithErrorBoundary;

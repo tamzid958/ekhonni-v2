@@ -3,13 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import React from 'react';
+import CustomErrorBoundary from '@/components/ErrorBoundary';
+
 
 export default function Home() {
   return (
-    <div className="flex mt-6 justify-center align-middle min-h-screen">
-      This is Homepage
-      {/*<Button>Hello</Button>*/}
-      {/*<Alert> New Alert</Alert>*/}
+    <div className="flex-col items-center justify-center min-h-screen">
+
+      <div className="flex align-item justify-center ">
+        <CustomErrorBoundary>
+
+            This is Homepage
+
+        </CustomErrorBoundary>
+      </div>
     </div>
   );
 }

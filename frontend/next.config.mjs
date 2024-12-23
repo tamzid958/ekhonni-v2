@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
-    domains: ['static.nike.com'], // Allow images from static.nike.com
+    domains: [
+      'via.placeholder.com',
+      'jsonplaceholder.typicode.com',
+      'images.unsplash.com',
+    ],
   },
 };
 
