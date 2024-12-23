@@ -16,7 +16,7 @@ interface WatchlistItem {
 
 export default async function WatchlistPage() {
   // Fetching the watchlist data directly in the server component
-  const response = await fetch('http://localhost:3000/api/watchlist', { cache: 'no-store' });
+  const response = await fetch('http://localhost:3000/api/watchlist');
 
   if (!response.ok) {
     throw new Error('Failed to fetch data');
