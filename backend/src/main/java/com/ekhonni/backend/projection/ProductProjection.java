@@ -23,8 +23,8 @@ public interface ProductProjection {
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
     ProductCondition getCondition();
-    Long getCategoryId();
-    String getCategoryName();
+//    Long getCategoryId();
+//    String getCategoryName();
 
 
 }

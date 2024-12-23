@@ -9,6 +9,7 @@ package com.ekhonni.backend.controller;
 
 
 
+import com.ekhonni.backend.Request.ProductRequest;
 import com.ekhonni.backend.dto.PageDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.Product;
@@ -30,40 +31,60 @@ import java.util.Optional;
 public record ProductController(ProductService productService){
 
 
+//    @GetMapping
+//    public ApiResponse<?> getAll(Pageable pageable ){
+//        Page<ProductProjection> productProjections =  productService.getAll(pageable);
+//        System.out.println(productProjections);
+//        return new ApiResponse<>(HTTPStatus.FOUND,productProjections);
+//    }
+
     @GetMapping
-    public ApiResponse<?> getAll(Pageable pageable ){
-        Page<ProductProjection> productProjections =  productService.getAll(pageable);
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products fetched successfully");
+    public ApiResponse<?> getAll(@RequestBody ProductRequest productRequest){
+        List<ProductProjection> productProjections =  productService.getAll(productRequest);
+        System.out.println(productProjections);
+        return new ApiResponse<>(HTTPStatus.FOUND,productProjections);
     }
 
 
 
-    @GetMapping("/{id}")
-    public ApiResponse<?> getOne(@PathVariable("id") Long id) {
-        Optional<ProductProjection> productProjection = productService.getOne(id);
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjection, "product information fetched" );
-    }
 
-
-    @GetMapping("/by-categories/{category_id}")
-    public ApiResponse<?> getByCategoryId( @PathVariable("category_id")Long categoryId, @NotNull final Pageable pageable){
-        Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
-        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
-    }
-
-
+    //    @GetMapping("/{id}")
+//    public ApiResponse<?> getOne(@PathVariable("id") Long id) {
+//        Optional<ProductProjection> productProjection = productService.getOne(id);
+//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjection, "product information fetched" );
+//    }
+//
+//
+//    @GetMapping("/category/{category_id}")
+//    public ApiResponse<?> getByCategoryId( @PathVariable("category_id")Long categoryId, @NotNull final Pageable pageable){
+//        Page<ProductProjection>productProjections = productService.getAllByCategoryId(categoryId,pageable);
+//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "all products given under one category");
+//    }
+//
+//
     @PostMapping
     public ApiResponse<?> create(@RequestBody Product product) {
         productService.create(product);
-        return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "successfully created product");
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
+       // return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "successfully created product");
     }
+//
+//
+//    @DeleteMapping("/{id}")
+//    public ApiResponse<?> delete(@PathVariable("id") Long id){
+//        boolean isDeleted = productService.delete(id);
+//        return ApiResponse.setResponse(HTTPStatus.DELETED, isDeleted, null, "deleted");
+//    }
+//
+//    @PostMapping("/search")
+//    public ApiResponse<?> search(@RequestParam String searchText, Pageable pageable){
+//        Page<ProductProjection> productProjections = productService.search(searchText,pageable);
+//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products on search");
+//    }
 
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<?> delete(@PathVariable("id") Long id){
-        boolean isDeleted = productService.delete(id);
-        return ApiResponse.setResponse(HTTPStatus.DELETED, isDeleted, null, "deleted");
-    }
+
+
 
 
 

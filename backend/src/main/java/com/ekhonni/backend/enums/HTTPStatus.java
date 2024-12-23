@@ -7,30 +7,34 @@
 
 package com.ekhonni.backend.enums;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+@Getter
+@AllArgsConstructor
 public enum HTTPStatus {
 
-    FOUND(200),
-    CREATED(201),
-    DELETED(200),
-    ACCEPTED(202),
-    NO_CONTENT(204),
-    NOT_MODIFIED(304),
-    BAD_REQUEST(400),
-    UNAUTHORIZED(401),
-    FORBIDDEN(403),
-    NOT_FOUND(404),
-    INTERNAL_SERVER_ERROR(500),
-    NOT_IMPLEMENTED(501);
+    FOUND(200, true),
+    CREATED(201, true),
+    DELETED(200, true),
+    ACCEPTED(202, true),
+    NO_CONTENT(204, true),
+    NOT_MODIFIED(304, false),
+    BAD_REQUEST(400, false),
+    UNAUTHORIZED(401, false),
+    FORBIDDEN(403, false),
+    NOT_FOUND(404, false),
+    INTERNAL_SERVER_ERROR(500, false),
+    NOT_IMPLEMENTED(501, false);
+
 
     private final int code;
-    HTTPStatus(int code) {
-        this.code = code;
-    }
+    private final boolean isSuccess;
 
-    @JsonValue
-    public int getCode() {
-        return code;
-    }
+
+
 }

@@ -44,4 +44,11 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+//    @ManyToOne(optional = false)
+//    @JoinColumn(name = "seller_id", nullable = false)
+//    private User seller;
+
+
+    //image adding
 }
+
