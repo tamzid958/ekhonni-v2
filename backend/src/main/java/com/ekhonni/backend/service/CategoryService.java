@@ -11,22 +11,20 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.repository.CategoryRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public record CategoryService(CategoryRepository categoryRepository){
+public record CategoryService(CategoryRepository categoryRepository) {
 
 
     public Category save(Category category) {
         return categoryRepository.save(category);
     }
 
-    public List<CategoryDTO> getAll(){
+    public List<CategoryDTO> getAll() {
 
         List<Category> categories = categoryRepository.findTopLevelCategories();
         System.out.println(categories);
