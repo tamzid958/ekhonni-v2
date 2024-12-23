@@ -1,141 +1,44 @@
-"use client"
-
 import * as React from "react"
-import {cn} from "@/lib/utils"
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import Link from "next/link";
+import {Card, CardContent} from "@/components/ui/card"
+import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
 
-export function CategoryMenu() {
+export function Category() {
     return (
-        <div className="bg-brand-mid h-[85px] flex justify-center">
-            <NavigationMenu>
-                <NavigationMenuList className="space-x-6">
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>ALL CATEGORIES</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="text-b grid gap-2 p-4 md:w-[200px] lg:w-[300px]">
-                                <ListItem href="/docs" title="Electronics">
-                                    Wide range of tech products and accessories.
-                                </ListItem>
-                                <ListItem href="/docs/installation" title="Fashion">
-                                    Latest trends in clothing and accessories.
-                                </ListItem>
-                                <ListItem href="/docs" title="Sporting Goods">
-                                    Quality gear for all your sports needs.
-                                </ListItem>
-                                <ListItem href="/docs" title="Business">
-                                    Tools for growing and managing your business.
-                                </ListItem>
-                                <ListItem href="/docs" title="Collection and Art">
-                                    Curated art and collectible items for you.
-                                </ListItem>
-                                <ListItem href="/docs" title="Books and Movies">
-                                    Must-read books and top-rated movies.
-                                </ListItem>
+        <div className="bg-brand-mid pl-40 pr-40 pt-10 pb-16">
+            <h2 className="flex justify-center text-4xl font-sans text-black">PRODUCT CATEGORY</h2>
+            <Carousel
+                opts={{
+                    align: "start",
+                }}
+                className="w-full pt-10"
+            >
+                <CarouselContent className="max-w-3xl">
+                    {Array.from({length: 15}).map((_, index) => (
+                        <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                            <div className="p-1">
+                                <Card className="w-[230px] h-[230px] rounded-full">
+                                    <CardContent className="flex items-center justify-center p-1">
+                                        <img
+                                            src={`demo1.png`}
+                                            alt={`alt text ${1}`}
+                                            className="h-full w-full object-cover rounded-full"
+                                        />
+                                    </CardContent>
+                                </Card>
+                                <div className="flex flex-row w-full pt-2 justify-center">
+                                    {/*<div className="flex flex-col justify-center w-3/4">*/}
+                                    <h2 className="justify-center text-xl font-sans font-bold text-black">CategoryName</h2>
+                                    {/*</div>*/}
+                                </div>
 
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                            </div>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious/>
+                <CarouselNext/>
 
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                SNEAKERS
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                CLOTHES
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                LUXURY
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                PERFUME
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                SPORTS
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                HEALTH
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                BEAUTY
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                GARDEN
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
+            </Carousel>
         </div>
     )
 }
-
-const ListItem = React.forwardRef<
-    React.ElementRef<"a">,
-    React.ComponentPropsWithoutRef<"a">
->(({className, title, children, ...props}, ref) => {
-    return (
-        <li>
-            <NavigationMenuLink asChild>
-                <a
-                    ref={ref}
-                    className={cn(
-                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-mid hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                        className
-                    )}
-                    {...props}
-                >
-                    <div className="text-sm font-medium leading-none">{title}</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {children}
-                    </p>
-                </a>
-            </NavigationMenuLink>
-        </li>
-    )
-})
-ListItem.displayName = "ListItem"

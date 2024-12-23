@@ -3,7 +3,7 @@ import './globals.css';
 import React from 'react';
 import {NavBar} from "@/components/NavBar";
 import {Inter} from 'next/font/google'
-import {CategoryMenu} from "@/components/Category";
+import {TopCAtegory} from "@/components/TopCategory";
 import Footer from "@/components/Footer";
 
 const geistSans = localFont({
@@ -29,10 +29,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}>
-        <div className="w-full poppins.className">
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="w-full">
             <NavBar placeholder={"What are you looking for?"}/>
-            <CategoryMenu/>
+            <TopCAtegory/>
         </div>
         <main>{children}</main>
         <div className="bg-gray-800 text-white">

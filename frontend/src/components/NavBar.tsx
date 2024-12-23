@@ -9,7 +9,7 @@ type Props = {
 
 export function NavBar({placeholder}: Props) {
     return (
-        <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] poppins.classname">
+        <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
             <div className="font-bold ml-16 mt-2">
                 <img src="frame.png" alt="logo" className="h-[75px]"/>
             </div>
