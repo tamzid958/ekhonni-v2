@@ -21,6 +21,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from 'postcss';
 import { bidData } from '../mockData/bidData';
 import { event } from 'next/dist/build/output/log';
+import { Checkbox } from "@/components/ui/checkbox"
+
 
 
 interface ImageState {
@@ -208,8 +210,9 @@ const ProductPage: React.FC = () => {
                       </Button>
                     </div>
 
-                    <div className="mt-4 flex justify-center items-center">
-                      <p className="text-s text-black-300">By bidding, you commit to buy if you win.</p>
+                    <div className="mt-4 flex space-x-2 justify-center items-center">
+                      <Checkbox />
+                      <p className="text-s text-black-300 ">By bidding, you commit to buy if you win.</p>
                     </div>
                   </div>
 
