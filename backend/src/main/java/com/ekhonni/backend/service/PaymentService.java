@@ -35,21 +35,17 @@ import java.util.UUID;
 public class PaymentService {
 
     TransactionService transactionService;
-    private final PaymentRequest paymentRequest;
     private final ProjectionFactory projectionFactory;
     private final Util util;
     private final String sslcommerzApiUrl;
 
     public ApiResponse<?> initiatePayment(Long bidLogId) {
         Transaction transaction = transactionService.create(bidLogId);
-        String requestBody = null;
+        String requestBody;
         try {
-            requestBody = util.getParamsString(paymentRequest,
-                    transaction.getBuyer(),
-                    transaction.getProduct(),
-                    transaction.getId(),
-                    true);
+            requestBody = util.getParamsString(transaction,true);
         } catch (UnsupportedEncodingException e) {
+            transactionService.deletePermanently(transaction.getId());
             return new ApiResponse<>(false, "Error", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         HttpHeaders headers = new HttpHeaders();
@@ -61,9 +57,11 @@ public class PaymentService {
         log.info("Response: {}", response);
 
         if (response != null && "SUCCESS".equals(response.getStatus())) {
+            transaction.setSessionkey(response.getSessionkey());
             GatewayResponseProjection responseProjection = projectionFactory.createProjection(GatewayResponseProjection.class, response);
             return new ApiResponse<>(true, "Success", responseProjection, HttpStatus.OK);
         } else {
+            transactionService.deletePermanently(transaction.getId());
             String message = "Unknown error";
             if (response != null) {
                 message = response.getFailedReason();
@@ -71,5 +69,7 @@ public class PaymentService {
             return new ApiResponse<>(false, message, null, HttpStatus.BAD_REQUEST);
         }
     }
+
+
     
 }
