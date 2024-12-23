@@ -1,7 +1,5 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,32 +17,39 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 @NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentRequest {
     @Value("${sslcommerz.store.id}")
-    private String storeId;
+    private String store_id;
+
     @Value("${sslcommerz.store.password}")
-    private String storePasswd;
-    private String totalAmount;
-    private String tranId;
+    private String store_passwd;
+
+    private String tran_id;
+    private String total_amount;
+    private String currency = "BDT";
+
     @Value("${payment.success.url}")
-    private String successUrl;
+    private String success_url;
+
     @Value("${payment.fail.url}")
-    private String failUrl;
+    private String fail_url;
+
     @Value("${payment.cancel.url}")
-    private String cancelUrl;
+    private String cancel_url;
+
     @Value("${payment.ipn.url}")
-    private String IpnUrl;
-    private String cusName;
-    private String cusEmail;
-    private String cusAdd1;
-    private String cusCity;
-    private String cusPostcode;
-    private String cusCountry;
-    private String cusPhone;
-    private String shippingMethod;
-    private String productName;
-    private String productCategory;
-    private String productProfile;
+    private String ipn_url;
+
+    private String cus_name;
+    private String cus_email;
+    private String cus_add1;
+    private String cus_city;
+    private String cus_postcode;
+    private String cus_country;
+    private String cus_phone;
+    private String shipping_method;
+    private String product_name;
+    private String product_category;
+    private String product_profile;
 }
 

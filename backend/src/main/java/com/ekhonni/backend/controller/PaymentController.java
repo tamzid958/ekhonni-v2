@@ -5,11 +5,9 @@ import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Author: Asif Iqbal
@@ -21,30 +19,33 @@ import java.util.UUID;
 @Slf4j
 public record PaymentController(PaymentService paymentService) {
 
-    @PostMapping("/initiate/{bidlog_id}")
-    public ApiResponse<?> initiatePayment(@PathVariable("bidlog_id") Long bidLogId) {
+    @PostMapping("/initiate/{bid_log_id}")
+    public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId) {
         return paymentService.initiatePayment(bidLogId);
     }
 
     @PostMapping("/success")
     public ApiResponse<?> success(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Validator Response: {}", validatorResponse);
-        return new ApiResponse<>(true, "Success", "Payment successful.", HttpStatus.OK);
+        log.info("Success Response: {}", validatorResponse);
+        return new ApiResponse<>(true, "Success", validatorResponse, HttpStatus.OK);
     }
 
     @PostMapping("/fail")
-    public ApiResponse<?> fail() {
+    public ApiResponse<?> fail(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Fail Response: {}", validatorResponse);
         return new ApiResponse<>(false, "Fail", "Payment failed.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PostMapping("/cancel")
-    public ApiResponse<?> cancel() {
+    public ApiResponse<?> cancel(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Cancel Response: {}", validatorResponse);
         return new ApiResponse<>(false, "Cancel", "Payment canceled.", HttpStatus.PAYMENT_REQUIRED);
     }
 
     @PostMapping("/ipn")
-    public ApiResponse<?> handleIpn(@RequestBody SSLCommerzValidatorResponse ipnData) {
-        return new ApiResponse<>(false, "Success", ipnData, HttpStatus.PAYMENT_REQUIRED);
+    public ApiResponse<?> handleIpn(@RequestParam Map<String, String> validatorResponse) {
+        log.info("IPN response: {}", validatorResponse);
+        return new ApiResponse<>(false, "Success", validatorResponse, HttpStatus.PAYMENT_REQUIRED);
     }
 
 }

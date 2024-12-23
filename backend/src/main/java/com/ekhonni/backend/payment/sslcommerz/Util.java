@@ -1,11 +1,13 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -19,7 +21,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Component
+@AllArgsConstructor
 public class Util {
+
+    private final PaymentRequest paymentRequest;
 
     public SSLCommerzInitResponse extractInitResponse(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -49,28 +54,29 @@ public class Util {
         return output.toString();
     }
 
-    public void constructRequestParameters(PaymentRequest paymentRequest, User buyer, Product product, Long trxId) {
-        paymentRequest.setTranId(String.valueOf(trxId));
-        paymentRequest.setTotalAmount(String.valueOf(product.getPrice()));
+    public void constructRequestParameters(Transaction transaction) {
+        Product product = transaction.getProduct();
+        User buyer = transaction.getBuyer();
+        paymentRequest.setTran_id(String.valueOf(transaction.getId()));
+        paymentRequest.setTotal_amount(String.valueOf(product.getPrice()));
 
-        paymentRequest.setCusName(buyer.getName());
-        paymentRequest.setCusEmail(buyer.getEmail());
-        paymentRequest.setCusPhone(buyer.getPhone());
-        paymentRequest.setCusAdd1(buyer.getAddress());
-        paymentRequest.setCusCity("Dhaka");
-        paymentRequest.setCusCountry("Bangladesh");
+        paymentRequest.setCus_name(buyer.getName());
+        paymentRequest.setCus_email(buyer.getEmail());
+        paymentRequest.setCus_phone(buyer.getPhone());
+        paymentRequest.setCus_add1(buyer.getAddress());
+        paymentRequest.setCus_city("Dhaka");
+        paymentRequest.setCus_country("Bangladesh");
 
-        paymentRequest.setShippingMethod("NO");
-        paymentRequest.setProductName(product.getName());
-        paymentRequest.setProductCategory("General");
-        paymentRequest.setProductProfile("General");
+        paymentRequest.setShipping_method("NO");
+        paymentRequest.setProduct_name(product.getName());
+        paymentRequest.setProduct_category("General");
+        paymentRequest.setProduct_profile("General");
     }
 
-    public String getParamsString(PaymentRequest paymentRequest, User buyer, Product product, Long trxId, boolean urlEncode) throws UnsupportedEncodingException {
-        constructRequestParameters(paymentRequest, buyer, product, trxId);
+    public String getParamsString(Transaction transaction, boolean urlEncode) throws UnsupportedEncodingException {
+        constructRequestParameters(transaction);
         StringBuilder result = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
         Map<String, Object> fieldMap = objectMapper.convertValue(paymentRequest, new TypeReference<>() {});
         for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {

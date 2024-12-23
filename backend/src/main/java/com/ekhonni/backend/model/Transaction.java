@@ -7,15 +7,12 @@ package com.ekhonni.backend.model;
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.TransactionStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Transaction extends BaseEntity<Long> {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -24,7 +21,7 @@ public class Transaction extends BaseEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionStatus status = TransactionStatus.PENDING;
+    private TransactionStatus status;
 
     private String sessionkey;
 
