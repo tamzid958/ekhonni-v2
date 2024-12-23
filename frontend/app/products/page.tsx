@@ -28,6 +28,7 @@ const fetcher = async (url: string): Promise<UnsplashPhoto[]> => {
   if (!res.ok) {
     throw new Error('Failed to fetch data');
   }
+
   return res.json();
 };
 
@@ -98,5 +99,6 @@ const ProductsPageWithErrorBoundary: React.FC = () => {
     </CustomErrorBoundary>
   );
 };
+
 
 export default ProductsPageWithErrorBoundary;
