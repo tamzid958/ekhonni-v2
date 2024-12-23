@@ -39,4 +39,6 @@ public class UserService extends BaseService<User, UUID> {
     public String updatePassword(UUID id, PasswordDTO passwordDTO) {
         return "To be implemented";
     }
+
+
 }

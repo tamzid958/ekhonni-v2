@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -45,9 +46,11 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     private String phone;
     @NotBlank
     private String address;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+    @Column
+    private LocalDateTime blockedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

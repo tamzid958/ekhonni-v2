@@ -1,5 +1,6 @@
 package com.ekhonni.backend.config;
 
+import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.filter.JWTFilter;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ public class SecurityConfig {
                 csrf(AbstractHttpConfigurer::disable).
                 authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_URLS).permitAll().
-                                requestMatchers(USER_URLS).hasAnyAuthority("USER", "ADMIN").
-                                requestMatchers(ADMIN_URLS).hasAuthority("ADMIN").
+                                requestMatchers(USER_URLS).hasAnyAuthority(Role.USER.toString(), Role.ADMIN.toString()).
+                                requestMatchers(ADMIN_URLS).hasAnyAuthority(Role.ADMIN.toString(), Role.SUPER_ADMIN.toString()).
                                 anyRequest().authenticated()
                 );
 

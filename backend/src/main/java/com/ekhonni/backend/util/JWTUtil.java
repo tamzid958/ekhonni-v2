@@ -5,8 +5,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -23,20 +21,20 @@ public class JWTUtil {
 
     @Value("${spring.security.jwt.secret}")
     private String secret;
-    @Value(("${spring.security.jwt.expiration}"))
-    private long expiration;
+    @Value(("${spring.security.jwt.access.token.expiration}"))
+    private long accessTokenExpiration;
+    @Value(("${spring.security.jwt.refresh.token.expiration}"))
+    private long refreshTokenExpiration;
 
-    @Cacheable(value = "jwtBlackList", key = "#jwt", unless = "#result == null")
-    public String getBlackListed(String jwt) {
-        return null;
+    public String generateAccessToken(Authentication authenticated) {
+        return buildToken(authenticated, accessTokenExpiration);
     }
 
-    @CachePut(value = "jwtBlackList", key = "#jwt")
-    public String blacklistToken(String jwt) {
-        return jwt;
+    public String generateRefreshToken(Authentication authenticated) {
+        return buildToken(authenticated, refreshTokenExpiration);
     }
 
-    public String generate(Authentication authenticated) {
+    private String buildToken(Authentication authenticated, long expiration) {
         return Jwts
                 .builder()
                 .setSubject(authenticated.getName())

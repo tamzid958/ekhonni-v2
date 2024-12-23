@@ -3,6 +3,8 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +27,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {
+    public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 
@@ -33,10 +35,16 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> create(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
 
         return ResponseEntity.ok(authService.create(userDTO));
 
+    }
+
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        // To be implemented
     }
 
 }

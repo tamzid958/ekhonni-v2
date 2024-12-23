@@ -27,6 +27,7 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     @Query("UPDATE #{#entityName} e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
     void softDelete(ID id);
 
+
     @Modifying
     @Transactional
     @Query("UPDATE #{#entityName} e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id IN :ids")

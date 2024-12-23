@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Author: Md Jahid Hasan
@@ -33,19 +34,21 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    public String create(UserDTO userRegDTO) {
-        if (userRepository.findByEmail(userRegDTO.email()) != null) throw new UserAlreadyExistsException();
+    @Transactional
+    public String create(UserDTO userDTO) {
+        if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
 
         Account account = new Account(0.0, "Active");
 
         User user = new User(
-                userRegDTO.name(),
-                userRegDTO.email(),
-                passwordEncoder.encode(userRegDTO.password()),
+                userDTO.name(),
+                userDTO.email(),
+                passwordEncoder.encode(userDTO.password()),
                 Role.USER,
-                userRegDTO.phone(),
-                userRegDTO.address(),
-                account
+                userDTO.phone(),
+                userDTO.address(),
+                account,
+                null
         );
 
         accountRepository.save(account);
@@ -63,9 +66,12 @@ public class AuthService {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
 
-        Authentication authenticated = authenticationManager.authenticate(authentication);
+        Authentication authenticatedUser = authenticationManager.authenticate(authentication);
 
-        return jwtUtil.generate(authenticated);
+        String accessToken = jwtUtil.generateAccessToken(authenticatedUser);
+        String refreshToken = jwtUtil.generateRefreshToken(authenticatedUser);
+
+        return jwtUtil.generateAccessToken(authenticatedUser);
     }
 
 
