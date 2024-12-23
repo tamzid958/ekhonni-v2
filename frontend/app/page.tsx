@@ -1,22 +1,21 @@
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
 import React from 'react';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
+
+import { QuickBid } from '@/components/QuickBid';
+import { Ads } from '@/components/Ads';
+import { Category } from '@/components/Category';
 
 
 export default function Home() {
   return (
-    <div className="flex-col items-center justify-center min-h-screen">
-
-      <div className="flex align-item justify-center ">
+    <div className="flex-col items-center justify-center min-h-screen poppins.classname bg-white">
         <CustomErrorBoundary>
 
-            This is Homepage
+            <Ads />
+            <QuickBid />
+            <Category />
 
         </CustomErrorBoundary>
-      </div>
     </div>
   );
 }
