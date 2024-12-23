@@ -197,9 +197,9 @@ const CarouselPrevious = React.forwardRef<
     const {orientation, scrollPrev, canScrollPrev} = useCarousel()
 
     return (
-        <Button //left button
+        <Button
             ref={ref}
-            variant="default"
+            variant={variant}
             size={size}
             className={cn(
                 "absolute  h-8 w-8 rounded-full",
@@ -226,9 +226,9 @@ const CarouselNext = React.forwardRef<
     const {orientation, scrollNext, canScrollNext} = useCarousel()
 
     return (
-        <Button     //right button
+        <Button
             ref={ref}
-            variant="default"
+            variant={variant}
             size={size}
             className={cn(
                 "absolute h-8 w-8 rounded-full",
