@@ -45,6 +45,8 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     private String phone;
     @NotBlank
     private String address;
+    @Column(nullable = false)
+    private boolean verified;
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
