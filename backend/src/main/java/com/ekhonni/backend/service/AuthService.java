@@ -6,6 +6,7 @@ import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.JWTUtil;
@@ -20,7 +21,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * Author: Md Jahid Hasan
- * Date: 12/12/24
+ * Co-Author: Safayet Rafi
+ * Date: 23/12/24
  */
 
 @Service
@@ -32,6 +34,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final VerificationTokenService verificationTokenService;
+    private final EmailService emailService;
 
     public String create(UserDTO userRegDTO) {
         if (userRepository.findByEmail(userRegDTO.email()) != null) throw new UserAlreadyExistsException();
@@ -45,21 +49,32 @@ public class AuthService {
                 Role.USER,
                 userRegDTO.phone(),
                 userRegDTO.address(),
+                false,
                 account
         );
 
         accountRepository.save(account);
         userRepository.save(user);
 
-        return "User Successfully registered";
+        VerificationToken verificationToken = verificationTokenService.create(user);
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken.getToken());
+
+        return "Sign up successful! Please verify your email to sign in";
     }
 
 
     public String signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
+        User user = userRepository.findByEmail(email);
 
-        if (userRepository.findByEmail(email) == null) throw new BadCredentialsException("Bad credentials");
+        if (user == null) {
+            throw new BadCredentialsException("Bad Credentials");
+        }
+
+        if (!user.isVerified()) {
+            throw new RuntimeException("Email not verified. Please verify your email to sign in.");
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
 
@@ -67,6 +82,4 @@ public class AuthService {
 
         return jwtUtil.generate(authenticated);
     }
-
-
 }

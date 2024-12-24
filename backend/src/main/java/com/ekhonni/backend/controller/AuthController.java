@@ -3,13 +3,11 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.service.AuthService;
+import com.ekhonni.backend.service.VerificationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Author: Md Jahid Hasan
@@ -23,6 +21,7 @@ public class AuthController {
 
 
     AuthService authService;
+    VerificationTokenService verificationTokenService;
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {
@@ -37,6 +36,11 @@ public class AuthController {
 
         return ResponseEntity.ok(authService.create(userDTO));
 
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
+        return ResponseEntity.ok(verificationTokenService.verifyEmail(token));
     }
 
 }
