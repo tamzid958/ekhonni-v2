@@ -26,18 +26,14 @@ export function Category() {
                                     </CardContent>
                                 </Card>
                                 <div className="flex flex-row w-full pt-2 justify-center">
-                                    {/*<div className="flex flex-col justify-center w-3/4">*/}
                                     <h2 className="justify-center text-xl font-sans font-bold text-black">CategoryName</h2>
-                                    {/*</div>*/}
                                 </div>
-
                             </div>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious/>
-                <CarouselNext/>
-
+                <CarouselPrevious className="w-12 h-12 left-[93%] -top-[4%]" variant={'default'}/>
+                <CarouselNext className="w-12 h-12 left-[97%] -top-[4%]" variant={'default'}/>
             </Carousel>
         </div>
     )

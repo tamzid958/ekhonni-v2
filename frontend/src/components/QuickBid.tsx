@@ -18,7 +18,7 @@ export function QuickBid() {
                     {Array.from({length: 15}).map((_, index) => (
                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                             <div className="p-1">
-                                <Card className="w-[260px] h-[260px]">
+                                <Card className="w-[100%] h-[45%]">
                                     <CardContent className="flex aspect-square items-center justify-center p-6">
                                         <span className="text-3xl font-semibold">{index + 1}</span>
                                     </CardContent>
@@ -34,14 +34,12 @@ export function QuickBid() {
                                         </Button>
                                     </div>
                                 </div>
-
                             </div>
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious/>
-                <CarouselNext/>
-
+                <CarouselPrevious className="w-12 h-12 left-[93%] -top-[4%]" variant={'default'}/>
+                <CarouselNext className="w-12 h-12 left-[97%] -top-[4%]" variant={'default'}/>
             </Carousel>
         </div>
     )

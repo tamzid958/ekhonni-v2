@@ -1,28 +1,37 @@
-import {Button} from "./ui/button"
-import {Input} from "./ui/input"
-import {Bell, Search, ShoppingCart, User} from "lucide-react"
-import React from "react";
+import {Button} from "./ui/button";
+import {Bell, Search, ShoppingCart, User} from "lucide-react";
+import * as React from "react";
+import {cn} from "@/lib/utils";
 
 type Props = {
-    placeholder?: string,
+    placeholder?: string;
 }
 
 export function NavBar({placeholder}: Props) {
     return (
         <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
+
             <div className="font-bold ml-16 mt-2">
                 <img src="frame.png" alt="logo" className="h-[75px]"/>
             </div>
-            <div className="w-[700px] flex justify-center items-center">
-                <Input
-                    type="text"
-                    placeholder={placeholder}
-                    className="border-none placeholder:font-bold text-4xl leading-tight p-6"
-                />
-                <Button variant="custom" size="icon2">
-                    <Search/>
-                    <span className="sr-only">Search Button</span>
-                </Button>
+
+            <div className="w-[680px] flex justify-center items-center">
+                <div className="w-full relative">
+                    <input
+                        type="text"
+                        placeholder={placeholder}
+                        className={cn(
+                            "flex h-12 w-full rounded-md border border-input bg-background py-2 px-4 text-xl ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50",
+                            "pr-6"
+                        )}
+                    />
+                    <div className="absolute left-[92%] top-1/2 transform -translate-y-1/2">
+                        <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
+                            <Search className="text-muted-foreground" size={18}/>
+                            <span className="sr-only">Search Button</span>
+                        </Button>
+                    </div>
+                </div>
             </div>
             <div className="flex gap-4 mr-28 mt-4">
                 <Button variant="custom" size="icon2" className="rounded-full"><ShoppingCart/></Button>
@@ -30,5 +39,5 @@ export function NavBar({placeholder}: Props) {
                 <Button variant="custom" size="icon2" className="rounded-full"><User/></Button>
             </div>
         </nav>
-    )
+    );
 }

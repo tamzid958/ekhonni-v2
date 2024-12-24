@@ -19,6 +19,7 @@ const buttonVariants = cva(
                 ghost: "hover:bg-accent hover:text-accent-foreground",
                 link: "text-primary underline-offset-4 hover:underline",
                 custom: "text-primary bg-brand-mid hover:bg-brand-light",
+                custom2: "border border-input bg-brand-mid hover:bg-brand-light hover:text-accent-foreground",
             },
             size: {
                 default: "h-10 px-4 py-2",
@@ -26,6 +27,7 @@ const buttonVariants = cva(
                 lg: "h-11 rounded-md px-8",
                 icon: "h-10 w-10",
                 icon2: "h-12 w-12 px-3",
+                customSize: "h-16 w-16 px-6 py-3"
             },
         },
         defaultVariants: {
