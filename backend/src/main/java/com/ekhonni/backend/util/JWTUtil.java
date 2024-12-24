@@ -21,20 +21,11 @@ public class JWTUtil {
 
     @Value("${spring.security.jwt.secret}")
     private String secret;
-    @Value(("${spring.security.jwt.access.token.expiration}"))
-    private long accessTokenExpiration;
-    @Value(("${spring.security.jwt.refresh.token.expiration}"))
-    private long refreshTokenExpiration;
+    @Value(("${spring.security.jwt.token.expiration}"))
+    private long expiration;
 
-    public String generateAccessToken(Authentication authenticated) {
-        return buildToken(authenticated, accessTokenExpiration);
-    }
 
-    public String generateRefreshToken(Authentication authenticated) {
-        return buildToken(authenticated, refreshTokenExpiration);
-    }
-
-    private String buildToken(Authentication authenticated, long expiration) {
+    public String generateToken(Authentication authenticated) {
         return Jwts
                 .builder()
                 .setSubject(authenticated.getName())
@@ -61,5 +52,9 @@ public class JWTUtil {
 
     private Date extractExpiration(String jwt) {
         return Jwts.parserBuilder().setSigningKey(generateKey()).build().parseClaimsJws(jwt).getBody().getExpiration();
+    }
+
+    public void refreshToken(String token) {
+        // To be implemented
     }
 }
