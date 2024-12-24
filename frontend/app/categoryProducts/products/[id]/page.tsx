@@ -26,6 +26,7 @@ const ProductPage: React.FC = () => {
 
   const { data, error, isLoading } = useSWR<UnsplashPhoto>({
     url: `https://api.unsplash.com/photos/${id}`,
+
   });
 
   const activeImg = data?.urls.regular || '';
