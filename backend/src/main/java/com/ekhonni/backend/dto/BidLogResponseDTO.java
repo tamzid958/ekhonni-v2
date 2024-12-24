@@ -10,6 +10,7 @@ public record BidLogResponseDTO(
         Long bidId,
         UUID bidderId,
         Double amount,
+        String currency,
         BidLogStatus status
 ) {
     // Factory method to create a response DTO from the original DTO and additional fields
@@ -19,6 +20,7 @@ public record BidLogResponseDTO(
                 createDTO.bidId(),
                 createDTO.bidderId(),
                 createDTO.amount(),
+                createDTO.currency(),
                 status
         );
     }

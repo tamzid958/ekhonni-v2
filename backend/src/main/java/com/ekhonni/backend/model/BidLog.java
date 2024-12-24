@@ -3,6 +3,7 @@ package com.ekhonni.backend.model;
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.BidLogStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -21,7 +22,11 @@ public class BidLog extends BaseEntity<Long> {
     private User bidder;
 
     @Column(nullable = false)
-    private Double amount = 0.0;
+    private double amount = 0.0;
+
+    @Column(nullable = false)
+    @Size(min = 3, max = 3, message = "Currency code must be exactly 3 characters")
+    private String currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -25,10 +25,16 @@ public class Transaction extends BaseEntity<Long> {
 
     private String sessionkey;
 
-    private double storeAmount;
-
     public double getAmount() {
         return bidLog.getAmount();
+    }
+
+    public String getCurrency() {
+        return bidLog.getCurrency();
+    }
+
+    public Product getProduct() {
+        return bidLog.getBid().getProduct();
     }
 
     public User getBuyer() {
@@ -37,10 +43,6 @@ public class Transaction extends BaseEntity<Long> {
 
     public Account getBuyerAccount() {
         return getBuyer().getAccount();
-    }
-
-    public Product getProduct() {
-        return bidLog.getBid().getProduct();
     }
 
     public User getSeller() {
