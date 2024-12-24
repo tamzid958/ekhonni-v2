@@ -5,7 +5,9 @@ import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +48,7 @@ public class UserController {
 
     @PatchMapping("/{id}/change-password")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateUserPassword(@PathVariable UUID id, @RequestBody PasswordDTO passwordDTO) {
+    public String updateUserPassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
         return userService.updatePassword(id, passwordDTO);
     }
 
@@ -74,5 +76,10 @@ public class UserController {
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public void getUploadedProducts() {
         // To be implemented
+    }
+
+    @GetMapping("/products")
+    public void getAllProduct(Pageable pageable) {
+        //To be implemented
     }
 }

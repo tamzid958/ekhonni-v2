@@ -58,10 +58,6 @@ public class AdminController {
         return adminService.getAllBlocked(UserProjection.class, pageable);
     }
 
-    @GetMapping("/products")
-    public void getAllProduct(Pageable pageable) {
-        //To be implemented
-    }
 
     @GetMapping("/products/deleted")
     public void getAllDeletedProduct(Pageable pageable) {
