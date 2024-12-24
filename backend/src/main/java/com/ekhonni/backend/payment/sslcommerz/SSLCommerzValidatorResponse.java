@@ -1,36 +1,29 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
-
-@Getter
-@Setter
-public class SSLCommerzValidatorResponse {
-    public String status;
-    public String tran_date;
-    public String tran_id;
-    public String val_id;
-    public String amount;
-    public String store_amount;
-    public String currency;
-    public String bank_tran_id;
-    public String card_type;
-    public String card_no;
-    public String card_issuer;
-    public String card_brand;
-    public String card_issuer_country;
-    public String card_issuer_country_code;
-    public String currency_type;
-    public String currency_amount;
-    public String currency_rate;
-    public String base_fair;
-    public String value_a;
-    public String value_b;
-    public String value_c;
-    public String value_d;
-    public String emi_instalment;
-    public String emi_amount;
-    public String emi_description;
+public interface SSLCommerzValidatorResponse {
+    String getStatus();
+    String getTran_date();
+    String getTran_id();
+    String getVal_id();
+    String getAmount();
+    String getStore_amount();
+    String getCurrency();
+    String getBank_tran_id();
+    String getCard_type();
+    String getCard_no();
+    String getCard_issuer();
+    String getCard_brand();
+    String getCard_issuer_country();
+    String getCard_issuer_country_code();
+    String getCurrency_type();
+    String getCurrency_amount();
+    String getCurrency_rate();
+    String getBase_fair();
+    String getValue_a();
+    String getValue_b();
+    String getValue_c();
+    String getValue_d();
+    String getEmi_instalment();
+    String getEmi_amount();
+    String getEmi_description();
 }

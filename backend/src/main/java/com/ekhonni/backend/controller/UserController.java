@@ -18,7 +18,7 @@ public record UserController(UserService userService) {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping
     public List<UserProjection> getAll() {
-        return userService.getAll();
+        return userService.getAll(UserProjection.class);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

@@ -55,10 +55,10 @@ public class Util {
     }
 
     public void constructRequestParameters(Transaction transaction) {
-        Product product = transaction.getProduct();
         User buyer = transaction.getBuyer();
         paymentRequest.setTran_id(String.valueOf(transaction.getId()));
-        paymentRequest.setTotal_amount(String.valueOf(product.getPrice()));
+        paymentRequest.setTotal_amount(String.valueOf(transaction.getAmount()));
+        paymentRequest.setCurrency(transaction.getCurrency());
 
         paymentRequest.setCus_name(buyer.getName());
         paymentRequest.setCus_email(buyer.getEmail());
@@ -68,7 +68,7 @@ public class Util {
         paymentRequest.setCus_country("Bangladesh");
 
         paymentRequest.setShipping_method("NO");
-        paymentRequest.setProduct_name(product.getName());
+        paymentRequest.setProduct_name(transaction.getProduct().getName());
         paymentRequest.setProduct_category("General");
         paymentRequest.setProduct_profile("General");
     }

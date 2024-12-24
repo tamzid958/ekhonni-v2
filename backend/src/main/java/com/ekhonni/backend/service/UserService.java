@@ -6,7 +6,9 @@ import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.AccountRepository;
+import com.ekhonni.backend.repository.BaseRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,15 @@ import java.util.UUID;
 
 
 @Service
-@RequiredArgsConstructor
 @Setter
-public class UserService {
+public class UserService extends BaseService<User, UUID> {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
 
-    public List<UserProjection> getAll() {
-        return userRepository.findBy(UserProjection.class);
+    public UserService(UserRepository userRepository, AccountRepository accountRepository) {
+        super(userRepository);
+        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
     }
 
     public UserProjection getById(UUID id) {
@@ -93,6 +96,5 @@ public class UserService {
 
         return userDTO;
     }
-
 
 }

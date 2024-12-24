@@ -26,7 +26,7 @@ public class PaymentRequest {
 
     private String tran_id;
     private String total_amount;
-    private String currency = "BDT";
+    private String currency;
 
     @Value("${payment.success.url}")
     private String success_url;

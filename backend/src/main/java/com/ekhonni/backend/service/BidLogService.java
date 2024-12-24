@@ -21,24 +21,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class BidLogService extends BaseService<BidLog, Long> {
     private final BidLogRepository bidLogRepository;
-    private final UserRepository userRepository;
-    private final BidRepository bidRepository;
+    private final UserService userService;
+    private final BidService bidService;
 
-    public BidLogService(BidLogRepository bidLogRepository, UserRepository userRepository, BidRepository bidRepository) {
+    public BidLogService(BidLogRepository bidLogRepository, UserService userRepository, BidService bidRepository) {
         super(bidLogRepository);
         this.bidLogRepository = bidLogRepository;
-        this.userRepository = userRepository;
-        this.bidRepository = bidRepository;
+        this.userService = userRepository;
+        this.bidService = bidRepository;
     }
-
 
     @Transactional
     public BidLogResponseDTO create(BidLogCreateDTO bidLogCreateDTO) {
-        Bid bid = bidRepository.findById(bidLogCreateDTO.bidId())
-                .orElseThrow(BidLogNotFoundException::new);
-        User bidder = userRepository.findById(bidLogCreateDTO.bidderId())
-                .orElseThrow(UserNotFoundException::new);
-        BidLog bidLog = new BidLog(bid, bidder, bidLogCreateDTO.amount(), BidLogStatus.PENDING);
+        Bid bid = bidService.get(bidLogCreateDTO.bidId());
+        User bidder = userService.get(bidLogCreateDTO.bidderId());
+        BidLog bidLog = new BidLog(bid, bidder, bidLogCreateDTO.amount(), bidLogCreateDTO.currency(), BidLogStatus.PENDING);
         bidLogRepository.save(bidLog);
         return BidLogResponseDTO.from(bidLogCreateDTO, bidLog.getId(), bidLog.getStatus());
     }
