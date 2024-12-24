@@ -6,6 +6,7 @@ const nextConfig = {
       'via.placeholder.com',
       'jsonplaceholder.typicode.com',
       'images.unsplash.com',
+      'static.nike.com',
     ],
   },
 };
