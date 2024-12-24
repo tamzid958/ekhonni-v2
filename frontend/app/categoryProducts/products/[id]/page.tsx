@@ -20,26 +20,13 @@ interface UnsplashPhoto {
   alt_description: string;
 }
 
-const fetcher = async (url: string): Promise<UnsplashPhoto> => {
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Client-ID ${process.env.NEXT_PUBLIC_UNSPLASH_CLIENT_ID}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
-  }
-  return res.json();
-};
 
 const ProductPage: React.FC = () => {
   const { id } = useParams();
 
-  const { data, error, isLoading } = useSWR<UnsplashPhoto>(
-    `https://api.unsplash.com/photos/${id}`,
-    fetcher,
-  );
+  const { data, error, isLoading } = useSWR<UnsplashPhoto>({
+    url: `https://api.unsplash.com/photos/${id}`,
+  });
 
   const activeImg = data?.urls.regular || '';
 
@@ -113,7 +100,6 @@ const ProductPage: React.FC = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-2">
                 Bid Information
               </h2>
-
               <div>
                 <div className="flex justify-between">
                   <span className="font-semibold text-gray-700">Bid Type:</span>
@@ -175,4 +161,4 @@ const ProductPage: React.FC = () => {
   );
 };
 
-export default ProductPage;
+export default  ProductPage;
