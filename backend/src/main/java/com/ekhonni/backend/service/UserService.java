@@ -40,5 +40,11 @@ public class UserService extends BaseService<User, UUID> {
         return "To be implemented";
     }
 
+    public boolean isActive(UUID id) {
+        return userRepository.existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(id);
+    }
 
+    public boolean isActive(String email) {
+        return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
+    }
 }

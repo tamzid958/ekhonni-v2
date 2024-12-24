@@ -44,4 +44,9 @@ public class AdminService extends BaseService<User, UUID> {
     public void block(UUID id) {
         adminRepository.block(id);
     }
+
+
+    public Page<UserProjection> getAllUser(Class<UserProjection> projection, Pageable pageable) {
+        return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
+    }
 }

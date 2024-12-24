@@ -24,14 +24,14 @@ public class AdminController {
     AdminService adminService;
 
     @PostMapping("/add-admin")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
     public ResponseEntity<?> add(@RequestBody EmailDTO emailDTO) {
         adminService.add(emailDTO.email());
         return ResponseEntity.ok("admin added");
     }
 
     @PostMapping("/remove-admin")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
     public ResponseEntity<?> remove(@RequestBody EmailDTO emailDTO) {
         adminService.remove(emailDTO.email());
         return ResponseEntity.ok("admin removed");
@@ -39,7 +39,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public Page<UserProjection> getAllUser(Pageable pageable) {
-        return adminService.getAll(UserProjection.class, pageable);
+        return adminService.getAllUser(UserProjection.class, pageable);
     }
 
     @GetMapping("/users/deleted")
@@ -48,6 +48,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/{id}/block")
+    @PreAuthorize("@userService.isActive(#id)")
     public void block(@PathVariable UUID id) {
         adminService.block(id);
     }

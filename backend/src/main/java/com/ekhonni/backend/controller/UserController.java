@@ -26,48 +26,52 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}/profile")
+    @PreAuthorize("@userService.isActive(#id)")
     public UserProjection getUserById(@PathVariable UUID id) {
         return userService.get(id, UserProjection.class);
     }
 
 
     @PatchMapping("/{id}/update")
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public UserUpdateDTO updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
     }
 
     @PatchMapping("/{id}/change-email")
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public String updateUserEmail(@PathVariable UUID id, @RequestBody EmailDTO emailDTO) {
         return userService.updateEmail(id, emailDTO);
     }
 
     @PatchMapping("/{id}/change-password")
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public String updateUserPassword(@PathVariable UUID id, @RequestBody PasswordDTO passwordDTO) {
         return userService.updatePassword(id, passwordDTO);
     }
 
 
     @DeleteMapping("/{id}/delete")
-    @PreAuthorize("#id == authentication.principal.id")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/wishlists")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public void getUserWishlists() {
         // To be implemented
     }
 
     @GetMapping("/{id}/bids")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public void getUserBids() {
         // To be implemented
     }
 
     @GetMapping("/{id}/products")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public void getUploadedProducts() {
         // To be implemented
     }

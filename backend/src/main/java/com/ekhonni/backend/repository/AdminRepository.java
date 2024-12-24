@@ -18,8 +18,11 @@ import java.util.UUID;
 public interface AdminRepository extends UserRepository {
     Page<UserProjection> findAllByBlockedAtIsNotNull(Class<UserProjection> projection, Pageable pageable);
 
+    Page<UserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNull(Class<UserProjection> projection, Pageable pageable);
+
+
     @Modifying
     @Transactional
-    @Query("UPDATE User e SET e.deletedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
+    @Query("UPDATE User e SET e.blockedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
     void block(UUID id);
 }
