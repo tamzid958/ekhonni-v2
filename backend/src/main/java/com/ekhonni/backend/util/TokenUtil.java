@@ -8,6 +8,11 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.UUID;
 
+/**
+ * Author: Safayet Rafi
+ * Date: 23/12/24
+ */
+
 @Service
 public class TokenUtil {
 
