@@ -37,6 +37,7 @@ public class PaymentService {
     private final ProjectionFactory projectionFactory;
     private final Util util;
     private final String sslcommerzApiUrl;
+    private final String storeId;
     private final String storePassword;
     private final String validatorApiUrl;
 
@@ -48,6 +49,7 @@ public class PaymentService {
         this.projectionFactory = projectionFactory;
         this.util = util;
         this.sslcommerzApiUrl = sslCommerzConfig.getApiUrl();
+        this.storeId = sslCommerzConfig.getStore_id();
         this.storePassword = sslCommerzConfig.getStore_passwd();
         this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
     }
@@ -122,20 +124,26 @@ public class PaymentService {
     }
 
     private boolean verifyAmount(Transaction transaction, SSLCommerzValidatorResponse response) {
-        double currencyRate;
-        double responseAmount;
         try {
-            currencyRate = Double.parseDouble(response.getCurrency_rate());
-            responseAmount = Double.parseDouble(response.getAmount());
+            double currencyRate = Double.parseDouble(response.getCurrency_rate());
+            double responseAmount = Double.parseDouble(response.getAmount());
+            double expectedBdtAmount = transaction.getAmount() * currencyRate;
+            double marginOfError = 0.01;
+            return response.getCurrency().equals(transaction.getCurrency())
+                    && response.getCurrency_amount().equals(String.valueOf(transaction.getAmount()))
+                    && (Math.abs(expectedBdtAmount - responseAmount) <= marginOfError);
         } catch (NumberFormatException e) {
             log.error(e.getMessage());
             return false;
         }
-        double expectedBdtAmount = transaction.getAmount() * currencyRate;
-        double marginOfError = 0.01;
-        return response.getCurrency().equals(transaction.getCurrency())
-                && response.getCurrency_amount().equals(String.valueOf(transaction.getAmount()))
-                && (Math.abs(expectedBdtAmount - responseAmount) <= marginOfError);
+    }
+
+    private boolean validate(String validationId) {
+        String format = "json";
+        String requestBody = String.format("%s?val_id=%s&store_id=%s&store_passwd=%s&format=%s",
+                validatorApiUrl, validationId, storeId, storePassword, format);
+        RestTemplate restTemplate = new RestTemplate();
+        return true;
     }
 
     private void updateTransaction(Transaction transaction, SSLCommerzValidatorResponse response) {
