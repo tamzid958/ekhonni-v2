@@ -36,6 +36,5 @@ public class CleanupService {
         if (!userIds.isEmpty()) {
             userRepository.deleteUsersByIds(userIds);
         }
-
     }
 }
