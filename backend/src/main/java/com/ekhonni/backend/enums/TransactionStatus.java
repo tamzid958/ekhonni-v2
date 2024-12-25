@@ -7,9 +7,12 @@ package com.ekhonni.backend.enums;
 public enum TransactionStatus {
     PENDING,
     VALID,
+    INVALID,
     SUCCESS,
     FAILED,
     CANCELLED,
     UNATTEMPTED,
-    EXPIRED
+    EXPIRED,
+    VALIDATED,
+    INVALID_TRANSACTION
 }

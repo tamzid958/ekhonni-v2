@@ -15,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 public class Transaction extends BaseEntity<Long> {
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid_log_id", nullable = false)
     private BidLog bidLog;
 
@@ -23,7 +23,9 @@ public class Transaction extends BaseEntity<Long> {
     @Column(nullable = false)
     private TransactionStatus status;
 
-    private String sessionkey;
+    private String sessionKey;
+    private String validationId;
+    private String bankTransactionId;
 
     public double getAmount() {
         return bidLog.getAmount();
