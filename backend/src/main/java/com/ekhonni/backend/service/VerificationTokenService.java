@@ -35,7 +35,7 @@ public class VerificationTokenService {
 
         VerificationToken verificationToken = new VerificationToken(
                 token,
-                LocalDateTime.now().plusMinutes(10),
+                LocalDateTime.now().plusMinutes(2),
                 user
         );
 
@@ -48,7 +48,7 @@ public class VerificationTokenService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token has expired.");
+            throw new IllegalArgumentException("Invalid Verification Token");
         }
 
         User user = verificationToken.getUser();
