@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 public class BidLog extends BaseEntity<Long> {
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 

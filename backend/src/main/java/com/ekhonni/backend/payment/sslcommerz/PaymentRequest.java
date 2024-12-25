@@ -1,5 +1,6 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
+import com.ekhonni.backend.config.SSLCommerzConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,29 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
 public class PaymentRequest {
-    @Value("${sslcommerz.store.id}")
     private String store_id;
-
-    @Value("${sslcommerz.store.password}")
     private String store_passwd;
 
     private String tran_id;
     private String total_amount;
     private String currency;
 
-    @Value("${payment.success.url}")
     private String success_url;
-
-    @Value("${payment.fail.url}")
     private String fail_url;
-
-    @Value("${payment.cancel.url}")
     private String cancel_url;
-
-    @Value("${payment.ipn.url}")
     private String ipn_url;
 
     private String cus_name;
@@ -51,5 +40,14 @@ public class PaymentRequest {
     private String product_name;
     private String product_category;
     private String product_profile;
+
+    public PaymentRequest(SSLCommerzConfig config) {
+        this.store_id = config.getStore_id();
+        this.store_passwd = config.getStore_passwd();
+        this.success_url = config.getSuccess_url();
+        this.fail_url = config.getFail_url();
+        this.cancel_url = config.getCancel_url();
+        this.ipn_url = config.getIpn_url();
+    }
 }
 

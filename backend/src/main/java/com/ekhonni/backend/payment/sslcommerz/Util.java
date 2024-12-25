@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class Util {
 
     private final PaymentRequest paymentRequest;
@@ -75,6 +77,7 @@ public class Util {
 
     public String getParamsString(Transaction transaction, boolean urlEncode) throws UnsupportedEncodingException {
         constructRequestParameters(transaction);
+        log.info("Payment request parameters: {}", paymentRequest.toString());
         StringBuilder result = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
 
