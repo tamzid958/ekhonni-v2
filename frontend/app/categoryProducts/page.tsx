@@ -11,7 +11,7 @@ interface data {
 }
 
 export default async function CategoryProductPage() {
-  const response = await fetch('http://localhost:3000/api/allProduct', { cache: 'no-store' });
+  const response = await fetch('http://localhost:3000/api/mock-data', { cache: 'no-store' });
 
   if (!response.ok) {
     throw new Error('Failed to fetch data');
