@@ -1,6 +1,5 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.exception.InvalidTransactionException;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +43,7 @@ public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/ipn")
     public ApiResponse<?> handleIpn(@RequestParam Map<String, String> validatorResponse) {
-        log.info("IPN response: {}", validatorResponse);
-        if (!paymentService.verifyTransaction(validatorResponse)) {
-            return new ApiResponse<>(false, "Error", validatorResponse, HttpStatus.PAYMENT_REQUIRED);
-        }
+        paymentService.verifyTransaction(validatorResponse);
         return new ApiResponse<>(true, "Success", validatorResponse, HttpStatus.OK);
     }
 

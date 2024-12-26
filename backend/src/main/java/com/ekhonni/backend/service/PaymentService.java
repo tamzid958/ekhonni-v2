@@ -3,27 +3,34 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.config.SSLCommerzConfig;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.InvalidTransactionException;
+import com.ekhonni.backend.exception.SSLCommerzPaymentException;
+import com.ekhonni.backend.interceptor.PaymentLoggingInterceptor;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.payment.sslcommerz.SSLCommerzInitResponse;
-import com.ekhonni.backend.payment.sslcommerz.SSLCommerzValidatorResponse;
+import com.ekhonni.backend.payment.sslcommerz.InitialResponse;
+import com.ekhonni.backend.payment.sslcommerz.IpnResponse;
 import com.ekhonni.backend.payment.sslcommerz.Util;
+import com.ekhonni.backend.payment.sslcommerz.ValidationResponse;
 import com.ekhonni.backend.projection.GatewayResponseProjection;
 import com.ekhonni.backend.response.ApiResponse;
-import lombok.AllArgsConstructor;
+import io.micrometer.core.instrument.config.validate.Validated;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import com.ekhonni.backend.exception.SSLCommerzPaymentException;
 
 /**
  * Author: Asif Iqbal
@@ -40,6 +47,7 @@ public class PaymentService {
     private final String storeId;
     private final String storePassword;
     private final String validatorApiUrl;
+    private final RestTemplate restTemplate;
 
     public PaymentService(TransactionService transactionService,
                           ProjectionFactory projectionFactory,
@@ -52,66 +60,121 @@ public class PaymentService {
         this.storeId = sslCommerzConfig.getStore_id();
         this.storePassword = sslCommerzConfig.getStore_passwd();
         this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
+        this.restTemplate = createRestTemplate();
+    }
+
+    private RestTemplate createRestTemplate() {
+        RestTemplate template = new RestTemplate();
+        template.setInterceptors(Collections.singletonList(new PaymentLoggingInterceptor()));
+        return template;
     }
 
     public ApiResponse<?> initiatePayment(Long bidLogId) {
-        Transaction transaction = transactionService.create(bidLogId);
-        String requestBody;
         try {
-            requestBody = util.getParamsString(transaction,true);
-        } catch (UnsupportedEncodingException e) {
-            transactionService.deletePermanently(transaction.getId());
-            return new ApiResponse<>(false, "Error", e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            Transaction transaction = transactionService.create(bidLogId);
+            String requestBody = prepareRequestBody(transaction);
+            InitialResponse response = sendPaymentRequest(requestBody);
+            return handleInitialResponse(response, transaction);
+        } catch (Exception e) {
+            log.error("Payment initiation failed", e);
+            throw new SSLCommerzPaymentException("Payment initiation failed: " + e.getMessage());
         }
+    }
+
+    private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
+        return util.getParamsString(transaction, true);
+    }
+
+    private InitialResponse sendPaymentRequest(String requestBody) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        SSLCommerzInitResponse response = restTemplate.postForEntity(sslcommerzApiUrl, requestEntity, SSLCommerzInitResponse.class).getBody();
-        log.info("Initial response: {}", response);
+        ResponseEntity<InitialResponse> responseEntity = restTemplate.postForEntity(
+                sslcommerzApiUrl,
+                requestEntity,
+                InitialResponse.class
+        );
 
+        InitialResponse response = responseEntity.getBody();
+        validateInitialResponse(response);
+        return response;
+    }
+
+    private ApiResponse<?> handleInitialResponse(InitialResponse response, Transaction transaction) {
         if (response != null && "SUCCESS".equals(response.getStatus())) {
             transaction.setSessionKey(response.getSessionkey());
-            GatewayResponseProjection responseProjection = projectionFactory.createProjection(GatewayResponseProjection.class, response);
+            GatewayResponseProjection responseProjection = projectionFactory.createProjection(
+                    GatewayResponseProjection.class,
+                    response
+            );
             return new ApiResponse<>(true, "Success", responseProjection, HttpStatus.OK);
         } else {
             transactionService.deletePermanently(transaction.getId());
-            String message = "Unknown error";
-            if (response != null) {
-                message = response.getFailedReason();
-            }
+            String message = response != null ? response.getFailedReason() != null ? response.getFailedReason() : "Unknown error" : "Null response";
             return new ApiResponse<>(false, message, null, HttpStatus.BAD_REQUEST);
         }
     }
 
-    public boolean verifyTransaction(Map<String, String> validatorResponse) {
-        SSLCommerzValidatorResponse response = projectionFactory.createProjection(SSLCommerzValidatorResponse.class, validatorResponse);
-        long transactionId;
-        try {
-            transactionId = Long.parseLong(response.getTran_id());
-        } catch (NumberFormatException e) {
-            log.error(e.getMessage());
-            return false;
+    public void verifyTransaction(Map<String, String> ipnResponse) {
+        if (ipnResponse == null) {
+            log.error("Ipn response is null");
+            throw new SSLCommerzPaymentException();
         }
-        Transaction transaction = transactionService.get(transactionId);  // base service handles error if not found
+        IpnResponse response = projectionFactory.createProjection(IpnResponse.class, ipnResponse);
+        log.info("IPN response: {}", response);
+        Transaction transaction = getTransaction(response.getTran_id());
 
-        if (!ipnHashVerify(validatorResponse)) {
-            transaction.setStatus(TransactionStatus.valueOf("INVALID"));
-            log.error("IPN hash verification failed for transaction_id : {}", validatorResponse.get("tran_id"));
-            return false;
+        if (!ipnHashVerify(ipnResponse)) {
+            updateStatus(transaction, "INVALID");
+            log.error("IPN hash verification failed for transaction_id : {}", ipnResponse.get("tran_id"));
+            throw new SSLCommerzPaymentException();
         }
 
-        if (!verifyStatus(response)) {
-            String status = response.getStatus() == null ? "FAILED" : response.getStatus();
-            transaction.setStatus(TransactionStatus.valueOf(status));
-            log.error("Transaction status: {}, id: {}", response.getStatus(), response.getTran_id());
+        if (!verifyStatus(response.getStatus())) {
+            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
+            updateStatus(transaction, status);
+            log.error("transaction_id: {}, status: {}", response.getTran_id(), response.getStatus());
+            throw new SSLCommerzPaymentException();
+        }
+
+        if (!verifyAmount(transaction, response)) {
+            updateStatus(transaction, "INVALID");
+            log.error("Amount or currency don't match for transaction_id: {}", response.getTran_id());
+            throw new SSLCommerzPaymentException();
+        }
+
+        if (!validate(response.getVal_id())) {
+            log.error("Validation failed for transaction_id: {}", response.getTran_id());
+            throw new SSLCommerzPaymentException();
+        }
+
+    }
+
+    private boolean validate(String validationId) {
+        String validationUrl = validatorApiUrl + "?val_id=" + validationId
+                + "&store_id=" + storeId + "&store_passwd=" + storePassword + "&v=1&format=json";
+
+        log.info("Validation URL: {}", validationUrl);
+        Map validationResponse = restTemplate.getForObject(validationUrl, Map.class);
+        if (validationResponse == null) {
+            return false;
+        }
+        ValidationResponse response = projectionFactory.createProjection(ValidationResponse.class, validationResponse);
+        log.info("Validation response: {}", validationResponse);
+
+        Transaction transaction = getTransaction(response.getTran_id());
+
+        if (!verifyStatus(response.getStatus())) {
+            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
+            updateStatus(transaction, status);
+            log.error("Validation transaction_id: {}, status: {}", response.getTran_id(), response.getStatus());
             return false;
         }
 
         if (!verifyAmount(transaction, response)) {
-            transaction.setStatus(TransactionStatus.valueOf("INVALID"));
-            log.error("Amount don't match for transaction_id: {}", transactionId);
+            updateStatus(transaction, "INVALID");
+            log.error("Validation amount or currency don't match for transaction_id: {}", response.getTran_id());
             return false;
         }
 
@@ -119,34 +182,73 @@ public class PaymentService {
         return true;
     }
 
-    private boolean verifyStatus(SSLCommerzValidatorResponse response) {
-        return response.getStatus() != null && !"VALID".equals(response.getStatus());
+    private Transaction getTransaction(String trxId) {
+        long transactionId;
+        try {
+            transactionId = Long.parseLong(trxId);
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage());
+            throw new InvalidTransactionException();
+        }
+        return transactionService.get(transactionId);
     }
 
-    private boolean verifyAmount(Transaction transaction, SSLCommerzValidatorResponse response) {
+    private void validateInitialResponse(InitialResponse response) {
+        if (response == null) {
+            throw new SSLCommerzPaymentException("Null response from payment gateway");
+        }
+        if (response.getStatus() == null) {
+            throw new SSLCommerzPaymentException("Invalid response status");
+        }
+    }
+
+    private boolean verifyStatus(String status) {
+        return "VALID".equals(status) || "VALIDATED".equals(status);
+    }
+
+    private boolean verifyAmount(Transaction transaction, IpnResponse response) {
         try {
             double currencyRate = Double.parseDouble(response.getCurrency_rate());
-            double responseAmount = Double.parseDouble(response.getAmount());
+            double responseAmount = Double.parseDouble(response.getCurrency_amount());
+            double responseBdtAmount = Double.parseDouble(response.getAmount());
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
+            log.info("Expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
             double marginOfError = 0.01;
             return response.getCurrency().equals(transaction.getCurrency())
-                    && response.getCurrency_amount().equals(String.valueOf(transaction.getAmount()))
-                    && (Math.abs(expectedBdtAmount - responseAmount) <= marginOfError);
+                    && responseAmount == transaction.getAmount()
+                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
         } catch (NumberFormatException e) {
             log.error(e.getMessage());
             return false;
         }
     }
 
-    private boolean validate(String validationId) {
-        String format = "json";
-        String requestBody = String.format("%s?val_id=%s&store_id=%s&store_passwd=%s&format=%s",
-                validatorApiUrl, validationId, storeId, storePassword, format);
-        RestTemplate restTemplate = new RestTemplate();
-        return true;
+    private boolean verifyAmount(Transaction transaction, ValidationResponse response) {
+        try {
+            double currencyRate = Double.parseDouble(response.getCurrency_rate());
+            double responseAmount = Double.parseDouble(response.getCurrency_amount());
+            double responseBdtAmount = Double.parseDouble(response.getAmount());
+            double expectedBdtAmount = transaction.getAmount() * currencyRate;
+            log.info("Validation expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
+            double marginOfError = 0.01;
+            return response.getCurrency().equals(transaction.getCurrency())
+                    && responseAmount == transaction.getAmount()
+                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 
-    private void updateTransaction(Transaction transaction, SSLCommerzValidatorResponse response) {
+    @Modifying
+    @Transactional
+    private void updateStatus(Transaction transaction, String status) {
+        transaction.setStatus(TransactionStatus.valueOf(status));
+    }
+
+    @Modifying
+    @Transactional
+    private void updateTransaction(Transaction transaction, ValidationResponse response) {
         transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getVal_id());
         transaction.setBankTransactionId(response.getBank_tran_id());

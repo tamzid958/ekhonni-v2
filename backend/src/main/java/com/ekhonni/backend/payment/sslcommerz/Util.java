@@ -1,12 +1,10 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,16 +26,16 @@ public class Util {
 
     private final PaymentRequest paymentRequest;
 
-    public SSLCommerzInitResponse extractInitResponse(String response) throws IOException {
+    public InitialResponse extractInitResponse(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response, SSLCommerzInitResponse.class);
+        return mapper.readValue(response, InitialResponse.class);
     }
 
-    public SSLCommerzValidatorResponse extractValidatorResponse(String response) throws IOException {
+    public IpnResponse extractValidatorResponse(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response, SSLCommerzValidatorResponse.class);
+        return mapper.readValue(response, IpnResponse.class);
     }
 
     public String getByOpeningJavaUrlConnection(String stringUrl) throws IOException {
