@@ -2,12 +2,12 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
+import com.ekhonni.backend.dto.TokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -36,13 +36,13 @@ public class UserController {
 
     @PatchMapping("/{id}/update")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public UserUpdateDTO updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    public UserUpdateDTO updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
     }
 
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateUserEmail(@PathVariable UUID id, @RequestBody EmailDTO emailDTO) {
+    public String updateUserEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
         return userService.updateEmail(id, emailDTO);
     }
 
@@ -60,26 +60,11 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/wishlists")
+    @PostMapping("/{id}/refresh-token")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public void getUserWishlists() {
+    public void getRefreshedToken(@RequestBody TokenDTO tokenDTO) {
         // To be implemented
     }
 
-    @GetMapping("/{id}/bids")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public void getUserBids() {
-        // To be implemented
-    }
 
-    @GetMapping("/{id}/products")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public void getUploadedProducts() {
-        // To be implemented
-    }
-
-    @GetMapping("/products")
-    public void getAllProduct(Pageable pageable) {
-        //To be implemented
-    }
 }
