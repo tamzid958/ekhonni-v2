@@ -3,11 +3,17 @@ import {Card, CardContent} from "@/components/ui/card"
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
 import {Button} from "@/components/ui/button";
 import {ShoppingCart} from "lucide-react"
+import Link from "next/link";
 
 export function QuickBid() {
     return (
         <div className="bg-brand-bright pl-40 pr-40 pt-10 pb-16 ">
-            <h2 className="flex justify-center text-4xl font-sans text-black">START YOUR BIDDING HERE</h2>
+            <div>
+                <h2 className="flex justify-center text-4xl font-sans text-black">START YOUR BIDDING HERE</h2>
+                <Link href="/categoryProducts">
+                    <Button variant="link" className="text-xl text-bold ">SEE ALL</Button>
+                </Link>
+            </div>
             <Carousel
                 opts={{
                     align: "start",
@@ -18,9 +24,20 @@ export function QuickBid() {
                     {Array.from({length: 15}).map((_, index) => (
                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                             <div className="p-1">
-                                <Card className="w-[100%] h-[45%]">
-                                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                                        <span className="text-3xl font-semibold">{index + 1}</span>
+                                <Card className="realtive overflow-hidden w-[100%] h-[45%]">
+                                    <CardContent
+                                        className="flex aspect-square items-center justify-center rounded-2xl p-0">
+                                        <img
+                                            src={`ad${((index + 1) % 5) + 1}.png`}
+                                            alt={`public/AdsImage/ad ${index + 1}`}
+                                            className="h-full w-full object-cover"
+                                        />
+                                        <Button
+                                            className="absolute mb-48 ml-36 px-4 py-2 rounded shadow"
+                                            variant="default"
+                                        >
+                                            Bid Now
+                                        </Button>
                                     </CardContent>
                                 </Card>
                                 <div className="flex flex-row w-full pt-2">

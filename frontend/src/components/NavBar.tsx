@@ -2,6 +2,7 @@ import {Button} from "./ui/button";
 import {Bell, Search, ShoppingCart, User} from "lucide-react";
 import * as React from "react";
 import {cn} from "@/lib/utils";
+import Link from 'next/link';
 
 type Props = {
     placeholder?: string;
@@ -10,9 +11,10 @@ type Props = {
 export function NavBar({placeholder}: Props) {
     return (
         <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
-
             <div className="font-bold ml-16 mt-2">
-                <img src="frame.png" alt="logo" className="h-[75px]"/>
+                <Link href="/">
+                    <img src="frame.png" alt="logo" className="h-[75px]"/>
+                </Link>
             </div>
 
             <div className="w-[680px] flex justify-center items-center">
@@ -34,9 +36,14 @@ export function NavBar({placeholder}: Props) {
                 </div>
             </div>
             <div className="flex gap-4 mr-28 mt-4">
-                <Button variant="custom" size="icon2" className="rounded-full"><ShoppingCart/></Button>
+                <Link href="/watchlist">
+                    <Button variant="custom" size="icon2" className="rounded-full">
+                        <ShoppingCart/>
+                    </Button>
+                </Link>
                 <Button variant="custom" size="icon2" className="rounded-full"><Bell/></Button>
                 <Button variant="custom" size="icon2" className="rounded-full"><User/></Button>
+
             </div>
         </nav>
     );
