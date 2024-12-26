@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google';
 import { TopCAtegory } from '@/components/TopCategory';
 import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
+import CustomErrorBoundary from '@/components/ErrorBoundary';
 
 
 const geistSans = localFont({
@@ -35,6 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
+      <CustomErrorBoundary customFallback={<div>Something went wrong.</div>}>
+
       <div className="w-full">
         <NavBar placeholder="What are you looking for?" />
         <TopCAtegory />
@@ -43,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <div className="bg-gray-800 text-white">
         <Footer />
       </div>
+      </CustomErrorBoundary>
     </RootLayoutWrapper>
     </body>
     </html>
