@@ -2,6 +2,7 @@ import React from 'react';
 import { CardDemo } from '@/components/Card';
 
 interface data {
+  id: string;
   title: string;
   description: string;
   img: string;
@@ -27,7 +28,7 @@ export default async function CategoryProductPage() {
         <h2 className="text-xl font-semibold my-4">Best Selling</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
+            <CardDemo key={item.id} {...item} />
           ))}
         </div>
       </div>
@@ -37,7 +38,7 @@ export default async function CategoryProductPage() {
         <h2 className="text-xl font-semibold my-4">Limited Time Deals</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
+            <CardDemo key={item.id} {...item} />
           ))}
         </div>
       </div>
@@ -47,7 +48,7 @@ export default async function CategoryProductPage() {
         <h2 className="text-xl font-semibold my-4">Top Rated</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
+            <CardDemo key={item.id} {...item} />
           ))}
         </div>
       </div>
