@@ -1,4 +1,4 @@
-// app/api/mock-data/route.ts
+import { NextResponse } from 'next/server';
 
 const mockData = [
   {
@@ -27,12 +27,15 @@ const mockData = [
   },
 ];
 
-// API route for entire data
-export async function GET() {
-  return new Response(JSON.stringify(mockData), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+// API route for dynamic path `id`
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params; // Get the `id` from the URL
+
+  const product = mockData.find((item) => item.id === id);
+
+  if (!product) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+  }
+
+  return NextResponse.json(product);
 }
