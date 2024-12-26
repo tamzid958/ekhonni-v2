@@ -1,9 +1,13 @@
 package com.ekhonni.backend.config;
 
+import lombok.Data;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: Asif Iqbal
@@ -11,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @Configuration
-@Getter
+@Data
 public class SSLCommerzConfig {
 
     @Value("${sslcommerz.api.url}")
@@ -37,5 +41,9 @@ public class SSLCommerzConfig {
 
     @Value("${sslcommerz.api.validator.url}")
     private String validatorApiUrl;
+
+    private int connectionTimeout = 5000;
+    private int readTimeout = 30000;
+    private List<String> allowedIps = new ArrayList<>();
 
 }

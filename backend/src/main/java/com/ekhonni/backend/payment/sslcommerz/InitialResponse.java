@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class SSLCommerzInitResponse {
+public class InitialResponse {
     public String status;
     public String sessionkey;
     public String GatewayPageURL;
