@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Bell, Search, ShoppingCart, User } from "lucide-react";
 import React, { useState } from "react";
-import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 
 type Props = {
