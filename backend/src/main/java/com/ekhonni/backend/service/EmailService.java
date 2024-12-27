@@ -8,6 +8,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+/**
+ * Author: Safayet Rafi
+ * Date: 22/12/24
+ */
+
 @Setter
 @Getter
 @AllArgsConstructor
