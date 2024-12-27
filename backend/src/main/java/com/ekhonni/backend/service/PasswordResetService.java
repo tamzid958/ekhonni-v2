@@ -54,6 +54,6 @@ public class PasswordResetService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        return "Password Reset Successful";
+        return "Password Reset Successfully";
     }
 }

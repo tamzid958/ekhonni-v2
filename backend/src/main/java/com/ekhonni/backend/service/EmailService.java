@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class EmailService {
     @Autowired
     JavaMailSender mailSender;
 
+    @Value("${spring.mail.username}")
+    private String senderEmail;
+
     public void sendVerificationEmail(String recipientEmail, String token) {
 
         String subject = "Email Verification";
@@ -29,7 +33,7 @@ public class EmailService {
         String message = "Please click the following link to verify your email: " + verificationUrl;
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("MS_FWQO0k@trial-3yxj6ljrqe14do2r.mlsender.net");
+        email.setFrom(senderEmail);
         email.setTo(recipientEmail);
         email.setSubject(subject);
         email.setText(message);
@@ -45,7 +49,7 @@ public class EmailService {
         String message = "Please click the following link to reset your password: " + resetUrl;
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("MS_FWQO0k@trial-3yxj6ljrqe14do2r.mlsender.net");
+        email.setFrom(senderEmail);
         email.setTo(recipientEmail);
         email.setSubject(subject);
         email.setText(message);
