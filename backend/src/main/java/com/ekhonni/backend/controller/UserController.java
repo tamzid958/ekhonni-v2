@@ -2,6 +2,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.service.PasswordResetService;
 import com.ekhonni.backend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
     @GetMapping("/{id}/profile")
     public UserProjection getUserById(@PathVariable UUID id) {
@@ -69,4 +71,5 @@ public class UserController {
     public void getUploadedProducts() {
         // To be implemented
     }
+
 }

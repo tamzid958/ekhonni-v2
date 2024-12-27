@@ -42,21 +42,4 @@ public class VerificationTokenService {
         return verificationTokenRepository.save(verificationToken);
     }
 
-    public String verifyEmail(String token) {
-
-        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid Verification Token");
-        }
-
-        User user = verificationToken.getUser();
-        user.setVerified(true);
-        userRepository.save(user);
-
-        verificationTokenRepository.delete(verificationToken);
-
-        return "Email verified successfully!";
-    }
 }
