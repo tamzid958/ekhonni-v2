@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
+@ToString
 public class PaymentRequest {
     private String store_id;
     private String store_passwd;

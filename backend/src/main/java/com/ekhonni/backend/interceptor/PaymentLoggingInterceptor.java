@@ -23,13 +23,15 @@ public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
                                         @NonNull byte[] body,
                                         @NonNull ClientHttpRequestExecution execution) throws IOException {
         String requestId = UUID.randomUUID().toString();
-        ClientHttpResponse response = null;
 
         try {
             logRequest(requestId, request, body);
-            response = execution.execute(request, body);
-            logResponse(requestId, response);
-            return response;
+            ClientHttpResponse response = execution.execute(request, body);
+
+            byte[] bodyBytes = StreamUtils.copyToByteArray(response.getBody());
+            logResponse(requestId, response, bodyBytes);
+
+            return new BufferingClientHttpResponseWrapper(response, bodyBytes);
         } catch (IOException e) {
             log.error("Request {} failed: {}", requestId, e.getMessage());
             throw e;
@@ -50,19 +52,14 @@ public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
         }
     }
 
-    private void logResponse(String requestId, ClientHttpResponse response) {
+    private void logResponse(String requestId, ClientHttpResponse response, byte[] bodyBytes) {
         try {
             log.info("=========================== Response Begin ===========================");
             log.info("Request ID: {}", requestId);
             log.info("Status Code: {}", response.getStatusCode());
             log.info("Status Text: {}", response.getStatusText());
             log.info("Headers: {}", response.getHeaders());
-
-            byte[] bodyBytes = StreamUtils.copyToByteArray(response.getBody());
             log.info("Response Body: {}", new String(bodyBytes, StandardCharsets.UTF_8));
-
-            response = new BufferingClientHttpResponseWrapper(response, bodyBytes);
-
             log.info("=========================== Response End ===========================");
         } catch (Exception e) {
             log.warn("Failed to log response {}: {}", requestId, e.getMessage());
@@ -81,7 +78,7 @@ class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
     @Override
     @NonNull
-    public java.io.InputStream getBody() throws IOException {
+    public java.io.InputStream getBody() {
         return new java.io.ByteArrayInputStream(body);
     }
 

@@ -6,31 +6,24 @@ import com.ekhonni.backend.exception.InvalidTransactionException;
 import com.ekhonni.backend.exception.SSLCommerzPaymentException;
 import com.ekhonni.backend.interceptor.PaymentLoggingInterceptor;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.payment.sslcommerz.InitialResponse;
-import com.ekhonni.backend.payment.sslcommerz.IpnResponse;
-import com.ekhonni.backend.payment.sslcommerz.Util;
-import com.ekhonni.backend.payment.sslcommerz.ValidationResponse;
+import com.ekhonni.backend.payment.sslcommerz.*;
 import com.ekhonni.backend.projection.GatewayResponseProjection;
 import com.ekhonni.backend.response.ApiResponse;
-import io.micrometer.core.instrument.config.validate.Validated;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
-import com.ekhonni.backend.exception.SSLCommerzPaymentException;
 
 /**
  * Author: Asif Iqbal
@@ -76,8 +69,8 @@ public class PaymentService {
             InitialResponse response = sendPaymentRequest(requestBody);
             return handleInitialResponse(response, transaction);
         } catch (Exception e) {
-            log.error("Payment initiation failed", e);
-            throw new SSLCommerzPaymentException("Payment initiation failed: " + e.getMessage());
+            log.error("Payment initiation failed: {}", e.getMessage());
+            throw new SSLCommerzPaymentException("Payment initiation failed");
         }
     }
 
@@ -97,6 +90,7 @@ public class PaymentService {
         );
 
         InitialResponse response = responseEntity.getBody();
+        log.info("Initial response: {}", response);
         validateInitialResponse(response);
         return response;
     }
@@ -206,7 +200,7 @@ public class PaymentService {
         return "VALID".equals(status) || "VALIDATED".equals(status);
     }
 
-    private boolean verifyAmount(Transaction transaction, IpnResponse response) {
+    private boolean verifyAmount(Transaction transaction, PaymentResponse response) {
         try {
             double currencyRate = Double.parseDouble(response.getCurrency_rate());
             double responseAmount = Double.parseDouble(response.getCurrency_amount());
@@ -214,24 +208,7 @@ public class PaymentService {
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
             log.info("Expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
             double marginOfError = 0.01;
-            return response.getCurrency().equals(transaction.getCurrency())
-                    && responseAmount == transaction.getAmount()
-                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
-        } catch (NumberFormatException e) {
-            log.error(e.getMessage());
-            return false;
-        }
-    }
-
-    private boolean verifyAmount(Transaction transaction, ValidationResponse response) {
-        try {
-            double currencyRate = Double.parseDouble(response.getCurrency_rate());
-            double responseAmount = Double.parseDouble(response.getCurrency_amount());
-            double responseBdtAmount = Double.parseDouble(response.getAmount());
-            double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            log.info("Validation expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
-            double marginOfError = 0.01;
-            return response.getCurrency().equals(transaction.getCurrency())
+            return response.getCurrency_type().equals(transaction.getCurrency())
                     && responseAmount == transaction.getAmount()
                     && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
         } catch (NumberFormatException e) {
