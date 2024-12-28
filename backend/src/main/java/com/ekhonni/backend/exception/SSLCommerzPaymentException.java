@@ -11,9 +11,4 @@ public class SSLCommerzPaymentException extends RuntimeException {
     public SSLCommerzPaymentException(String message) {
         super(message);
     }
-
-    @Override
-    public String getMessage() {
-        return "Error processing payment";
-    }
 }
