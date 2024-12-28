@@ -1,11 +1,13 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.exception.SSLCommerzPaymentException;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -19,8 +21,12 @@ import java.util.Map;
 public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/initiate/{bid_log_id}")
-    public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId) {
-        return paymentService.initiatePayment(bidLogId);
+    public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId)  {
+        try {
+            return new ApiResponse<>(true, "Success", paymentService.initiatePayment(bidLogId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new SSLCommerzPaymentException("Internal server error");
+        }
     }
 
     @PostMapping("/success")

@@ -43,4 +43,8 @@ public class TransactionService extends BaseService<Transaction, Long> {
         return transactionRepository.save(transaction);
     }
 
+    public void deletePermanentlyByBidLogId(Long bidLogId) {
+        transactionRepository.deleteByBidLogId(bidLogId);
+    }
+
 }
