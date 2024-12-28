@@ -9,12 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -26,32 +22,16 @@ public class Util {
 
     private final PaymentRequest paymentRequest;
 
-    public InitialResponse extractInitResponse(String response) throws IOException {
+    public InitialResponse extractInitResponse(Map<String, String> response) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response, InitialResponse.class);
+        return mapper.convertValue(response, InitialResponse.class);
     }
 
-    public IpnResponse extractValidatorResponse(String response) throws IOException {
+    public IpnResponse extractIpnResponse(Map<String, String> response) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(response, IpnResponse.class);
-    }
-
-    public String getByOpeningJavaUrlConnection(String stringUrl) throws IOException {
-        StringBuilder output = new StringBuilder();
-        URL url = new URL(stringUrl);
-        URLConnection conn = url.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(5000);
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-        String outputLine;
-        while ((outputLine = br.readLine()) != null) {
-            output.append(outputLine);
-        }
-        br.close();
-        return output.toString();
+        return mapper.convertValue(response, IpnResponse.class);
     }
 
     public void constructRequestParameters(Transaction transaction) {
