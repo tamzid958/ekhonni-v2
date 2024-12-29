@@ -10,12 +10,9 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
-import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/v2/category")
 @RestController
@@ -40,8 +37,7 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping("/{name}")
     public ApiResponse<?> getSubCategories(@PathVariable String name) {
         try {
-            List<CategoryProjection> categoryProjection = categoryService.getSub(name);
-            return new ApiResponse<>(HTTPStatus.FOUND, categoryProjection);
+            return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
         } catch (RuntimeException e) {
             return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {

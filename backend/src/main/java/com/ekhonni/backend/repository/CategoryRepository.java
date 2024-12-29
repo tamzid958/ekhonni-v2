@@ -23,12 +23,10 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
     List<CategoryProjection> findByParentCategoryOrderByIdAsc(Category category);
 
+    List<CategoryProjection> findAllByParentCategory(Category parentCategory);
 
-    @Query("SELECT c FROM Category c WHERE c.parentCategory.id IS NULL")
-    List<CategoryProjection> findFeatured();
+    List<CategoryProjection> findAllByParentCategoryIsNull();
 
-    @Query("SELECT c FROM Category c WHERE c.parentCategory.id = :id")
-    List<CategoryProjection> findSub(Long id);
 
     @Modifying
     @Transactional

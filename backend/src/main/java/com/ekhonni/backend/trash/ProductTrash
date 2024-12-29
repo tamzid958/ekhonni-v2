@@ -16,3 +16,14 @@
 //    }
 
 
+// category subcategory
+//    public Map<Category, List<CategoryProjection>> getRootAndFirstSub() {
+//        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNull();
+//        Map<Category, List<CategoryProjection>> parentChildCategories = new LinkedHashMap<>();
+//
+//        for (Category rootCategory : rootCategories) {
+//            List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory);
+//            parentChildCategories.put(rootCategory, subCategories);
+//        }
+//        return parentChildCategories;
+//    }

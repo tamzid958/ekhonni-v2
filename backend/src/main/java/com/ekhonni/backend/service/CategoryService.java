@@ -9,15 +9,15 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.dto.CategorySubCategoryDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -51,22 +51,32 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
     //done
-    public List<CategoryProjection> getSub(String name) {
+    public CategorySubCategoryDTO getSub(String name) {
         Category category = getByName(name);
         if (category == null) throw new RuntimeException("no category found by this name");
-        return categoryRepository.findSub(category.getId());
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(category.getName(), new ArrayList<>());
+        List<CategoryProjection> categoryProjections = categoryRepository.findAllByParentCategory(category);
+        for (CategoryProjection categoryProjection : categoryProjections) {
+            categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+        }
+        return categorySubCategoryDTO;
     }
 
 
-    public Map<Category, List<CategoryProjection>> getRootAndFirstSub() {
+    public List<CategorySubCategoryDTO> getRootAndFirstSub() {
         List<Category> rootCategories = categoryRepository.findByParentCategoryIsNull();
-        Map<Category, List<CategoryProjection>> parentChildCategories = new LinkedHashMap<>();
+        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
 
         for (Category rootCategory : rootCategories) {
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
             List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory);
-            parentChildCategories.put(rootCategory, subCategories);
+            for (CategoryProjection categoryProjection : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+            }
+            categorySubCategoryDTOS.add(categorySubCategoryDTO);
         }
-        return parentChildCategories;
+        return categorySubCategoryDTOS;
+
     }
 
 
@@ -75,7 +85,7 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
     public List<CategoryProjection> getFeatured() {
-        return categoryRepository.findFeatured();
+        return categoryRepository.findAllByParentCategoryIsNull();
     }
 
 
