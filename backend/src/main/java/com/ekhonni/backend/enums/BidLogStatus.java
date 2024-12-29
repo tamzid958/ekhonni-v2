@@ -7,5 +7,6 @@ package com.ekhonni.backend.enums;
 public enum BidLogStatus {
     PENDING,
     ACCEPTED,
-    REJECTED
+    REJECTED,
+    PAID
 }
