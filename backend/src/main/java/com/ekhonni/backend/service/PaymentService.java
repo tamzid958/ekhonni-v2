@@ -66,23 +66,20 @@ public class PaymentService {
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     public PaymentResponseProjection initiatePayment(Long bidLogId) throws UnsupportedEncodingException {
-        Transaction transaction = transactionService.create(bidLogId);
-        String requestBody = prepareRequestBody(transaction);
-        InitialResponse response = sendPaymentRequest(requestBody);
-        return handleInitialResponse(response, transaction);
+        try {
+            Transaction transaction = transactionService.create(bidLogId);
+            String requestBody = prepareRequestBody(transaction);
+            InitialResponse response = sendPaymentRequest(requestBody);
+            return handleInitialResponse(response, transaction);
+        } catch (Exception e) {
+            log.warn("Error for bid {}: {}", bidLogId, e.getMessage());
+            transactionService.deletePermanentlyByBidLogId(bidLogId);
+            throw e;
+        }
     }
 
-    @Transactional
-    public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, UnsupportedEncodingException e) {
-        log.warn("Encoding error for bid {}: {}", bidLogId, e.getMessage());
-        transactionService.deletePermanentlyByBidLogId(bidLogId);
-        throw new InitiatePaymentException("Internal server error");
-    }
-
-    @Transactional
-    public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, Exception e) {
-        log.warn("Unexpected error for bid {}: {}", bidLogId, e.getMessage());
-        transactionService.deletePermanentlyByBidLogId(bidLogId);
+    public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, Throwable throwable) {
+        log.warn("Fallback triggered for bid {} due to error: {}", bidLogId, throwable.getMessage());
         throw new InitiatePaymentException("Payment error");
     }
 
@@ -102,7 +99,6 @@ public class PaymentService {
         );
 
         InitialResponse response = responseEntity.getBody();
-        log.info("Initial response: {}", response);
         validateInitialResponse(response);
         return response;
     }
@@ -132,7 +128,7 @@ public class PaymentService {
             throw new InvalidTransactionException();
         }
         IpnResponse response = util.extractIpnResponse(ipnResponse);
-        log.info("IPN response: {}", response);
+        log.info("Ipn response: {}", response);
 
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
@@ -168,7 +164,6 @@ public class PaymentService {
         ResponseEntity<ValidationResponse> responseEntity = restTemplate.getForEntity(validationUrl, ValidationResponse.class);
         ValidationResponse response = responseEntity.getBody();
         log.info("Validation response: {}", response);
-
         if (response == null) {
             return false;
         }
@@ -205,7 +200,7 @@ public class PaymentService {
 
     private void validateInitialResponse(InitialResponse response) {
         if (response == null) {
-            throw new InitiatePaymentException("Null response from payment gateway");
+            throw new InitiatePaymentException("No response from payment gateway");
         }
         if (response.getStatus() == null) {
             throw new InitiatePaymentException("Invalid response status");
