@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 
-
 const signupSchema = z.object({
   firstName: z.string().min(1, "First Name is required"),
   lastName: z.string().min(1, "Last Name is required"),
@@ -29,12 +28,10 @@ const signupSchema = z.object({
   path: ["confirmPassword"],
 });
 
-
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
 
 export default function AuthForm() {
   const [isSignup, setIsSignup] = useState(false);
@@ -43,11 +40,53 @@ export default function AuthForm() {
     resolver: zodResolver(isSignup ? signupSchema : loginSchema),
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data) => {
     if (isSignup) {
-      console.log("Signup Data", data);
+
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+            phone: data.phone,
+            address: data.address,
+          }),
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          alert("Signup successful! Please log in.");
+          setIsSignup(false); // Switch to login form
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        console.error("Signup error:", err);
+        alert("Something went wrong. Please try again.");
+      }
     } else {
-      signIn("credentials", { ...data });
+      // Handle Login
+      try {
+        const res = await signIn("credentials", {
+          redirect: false,
+          email: data.email,
+          password: data.password,
+        });
+
+        if (res?.ok) {
+          alert("Login successful!");
+          window.location.href = "/";
+        } else {
+          alert("Invalid email or password");
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -86,44 +125,6 @@ export default function AuthForm() {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1 text-sm font-medium">Email</label>
-                  <Input
-                    type="email"
-                    {...register("email")}
-                    placeholder="Enter your email"
-                    className="w-full"
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-red-600">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-sm font-medium">Password</label>
-                  <Input
-                    type="password"
-                    {...register("password")}
-                    placeholder="Enter your password"
-                    className="w-full"
-                  />
-                  {errors.password && (
-                    <p className="text-sm text-red-600">{errors.password.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-sm font-medium">Confirm Password</label>
-                  <Input
-                    type="password"
-                    {...register("confirmPassword")}
-                    placeholder="Confirm your password"
-                    className="w-full"
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-red-600">
-                      {errors.confirmPassword.message}
-                    </p>
-                  )}
-                </div>
-                <div>
                   <label className="block mb-1 text-sm font-medium">Phone</label>
                   <Input
                     type="text"
@@ -148,40 +149,49 @@ export default function AuthForm() {
                   )}
                 </div>
               </>
-            ) : (
-              <>
-                <div>
-                  <label className="block mb-1 text-sm font-medium">Email</label>
-                  <Input
-                    type="email"
-                    {...register("email")}
-                    placeholder="Enter your email"
-                    className="w-full"
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-red-600">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-sm font-medium">Password</label>
-                  <Input
-                    type="password"
-                    {...register("password")}
-                    placeholder="Enter your password"
-                    className="w-full"
-                  />
-                  {errors.password && (
-                    <p className="text-sm text-red-600">{errors.password.message}</p>
-                  )}
-                </div>
-              </>
+            ) : null}
+            <div>
+              <label className="block mb-1 text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                {...register("email")}
+                placeholder="Enter your email"
+                className="w-full"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium">Password</label>
+              <Input
+                type="password"
+                {...register("password")}
+                placeholder="Enter your password"
+                className="w-full"
+              />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
+            {isSignup && (
+              <div>
+                <label className="block mb-1 text-sm font-medium">Confirm Password</label>
+                <Input
+                  type="password"
+                  {...register("confirmPassword")}
+                  placeholder="Confirm your password"
+                  className="w-full"
+                />
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+                )}
+              </div>
             )}
             <Button type="submit" className="w-full">
               {isSignup ? "Sign Up" : "Log In"}
             </Button>
           </form>
-
-          {/* Divider */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
@@ -190,7 +200,6 @@ export default function AuthForm() {
               <span className="bg-white px-2 text-gray-500 text-sm">or</span>
             </div>
           </div>
-
           <Button
             variant="outline"
             className="mt-4 w-full flex items-center justify-center gap-2"
@@ -215,4 +224,3 @@ export default function AuthForm() {
     </div>
   );
 }
-

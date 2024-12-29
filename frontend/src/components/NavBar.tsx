@@ -1,13 +1,22 @@
+'use client';
+
 import {Button} from "./ui/button"
 import {Input} from "./ui/input"
 import {Bell, Search, ShoppingCart, User} from "lucide-react"
 import React from "react";
+
+import { useRouter } from "next/navigation";
 
 type Props = {
     placeholder?: string,
 }
 
 export function NavBar({placeholder}: Props) {
+  const router = useRouter();
+  const handleNavigation = () => {
+    router.push("/user");
+  };
+
     return (
         <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
             <div className="font-bold ml-16 mt-2">
@@ -27,7 +36,8 @@ export function NavBar({placeholder}: Props) {
             <div className="flex gap-4 mr-28 mt-4">
                 <Button variant="custom" size="icon2" className="rounded-full"><ShoppingCart/></Button>
                 <Button variant="custom" size="icon2" className="rounded-full"><Bell/></Button>
-                <Button variant="custom" size="icon2" className="rounded-full"><User/></Button>
+                <Button variant="custom" onClick={handleNavigation} size="icon2" className="rounded-full"><User/></Button>
+
             </div>
         </nav>
     )

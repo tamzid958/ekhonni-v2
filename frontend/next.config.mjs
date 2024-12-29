@@ -7,6 +7,7 @@ const nextConfig = {
       'jsonplaceholder.typicode.com',
       'images.unsplash.com',
       'static.nike.com',
+      'lh3.googleusercontent.com',
     ],
   },
 };
