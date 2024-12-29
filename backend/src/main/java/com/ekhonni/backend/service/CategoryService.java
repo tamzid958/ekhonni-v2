@@ -16,8 +16,8 @@ import com.ekhonni.backend.repository.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,37 +51,39 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
     //done
-    public CategorySubCategoryDTO getSub(String name) {
+    public CategorySubCategoryDTO getSubCategories(String name) {
         Category category = getByName(name);
-        if (category == null) throw new RuntimeException("no category found by this name");
-        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(category.getName(), new ArrayList<>());
-        List<CategoryProjection> categoryProjections = categoryRepository.findAllByParentCategory(category);
-        for (CategoryProjection categoryProjection : categoryProjections) {
-            categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+        if (category == null) {
+            throw new RuntimeException("No category found by this name");
         }
-        return categorySubCategoryDTO;
+
+        List<String> subCategoryNames = categoryRepository.findAllByParentCategory(category)
+                .stream()
+                .map(CategoryProjection::getName)
+                .collect(Collectors.toList());
+
+        return new CategorySubCategoryDTO(category.getName(), subCategoryNames);
     }
 
 
-    public List<CategorySubCategoryDTO> getRootAndFirstSub() {
-        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNull();
-        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
-
-        for (Category rootCategory : rootCategories) {
-            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
-            List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory);
-            for (CategoryProjection categoryProjection : subCategories) {
-                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
-            }
-            categorySubCategoryDTOS.add(categorySubCategoryDTO);
-        }
-        return categorySubCategoryDTOS;
-
+    public List<CategorySubCategoryDTO> getShopByCategoryList() {
+        return categoryRepository.findByParentCategoryIsNull().stream()
+                .map(rootCategory -> {
+                    List<String> subCategoryNames = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory).stream()
+                            .map(CategoryProjection::getName)
+                            .collect(Collectors.toList());
+                    return new CategorySubCategoryDTO(rootCategory.getName(), subCategoryNames);
+                })
+                .collect(Collectors.toList());
     }
 
 
-    public void delete(Long id) {
-        categoryRepository.deleteCategoryById(id);
+    public void delete(String name) {
+        Category category = getByName(name);
+        if (category == null) {
+            throw new RuntimeException("category not found");
+        }
+        categoryRepository.deleteCategoryByName(name);
     }
 
     public List<CategoryProjection> getFeatured() {

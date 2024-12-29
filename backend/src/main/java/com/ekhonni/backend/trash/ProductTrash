@@ -27,3 +27,22 @@
 //        }
 //        return parentChildCategories;
 //    }
+
+
+
+// shop by category
+ public List<CategorySubCategoryDTO> getRootAndFirstSub() {
+        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNull();
+        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
+
+        for (Category rootCategory : rootCategories) {
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
+            List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory);
+            for (CategoryProjection categoryProjection : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+            }
+            categorySubCategoryDTOS.add(categorySubCategoryDTO);
+        }
+        return categorySubCategoryDTOS;
+
+    }

@@ -37,7 +37,7 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping("/{name}")
     public ApiResponse<?> getSubCategories(@PathVariable String name) {
         try {
-            return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
+            return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubCategories(name));
         } catch (RuntimeException e) {
             return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
@@ -47,8 +47,8 @@ public record CategoryController(CategoryService categoryService) {
     }
 
     @GetMapping("/shop-by-category")
-    public ApiResponse<?> getParentAndFirstChildSubCategories() {
-        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getRootAndFirstSub());
+    public ApiResponse<?> shopByCategoryList() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getShopByCategoryList());
     }
 
     //
@@ -58,11 +58,16 @@ public record CategoryController(CategoryService categoryService) {
 //        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "featured categories");
 //    }
 //
-//    @DeleteMapping("/{id}")
-//    public ApiResponse<?> delete(@PathVariable Long id) {
-//        categoryService.delete(id);
-//        return ApiResponse.setResponse(HTTPStatus.DELETED, true, null, "successfully deleted");
-//    }
+    @DeleteMapping("/{name}")
+    public ApiResponse<?> delete(@PathVariable String name) {
+
+        try {
+            categoryService.delete(name);
+            return new ApiResponse<>(HTTPStatus.DELETED, null);
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 
 
 }
