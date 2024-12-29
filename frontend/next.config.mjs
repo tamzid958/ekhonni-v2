@@ -12,6 +12,7 @@ const nextConfig = {
       'images.unsplash.com',
       'static.nike.com',
       'picsum.photos',
+      'lh3.googleusercontent.com',
     ],
   },
 };
