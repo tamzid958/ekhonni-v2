@@ -3,6 +3,7 @@ import {Bell, Search, ShoppingCart, User} from "lucide-react";
 import * as React from "react";
 import {cn} from "@/lib/utils";
 import Link from 'next/link';
+import {Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger,} from "@/components/ui/select"
 
 type Props = {
     placeholder?: string;
@@ -36,12 +37,32 @@ export function NavBar({placeholder}: Props) {
                 </div>
             </div>
             <div className="flex gap-4 mr-28 mt-4">
-                <Link href="/watchlist">
+                <Link href="/cart">
                     <Button variant="custom" size="icon2" className="rounded-full">
                         <ShoppingCart/>
                     </Button>
                 </Link>
-                <Button variant="custom" size="icon2" className="rounded-full"><Bell/></Button>
+                {/*<Button variant="custom" size="icon2" className="rounded-full">*/}
+                {/*        <Bell/>*/}
+                {/*</Button>*/}
+
+                <Select>
+                    <SelectTrigger
+                        className="text-primary bg-brand-mid hover:bg-brand-light h-12 w-12 px-3 rounded-full focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
+                        <Bell className="w-5 h-5"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Notifications</SelectLabel>
+                            <SelectItem value="update">System Update Available</SelectItem>
+                            <SelectItem value="message">New Message from John</SelectItem>
+                            <SelectItem value="reminder">Meeting Reminder: 2 PM</SelectItem>
+                            <SelectItem value="offer">Exclusive Offer: 20% Off</SelectItem>
+                            <SelectItem value="alert">Security Alert: Unusual Login Attempt</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+
                 <Button variant="custom" size="icon2" className="rounded-full"><User/></Button>
 
             </div>

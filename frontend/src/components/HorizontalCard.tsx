@@ -5,12 +5,13 @@ import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import * as React from "react";
 
-// Type for watchlist item
+
 interface WatchlistItem {
     id: number;
     title: string;
     img: string;
     price: number;
+    yourBid?: number;
     shipping: number;
     timeLeft: string;
     condition: string;
@@ -21,13 +22,20 @@ interface WatchlistItem {
 // Props type for the component
 interface HorizontalCardProps {
     watchlistItem: WatchlistItem;
+    showBidSection?: boolean;
+    showCheckBox?: boolean;
 }
 
-export const HorizontalCard: React.FC<HorizontalCardProps> = ({watchlistItem = {}}) => {
+export const HorizontalCard: React.FC<HorizontalCardProps> = ({
+                                                                  watchlistItem = {},
+                                                                  showBidSection = false,
+                                                                  showCheckBox = true
+                                                              }) => {
     const {
         title,
         img,
         price,
+        yourBid,
         shipping,
         timeLeft,
         condition,
@@ -38,7 +46,13 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({watchlistItem = {
     return (
         <Card className="flex items-center gap-4 mb-4">
             {/* Checkbox */}
-            <Checkbox className="ml-4"/>
+            <div className="ml-4">
+                {showCheckBox && (
+                    <>
+                        <Checkbox/>
+                    </>
+                )}
+            </div>
 
             {/* Product Image */}
             <CardContent className="w-24 h-24 relative">
@@ -68,6 +82,21 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({watchlistItem = {
                     <li>
                         <Separator orientation="vertical" className="h-full bg-gray-300"/>
                     </li>
+
+                    {showBidSection && (
+                        <>
+                            <li>
+                                <div className="pr-2">
+                                    <p className="text-gray-600">Your Bid: {bidsAmount}</p>
+                                    <CardTitle className="py-0.5">US ${yourBid}</CardTitle>
+                                </div>
+                            </li>
+                            <li>
+                                <Separator orientation="vertical" className="h-full bg-gray-300"/>
+                            </li>
+                        </>
+                    )}
+
                     <li>
                         <div className="px-4">
                             <p className="text-gray-600">TIME ENDS:</p>
