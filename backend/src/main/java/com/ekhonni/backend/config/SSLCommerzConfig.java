@@ -1,13 +1,12 @@
 package com.ekhonni.backend.config;
 
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Author: Asif Iqbal
@@ -15,35 +14,18 @@ import java.util.List;
  */
 
 @Configuration
+@ConfigurationProperties(prefix = "sslcommerz")
 @Data
 public class SSLCommerzConfig {
-
-    @Value("${sslcommerz.api.url}")
     private String apiUrl;
-
-    @Value("${sslcommerz.store.id}")
-    private String store_id;
-
-    @Value("${sslcommerz.store.password}")
-    private String store_passwd;
-
-    @Value("${payment.success.url}")
-    private String success_url;
-
-    @Value("${payment.fail.url}")
-    private String fail_url;
-
-    @Value("${payment.cancel.url}")
-    private String cancel_url;
-
-    @Value("${payment.ipn.url}")
-    private String ipn_url;
-
-    @Value("${sslcommerz.api.validator.url}")
+    private String storeId;
+    private String storePassword;
+    private String successUrl;
+    private String failUrl;
+    private String cancelUrl;
+    private String ipnUrl;
     private String validatorApiUrl;
-
     private int connectionTimeout = 5000;
-    private int readTimeout = 30000;
-    private List<String> allowedIps = new ArrayList<>();
-
+    private int readTimeout = 3000;
+    private Set<String> allowedIps = new HashSet<>();
 }

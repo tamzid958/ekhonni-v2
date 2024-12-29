@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
  * Date: 12/26/24
  */
 @NoArgsConstructor
-public class SSLCommerzPaymentException extends RuntimeException {
-    public SSLCommerzPaymentException(String message) {
+public class InitiatePaymentException extends RuntimeException {
+    public InitiatePaymentException(String message) {
         super(message);
     }
 }
