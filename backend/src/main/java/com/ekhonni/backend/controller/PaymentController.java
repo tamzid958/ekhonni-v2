@@ -1,13 +1,13 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.exception.SSLCommerzPaymentException;
+import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -25,7 +25,7 @@ public record PaymentController(PaymentService paymentService) {
         try {
             return new ApiResponse<>(true, "Success", paymentService.initiatePayment(bidLogId), HttpStatus.OK);
         } catch (Exception e) {
-            throw new SSLCommerzPaymentException("Internal server error");
+            throw new InitiatePaymentException("Internal server error");
         }
     }
 
@@ -48,9 +48,9 @@ public record PaymentController(PaymentService paymentService) {
     }
 
     @PostMapping("/ipn")
-    public ApiResponse<?> handleIpn(@RequestParam Map<String, String> validatorResponse) {
-        paymentService.verifyTransaction(validatorResponse);
-        return new ApiResponse<>(true, "Success", validatorResponse, HttpStatus.OK);
+    public ApiResponse<?> handleIpn(@RequestParam Map<String, String> ipnResponse, HttpServletRequest request) {
+        paymentService.verifyTransaction(ipnResponse, request);
+        return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
 
 }

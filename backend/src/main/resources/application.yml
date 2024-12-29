@@ -1,33 +1,23 @@
 management:
-  health:
-    circuitbreaker:
-      enabled: true
   endpoints:
     web:
       exposure:
-        include: health,metrics,circuitbreakers,retries
+        include: "*"  # or specifically list needed endpoints
   endpoint:
     health:
       show-details: always
-
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        resilience4j.circuitbreaker: true
+        resilience4j.retry: true
 
 resilience4j:
   circuitbreaker:
-    instances:
-      initiatePayment:
-        registerHealthIndicator: true
-        slidingWindowSize: 5
-        minimumNumberOfCalls: 3
-        permittedNumberOfCallsInHalfOpenState: 2
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        waitDurationInOpenState: 20s
-        failureRateThreshold: 50
-        eventConsumerBufferSize: 10
+    metrics:
+      enabled: true
   retry:
-    instances:
-      initiatePayment:
-        maxAttempts: 3
-        waitDuration: 1s
-        enableExponentialBackoff: true
-        exponentialBackoffMultiplier: 2
-
+    metrics:
+      enabled: true

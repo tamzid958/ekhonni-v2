@@ -2,13 +2,14 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.config.SSLCommerzConfig;
 import com.ekhonni.backend.enums.TransactionStatus;
+import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
-import com.ekhonni.backend.exception.SSLCommerzPaymentException;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
 import com.ekhonni.backend.projection.PaymentResponseProjection;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -43,6 +45,7 @@ public class PaymentService {
     private final String storePassword;
     private final String validatorApiUrl;
     private final RestTemplate restTemplate;
+    private final Set<String> allowedIps;
 
     public PaymentService(TransactionService transactionService,
                           ProjectionFactory projectionFactory,
@@ -53,10 +56,11 @@ public class PaymentService {
         this.projectionFactory = projectionFactory;
         this.util = util;
         this.paymentApiUrl = sslCommerzConfig.getApiUrl();
-        this.storeId = sslCommerzConfig.getStore_id();
-        this.storePassword = sslCommerzConfig.getStore_passwd();
+        this.storeId = sslCommerzConfig.getStoreId();
+        this.storePassword = sslCommerzConfig.getStorePassword();
         this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
         this.restTemplate = restTemplate;
+        this.allowedIps = sslCommerzConfig.getAllowedIps();
     }
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
@@ -68,16 +72,18 @@ public class PaymentService {
         return handleInitialResponse(response, transaction);
     }
 
+    @Transactional
     public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, UnsupportedEncodingException e) {
-        log.error("Encoding error for bid {}: {}", bidLogId, e.getMessage());
+        log.warn("Encoding error for bid {}: {}", bidLogId, e.getMessage());
         transactionService.deletePermanentlyByBidLogId(bidLogId);
-        throw new SSLCommerzPaymentException("Internal server error");
+        throw new InitiatePaymentException("Internal server error");
     }
 
+    @Transactional
     public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, Exception e) {
-        log.error("Unexpected error for bid {}: {}", bidLogId, e.getMessage());
+        log.warn("Unexpected error for bid {}: {}", bidLogId, e.getMessage());
         transactionService.deletePermanentlyByBidLogId(bidLogId);
-        throw new SSLCommerzPaymentException("Payment error");
+        throw new InitiatePaymentException("Payment error");
     }
 
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
@@ -109,13 +115,20 @@ public class PaymentService {
                     response
             );
         } else {
-            throw new SSLCommerzPaymentException("Initial response not successful");
+            throw new InitiatePaymentException("Initial response not successful");
         }
     }
 
-    public void verifyTransaction(Map<String, String> ipnResponse) {
+    public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
+        String gatewayIpAddress = getGatewayIpAddress(request);
+        log.info("Payment gateway ip address: {}", gatewayIpAddress);
+        if (!allowedIps.contains(gatewayIpAddress)) {
+            log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
+            throw new InvalidTransactionException();
+        }
+
         if (ipnResponse == null) {
-            log.error("Ipn response is null");
+            log.warn("Ipn response is null");
             throw new InvalidTransactionException();
         }
         IpnResponse response = util.extractIpnResponse(ipnResponse);
@@ -146,7 +159,6 @@ public class PaymentService {
             log.warn("Validation failed for transaction_id: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
-
     }
 
     private boolean validate(String validationId) {
@@ -193,10 +205,10 @@ public class PaymentService {
 
     private void validateInitialResponse(InitialResponse response) {
         if (response == null) {
-            throw new SSLCommerzPaymentException("Null response from payment gateway");
+            throw new InitiatePaymentException("Null response from payment gateway");
         }
         if (response.getStatus() == null) {
-            throw new SSLCommerzPaymentException("Invalid response status");
+            throw new InitiatePaymentException("Invalid response status");
         }
     }
 
@@ -233,6 +245,14 @@ public class PaymentService {
         transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
+    }
+
+    private String getGatewayIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     private boolean ipnHashVerify(final Map<String, String> response) {

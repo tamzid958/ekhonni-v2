@@ -8,6 +8,7 @@ import com.ekhonni.backend.model.Transaction;
  * Date: 12/19/24
  */
 public interface TransactionRepository extends BaseRepository<Transaction, Long> {
-    BidLog findBidLogById(Long id);
+    BidLog findBidLogById(Long bidLogId);
     void deleteByBidLogId(Long bidLogId);
+    boolean existsByBidLogIdAndDeletedAtIsNull(Long bidLogId);
 }
