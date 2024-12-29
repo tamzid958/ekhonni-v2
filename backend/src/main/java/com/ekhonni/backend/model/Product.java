@@ -12,7 +12,10 @@ import com.ekhonni.backend.enums.ProductCondition;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -20,7 +23,6 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "product")
-
 public class Product extends BaseEntity<Long> {
 
     @NotBlank
@@ -33,8 +35,8 @@ public class Product extends BaseEntity<Long> {
     @NotBlank
     private String description;
 
-    private boolean approved = false;
-    private boolean sold = false;
+    private boolean approved;
+    private boolean sold;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,11 +46,10 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name = "seller_id", nullable = false)
-//    private User seller;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
 
 
-    //image adding
 }
 

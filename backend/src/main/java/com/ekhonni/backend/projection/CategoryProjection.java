@@ -7,14 +7,10 @@
 
 package com.ekhonni.backend.projection;
 
-import com.ekhonni.backend.model.Category;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.util.List;
-
 public interface CategoryProjection {
     Long getId();
-    String getName();
-    boolean isActive();
 
+    String getName();
+
+    boolean isActive();
 }

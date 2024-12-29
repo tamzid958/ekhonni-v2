@@ -8,11 +8,11 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import com.fasterxml.jackson.annotation.*;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
-
-import java.util.List;
 
 
 @Getter
@@ -20,16 +20,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-
+@ToString
 public class Category extends BaseEntity<Long> {
 
     @Column(nullable = false, unique = true)
     private String name;
-    private boolean active = true;
+    private boolean active;
 
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
-
 
 }

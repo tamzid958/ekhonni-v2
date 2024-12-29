@@ -5,7 +5,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -15,7 +18,7 @@ import lombok.*;
 public class BidLog extends BaseEntity<Long> {
 
     @ManyToOne
-    @JoinColumn(name = "bid_id") // Ensures proper foreign key mapping
+    @JoinColumn(name = "bid_id")
     private Bid bid;
 
     @ManyToOne
@@ -23,15 +26,15 @@ public class BidLog extends BaseEntity<Long> {
     private User bidder;
 
     @Column
-    private Double amount;
+    private Double amount = 0.0;
 
     @Column
-    private String status;
+    private String status = "Pending";
 
-    public BidLog(Double amount, String status){
+    public BidLog(Double amount, String status) {
+        super();
         this.amount = amount;
         this.status = status;
     }
-
 }
 

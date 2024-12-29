@@ -10,8 +10,6 @@ package com.ekhonni.backend.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Getter
@@ -34,7 +32,6 @@ public enum HTTPStatus {
 
     private final int code;
     private final boolean isSuccess;
-
 
 
 }

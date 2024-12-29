@@ -7,11 +7,26 @@
 
 package com.ekhonni.backend.dto;
 
-import java.time.LocalTime;
+import com.ekhonni.backend.enums.ProductCondition;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
-public class ProductDTO {
-//    private Long id;
-//    private LocalTime
+public record ProductDTO(@NotBlank
+                         String name,
+                         @Positive
+                         @Column(nullable = false)
+                         Double price,
+                         @NotBlank
+                         String description,
+                         @Enumerated(EnumType.STRING)
+                         @Column(nullable = false)
+                         ProductCondition condition,
+                         String category) {
+
+
 }
 
 

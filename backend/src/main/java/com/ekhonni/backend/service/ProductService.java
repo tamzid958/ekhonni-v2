@@ -8,96 +8,101 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.Request.ProductRequest;
+import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.specification.ProductSpecifications;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
-
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
-import java.util.List;
-import java.util.Optional;
-
 @Service
-public class ProductService {
+public class ProductService extends BaseService<Product, Long> {
 
-       private final ProductRepository productRepository;
-
-
-
-       public ProductService(ProductRepository productRepository, ProductSpecifications productSpecifications) {
-         this.productRepository = productRepository;
-       }
-
-       public void create(Product product){
-           productRepository.save(product);
-       }
-
-//       public Page<ProductProjection> getAll(Pageable pageable) {
-//           return productRepository.findAllProjection(pageable);
-//       }
-public List<ProductProjection> getAll(ProductRequest productRequest) {
+    ProductRepository productRepository;
+    CategoryService categoryService;
 
 
-    Specification<Product> spec = Specification.where(null);
+    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+        super(productRepository);
+        this.productRepository = productRepository;
+        this.categoryService = categoryService;
+    }
 
 
-        spec = spec.and(ProductSpecifications.hasMinimumPrice(productRequest.getMinPrice()));
+    @Transactional
+    public void create(ProductDTO productDTO) {
+        // need to change something
+        Authentication authenticated = SecurityContextHolder.getContext().getAuthentication();
+        if (authenticated == null) {
+            throw new RuntimeException("user not authenticated");
+        }
+        User user = (User) authenticated.getPrincipal();
+        Category category = categoryService.getByName(productDTO.category());
 
-        List<ProductProjection> result = productRepository.findBy(spec, q -> q
-//                .project("name")
-                .as(ProductProjection .class)
-                .all()
+
+        Product product = new Product(
+                productDTO.name(),
+                productDTO.price(),
+                productDTO.description(),
+                false,
+                false,
+                productDTO.condition(),
+                category,
+                user
         );
-
-    return result;
-}
-
-
-       public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable){
-           return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
-       }
+        productRepository.save(product);
+    }
 
 
-       public Optional<ProductProjection> getOne(Long Id){
-           return Optional.ofNullable(productRepository.findProductProjectionById(Id));
-       }
-
-       public Page<ProductProjection> search(String searchText, Pageable pageable){
-           return productRepository.searchProducts(searchText, pageable);
-       }
+//    public ProductProjection updateOne(Long id, ProductDTO productDTO) {
+//        this.update(id, productDTO);
+//        return productRepository.findProductProjectionById(id);
+//    }
 
 
-       public boolean delete(Long id){
-           if (productRepository.existsById(id)) {
-               productRepository.deleteById(id);
-               return true;
-           }
-           return false;
-       }
-
-       @Transactional
-       public boolean approveProduct(Long id){
-           productRepository.findById(id).ifPresent(product -> {
-               product.setApproved(true);
-               productRepository.save(product);
-           });
-           return productRepository.existsById(id);
-       }
-
-       public boolean declineProduct(Long id){
-           productRepository.findById(id).ifPresent(product -> {
-               // notify seller
-           });
-           return true;
-       }
+    public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable) {
+        return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
+    }
 
 
+//    public Optional<ProductProjection> getOne(Long Id) {
+//        return Optional.ofNullable(productRepository.findProductProjectionById(Id));
+//    }
+
+    public Page<ProductProjection> search(String searchText, Pageable pageable) {
+        return productRepository.searchProducts(searchText, pageable);
+    }
+
+
+//    public boolean delete(Long id) {
+//        if (productRepository.existsById(id)) {
+//            productRepository.deleteById(id);
+//            return true;
+//        }
+//        return false;
+//    }
+
+    @Transactional
+    public boolean approveProduct(Long id) {
+        productRepository.findById(id).ifPresent(product -> {
+            product.setApproved(true);
+            productRepository.save(product);
+        });
+        return productRepository.existsById(id);
+    }
+
+    public boolean declineProduct(Long id) {
+        productRepository.findById(id).ifPresent(product -> {
+            // notify seller
+        });
+        return true;
+    }
 
 
 }

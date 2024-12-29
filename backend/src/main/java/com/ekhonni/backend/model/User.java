@@ -1,14 +1,21 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +29,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity<UUID> {
+public class User extends BaseEntity<UUID> implements UserDetails, Serializable {
 
     @NotBlank
     private String name;
@@ -31,25 +38,25 @@ public class User extends BaseEntity<UUID> {
     private String email;
     @NotBlank
     private String password;
-    @NotBlank
-    private String role;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @NotBlank
     private String phone;
     @NotBlank
     private String address;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
-    @OneToMany(mappedBy = "bidder")
-    private List<BidLog> bidlog;
 
-    public User(String name, String email, String password, String role, String phone, String address) {
-        super();
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.phone = phone;
-        this.address = address;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getEmail();
     }
 
 }

@@ -9,7 +9,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -17,14 +21,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account extends BaseEntity<Long> {
-    @NonNull
-    @OneToOne
-    private User user;
-
     @Column(nullable = false)
     private double balance = 0.0;
-
     @NotBlank
     private String status;
-
 }

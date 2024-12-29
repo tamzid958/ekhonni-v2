@@ -6,6 +6,12 @@
  */
 
 package com.ekhonni.backend.dto;
-public class CategoryDTO {
 
+import jakarta.persistence.Column;
+
+public record CategoryDTO(
+        @Column(nullable = false, unique = true)
+        String name,
+        String parentCategory
+) {
 }

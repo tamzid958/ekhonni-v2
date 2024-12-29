@@ -1,0 +1,18 @@
+//    public List<ProductProjection> getAll(ProductRequest productRequest) {
+//
+//
+//        Specification<Product> spec = Specification.where(null);
+//
+//
+//        spec = spec.and(ProductSpecifications.hasMinimumPrice(productRequest.getMinPrice()));
+//
+//        List<ProductProjection> result = productRepository.findBy(spec, q -> q
+////                .project("name")
+//                        .as(ProductProjection.class)
+//                        .all()
+//        );
+//
+//        return result;
+//    }
+
+

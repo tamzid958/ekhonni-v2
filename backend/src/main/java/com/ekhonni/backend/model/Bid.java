@@ -18,13 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Bid extends BaseEntity<Long> {
-
-    @OneToMany(mappedBy = "bid", cascade = CascadeType.ALL)
-    private List<BidLog> bidLog;
-
-    @OneToOne
-    private User buyer;
-
     @OneToOne
     private Product product;
 }
