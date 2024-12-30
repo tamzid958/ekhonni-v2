@@ -1,31 +1,46 @@
 package com.ekhonni.backend.controller;
 
+
 import com.ekhonni.backend.dto.BidCreateDTO;
-import com.ekhonni.backend.response.ApiResponse;
+import com.ekhonni.backend.dto.BidCreateDTO;
+import com.ekhonni.backend.dto.BidResponseDTO;
+import com.ekhonni.backend.model.Bid;
+import com.ekhonni.backend.projection.BidProjection;
 import com.ekhonni.backend.service.BidService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * Author: Asif Iqbal
- * Date: 12/22/24
- */
+import java.util.List;
+
+
 @RestController
-@AllArgsConstructor
-@RequestMapping("/api/v2/bid")
-public class BidController {
+@RequestMapping("/api/v2/bidlog")
+public record BidController(BidService bidService) {
 
-    private final BidService bidService;
-
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
-        bidService.create(bidCreateDTO);
-        return new ApiResponse<>(true, "Success", null, HttpStatus.CREATED);
+    public BidResponseDTO create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
+        return bidService.create(bidCreateDTO);
     }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @GetMapping("/{id}")
+    public Bid getByID(@PathVariable Long id){
+        return bidService.get(id);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @GetMapping
+    public List<BidProjection> getAll(){
+        return bidService.getAll(BidProjection.class);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PutMapping("/{id}/update")
+    public BidCreateDTO update(@PathVariable Long id, @RequestBody BidCreateDTO bidCreateDTO){
+        return bidService.update(id, bidCreateDTO);
+    }
+
 
 }

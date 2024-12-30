@@ -1,8 +1,25 @@
 package com.ekhonni.backend.dto;
 
-/**
- * Author: Asif Iqbal
- * Date: 12/22/24
- */
-public record BidCreateDTO(Long productId) {
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+import java.util.UUID;
+
+public record BidCreateDTO(
+        @NotNull(message = "Bid id cannot be null")
+        Long bidId,
+        @NotNull(message = "Bidder id cannot be blank")
+        UUID bidderId,
+        @NotNull(message = "Amount cannot be null")
+        @Digits(integer = 10, fraction = 2, message = "Amount must have up to 10 integer digits and 2 decimal places")
+        @Positive
+        Double amount,
+        String currency) {
+
+    public BidLogCreateDTO {
+        if (currency == null) {
+            currency = "BDT";
+        }
+    }
 }
