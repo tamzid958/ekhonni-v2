@@ -1,7 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import com.ekhonni.backend.enums.BidLogStatus;
+import com.ekhonni.backend.enums.BidStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BidLog extends BaseEntity<Long> {
+public class Bid extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -30,7 +30,7 @@ public class BidLog extends BaseEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BidLogStatus status;
+    private BidStatus status;
 
 }
 

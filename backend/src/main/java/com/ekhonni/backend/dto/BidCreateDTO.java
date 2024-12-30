@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Positive;
 import java.util.UUID;
 
 public record BidCreateDTO(
-        @NotNull(message = "Bid id cannot be null")
-        Long bidId,
+        @NotNull(message = "Product id cannot be null")
+        Long productId,
         @NotNull(message = "Bidder id cannot be blank")
         UUID bidderId,
         @NotNull(message = "Amount cannot be null")
@@ -17,7 +17,7 @@ public record BidCreateDTO(
         Double amount,
         String currency) {
 
-    public BidLogCreateDTO {
+    public BidCreateDTO {
         if (currency == null) {
             currency = "BDT";
         }

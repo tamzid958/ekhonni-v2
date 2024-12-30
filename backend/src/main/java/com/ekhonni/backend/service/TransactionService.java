@@ -1,10 +1,9 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.enums.BidLogStatus;
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
-import com.ekhonni.backend.exception.BidLogNotFoundException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
-import com.ekhonni.backend.model.BidLog;
+import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
@@ -20,34 +19,34 @@ import org.springframework.stereotype.Service;
 public class TransactionService extends BaseService<Transaction, Long> {
 
     private final TransactionRepository transactionRepository;
-    private final BidLogService bidLogService;
+    private final BidService bidService;
 
-    public TransactionService(TransactionRepository transactionRepository, BidLogService bidLogService) {
+    public TransactionService(TransactionRepository transactionRepository, BidService bidService) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
-        this.bidLogService = bidLogService;
+        this.bidService = bidService;
     }
 
     @Transactional
-    public Transaction create(Long bidLogId) {
-        BidLog bidLog = bidLogService.get(bidLogId);
-        if (bidLog.getStatus() != BidLogStatus.ACCEPTED) {
-            log.warn("Transaction request for unaccepted bid: {}", bidLogId);
+    public Transaction create(Long bidId) {
+        Bid bid = bidService.get(bidId);
+        if (bid.getStatus() != BidStatus.ACCEPTED) {
+            log.warn("Transaction request for unaccepted bid: {}", bidId);
             throw new InvalidTransactionException();
         }
         Transaction transaction = new Transaction();
-        transaction.setBidLog(bidLog);
+        transaction.setBid(bid);
         transaction.setStatus(TransactionStatus.PENDING);
         return transactionRepository.save(transaction);
     }
 
     @Transactional
-    public void deletePermanentlyByBidLogId(Long bidLogId) {
-        transactionRepository.deleteByBidLogId(bidLogId);
+    public void deletePermanentlyByBidId(Long bidId) {
+        transactionRepository.deleteByBidId(bidId);
     }
 
-    public boolean existsByBidLogId(Long bidLogId) {
-        return transactionRepository.existsByBidLogIdAndDeletedAtIsNull(bidLogId);
+    public boolean existsByBidId(Long bidId) {
+        return transactionRepository.existsByBidIdAndDeletedAtIsNull(bidId);
     }
 
 }

@@ -1,11 +1,11 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.dto.BidLogCreateDTO;
-import com.ekhonni.backend.dto.BidLogResponseDTO;
-import com.ekhonni.backend.enums.BidLogStatus;
+import com.ekhonni.backend.dto.BidCreateDTO;
+import com.ekhonni.backend.dto.BidResponseDTO;
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.model.Bid;
+import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.repository.BidLogRepository;
 import com.ekhonni.backend.repository.BidRepository;
 import jakarta.transaction.Transactional;
 import lombok.*;
@@ -14,24 +14,24 @@ import org.springframework.stereotype.Service;
 @Setter
 @Getter
 @Service
-public class BidLogService extends BaseService<Bid, Long> {
-    private final BidLogRepository bidLogRepository;
+public class BidService extends BaseService<Bid, Long> {
+    private final BidRepository bidRepository;
     private final UserService userService;
-    private final BidService bidService;
+    private final ProductService productService;
 
-    public BidLogService(BidLogRepository bidLogRepository, UserService userRepository, BidService bidRepository) {
-        super(bidLogRepository);
-        this.bidLogRepository = bidLogRepository;
+    public BidService(BidRepository bidRepository, UserService userRepository, ProductService productService) {
+        super(bidRepository);
+        this.bidRepository = bidRepository;
         this.userService = userRepository;
-        this.bidService = bidRepository;
+        this.productService = productService;
     }
 
     @Transactional
-    public BidLogResponseDTO create(BidLogCreateDTO bidLogCreateDTO) {
-        Bid bid = bidService.get(bidLogCreateDTO.bidId());
-        User bidder = userService.get(bidLogCreateDTO.bidderId());
-        Bid bidLog = new Bid(bid, bidder, bidLogCreateDTO.amount(), bidLogCreateDTO.currency(), BidLogStatus.PENDING);
-        bidLogRepository.save(bidLog);
-        return BidLogResponseDTO.from(bidLogCreateDTO, bidLog.getId(), bidLog.getStatus());
+    public BidResponseDTO create(BidCreateDTO bidCreateDTO) {
+        Product product = productService.get(bidCreateDTO.productId());
+        User bidder = userService.get(bidCreateDTO.bidderId());
+        Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), bidCreateDTO.currency(), BidStatus.PENDING);
+        bidRepository.save(bid);
+        return BidResponseDTO.from(bidCreateDTO, bid.getId(), bid.getStatus());
     }
 }

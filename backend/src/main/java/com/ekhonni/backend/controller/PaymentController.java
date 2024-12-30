@@ -49,6 +49,7 @@ public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/ipn")
     public ApiResponse<?> handleIpn(@RequestParam Map<String, String> ipnResponse, HttpServletRequest request) {
+        log.info("IPN Response: {}", ipnResponse);
         paymentService.verifyTransaction(ipnResponse, request);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }
