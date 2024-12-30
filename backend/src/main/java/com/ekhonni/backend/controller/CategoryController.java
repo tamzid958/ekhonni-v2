@@ -9,6 +9,7 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
@@ -32,12 +33,19 @@ public record CategoryController(CategoryService categoryService) {
         }
     }
 
+    //done
+    @GetMapping
+    public ApiResponse<?> getAllCategories() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategories());
+    }
 
     //done
-    @GetMapping("/{name}")
+    @GetMapping("/{name}/subCategories")
     public ApiResponse<?> getSubCategories(@PathVariable String name) {
+
         try {
             return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubCategories(name));
+
         } catch (RuntimeException e) {
             return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
@@ -46,10 +54,6 @@ public record CategoryController(CategoryService categoryService) {
 
     }
 
-    @GetMapping("/shop-by-category")
-    public ApiResponse<?> shopByCategoryList() {
-        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getShopByCategoryList());
-    }
 
     //
 //    @GetMapping("/featured")
@@ -64,6 +68,16 @@ public record CategoryController(CategoryService categoryService) {
         try {
             categoryService.delete(name);
             return new ApiResponse<>(HTTPStatus.DELETED, null);
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PatchMapping
+    public ApiResponse<?> updateCategory(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
+        try {
+            categoryService.updateCategory(categoryUpdateDTO);
+            return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
         } catch (Exception e) {
             return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
