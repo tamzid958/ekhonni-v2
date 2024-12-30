@@ -1,9 +1,10 @@
 package com.ekhonni.backend.initializer;
 
-import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
+import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ public class BackendApplicationInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
     @Value("${spring.security.admin.email}")
     private String adminEmail;
     @Value("${spring.security.admin.password}")
@@ -28,22 +30,30 @@ public class BackendApplicationInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!userRepository.existsByRole(Role.SUPER_ADMIN)) {
-            Account account = new Account(0.0, "Active");
 
-            User user = new User(
-                    "Md Jahid Hasan",
-                    adminEmail,
-                    passwordEncoder.encode(adminPassword),
-                    Role.SUPER_ADMIN,
-                    "01710108965",
-                    "Shafipur, Kaliakair, Gazipur",
-                    account,
-                    null
-            );
+        if (!roleRepository.existsByName("SUPER_ADMIN")) {
+            Role superAdmin = new Role("SUPER_ADMIN", "An Admin with highest level of privilege");
+            roleRepository.save(superAdmin);
 
-            accountRepository.save(account);
-            userRepository.save(user);
+            if (!userRepository.existsByRole(superAdmin)) {
+                Account account = new Account(0.0, "Active");
+                User user = new User(
+                        "Md Jahid Hasan",
+                        adminEmail,
+                        passwordEncoder.encode(adminPassword),
+                        "01710108965",
+                        "Shafipur, Kaliakair, Gazipur",
+                        superAdmin,
+                        account,
+                        null
+                );
+
+                accountRepository.save(account);
+                userRepository.save(user);
+
+            }
         }
+
+
     }
 }

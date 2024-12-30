@@ -47,8 +47,8 @@ public record AccountController(AccountService accountService) {
         return new ApiResponse<>(true, "Success", accountService.getAllIncludingDeleted(), HttpStatus.OK);
     }
 
-    @PostMapping("/{user_id}")
-    public ApiResponse<?> create(@PathVariable("user_id") UUID userId) {
+    @PostMapping("/{userId}")
+    public ApiResponse<?> create(@PathVariable("userId") UUID userId) {
         return new ApiResponse<>(true, "Success", accountService.create(userId), HttpStatus.CREATED);
     }
 

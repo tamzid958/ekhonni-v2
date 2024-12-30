@@ -1,12 +1,10 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,19 +21,19 @@ public class AdminController {
 
     AdminService adminService;
 
-    @PostMapping("/add-admin")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-    public ResponseEntity<?> add(@RequestBody EmailDTO emailDTO) {
-        adminService.add(emailDTO.email());
-        return ResponseEntity.ok("admin added");
-    }
-
-    @PostMapping("/remove-admin")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-    public ResponseEntity<?> remove(@RequestBody EmailDTO emailDTO) {
-        adminService.remove(emailDTO.email());
-        return ResponseEntity.ok("admin removed");
-    }
+//    @PostMapping("/add-admin")
+//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
+//    public ResponseEntity<?> add(@RequestBody EmailDTO emailDTO) {
+//        adminService.add(emailDTO.email());
+//        return ResponseEntity.ok("admin added");
+//    }
+//
+//    @PostMapping("/remove-admin")
+//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
+//    public ResponseEntity<?> remove(@RequestBody EmailDTO emailDTO) {
+//        adminService.remove(emailDTO.email());
+//        return ResponseEntity.ok("admin removed");
+//    }
 
     @GetMapping("/users")
     public Page<UserProjection> getAllUser(Pageable pageable) {

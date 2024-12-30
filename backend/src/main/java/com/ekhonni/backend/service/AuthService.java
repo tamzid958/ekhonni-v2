@@ -2,9 +2,9 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
-import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
@@ -40,13 +40,15 @@ public class AuthService {
 
         Account account = new Account(0.0, "Active");
 
+        Role userRole = new Role("USER", "A General Registered User");
+
         User user = new User(
                 userDTO.name(),
                 userDTO.email(),
                 passwordEncoder.encode(userDTO.password()),
-                Role.USER,
                 userDTO.phone(),
                 userDTO.address(),
+                userRole,
                 account,
                 null
         );

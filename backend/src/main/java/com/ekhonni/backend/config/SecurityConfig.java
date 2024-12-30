@@ -1,9 +1,9 @@
 package com.ekhonni.backend.config;
 
-import com.ekhonni.backend.enums.Role;
 import com.ekhonni.backend.filter.JWTFilter;
+import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +30,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
-
-    @Autowired
     private JWTFilter jwtFilter;
+    private RoleRepository roleRepository;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
@@ -54,8 +53,8 @@ public class SecurityConfig {
                 csrf(AbstractHttpConfigurer::disable).
                 authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_URLS).permitAll().
-                                requestMatchers(USER_URLS).hasAnyAuthority(Role.USER.toString(), Role.ADMIN.toString()).
-                                requestMatchers(ADMIN_URLS).hasAnyAuthority(Role.ADMIN.toString(), Role.SUPER_ADMIN.toString()).
+                                requestMatchers(USER_URLS).hasAnyAuthority("USER", "ADMIN").
+                                requestMatchers(ADMIN_URLS).hasAnyAuthority("ADMIN", "SUPER_ADMIN").
                                 anyRequest().authenticated()
                 );
 
