@@ -7,6 +7,6 @@ package com.ekhonni.backend.exception;
 public class BidLogNotFoundException extends RuntimeException {
     @Override
     public String getMessage() {
-        return "BidLog not found.";
+        return "Bid not found.";
     }
 }

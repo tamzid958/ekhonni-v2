@@ -25,15 +25,15 @@ import java.util.Optional;
 public record ProductController(ProductService productService){
 
     @GetMapping
-    public List<ProductDTO> getAll(){
+    public List<Product> getAll(){
         return productService.getAll();
     }
 
-    @GetMapping("/by-categories/{category_id}")
-    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        //System.out.println(categoryId);
-        return productService.getAllByCategoryId(categoryId);
-    }
+//    @GetMapping("/by-categories/{category_id}")
+//    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
+//        //System.out.println(categoryId);
+//        return productService.getAllByCategoryId(categoryId);
+//    }
 
 //    @GetMapping
 //    public ResponseEntity<List<ProductDTO>> getAll() {

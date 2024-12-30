@@ -19,7 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -44,14 +44,14 @@ public class PaymentService {
     private final String storeId;
     private final String storePassword;
     private final String validatorApiUrl;
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
     private final Set<String> allowedIps;
 
     public PaymentService(TransactionService transactionService,
                           ProjectionFactory projectionFactory,
                           Util util,
                           SSLCommerzConfig sslCommerzConfig,
-                          RestTemplate restTemplate) {
+                          RestClient restClient) {
         this.transactionService = transactionService;
         this.projectionFactory = projectionFactory;
         this.util = util;
@@ -59,27 +59,28 @@ public class PaymentService {
         this.storeId = sslCommerzConfig.getStoreId();
         this.storePassword = sslCommerzConfig.getStorePassword();
         this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
-        this.restTemplate = restTemplate;
+        this.restClient = restClient;
         this.allowedIps = sslCommerzConfig.getAllowedIps();
     }
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    public PaymentResponseProjection initiatePayment(Long bidLogId) throws UnsupportedEncodingException {
+    public PaymentResponseProjection initiatePayment(Long bidId) throws UnsupportedEncodingException {
         try {
-            Transaction transaction = transactionService.create(bidLogId);
+            Transaction transaction = transactionService.create(bidId);
             String requestBody = prepareRequestBody(transaction);
             InitialResponse response = sendPaymentRequest(requestBody);
+            validateInitialResponse(response);
             return handleInitialResponse(response, transaction);
         } catch (Exception e) {
-            log.warn("Error for bid {}: {}", bidLogId, e.getMessage());
-            transactionService.deletePermanentlyByBidLogId(bidLogId);
+            log.warn("Error processing transaction for bid {}: {}", bidId, e.getMessage());
+            transactionService.deletePermanentlyByBidId(bidId);
             throw e;
         }
     }
 
-    public PaymentResponseProjection initiatePaymentFallback(Long bidLogId, Throwable throwable) {
-        log.warn("Fallback triggered for bid {} due to error: {}", bidLogId, throwable.getMessage());
+    public PaymentResponseProjection initiatePaymentFallback(Long bidId, Throwable throwable) {
+        log.warn("Fallback triggered for bid {} due to error: {}", bidId, throwable.getMessage());
         throw new InitiatePaymentException("Payment error");
     }
 
@@ -88,19 +89,12 @@ public class PaymentService {
     }
 
     private InitialResponse sendPaymentRequest(String requestBody) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<InitialResponse> responseEntity = restTemplate.postForEntity(
-                paymentApiUrl,
-                requestEntity,
-                InitialResponse.class
-        );
-
-        InitialResponse response = responseEntity.getBody();
-        validateInitialResponse(response);
-        return response;
+        return restClient.post()
+                .uri(paymentApiUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(requestBody)
+                .retrieve()
+                .body(InitialResponse.class);
     }
 
     private PaymentResponseProjection handleInitialResponse(InitialResponse response, Transaction transaction) {
@@ -159,11 +153,15 @@ public class PaymentService {
 
     private boolean validate(String validationId) {
         String validationUrl = validatorApiUrl + "?val_id=" + validationId
-                + "&store_id=" + storeId + "&store_passwd=" + storePassword + "&v=1&format=json";
+                + "&store_id=" + storeId
+                + "&store_passwd=" + storePassword
+                + "&v=1&format=json";
 
-        ResponseEntity<ValidationResponse> responseEntity = restTemplate.getForEntity(validationUrl, ValidationResponse.class);
-        ValidationResponse response = responseEntity.getBody();
-        log.info("Validation response: {}", response);
+        ValidationResponse response = restClient.get()
+                .uri(validationUrl)
+                .retrieve()
+                .body(ValidationResponse.class);
+
         if (response == null) {
             return false;
         }
@@ -173,13 +171,15 @@ public class PaymentService {
         if (!verifyStatus(response.getStatus())) {
             String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
             updateStatus(transaction, status);
-            log.warn("Validation transaction_id: {}, status: {}", response.getTranId(), response.getStatus());
+            log.warn("Validation transaction_id: {}, status: {}",
+                    response.getTranId(), response.getStatus());
             return false;
         }
 
         if (!verifyAmount(transaction, response)) {
             updateStatus(transaction, "INVALID");
-            log.warn("Validation amount or currency don't match for transaction_id: {}", response.getTranId());
+            log.warn("Validation amount or currency don't match for transaction_id: {}",
+                    response.getTranId());
             return false;
         }
 

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends BaseRepository<Product, Long> {
 
 
 //    @Query("SELECT p FROM Product p where p.parentCategoryId=?1 AND p.productApproved=false")

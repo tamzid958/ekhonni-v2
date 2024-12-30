@@ -19,8 +19,8 @@ import lombok.Setter;
 @Entity
 public class Transaction extends BaseEntity<Long> {
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bid_log_id", nullable = false)
-    private BidLog bidLog;
+    @JoinColumn(name = "bid_id", nullable = false)
+    private Bid bid;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -31,19 +31,19 @@ public class Transaction extends BaseEntity<Long> {
     private String bankTransactionId;
 
     public double getAmount() {
-        return bidLog.getAmount();
+        return bid.getAmount();
     }
 
     public String getCurrency() {
-        return bidLog.getCurrency();
+        return bid.getCurrency();
     }
 
     public Product getProduct() {
-        return bidLog.getBid().getProduct();
+        return bid.getProduct();
     }
 
     public User getBuyer() {
-        return bidLog.getBidder();
+        return bid.getBidder();
     }
 
     public Account getBuyerAccount() {

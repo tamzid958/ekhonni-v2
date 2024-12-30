@@ -2,7 +2,6 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.BidCreateDTO;
-import com.ekhonni.backend.dto.BidCreateDTO;
 import com.ekhonni.backend.dto.BidResponseDTO;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.projection.BidProjection;
@@ -15,7 +14,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v2/bidlog")
+@RequestMapping("/api/v2/bid")
 public record BidController(BidService bidService) {
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -26,7 +25,7 @@ public record BidController(BidService bidService) {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/{id}")
-    public Bid getByID(@PathVariable Long id){
+    public Bid get(@PathVariable Long id){
         return bidService.get(id);
     }
 
