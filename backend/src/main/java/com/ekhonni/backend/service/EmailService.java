@@ -26,10 +26,16 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
+    @Value("${spring.constant.email-verification-url}")
+    private String emailVerificationUrl;
+
+    @Value("${spring.constant.password-reset-url}")
+    private String passwordResetUrl;
+
     public void sendVerificationEmail(String recipientEmail, String token) {
 
         String subject = "Email Verification";
-        String verificationUrl = "http://localhost:8080/api/v2/auth/verify-email?token=" + token;
+        String verificationUrl = emailVerificationUrl + token;
         String message = "Please click the following link to verify your email: " + verificationUrl;
 
         SimpleMailMessage email = new SimpleMailMessage();
@@ -45,7 +51,7 @@ public class EmailService {
     public void sendPasswordResetEmail(String recipientEmail, String token) {
 
         String subject = "Password Reset";
-        String resetUrl = "http://localhost:8080/api/v2/auth/reset-password?token=" + token;
+        String resetUrl = passwordResetUrl + token;
         String message = "Please click the following link to reset your password: " + resetUrl;
 
         SimpleMailMessage email = new SimpleMailMessage();

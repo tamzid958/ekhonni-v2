@@ -29,7 +29,7 @@ public class EmailVerificationService {
     private final TokenUtil tokenUtil;
 
 
-    public String verifyEmail(String token) {
+    public String verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));

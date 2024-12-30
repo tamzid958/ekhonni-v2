@@ -44,16 +44,16 @@ public class AuthController {
 
     @GetMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
-        return ResponseEntity.ok(emailVerificationService.verifyEmail(token));
+        return ResponseEntity.ok(emailVerificationService.verify(token));
     }
 
     @PostMapping("/password-reset-request")
     public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
-        return ResponseEntity.ok(passwordResetService.requestPasswordReset(passwordResetDTO.email()));
+        return ResponseEntity.ok(passwordResetService.requestReset(passwordResetDTO.email()));
     }
 
-    @PostMapping("/reset-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(passwordResetService.resetPassword(token, resetPasswordDTO.newPassword()));
+        return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
     }
 }
