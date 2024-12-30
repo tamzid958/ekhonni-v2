@@ -28,7 +28,7 @@ public class PasswordResetService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public String requestPasswordReset(String email) {
+    public String requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
 
@@ -44,7 +44,7 @@ public class PasswordResetService {
 
     }
 
-    public String resetPassword(String token, String newPassword) {
+    public String reset(String token, String newPassword) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid Token"));
@@ -53,6 +53,8 @@ public class PasswordResetService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+
+        verificationTokenRepository.delete(verificationToken);
 
         return "Password Reset Successfully";
     }
