@@ -48,7 +48,8 @@ const handler = NextAuth({
     secret: process.env.JWT_SECRET || "supersecret",
   },
   pages: {
-    signIn: "/auth/login", // Use your custom login page
+    signIn: "/auth/login",
+    signOut:  "/auth/logout",
   },
   callbacks: {
 
@@ -63,7 +64,6 @@ const handler = NextAuth({
         token.email = user.email;
         token.name = user.name;
       }
-
       return token;
     },
     async session({ session, token }) {
