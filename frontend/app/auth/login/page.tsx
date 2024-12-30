@@ -92,9 +92,9 @@ export default function AuthForm() {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-50">
-      <Card className="w-96 max-h-[90vh] flex flex-col">
+      <Card className="w-96 max-h-[96vh] flex flex-col">
         <CardContent className="overflow-auto flex-grow">
-          <h2 className="text-lg font-bold mb-4 text-center">
+          <h2 className="text-lg font-bold mb-4 mt-4  text-center">
             {isSignup ? "Sign Up" : "Log In"}
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
