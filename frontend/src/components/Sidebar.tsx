@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation'; // Import usePathname hook
 import {
   X,
   LogOut,
@@ -36,16 +37,17 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const items = [
-  { title: "Edit Profile", url: "buyerProfile", icon: Settings },
-  { title: "About", url: "#", icon: Info },
-  { title: "Inbox", url: "#", icon: Inbox },
-  { title: "Feedback", url: "#", icon: MessageCircle },
-  { title: "Watchlist", url: "#", icon: List },
-  { title: "Shop", url: "#", icon: ShoppingBag },
+  { title: "Edit Profile", url: "/editProfile", icon: Settings },
+  { title: "About", url: "/userAbout", icon: Info },
+  { title: "Inbox", url: "/inbox", icon: Inbox },
+  { title: "Feedback", url: "/feedback", icon: MessageCircle },
+  { title: "Watchlist", url: "/watchlist", icon: List },
+  { title: "Shop", url: "/shop", icon: ShoppingBag },
 ];
 
 export function AppSidebar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const handleClose = () => {
@@ -71,7 +73,7 @@ export function AppSidebar() {
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className=" justify-end p-4 text-black-500 font-bold hover:text-red-700"
+              className="justify-end p-4 text-black-500 font-bold hover:text-red-700"
             >
               <X className="w-6 h-6" />
             </button>
@@ -82,10 +84,17 @@ export function AppSidebar() {
               <SidebarGroupContent className="font-bold">
                 <SidebarMenu>
                   {items.map((item) => (
-                    <SidebarMenuButton key={item.title} onClick={() => router.push(item.url)}>
+                    <SidebarMenuButton
+                      key={item.title}
+                      onClick={() => router.push(item.url)}
+                    >
                       <SidebarMenuItem
                         href={item.url}
-                        className="flex items-center space-x-2 pt-1"
+                        className={`flex items-center space-x-2 pt-1 ${
+                          pathname === item.url
+                            ? 'bg-blue-500 text-white rounded'
+                            : 'text-gray-700 hover:bg-gray-200'
+                        }`}
                       >
                         <item.icon className="w-6 h-6" />
                         <span>{item.title}</span>
@@ -93,7 +102,6 @@ export function AppSidebar() {
                     </SidebarMenuButton>
                   ))}
 
-                  {/* Log Out Option with AlertDialog */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <SidebarMenuButton>
