@@ -2,11 +2,13 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
+import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.JWTUtil;
 import lombok.AllArgsConstructor;
@@ -32,6 +34,7 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
     private final JWTUtil jwtUtil;
 
     @Transactional
@@ -40,7 +43,7 @@ public class AuthService {
 
         Account account = new Account(0.0, "Active");
 
-        Role userRole = new Role("USER", "A General Registered User");
+        Role userRole = roleRepository.findByName("USER").orElseThrow(RoleNotFoundException::new);
 
         User user = new User(
                 userDTO.name(),

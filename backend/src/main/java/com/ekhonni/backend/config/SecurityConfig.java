@@ -1,7 +1,6 @@
 package com.ekhonni.backend.config;
 
 import com.ekhonni.backend.filter.JWTFilter;
-import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,16 +34,10 @@ public class SecurityConfig {
 
     private UserDetailsServiceImpl userDetailsServiceImpl;
     private JWTFilter jwtFilter;
-    private RoleRepository roleRepository;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
 
-    @Value("${spring.constant.user.urls}")
-    private String[] USER_URLS;
-
-    @Value("${spring.constant.admin.urls}")
-    private String[] ADMIN_URLS;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,8 +46,6 @@ public class SecurityConfig {
                 csrf(AbstractHttpConfigurer::disable).
                 authorizeHttpRequests(request ->
                         request.requestMatchers(PUBLIC_URLS).permitAll().
-                                requestMatchers(USER_URLS).hasAnyAuthority("USER", "ADMIN").
-                                requestMatchers(ADMIN_URLS).hasAnyAuthority("ADMIN", "SUPER_ADMIN").
                                 anyRequest().authenticated()
                 );
 

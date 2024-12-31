@@ -6,6 +6,8 @@ package com.ekhonni.backend.dto;
  */
 public record PrivilegeDTO(
         String name,
-        String description
+        String description,
+        String httpMethod,
+        String endpoint
 ) {
 }

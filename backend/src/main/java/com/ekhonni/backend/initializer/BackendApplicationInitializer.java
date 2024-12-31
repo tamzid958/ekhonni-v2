@@ -31,6 +31,12 @@ public class BackendApplicationInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        if (!roleRepository.existsByName("USER")) {
+            Role user = new Role("USER", "A General Registered User");
+            roleRepository.save(user);
+        }
+        
+
         if (!roleRepository.existsByName("SUPER_ADMIN")) {
             Role superAdmin = new Role("SUPER_ADMIN", "An Admin with highest level of privilege");
             roleRepository.save(superAdmin);

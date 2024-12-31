@@ -1,15 +1,20 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
+import com.ekhonni.backend.exception.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
+import com.ekhonni.backend.model.RolePrivilegeAssignment;
 import com.ekhonni.backend.repository.PrivilegeRepository;
+import com.ekhonni.backend.repository.RolePrivilegeAssignmentRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 /**
@@ -21,28 +26,73 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
 
     PrivilegeRepository privilegeRepository;
     RoleRepository roleRepository;
+    RolePrivilegeAssignmentRepository rolePrivilegeAssignmentRepository;
 
-    public PrivilegeService(PrivilegeRepository privilegeRepository, RoleRepository roleRepository) {
+    public PrivilegeService(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, RolePrivilegeAssignmentRepository rolePrivilegeAssignmentRepository) {
+        super(privilegeRepository);
         this.privilegeRepository = privilegeRepository;
         this.roleRepository = roleRepository;
+        this.rolePrivilegeAssignmentRepository = rolePrivilegeAssignmentRepository;
     }
 
     @Transactional
-    public String add(long roleId, PrivilegeDTO privilegeDTO) {
-
-        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+    public String add(PrivilegeDTO privilegeDTO) {
 
         Privilege privilege = new Privilege(
                 privilegeDTO.name(),
                 privilegeDTO.description(),
-                role
+                privilegeDTO.httpMethod(),
+                privilegeDTO.endpoint()
         );
 
         privilegeRepository.save(privilege);
+
+        assignPrivilegeToSuperAdmin(privilege);
+
         return "privilege added";
     }
 
-    public Page<Privilege> getAllByRole(long roleId, Pageable pageable) {
-        return privilegeRepository.getAllByRole(roleId, pageable);
+    private void assignPrivilegeToSuperAdmin(Privilege privilege) {
+        Role roleAdmin = roleRepository.findByName("SUPER_ADMIN").orElseThrow(RoleNotFoundException::new);
+
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(roleAdmin, privilege);
+
+        rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+    }
+
+    @Transactional
+    public String addMultiple(List<PrivilegeDTO> privilegeDTOList) {
+
+        for (PrivilegeDTO privilegeDTO : privilegeDTOList) {
+            Privilege privilege = new Privilege(
+                    privilegeDTO.name(),
+                    privilegeDTO.description(),
+                    privilegeDTO.httpMethod(),
+                    privilegeDTO.endpoint()
+            );
+            privilegeRepository.save(privilege);
+
+            assignPrivilegeToSuperAdmin(privilege);
+
+        }
+
+        return "Multiple privilege added";
+    }
+
+    public String assign(long roleId, long privilegeId) {
+        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(PrivilegeNotFoundException::new);
+
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
+
+        rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+
+        return "Privilege assigned to role";
+    }
+
+    public Page<Privilege> getAllOfRole(long roleId, Pageable pageable) {
+        Page<RolePrivilegeAssignment> rolePrivilegeAssignments = rolePrivilegeAssignmentRepository.findAllByRoleId(roleId, pageable);
+
+        return rolePrivilegeAssignments.map(RolePrivilegeAssignment::getPrivilege);
     }
 }
