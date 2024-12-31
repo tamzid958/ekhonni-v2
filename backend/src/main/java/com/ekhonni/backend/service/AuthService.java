@@ -35,7 +35,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final VerificationTokenService verificationTokenService;
-    private final EmailService emailService;
+    private final EmailVerificationService emailVerificationService;
 
     public String create(UserDTO userRegDTO) {
         if (userRepository.findByEmail(userRegDTO.email()) != null) throw new UserAlreadyExistsException();
@@ -57,7 +57,7 @@ public class AuthService {
         userRepository.save(user);
 
         VerificationToken verificationToken = verificationTokenService.create(user);
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken.getToken());
+        emailVerificationService.send(user.getEmail(), verificationToken.getToken());
 
         return "Sign up successful! Please verify your email to sign in";
     }
