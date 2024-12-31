@@ -30,8 +30,10 @@ export function NavBar({placeholder}: Props) {
                     />
                     <div className="absolute left-[92%] top-1/2 transform -translate-y-1/2">
                         <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
-                            <Search className="text-muted-foreground" size={18}/>
-                            <span className="sr-only">Search Button</span>
+                            <Link href="/search">
+                                <Search className="text-muted-foreground" size={18}/>
+                            </Link>
+                            {/*<span className="sr-only">Search Button</span>*/}
                         </Button>
                     </div>
                 </div>
