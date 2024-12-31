@@ -16,7 +16,7 @@ const protectedUrls = [
     access: ["Buyer/Seller", "Admin"],
   },
   {
-    url: "/orders",
+    url: "/bids",
     access: ["Buyer/Seller"],
   },
   {
@@ -24,7 +24,7 @@ const protectedUrls = [
     access: ["Guest", "Buyer/Seller", "Admin"],
   },
   {
-    url: "/about",
+    url: "/seller-profile",
     access: ["Guest", "Buyer/Seller", "Admin"],
   },
 ];
