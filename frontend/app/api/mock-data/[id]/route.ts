@@ -25,6 +25,7 @@ const mockData = [
     price: 150,
     category: 'Top Rated',
   },
+<<<<<<< HEAD
   {
     id: '4',
     title: 'Desert Oasis',
@@ -125,6 +126,10 @@ const mockData = [
 
 export default mockData;
 
+=======
+];
+
+>>>>>>> 1e361d2d9968b94fa43ebcfdc5c31fc57d44facb
 // API route for dynamic path `id`
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params; // Get the `id` from the URL
