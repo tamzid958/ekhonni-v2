@@ -1,9 +1,13 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.config.SSLCommerzConfig;
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
+import com.ekhonni.backend.exception.TransactionNotFoundException;
+import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
 import com.ekhonni.backend.projection.PaymentResponseProjection;
@@ -38,6 +42,7 @@ import java.util.TreeMap;
 public class PaymentService {
 
     private final TransactionService transactionService;
+    private final BidService bidService;
     private final ProjectionFactory projectionFactory;
     private final Util util;
     private final String paymentApiUrl;
@@ -48,11 +53,13 @@ public class PaymentService {
     private final Set<String> allowedIps;
 
     public PaymentService(TransactionService transactionService,
+                          BidService bidService,
                           ProjectionFactory projectionFactory,
                           Util util,
                           SSLCommerzConfig sslCommerzConfig,
                           RestClient restClient) {
         this.transactionService = transactionService;
+        this.bidService = bidService;
         this.projectionFactory = projectionFactory;
         this.util = util;
         this.paymentApiUrl = sslCommerzConfig.getApiUrl();
@@ -65,17 +72,20 @@ public class PaymentService {
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    public PaymentResponseProjection initiatePayment(Long bidId) throws UnsupportedEncodingException {
+    public PaymentResponseProjection initiatePayment(Long bidId) throws Throwable {
+        if (transactionService.existsByBidId(bidId)) {
+            throw new InitiatePaymentException(String.format("Payment already processed for bid: %s", bidId));
+        }
         try {
             Transaction transaction = transactionService.create(bidId);
             String requestBody = prepareRequestBody(transaction);
             InitialResponse response = sendPaymentRequest(requestBody);
             validateInitialResponse(response);
             return handleInitialResponse(response, transaction);
-        } catch (Exception e) {
-            log.warn("Error processing transaction for bid {}: {}", bidId, e.getMessage());
+        } catch (Throwable throwable) {
+            log.warn("Error processing transaction for bid {}: {}", bidId, throwable.getMessage());
             transactionService.deletePermanentlyByBidId(bidId);
-            throw e;
+            throw throwable;
         }
     }
 
@@ -112,13 +122,14 @@ public class PaymentService {
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
+
         if (!allowedIps.contains(gatewayIpAddress)) {
             log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
         }
 
         if (ipnResponse == null) {
-            log.warn("Ipn response is null");
+            log.warn("Null ipn response in payment");
             throw new InvalidTransactionException();
         }
         IpnResponse response = util.extractIpnResponse(ipnResponse);
@@ -127,59 +138,46 @@ public class PaymentService {
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
         if (!ipnHashVerify(ipnResponse)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("IPN signature verification failed for transaction_id : {}", ipnResponse.get("tran_id"));
+            updateFailedTransactionStatus(transaction, "INVALID");
+            log.warn("IPN signature verification failed for transaction : {}", ipnResponse.get("tran_id"));
             throw new InvalidTransactionException();
         }
 
-        if (!verifyStatus(response.getStatus())) {
-            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
-            updateStatus(transaction, status);
-            log.warn("transaction_id: {}, status: {}", response.getTranId(), response.getStatus());
-            throw new InvalidTransactionException();
-        }
-
-        if (!verifyAmount(transaction, response)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("Amount or currency don't match for transaction_id: {}", response.getTranId());
+        if (!verifyPaymentResponse(transaction, response)) {
+            updateFailedTransactionStatus(transaction, response.getStatus());
+            log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
 
         if (!validate(response.getValId())) {
-            log.warn("Validation failed for transaction_id: {}", response.getTranId());
+            log.warn("Validation failed for transaction: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
     }
 
-    private boolean validate(String validationId) {
+    private ValidationResponse getValidationResponse(String validationId) {
         String validationUrl = validatorApiUrl + "?val_id=" + validationId
                 + "&store_id=" + storeId
                 + "&store_passwd=" + storePassword
                 + "&v=1&format=json";
 
-        ValidationResponse response = restClient.get()
+        return restClient.get()
                 .uri(validationUrl)
                 .retrieve()
                 .body(ValidationResponse.class);
+    }
 
+    private boolean validate(String validationId) {
+        ValidationResponse response = getValidationResponse(validationId);
         if (response == null) {
             return false;
         }
 
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
-        if (!verifyStatus(response.getStatus())) {
-            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
-            updateStatus(transaction, status);
-            log.warn("Validation transaction_id: {}, status: {}",
-                    response.getTranId(), response.getStatus());
-            return false;
-        }
-
-        if (!verifyAmount(transaction, response)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("Validation amount or currency don't match for transaction_id: {}",
-                    response.getTranId());
+        if (!verifyPaymentResponse(transaction, response)) {
+            updateFailedTransactionStatus(transaction, response.getStatus());
+            log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
             return false;
         }
 
@@ -195,42 +193,44 @@ public class PaymentService {
             log.error(e.getMessage());
             throw new InvalidTransactionException();
         }
-        return transactionService.get(transactionId);
+        return transactionService.get(transactionId)
+                .orElseThrow(InvalidTransactionException::new);
     }
 
     private void validateInitialResponse(InitialResponse response) {
         if (response == null) {
-            throw new InitiatePaymentException("No response from payment gateway");
+            throw new InitiatePaymentException("No response");
         }
         if (response.getStatus() == null) {
-            throw new InitiatePaymentException("Invalid response status");
+            throw new InitiatePaymentException("Invalid transaction status");
         }
     }
 
-    private boolean verifyStatus(String status) {
-        return "VALID".equals(status) || "VALIDATED".equals(status);
-    }
-
-    private boolean verifyAmount(Transaction transaction, PaymentResponse response) {
+    private boolean verifyPaymentResponse(Transaction transaction, PaymentResponse response) {
+        if (!"VALID".equals(response.getStatus()) && !"VALIDATED".equals(response.getStatus())) {
+            return false;
+        }
         try {
             double currencyRate = Double.parseDouble(response.getCurrencyRate());
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());
             double responseBdtAmount = Double.parseDouble(response.getAmount());
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            log.info("Expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
             double marginOfError = 0.01;
             return response.getCurrencyType().equals(transaction.getCurrency())
                     && responseAmount == transaction.getAmount()
                     && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
         } catch (NumberFormatException e) {
-            log.error(e.getMessage());
+            log.error("Invalid number format in transaction: {}", e.getMessage());
             return false;
         }
     }
 
     @Modifying
     @Transactional
-    private void updateStatus(Transaction transaction, String status) {
+    private void updateFailedTransactionStatus(Transaction transaction, String status) {
+        if (status == null || status.equals("VALID")) {
+            status = "INVALID";
+        }
         transaction.setStatus(TransactionStatus.valueOf(status));
     }
 
@@ -240,7 +240,14 @@ public class PaymentService {
         transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
+        transaction.getBid().setStatus(BidStatus.PAID);
+
+        Account buyerAccount = transaction.getBid().getBidder().getAccount();
+        Account sellerAccount = transaction.getBid().getProduct().getUser().getAccount();
+        buyerAccount.setBalance(buyerAccount.getBalance() - transaction.getAmount());
+        sellerAccount.setBalance(sellerAccount.getBalance() - transaction.getAmount());
     }
+
 
     private String getGatewayIpAddress(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");

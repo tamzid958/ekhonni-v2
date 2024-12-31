@@ -24,7 +24,7 @@ public record PaymentController(PaymentService paymentService) {
     public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId)  {
         try {
             return new ApiResponse<>(true, "Success", paymentService.initiatePayment(bidLogId), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (Throwable throwable) {
             throw new InitiatePaymentException("Internal server error");
         }
     }
@@ -49,7 +49,6 @@ public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/ipn")
     public ApiResponse<?> handleIpn(@RequestParam Map<String, String> ipnResponse, HttpServletRequest request) {
-        log.info("IPN Response: {}", ipnResponse);
         paymentService.verifyTransaction(ipnResponse, request);
         return new ApiResponse<>(true, "Success", null, HttpStatus.OK);
     }

@@ -3,6 +3,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.BidCreateDTO;
 import com.ekhonni.backend.dto.BidResponseDTO;
+import com.ekhonni.backend.exception.BidNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.projection.BidProjection;
 import com.ekhonni.backend.service.BidService;
@@ -26,7 +27,7 @@ public record BidController(BidService bidService) {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/{id}")
     public Bid get(@PathVariable Long id){
-        return bidService.get(id);
+        return bidService.get(id).orElseThrow(BidNotFoundException::new);
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

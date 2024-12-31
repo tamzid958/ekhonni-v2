@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
+import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
@@ -9,6 +10,8 @@ import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * Author: Asif Iqbal
@@ -29,7 +32,8 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     @Transactional
     public Transaction create(Long bidId) {
-        Bid bid = bidService.get(bidId);
+        Bid bid = bidService.get(bidId)
+                .orElseThrow(InvalidTransactionException::new);
         if (bid.getStatus() != BidStatus.ACCEPTED) {
             log.warn("Transaction request for unaccepted bid: {}", bidId);
             throw new InvalidTransactionException();
@@ -47,6 +51,10 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     public boolean existsByBidId(Long bidId) {
         return transactionRepository.existsByBidIdAndDeletedAtIsNull(bidId);
+    }
+
+    public Optional<Transaction> findByBidId(Long bidId) {
+        return transactionRepository.findByBidId(bidId);
     }
 
 }

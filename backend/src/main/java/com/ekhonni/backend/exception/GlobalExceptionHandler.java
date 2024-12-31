@@ -49,8 +49,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
-    @ExceptionHandler(BidLogNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidLogNotFoundException ex) {
+    @ExceptionHandler(BidNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
