@@ -1,5 +1,10 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { CardDemo } from '@/components/Card';
+import Sidebar from '@/components/CategorySidebar';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface data {
   id: string;
@@ -10,14 +15,30 @@ interface data {
   category: string;
 }
 
-export default async function CategoryProductPage() {
-  const response = await fetch('http://localhost:3000/api/mock-data', { cache: 'no-store' });
+export default function CategoryProductPage() {
+  const [products, setProducts] = useState<data[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch data');
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:3000/api/mock-data', { cache: 'no-store' });
 
-  const allProductsItems: data[] = await response.json();
+      if (response.ok) {
+        const data: data[] = await response.json();
+        console.log(data);  // Add this to check the fetched data
+        setProducts(data);
+      } else {
+        console.error('Failed to fetch products');
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const filteredProducts =
+    selectedCategory === 'All'
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
   return (
     <div className="space-y-6 container mx-auto my-4 px-4">
@@ -25,19 +46,28 @@ export default async function CategoryProductPage() {
 
       {/* Best Selling Section */}
       <div>
+        <Sidebar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
         <h2 className="text-xl font-semibold my-4">Best Selling</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
-            <CardDemo key={item.id} {...item} />
-          ))}
-        </div>
+        <ScrollArea className="whitespace-nowrap rounded-md border">
+          <div className="flex w-max space-x-4 p-4">
+            {filteredProducts.map((item) => (
+              <CardDemo key={item.id} {...item} />
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
+
+      <Separator></Separator>
 
       {/* Limited Time Deals Section */}
       <div>
         <h2 className="text-xl font-semibold my-4">Limited Time Deals</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
+          {filteredProducts.map((item) => (
             <CardDemo key={item.id} {...item} />
           ))}
         </div>
@@ -47,7 +77,7 @@ export default async function CategoryProductPage() {
       <div>
         <h2 className="text-xl font-semibold my-4">Top Rated</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
+          {filteredProducts.map((item) => (
             <CardDemo key={item.id} {...item} />
           ))}
         </div>

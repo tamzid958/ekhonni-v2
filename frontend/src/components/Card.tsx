@@ -16,14 +16,16 @@ export function CardDemo({ id, title, description, img, price }: data) {
   console.log('id: ' + id);
   return (
     <Link href={`/categoryProducts/products/${id}`} passHref>
-      <Card className="cursor-pointer hover:shadow-md bg-transparent shadow-none transition-shadow">
+      <Card className="w-64 h-96 cursor-pointer hover:shadow-md bg-transparent shadow-none transition-shadow">
         <CardContent className="pt-6">
           <AspectRatio ratio={4 / 3} className="bg-muted">
             <Image
               src={img}
               alt={`Image of ${title}`}
               fill
-              className="h-full w-full rounded-md object-cover"
+              // width={96} // Set fixed width
+              // height={96} // Set fixed height
+              className="rounded-md object-cover"
             />
           </AspectRatio>
         </CardContent>
