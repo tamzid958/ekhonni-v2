@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -33,55 +33,57 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export default function AuthForm() {
-  const [isSignup, setIsSignup] = useState(false);
+type SignupFormValues = z.infer<typeof signupSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>;
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+export default function AuthForm() {
+  const [isSignup, setIsSignup] = useState<boolean>(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues | LoginFormValues>({
     resolver: zodResolver(isSignup ? signupSchema : loginSchema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<SignupFormValues | LoginFormValues> = async (data) => {
     if (isSignup) {
-
       try {
-        const res = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            password: data.password,
-            phone: data.phone,
-            address: data.address,
-          }),
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: (data as SignupFormValues).email,
+          password: (data as SignupFormValues).password,
+          firstName: (data as SignupFormValues).firstName,
+          lastName: (data as SignupFormValues).lastName,
+          phone: (data as SignupFormValues).phone,
+          address: (data as SignupFormValues).address,
         });
 
-        const result = await res.json();
-        if (res.ok) {
-          alert("Signup successful! Please log in.");
-          setIsSignup(false); // Switch to login form
+        if (result?.error) {
+          console.error("Signup error:", result.error);
+          alert(result.error);
         } else {
-          alert(result.message);
+          alert("Signup successful! Please log in.");
+          setIsSignup(false);
         }
       } catch (err) {
         console.error("Signup error:", err);
         alert("Something went wrong. Please try again.");
       }
     } else {
-      // Handle Login
       try {
-        const res = await signIn("credentials", {
+        const result = await signIn("credentials", {
           redirect: false,
-          email: data.email,
-          password: data.password,
+          email: (data as LoginFormValues).email,
+          password: (data as LoginFormValues).password,
         });
 
-        if (res?.ok) {
+        if (result?.ok) {
           alert("Login successful!");
           window.location.href = "/";
         } else {
-          alert("Invalid email or password");
+          alert(result?.error || "Invalid email or password");
         }
       } catch (err) {
         console.error("Login error:", err);
@@ -94,11 +96,11 @@ export default function AuthForm() {
     <div className="flex items-center justify-center h-screen bg-gray-50">
       <Card className="w-96 max-h-[96vh] flex flex-col">
         <CardContent className="overflow-auto flex-grow">
-          <h2 className="text-lg font-bold mb-4 mt-4  text-center">
+          <h2 className="text-lg font-bold mb-4 mt-4 text-center">
             {isSignup ? "Sign Up" : "Log In"}
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {isSignup ? (
+            {isSignup && (
               <>
                 <div>
                   <label className="block mb-1 text-sm font-medium">First Name</label>
@@ -149,7 +151,7 @@ export default function AuthForm() {
                   )}
                 </div>
               </>
-            ) : null}
+            )}
             <div>
               <label className="block mb-1 text-sm font-medium">Email</label>
               <Input
@@ -183,7 +185,7 @@ export default function AuthForm() {
                   placeholder="Confirm your password"
                   className="w-full"
                 />
-                {errors.confirmPassword && (
+                {errors?.confirmPassword && (
                   <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
                 )}
               </div>
