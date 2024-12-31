@@ -18,8 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,7 +34,7 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
     public Category getByName(String name) {
-        return categoryRepository.findByName(name);
+        return categoryRepository.findByNameAndActive(name, true);
     }
 
 
@@ -56,30 +56,31 @@ public class CategoryService extends BaseService<Category, Long> {
     //done
     public CategorySubCategoryDTO getSubCategories(String name) {
         Category category = getByName(name);
-        if (category == null) {
-            throw new RuntimeException("No category found by this name");
+        if (category == null) throw new RuntimeException("no category found by this name");
+
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(category.getName(), new ArrayList<>());
+        List<CategoryProjection> categoryProjections = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(category, true);
+        for (CategoryProjection categoryProjection : categoryProjections) {
+            categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
         }
-
-        List<String> subCategoryNames = categoryRepository.findAllByParentCategoryAndActive(category, true)
-                .stream()
-                .map(CategoryProjection::getName)
-                .collect(Collectors.toList());
-
-        return new CategorySubCategoryDTO(category.getName(), subCategoryNames);
+        return categorySubCategoryDTO;
     }
 
 
     public List<CategorySubCategoryDTO> getAllCategories() {
-        List<Category> rootCat = categoryRepository.findByParentCategoryIsNullAndActive(true);
-        System.out.println(rootCat);
-        return categoryRepository.findByParentCategoryIsNullAndActive(true).stream()
-                .map(rootCategory -> {
-                    List<String> subCategoryNames = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true).stream()
-                            .map(CategoryProjection::getName)
-                            .collect(Collectors.toList());
-                    return new CategorySubCategoryDTO(rootCategory.getName(), subCategoryNames);
-                })
-                .collect(Collectors.toList());
+        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
+        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
+
+        for (Category rootCategory : rootCategories) {
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
+            List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
+            for (CategoryProjection categoryProjection : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+            }
+            categorySubCategoryDTOS.add(categorySubCategoryDTO);
+        }
+        return categorySubCategoryDTOS;
+
     }
 
 
@@ -91,17 +92,16 @@ public class CategoryService extends BaseService<Category, Long> {
         categoryRepository.deleteCategoryById(category.getId());
     }
 
-//    public List<CategoryProjection> getFeatured() {
-//        return categoryRepository.findAllByParentCategoryIsNull();
-//    }
 
     @Transactional
     public void updateCategory(CategoryUpdateDTO categoryUpdateDTO) {
-        Category category = getByName(categoryUpdateDTO.name());
+        Category category = categoryRepository.findByName(categoryUpdateDTO.name());
         if (category == null) {
             throw new RuntimeException("no such category found by this name");
         }
+        System.out.println(categoryUpdateDTO);
         category.setActive(categoryUpdateDTO.active());
+        System.out.println(category);
         categoryRepository.save(category);
 
     }

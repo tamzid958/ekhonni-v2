@@ -23,10 +23,6 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
     List<CategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
 
-    List<CategoryProjection> findAllByParentCategoryAndActive(Category parentCategory, boolean active);
-
-    List<CategoryProjection> findAllByParentCategoryIsNullAndActive(boolean active);
-
 
     @Modifying
     @Transactional
@@ -41,6 +37,8 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
             """, nativeQuery = true)
     void deleteCategoryById(Long parentId);
 
+
+    Category findByNameAndActive(String name, boolean active);
 
     Category findByName(String name);
 }
