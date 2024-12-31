@@ -13,6 +13,7 @@ import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -21,17 +22,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ProductService extends BaseService<Product, Long> {
 
     ProductRepository productRepository;
     CategoryService categoryService;
+    CategoryRepository categoryRepository;
 
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -45,6 +51,14 @@ public class ProductService extends BaseService<Product, Long> {
         User user = (User) authenticated.getPrincipal();
         Category category = categoryService.getByName(productDTO.category());
 
+        List<Category> categories = new ArrayList<>();
+        categories.add(category);
+
+        if (category.getName().equals("Asian")) {
+            Category category1 = categoryService.getByName("People");
+            categories.add(category1);
+        }
+
 
         Product product = new Product(
                 productDTO.name(),
@@ -54,6 +68,7 @@ public class ProductService extends BaseService<Product, Long> {
                 false,
                 productDTO.condition(),
                 category,
+                categories,
                 user
         );
         productRepository.save(product);
@@ -66,8 +81,14 @@ public class ProductService extends BaseService<Product, Long> {
 //    }
 
 
-    public Page<ProductProjection> getAllByCategoryId(Long categoryId, Pageable pageable) {
-        return productRepository.findAllProjectionByCategoryId(categoryId, pageable);
+//    public Page<ProductProjection> getAllByCategoryName(String categoryName, Pageable pageable) {
+//        Category category = categoryRepository.findByNameAndActive(categoryName, true);
+//        return productRepository.findAllProjectionByCategoryId(category.getId(), pageable);
+//    }
+
+    public Page<ProductProjection> getAllByCategoryName(String categoryName, Pageable pageable) {
+        Category category = categoryRepository.findByNameAndActive(categoryName, true);
+        return productRepository.findAllByCategoriesName(category.getName(), pageable);
     }
 
 

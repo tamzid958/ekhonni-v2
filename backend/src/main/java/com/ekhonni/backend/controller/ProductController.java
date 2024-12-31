@@ -13,6 +13,7 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -61,11 +62,20 @@ public record ProductController(ProductService productService) {
     }
 
 
-//    @GetMapping("/category")
-//    public ApiResponse<?> getByCategoryId(@NotNull final Pageable pageable) {
-//        Page<ProductProjection> productProjections = productService.getAllByCategoryId(categoryId, pageable);
+    //    @GetMapping("/category/{category_name}")
+//    public ApiResponse<?> getByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
+//        Page<ProductProjection> productProjections = productService.getAllByCategoryName(categoryName, pageable);
+//        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+//        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
 //
 //    }
+    @GetMapping("/category/{category_name}")
+    public ApiResponse<?> getAllProductsByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
+        Page<ProductProjection> productProjections = productService.getAllByCategoryName(categoryName, pageable);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
+
+    }
 //
 //
 

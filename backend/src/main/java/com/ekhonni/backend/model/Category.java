@@ -28,4 +28,5 @@ public class Category extends BaseEntity<Long> {
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
 
+
 }
