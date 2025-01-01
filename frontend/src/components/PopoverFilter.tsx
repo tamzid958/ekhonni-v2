@@ -24,10 +24,6 @@ const statuses: Status[] = [
         value: "Price High to Low",
         label: "Price High to Low",
     },
-    {
-        value: "New Product",
-        label: "New Product",
-    },
 ]
 
 export function ComboboxPopover() {
@@ -41,8 +37,8 @@ export function ComboboxPopover() {
             <p className="text-sm text-muted-foreground">Filter</p>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[150px] justify-start">
-                        {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
+                    <Button variant="custom" className="w-[150px] justify-start">
+                        {selectedStatus ? <>{selectedStatus.label}</> : <>+ SORT BY PRICE</>}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0 -mt-[51px]" side="bottom" align="start">

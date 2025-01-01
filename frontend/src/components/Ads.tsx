@@ -3,17 +3,18 @@ import * as React from "react"
 
 import {Card, CardContent} from "@/components/ui/card"
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay";
 
 
 export function Ads() {
     return (
         <div className="flex flex-row w-full bg-white pt-10 pb-10 gap-20 pl-40 pr-40">
             <Carousel
-                // plugins={[
-                //     Autoplay({
-                //         delay: 4000, // 4 seconds delay between slides
-                //     }),
-                // ]}
+                plugins={[
+                    Autoplay({
+                        delay: 4000, // 4 seconds delay between slides
+                    }),
+                ]}
                 className="flex flex-row  w-3/4 max-h-[50vh] max-w-6xl">
                 <CarouselContent>
                     {Array.from({length: 5}).map((_, index) => (
@@ -37,11 +38,11 @@ export function Ads() {
                 <CarouselNext className={'invisible'}/>
             </Carousel>
             <Carousel
-                // plugins={[
-                //     Autoplay({
-                //         delay: 3000, // 3 seconds delay between slides
-                //     }),
-                // ]}
+                plugins={[
+                    Autoplay({
+                        delay: 3000, // 3 seconds delay between slides
+                    }),
+                ]}
                 opts={{
                     align: "start",
                 }}

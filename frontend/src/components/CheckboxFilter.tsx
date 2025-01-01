@@ -6,34 +6,42 @@ import {useForm} from "react-hook-form"
 import {z} from "zod"
 
 import {toast} from "@/hooks/use-toast"
-import {Button} from "@/components/ui/button"
 import {Checkbox} from "@/components/ui/checkbox"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
+import {Button} from "@/components/ui/button";
 
 const items = [
     {
-        id: "recents",
-        label: "Recents",
+        id: "DHAKA",
+        label: "DHAKA",
     },
     {
-        id: "home",
-        label: "Home",
+        id: "SYLHET",
+        label: "SYLHET",
     },
     {
-        id: "applications",
-        label: "Applications",
+        id: "CHITTAGONG",
+        label: "CHITTAGONG",
     },
     {
-        id: "desktop",
-        label: "Desktop",
+        id: "KHULNA",
+        label: "KHULNA",
     },
     {
-        id: "downloads",
-        label: "Downloads",
+        id: "RAJSHAHI",
+        label: "RAJSHAHI",
     },
     {
-        id: "documents",
-        label: "Documents",
+        id: "BARISAL",
+        label: "BARISAL",
+    },
+    {
+        id: "RANGPUR",
+        label: "RANGPUR",
+    },
+    {
+        id: "MYMENSINGH",
+        label: "MYMENSINGH",
     },
 ] as const
 
@@ -71,7 +79,7 @@ export function CheckboxReactHookFormMultiple() {
                     render={() => (
                         <FormItem>
                             <div className="mb-4">
-                                <FormLabel className="text-base">Sidebar</FormLabel>
+                                <FormLabel className="text-base">FILTER BY LOCATION</FormLabel>
                                 <FormDescription>
                                     Select the items you want to display in the sidebar.
                                 </FormDescription>
@@ -113,7 +121,7 @@ export function CheckboxReactHookFormMultiple() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit" variant="custom">Filter</Button>
             </form>
         </Form>
     )
