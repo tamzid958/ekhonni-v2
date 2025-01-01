@@ -33,15 +33,12 @@ public class CategoryService extends BaseService<Category, Long> {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category getByName(String name) {
-        return categoryRepository.findByNameAndActive(name, true);
-    }
-
 
     // done
     public void save(CategoryDTO categoryDTO) {
         Category parentCategory = null;
-        if (categoryDTO.parentCategory() != null) parentCategory = getByName(categoryDTO.parentCategory());
+        if (categoryDTO.parentCategory() != null)
+            parentCategory = categoryRepository.findByName(categoryDTO.parentCategory());
         if (categoryDTO.parentCategory() != null && parentCategory == null)
             throw new RuntimeException("parent category by this name not found");
         Category category = new Category(
@@ -55,7 +52,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     //done
     public CategorySubCategoryDTO getSubCategories(String name) {
-        Category category = getByName(name);
+        Category category = categoryRepository.findByName(name);
         if (category == null) throw new RuntimeException("no category found by this name");
 
         CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(category.getName(), new ArrayList<>());
@@ -71,6 +68,7 @@ public class CategoryService extends BaseService<Category, Long> {
         List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
 
+
         for (Category rootCategory : rootCategories) {
             CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
             List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
@@ -85,7 +83,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
 
     public void delete(String name) {
-        Category category = getByName(name);
+        Category category = categoryRepository.findByName(name);
         if (category == null) {
             throw new RuntimeException("category not found");
         }
@@ -94,14 +92,12 @@ public class CategoryService extends BaseService<Category, Long> {
 
 
     @Transactional
-    public void updateCategory(CategoryUpdateDTO categoryUpdateDTO) {
+    public void update(CategoryUpdateDTO categoryUpdateDTO) {
         Category category = categoryRepository.findByName(categoryUpdateDTO.name());
         if (category == null) {
             throw new RuntimeException("no such category found by this name");
         }
-        System.out.println(categoryUpdateDTO);
         category.setActive(categoryUpdateDTO.active());
-        System.out.println(category);
         categoryRepository.save(category);
 
     }

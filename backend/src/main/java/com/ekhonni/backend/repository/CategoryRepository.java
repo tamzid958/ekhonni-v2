@@ -37,7 +37,6 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
             """, nativeQuery = true)
     void deleteCategoryById(Long parentId);
 
-
     Category findByNameAndActive(String name, boolean active);
 
     Category findByName(String name);

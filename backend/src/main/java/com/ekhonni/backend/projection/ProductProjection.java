@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public interface ProductProjection {
     Long getId();
 
-    Long getPrice();
+    Double getPrice();
 
     String getName();
 

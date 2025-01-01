@@ -10,13 +10,15 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -28,6 +30,12 @@ public record ProductController(ProductService productService) {
     @GetMapping
     public ApiResponse<?> getAllProducts(Pageable pageable) {
         Page<ProductProjection> productProjections = productService.getAll(ProductProjection.class, pageable);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+    }
+
+    @GetMapping("/filter")
+    public ApiResponse<?> getAllProductsFiltered(@RequestBody ProductFilter productFilter) {
+        List<ProductProjection> productProjections = productService.getAllFiltered(productFilter);
         return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
     }
 
@@ -61,6 +69,12 @@ public record ProductController(ProductService productService) {
         return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
+    @GetMapping("/search/{search_text}")
+    public ApiResponse<?> getSearchProducts(@PathVariable("search_text") String searchText, Pageable pageable) {
+        List<ProductProjection> productProjections = productService.search(searchText, pageable);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+    }
+
 
     //    @GetMapping("/category/{category_name}")
 //    public ApiResponse<?> getByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
@@ -69,13 +83,15 @@ public record ProductController(ProductService productService) {
 //        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
 //
 //    }
-    @GetMapping("/category/{category_name}")
-    public ApiResponse<?> getAllProductsByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
-        Page<ProductProjection> productProjections = productService.getAllByCategoryName(categoryName, pageable);
-        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
-        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
+//    @GetMapping("/category/filter")
+//    public ApiResponse<?> getAllProductsByCategoryName(@RequestBody ProductFilterDTO productFilterDTO, @NotNull final Pageable pageable) {
+//        Page<ProductProjection> productProjections = productService.getAllByCategoryName(productFilterDTO, pageable);
+//        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+//        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
+//
+//    }
 
-    }
+
 //
 //
 

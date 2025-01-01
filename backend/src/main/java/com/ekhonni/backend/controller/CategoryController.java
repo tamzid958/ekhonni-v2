@@ -45,7 +45,6 @@ public record CategoryController(CategoryService categoryService) {
 
         try {
             return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubCategories(name));
-
         } catch (RuntimeException e) {
             return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
@@ -55,13 +54,6 @@ public record CategoryController(CategoryService categoryService) {
     }
 
 
-    //
-//    @GetMapping("/featured")
-//    public ApiResponse<?> getFeatured() {
-//        List<CategoryProjection> categoryProjections = categoryService.getFeatured();
-//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, categoryProjections, "featured categories");
-//    }
-//
     @DeleteMapping("/{name}")
     public ApiResponse<?> delete(@PathVariable String name) {
 
@@ -76,7 +68,7 @@ public record CategoryController(CategoryService categoryService) {
     @PatchMapping
     public ApiResponse<?> updateCategory(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
         try {
-            categoryService.updateCategory(categoryUpdateDTO);
+            categoryService.update(categoryUpdateDTO);
             return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
         } catch (Exception e) {
             return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
