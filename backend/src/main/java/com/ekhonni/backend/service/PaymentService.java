@@ -5,7 +5,6 @@ import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
-import com.ekhonni.backend.exception.TransactionNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
@@ -15,13 +14,11 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -30,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -38,6 +35,7 @@ import java.util.TreeMap;
  * Date: 12/15/24
  */
 @Service
+@AllArgsConstructor
 @Slf4j
 public class PaymentService {
 
@@ -45,53 +43,52 @@ public class PaymentService {
     private final BidService bidService;
     private final ProjectionFactory projectionFactory;
     private final Util util;
-    private final String paymentApiUrl;
-    private final String storeId;
-    private final String storePassword;
-    private final String validatorApiUrl;
+    private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
-    private final Set<String> allowedIps;
 
-    public PaymentService(TransactionService transactionService,
-                          BidService bidService,
-                          ProjectionFactory projectionFactory,
-                          Util util,
-                          SSLCommerzConfig sslCommerzConfig,
-                          RestClient restClient) {
-        this.transactionService = transactionService;
-        this.bidService = bidService;
-        this.projectionFactory = projectionFactory;
-        this.util = util;
-        this.paymentApiUrl = sslCommerzConfig.getApiUrl();
-        this.storeId = sslCommerzConfig.getStoreId();
-        this.storePassword = sslCommerzConfig.getStorePassword();
-        this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
-        this.restClient = restClient;
-        this.allowedIps = sslCommerzConfig.getAllowedIps();
-    }
-
+    @Modifying
+    @Transactional
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    @Retry(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    public PaymentResponseProjection initiatePayment(Long bidId) throws Throwable {
-        if (transactionService.existsByBidId(bidId)) {
-            throw new InitiatePaymentException(String.format("Payment already processed for bid: %s", bidId));
+    @Retry(name = "retryPayment", fallbackMethod = "retryPaymentFallback")
+    public PaymentResponseProjection initiatePayment(Long bidId) throws Exception {
+        Bid bid = bidService.get(bidId)
+                .orElseThrow(() -> {
+                    log.warn("Payment request for invalid bid: {}", bidId);
+                    return new InvalidTransactionException();
+                });
+        if (bid.getStatus() == BidStatus.PAID) {
+            log.warn("Duplicate payment request for bid: {}", bidId);
+            throw new InitiatePaymentException();
         }
-        try {
-            Transaction transaction = transactionService.create(bidId);
-            String requestBody = prepareRequestBody(transaction);
-            InitialResponse response = sendPaymentRequest(requestBody);
-            validateInitialResponse(response);
-            return handleInitialResponse(response, transaction);
-        } catch (Throwable throwable) {
-            log.warn("Error processing transaction for bid {}: {}", bidId, throwable.getMessage());
-            transactionService.deletePermanentlyByBidId(bidId);
-            throw throwable;
+        if (bid.getStatus() != BidStatus.ACCEPTED) {
+            log.warn("Payment request for unaccepted bid: {}", bidId);
+            throw new InvalidTransactionException();
         }
+
+        Transaction transaction = transactionService.findByBidId(bidId)
+                .orElse(transactionService.create(bid));
+
+        log.info("Transaction : {}", transaction);
+
+        String requestBody = prepareRequestBody(transaction);
+        InitialResponse response = sendPaymentRequest(requestBody);
+        validateInitialResponse(response);
+        transaction.setSessionKey(response.getSessionkey());
+        log.info("Transaction after setting session key: {}", transaction);
+        return projectionFactory.createProjection(
+                PaymentResponseProjection.class,
+                response
+        );
     }
 
-    public PaymentResponseProjection initiatePaymentFallback(Long bidId, Throwable throwable) {
-        log.warn("Fallback triggered for bid {} due to error: {}", bidId, throwable.getMessage());
-        throw new InitiatePaymentException("Payment error");
+    public PaymentResponseProjection initiatePaymentFallback(Long bidId, Exception e) {
+        log.warn("Initiate payment fallback triggered for bid {} due to error: {}", bidId, e.getMessage());
+        throw new InitiatePaymentException("Payment service not available");
+    }
+
+    public PaymentResponseProjection retryPaymentFallback(Long bidId, Exception e) {
+        log.warn("All retries failed for bid {} due to error: {}", bidId, e.getMessage());
+        throw new InitiatePaymentException("Payment initiation failed");
     }
 
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
@@ -100,30 +97,18 @@ public class PaymentService {
 
     private InitialResponse sendPaymentRequest(String requestBody) {
         return restClient.post()
-                .uri(paymentApiUrl)
+                .uri(sslCommerzConfig.getApiUrl())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(requestBody)
                 .retrieve()
                 .body(InitialResponse.class);
     }
 
-    private PaymentResponseProjection handleInitialResponse(InitialResponse response, Transaction transaction) {
-        if (response != null && "SUCCESS".equals(response.getStatus())) {
-            transaction.setSessionKey(response.getSessionkey());
-            return projectionFactory.createProjection(
-                    PaymentResponseProjection.class,
-                    response
-            );
-        } else {
-            throw new InitiatePaymentException("Initial response not successful");
-        }
-    }
-
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
 
-        if (!allowedIps.contains(gatewayIpAddress)) {
+        if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
             log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
         }
@@ -156,9 +141,9 @@ public class PaymentService {
     }
 
     private ValidationResponse getValidationResponse(String validationId) {
-        String validationUrl = validatorApiUrl + "?val_id=" + validationId
-                + "&store_id=" + storeId
-                + "&store_passwd=" + storePassword
+        String validationUrl = sslCommerzConfig.getValidatorApiUrl() + "?val_id=" + validationId
+                + "&store_id=" + sslCommerzConfig.getStoreId()
+                + "&store_passwd=" + sslCommerzConfig.getStorePassword()
                 + "&v=1&format=json";
 
         return restClient.get()
@@ -198,11 +183,8 @@ public class PaymentService {
     }
 
     private void validateInitialResponse(InitialResponse response) {
-        if (response == null) {
-            throw new InitiatePaymentException("No response");
-        }
-        if (response.getStatus() == null) {
-            throw new InitiatePaymentException("Invalid transaction status");
+        if (response == null || !"SUCCESS".equals(response.getStatus())) {
+            throw new InitiatePaymentException("Payment initiation error");
         }
     }
 
@@ -245,7 +227,7 @@ public class PaymentService {
         Account buyerAccount = transaction.getBid().getBidder().getAccount();
         Account sellerAccount = transaction.getBid().getProduct().getUser().getAccount();
         buyerAccount.setBalance(buyerAccount.getBalance() - transaction.getAmount());
-        sellerAccount.setBalance(sellerAccount.getBalance() - transaction.getAmount());
+        sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getAmount());
     }
 
 
@@ -271,7 +253,7 @@ public class PaymentService {
                         sortedMap.put(key, response.get(key));
                     }
                 }
-                String hashedPass = md5(storePassword);
+                String hashedPass = md5(sslCommerzConfig.getStorePassword());
                 sortedMap.put("store_passwd", hashedPass);
 
                 StringBuilder hashStringBuilder = new StringBuilder();

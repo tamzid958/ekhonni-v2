@@ -22,22 +22,14 @@ import java.util.Optional;
 public class TransactionService extends BaseService<Transaction, Long> {
 
     private final TransactionRepository transactionRepository;
-    private final BidService bidService;
 
     public TransactionService(TransactionRepository transactionRepository, BidService bidService) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
-        this.bidService = bidService;
     }
 
     @Transactional
-    public Transaction create(Long bidId) {
-        Bid bid = bidService.get(bidId)
-                .orElseThrow(InvalidTransactionException::new);
-        if (bid.getStatus() != BidStatus.ACCEPTED) {
-            log.warn("Transaction request for unaccepted bid: {}", bidId);
-            throw new InvalidTransactionException();
-        }
+    public Transaction create(Bid bid) {
         Transaction transaction = new Transaction();
         transaction.setBid(bid);
         transaction.setStatus(TransactionStatus.PENDING);

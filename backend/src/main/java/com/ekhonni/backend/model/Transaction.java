@@ -57,4 +57,13 @@ public class Transaction extends BaseEntity<Long> {
     public Account getSellerAccount() {
         return getSeller().getAccount();
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + getId() +
+                "status=" + status +
+                ", sessionKey='" + sessionKey + '\'' +
+                '}';
+    }
 }

@@ -27,7 +27,7 @@ public record BidController(BidService bidService) {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/{id}")
     public Bid get(@PathVariable Long id){
-        return bidService.get(id).orElseThrow(BidNotFoundException::new);
+        return bidService.get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
     }
 
     @ResponseStatus(HttpStatus.ACCEPTED)

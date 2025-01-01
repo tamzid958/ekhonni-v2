@@ -21,12 +21,8 @@ import java.util.Map;
 public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/initiate/{bid_log_id}")
-    public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId)  {
-        try {
-            return new ApiResponse<>(true, "Success", paymentService.initiatePayment(bidLogId), HttpStatus.OK);
-        } catch (Throwable throwable) {
-            throw new InitiatePaymentException("Internal server error");
-        }
+    public ApiResponse<?> initiatePayment(@PathVariable("bid_log_id") Long bidLogId) throws Exception {
+        return new ApiResponse<>(true, "Success", paymentService.initiatePayment(bidLogId), HttpStatus.OK);
     }
 
     @PostMapping("/success")

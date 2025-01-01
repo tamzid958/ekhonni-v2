@@ -33,10 +33,10 @@ public class ResilienceConfig {
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .slidingWindowSize(5)
                 .minimumNumberOfCalls(3)
-                .permittedNumberOfCallsInHalfOpenState(2)
+                .permittedNumberOfCallsInHalfOpenState(3)
                 .automaticTransitionFromOpenToHalfOpenEnabled(true)
                 .recordExceptions(InitiatePaymentException.class, RestClientException.class)
-                .ignoreExceptions(UnsupportedEncodingException.class, IllegalArgumentException.class)
+                .ignoreExceptions(UnsupportedEncodingException.class)
                 .build();
     }
 
@@ -49,7 +49,10 @@ public class ResilienceConfig {
                         2.0,
                         Duration.ofSeconds(10)
                 ))
-                .retryExceptions(InitiatePaymentException.class, RestClientException.class)
+                .retryExceptions(
+                        InitiatePaymentException.class,
+                        RestClientException.class,
+                        UnsupportedEncodingException.class)
                 .build();
     }
 
@@ -83,7 +86,7 @@ public class ResilienceConfig {
     public RetryRegistry retryRegistry(RetryConfig retryConfig) {
         RetryRegistry registry = RetryRegistry.of(retryConfig);
 
-        Retry retry = registry.retry("initiatePayment", retryConfig);
+        Retry retry = registry.retry("retryPayment", retryConfig);
 
         retry.getEventPublisher()
                 .onRetry(event -> {

@@ -37,7 +37,7 @@ public class AccountService extends BaseService<Account, Long> {
     @Transactional
     public Account create(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Account account = new Account(0.0, "Active");
         user.setAccount(account);
         accountRepository.save(account);
