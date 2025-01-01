@@ -12,7 +12,7 @@ import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.dto.CategorySubCategoryDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.projection.CategoryProjection;
+import com.ekhonni.backend.projection.viewer.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -52,28 +52,29 @@ public class CategoryService extends BaseService<Category, Long> {
 
     //done
     public CategorySubCategoryDTO getSubCategories(String name) {
-        Category category = categoryRepository.findByName(name);
-        if (category == null) throw new RuntimeException("no category found by this name");
+        Category parent = categoryRepository.findByName(name);
+        if (parent == null) throw new RuntimeException("no category found by this name");
 
-        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(category.getName(), new ArrayList<>());
-        List<CategoryProjection> categoryProjections = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(category, true);
-        for (CategoryProjection categoryProjection : categoryProjections) {
-            categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), new ArrayList<>());
+        List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
+
+        for (ViewerCategoryProjection child : children) {
+            categorySubCategoryDTO.getSubCategories().add(child.getName());
         }
+
         return categorySubCategoryDTO;
     }
 
 
     public List<CategorySubCategoryDTO> getAllCategories() {
-        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
+
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
-
-
+        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
         for (Category rootCategory : rootCategories) {
-            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
-            List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
-            for (CategoryProjection categoryProjection : subCategories) {
-                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>(), new ArrayList<>());
+            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
+            for (ViewerCategoryProjection subCategory : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(subCategory.getName());
             }
             categorySubCategoryDTOS.add(categorySubCategoryDTO);
         }
@@ -100,6 +101,17 @@ public class CategoryService extends BaseService<Category, Long> {
         category.setActive(categoryUpdateDTO.active());
         categoryRepository.save(category);
 
+    }
+
+    public List<String> getChainCategories(String name) {
+        Category category = categoryRepository.findByNameAndActive(name, true);
+        List<String> chain = new ArrayList<>();
+        chain.add(category.getName());
+        while (category.getParentCategory() != null) {
+            chain.add(category.getParentCategory().getName());
+            category = categoryRepository.findByNameAndActive(category.getParentCategory().getName(), true);
+        }
+        return chain;
     }
 
 

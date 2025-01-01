@@ -22,4 +22,5 @@ import java.util.List;
 public class CategorySubCategoryDTO {
     private String category;
     private List<String> subCategories;
+    private List<String> chainCategories;
 }

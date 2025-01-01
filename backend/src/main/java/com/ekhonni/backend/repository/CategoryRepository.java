@@ -8,7 +8,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.projection.CategoryProjection;
+import com.ekhonni.backend.projection.viewer.ViewerCategoryProjection;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +21,7 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
     List<Category> findByParentCategoryIsNullAndActive(boolean active);
 
-    List<CategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
+    List<ViewerCategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
 
 
     @Modifying
@@ -40,4 +40,6 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
     Category findByNameAndActive(String name, boolean active);
 
     Category findByName(String name);
+
+    //List<Category> findParentCategoryChain(Category category);
 }

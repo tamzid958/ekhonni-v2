@@ -34,15 +34,14 @@ public record CategoryController(CategoryService categoryService) {
     }
 
     //done
-    @GetMapping
+    @GetMapping("/all")
     public ApiResponse<?> getAllCategories() {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategories());
     }
 
     //done
     @GetMapping("/{name}/subCategories")
-    public ApiResponse<?> getSubCategories(@PathVariable String name) {
-
+    public ApiResponse<?> getSubCategories(@PathVariable("name") String name) {
         try {
             return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubCategories(name));
         } catch (RuntimeException e) {
@@ -65,7 +64,7 @@ public record CategoryController(CategoryService categoryService) {
         }
     }
 
-    @PatchMapping
+    @PatchMapping("/{name}")
     public ApiResponse<?> updateCategory(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
         try {
             categoryService.update(categoryUpdateDTO);
@@ -73,6 +72,12 @@ public record CategoryController(CategoryService categoryService) {
         } catch (Exception e) {
             return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+
+    @GetMapping("/chain/{name}")
+    public ApiResponse<?> chain(@PathVariable String name) {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getChainCategories(name));
     }
 
 
