@@ -21,7 +21,8 @@ const ProductPage = async ({ params }: { params: { id: string } }) => {
   const { id } = params;
 
   // Fetch the product data using the dynamic `id`
-  const res = await fetch(`http://localhost:3000/api/mock-data/${id}`);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
+  const res = await fetch(`${baseUrl}/api/mock-data?id=${id}`, { cache: 'no-store' });
 
   if (!res.ok) {
     return <Error message="Failed to load product details." />;
@@ -35,7 +36,8 @@ const ProductPage = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <div className="flex flex-row justify-center items-center bg-gray-100 min-h-screen">
+    <div
+      className="space-y-6 container mx-auto px-4 w-full overflow-hidden flex flex-row justify-center items-center min-h-screen">
       <div className="flex h-auto bg-white w-full">
         {/* Left Section: Image and Thumbnails */}
         <div className="flex flex-col w-1/2 h-96">

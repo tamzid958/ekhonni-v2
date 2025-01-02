@@ -31,7 +31,8 @@ export function CardDemo({ id, title, description, img, price }: data) {
         </CardContent>
         <CardFooter className="flex-col items-start">
           <CardTitle className="mb-2 text-xl">{title}</CardTitle>
-          <CardDescription className="text-md">{description}</CardDescription>
+          <CardDescription className="text-md line-clamp-3 overflow-hidden text-ellipsis"
+                           title={description}>{description}</CardDescription>
           <CardDescription className="text-lg mt-2">${price}</CardDescription>
         </CardFooter>
       </Card>

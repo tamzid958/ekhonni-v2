@@ -9,10 +9,21 @@ const Sidebar: React.FC<SidebarProps> = ({
                                            selectedCategory,
                                            setSelectedCategory,
                                          }) => {
-  const categories = ['All', 'Best Selling', 'Limited Time Deals', 'Top Rated'];
+  // Updated categories to match mockData
+  const categories = [
+    'All',
+    'Electronics',
+    'Antiques',
+    'Fashion',
+    'Books',
+    'Home Decor',
+    'Toys',
+    'Sports Equipment',
+    'Automobiles',
+  ];
 
   return (
-    <aside className="w-64 bg-gray-100 p-4 min-h-screen">
+    <aside className="w-56 flex-shrink-0 bg-gray-100 p-4 min-h-screen">
       <h2 className="text-lg font-semibold mb-4">Shop by Category</h2>
       <ul className="space-y-2">
         {categories.map((category) => (

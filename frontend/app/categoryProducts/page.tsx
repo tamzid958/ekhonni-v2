@@ -1,85 +1,135 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { CardDemo } from '@/components/Card';
 import Sidebar from '@/components/CategorySidebar';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { CardDemo } from '@/components/Card';
+import { Separator } from '@/components/ui/separator';
 
-interface data {
+interface Data {
   id: string;
   title: string;
   description: string;
   img: string;
   price: number;
   category: string;
+  label: string;
 }
 
 export default function CategoryProductPage() {
-  const [products, setProducts] = useState<data[]>([]);
+  const [products, setProducts] = useState<Data[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('http://localhost:3000/api/mock-data', { cache: 'no-store' });
+      setLoading(true); // Show loading state while fetching data
 
-      if (response.ok) {
-        const data: data[] = await response.json();
-        console.log(data);  // Add this to check the fetched data
-        setProducts(data);
-      } else {
-        console.error('Failed to fetch products');
+      try {
+        const url =
+          selectedCategory === 'All'
+            ? '/api/mock-data'
+            : `/api/mock-data?category=${encodeURIComponent(selectedCategory)}`;
+
+        const response = await fetch(url, { cache: 'no-store' });
+
+        if (response.ok) {
+          const data: Data[] = await response.json();
+          console.log(data); // Debugging fetched data
+          setProducts(data);
+        } else {
+          console.error('Failed to fetch products');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false); // Remove loading state once data is fetched
       }
     };
 
     fetchData();
-  }, []);
-
-  const filteredProducts =
-    selectedCategory === 'All'
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  }, [selectedCategory]); // Re-fetch data when the selected category changes
 
   return (
-    <div className="space-y-6 container mx-auto my-4 px-4">
+    <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">
       <h1 className="text-2xl font-bold my-6">All Products</h1>
 
-      {/* Best Selling Section */}
-      <div>
+      <div className="flex">
+        {/* Sidebar */}
         <Sidebar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
-        <h2 className="text-xl font-semibold my-4">Best Selling</h2>
-        <ScrollArea className="whitespace-nowrap rounded-md border">
-          <div className="flex w-max space-x-4 p-4">
-            {filteredProducts.map((item) => (
-              <CardDemo key={item.id} {...item} />
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
 
-      <Separator></Separator>
+        {/* Main Content */}
+        <div className="flex-1 ml-6">
+          {loading ? (
+            <p>Loading products...</p>
+          ) : (
+            <div className="container mx-auto px-4 w-full space-y-6">
+              {/* Best Selling Section */}
+              <div className="w-full mb-6">
+                <h2 className="text-xl font-semibold space-x-4 p-4">Best Selling</h2>
+                <ScrollArea className="w-full overflow-x-auto">
+                  {products.filter((product) => product.label === 'Best Selling').length === 0 ? (
+                    // If no products are found, show this message
+                    <p className="text-center text-gray-500">No products found in this label.</p>
+                  ) : (
+                    <div className="flex w-max space-x-4 p-4">
+                      {products
+                        .filter((product) => product.label === 'Best Selling')
+                        .map((item) => (
+                          <CardDemo key={item.id} {...item} />
+                        ))}
+                    </div>
+                  )}
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
 
-      {/* Limited Time Deals Section */}
-      <div>
-        <h2 className="text-xl font-semibold my-4">Limited Time Deals</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {filteredProducts.map((item) => (
-            <CardDemo key={item.id} {...item} />
-          ))}
-        </div>
-      </div>
+              <Separator />
 
-      {/* Top Rated Section */}
-      <div>
-        <h2 className="text-xl font-semibold my-4">Top Rated</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {filteredProducts.map((item) => (
-            <CardDemo key={item.id} {...item} />
-          ))}
+              {/* Limited Time Deals Section */}
+              <div className="w-full mb-6">
+                <h2 className="text-xl font-semibold space-x-4 p-4">Limited Time Deals</h2>
+                <ScrollArea className="w-full overflow-x-auto">
+                  {products.filter((product) => product.label === 'Limited Time Deals').length === 0 ? (
+                    <p className="text-center text-gray-500">No products found in this label.</p>
+                  ) : (
+                    <div className="flex w-max space-x-4 p-4">
+                      {products
+                        .filter((product) => product.label === 'Limited Time Deals')
+                        .map((item) => (
+                          <CardDemo key={item.id} {...item} />
+                        ))}
+                    </div>
+                  )}
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+
+              <Separator />
+
+              {/* Top Rated Section */}
+              <div className="w-full mb-6">
+                <h2 className="text-xl font-semibold space-x-4 p-4">Top Rated</h2>
+                <ScrollArea className="w-full overflow-x-auto">
+                  {products.filter((product) => product.label === 'Top Rated').length === 0 ? (
+                    <p className="text-center text-gray-500">No products found in this label.</p>
+                  ) : (
+                    <div className="flex w-max space-x-4 p-4">
+                      {products
+                        .filter((product) => product.label === 'Top Rated')
+                        .map((item) => (
+                          <CardDemo key={item.id} {...item} />
+                        ))}
+                    </div>
+                  )}
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
