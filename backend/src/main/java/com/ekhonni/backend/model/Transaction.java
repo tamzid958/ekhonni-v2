@@ -51,7 +51,7 @@ public class Transaction extends BaseEntity<Long> {
     }
 
     public User getSeller() {
-        return getProduct().getUser();
+        return getProduct().getSeller();
     }
 
     public Account getSellerAccount() {

@@ -1,5 +1,6 @@
 package com.ekhonni.backend.exception;
 
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ApiResponse<?> handleEntityNotFoundException(EntityNotFoundException ex) {
-        return new ApiResponse<>(false, "Error", ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-        var response = new ApiResponse<>(false, "Error", errors, HttpStatus.BAD_REQUEST);
+        var response = new ApiResponse<>(HTTPStatus.BAD_REQUEST, errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

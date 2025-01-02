@@ -225,7 +225,7 @@ public class PaymentService {
         transaction.getBid().setStatus(BidStatus.PAID);
 
         Account buyerAccount = transaction.getBid().getBidder().getAccount();
-        Account sellerAccount = transaction.getBid().getProduct().getUser().getAccount();
+        Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
         buyerAccount.setBalance(buyerAccount.getBalance() - transaction.getAmount());
         sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getAmount());
     }

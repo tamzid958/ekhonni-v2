@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,13 +24,12 @@ public class Watchlist extends BaseEntity<Long> {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     User watcher;
 
-
     @ManyToMany
     @JoinTable(
             name = "watchlist_products",
             joinColumns = @JoinColumn(name = "watchlist_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
 }

@@ -16,6 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum HTTPStatus {
 
+    OK(200, true),
     FOUND(200, true),
     CREATED(201, true),
     DELETED(200, true),
