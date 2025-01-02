@@ -1,6 +1,7 @@
 package com.ekhonni.backend.config;
 
 import com.ekhonni.backend.exception.InitiatePaymentException;
+import com.ekhonni.backend.exception.InvalidTransactionException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -53,6 +54,7 @@ public class ResilienceConfig {
                         InitiatePaymentException.class,
                         RestClientException.class,
                         UnsupportedEncodingException.class)
+                .ignoreExceptions(InvalidTransactionException.class)
                 .build();
     }
 
