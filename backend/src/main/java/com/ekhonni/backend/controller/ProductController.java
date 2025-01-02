@@ -42,7 +42,7 @@ public record ProductController(ProductService productService) {
 
     //done (paused for now)
     @PostMapping
-    public ApiResponse<?> createProduct(@RequestBody ProductDTO productDTO) {
+    public ApiResponse<?> createProduct(@ModelAttribute ProductDTO productDTO) {
         productService.create(productDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }

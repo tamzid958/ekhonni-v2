@@ -12,10 +12,7 @@ import com.ekhonni.backend.enums.ProductCondition;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -23,6 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "product")
+@ToString
 public class Product extends BaseEntity<Long> {
 
     @NotBlank
@@ -49,6 +47,9 @@ public class Product extends BaseEntity<Long> {
     @ManyToOne(optional = false)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
+
+    @NotBlank
+    private String imagePath;
 
 }
 

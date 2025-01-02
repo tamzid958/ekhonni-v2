@@ -13,6 +13,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.springframework.web.multipart.MultipartFile;
 
 public record ProductDTO(@NotBlank
                          String name,
@@ -24,9 +25,10 @@ public record ProductDTO(@NotBlank
                          @Enumerated(EnumType.STRING)
                          @Column(nullable = false)
                          ProductCondition condition,
-                         String category) {
-
-
+                         String category,
+                         MultipartFile image
+) {
+    
 }
 
 

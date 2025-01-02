@@ -19,10 +19,11 @@ import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.service.BaseService;
 import com.ekhonni.backend.service.CategoryService;
 import com.ekhonni.backend.service.ProductService;
+import com.ekhonni.backend.util.AuthUtil;
+import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,9 @@ public class ProductServiceImpl extends BaseService<Product, Long> implements Pr
     ProductRepository productRepository;
     CategoryService categoryService;
     CategoryRepository categoryRepository;
+
+    @Value("${upload.dir}")
+    String UPLOAD_DIR;
 
 
     public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository) {
@@ -46,33 +50,29 @@ public class ProductServiceImpl extends BaseService<Product, Long> implements Pr
     @Override
     @Transactional
     public void create(ProductDTO productDTO) {
-        // need to change something
-        Authentication authenticated = SecurityContextHolder.getContext().getAuthentication();
-        if (authenticated == null) {
-            throw new RuntimeException("user not authenticated");
+
+        try {
+            User user = AuthUtil.getAuthenticatedUser();
+            Category category = categoryRepository.findByName(productDTO.category());
+            String imagePath = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.image());
+
+            Product product = new Product(
+                    productDTO.name(),
+                    productDTO.price(),
+                    productDTO.description(),
+                    false,
+                    false,
+                    productDTO.condition(),
+                    category,
+                    user,
+                    imagePath
+            );
+            productRepository.save(product);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        User user = (User) authenticated.getPrincipal();
-        Category category = categoryRepository.findByName(productDTO.category());
 
-
-        Product product = new Product(
-                productDTO.name(),
-                productDTO.price(),
-                productDTO.description(),
-                false,
-                false,
-                productDTO.condition(),
-                category,
-                user
-        );
-        productRepository.save(product);
     }
-
-
-//    public ProductProjection updateOne(Long id, ProductDTO productDTO) {
-//        this.update(id, productDTO);
-//        return productRepository.findProductProjectionById(id);
-//    }
 
 
     @Override
@@ -84,23 +84,11 @@ public class ProductServiceImpl extends BaseService<Product, Long> implements Pr
     }
 
 
-//    public Optional<ProductProjection> getOne(Long Id) {
-//        return Optional.ofNullable(productRepository.findProductProjectionById(Id));
-//    }
-
     @Override
     public List<ProductProjection> search(String searchText, Pageable pageable) {
         return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(searchText, searchText, searchText);
     }
 
-
-//    public boolean delete(Long id) {
-//        if (productRepository.existsById(id)) {
-//            productRepository.deleteById(id);
-//            return true;
-//        }
-//        return false;
-//    }
 
     @Override
     @Transactional
@@ -121,8 +109,4 @@ public class ProductServiceImpl extends BaseService<Product, Long> implements Pr
     }
 
 
-//    public List<ProductProjection> getFilteredProducts(ProductFilterDTO filterDTO, Pageable pageable) {
-//        Category category = categoryRepository.findByName(filterDTO.getCategoryName());
-//        return productRepository.findAllFilteredProducts(category.getId());
-//    }
 }

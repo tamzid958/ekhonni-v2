@@ -104,6 +104,7 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
     public List<String> getChainCategories(String name) {
+
         Category category = categoryRepository.findByNameAndActive(name, true);
         List<String> chain = new ArrayList<>();
         chain.add(category.getName());
