@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import {redis, redlock} from '@/lib/redis';
 
 export interface User {
   id: number;
@@ -35,6 +36,13 @@ const refreshAccessToken = async (token: any) => {
       accessToken: `refreshed-${token.accessToken}`,
       accessTokenExpires: Date.now() + 60,
     };
+
+    await redis.set(
+      `jwt:${token.id}`,
+      JSON.stringify(refreshedToken),
+      "EX",
+      60
+    );
 
     return refreshedToken;
   } catch (error) {
@@ -120,7 +128,7 @@ const options: NextAuthOptions = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || "supersecret",
-    maxAge: 60 ,
+    maxAge: 60,
   },
   pages: {
     signIn: "/auth/login",
@@ -130,22 +138,34 @@ const options: NextAuthOptions = {
       return baseUrl;
     },
     async jwt({ token, user, account }) {
-      if (user) {
-        return {
+      if (user && account) {
+        const jwtToken = {
           ...token,
           id: user.id,
           email: user.email,
           name: user.name,
           accessToken: user.accessToken || "default-access-token",
           refreshToken: user.refreshToken || "default-refresh-token",
-          accessTokenExpires: Date.now() + 60 ,
+          accessTokenExpires: Date.now() + 60,
         };
+
+        await redis.set(
+          `jwt:${user.id}`,
+          JSON.stringify(jwtToken),
+          "EX",
+          60
+        );
+        return jwtToken;
+      }
+
+      const storedToken = await redis.get(`jwt:${token.id}`);
+      if (storedToken) {
+        return JSON.parse(storedToken);
       }
 
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
-
       return await refreshAccessToken(token);
     },
     async session({ session, token }) {
