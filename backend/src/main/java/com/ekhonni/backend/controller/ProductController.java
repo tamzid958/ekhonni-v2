@@ -69,8 +69,8 @@ public record ProductController(ProductService productService) {
         return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
-    @GetMapping("/search/{search_text}")
-    public ApiResponse<?> getSearchProducts(@PathVariable("search_text") String searchText, Pageable pageable) {
+    @GetMapping("/search")
+    public ApiResponse<?> getSearchProducts(@RequestParam("search_text") String searchText, Pageable pageable) {
         List<ProductProjection> productProjections = productService.search(searchText, pageable);
         return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
     }

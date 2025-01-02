@@ -41,6 +41,15 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
                 WHERE COALESCE(:#{#filter.maxPrice}, p.price) >= p.price
                   AND COALESCE(:#{#filter.minPrice}, p.price) <= p.price
                   AND COALESCE(:#{#filter.productCondition}, p.condition) = p.condition
+            
+                  ORDER BY
+                       CASE
+                         WHEN :#{#filter.sortBy.name()} = 'priceLowToHigh' THEN p.price
+                         WHEN :#{#filter.sortBy.name()} = 'priceHighToLow' THEN -p.price
+                       END ASC,
+                       CASE
+                         WHEN :#{#filter.sortBy.name()} = 'newlyListed' THEN p.created_at
+                       END DESC
             """, nativeQuery = true)
     List<ProductProjection> findAllProjectionByFilter(@Param("filter") ProductFilter filter, @Param("categoryId") Long categoryId);
 

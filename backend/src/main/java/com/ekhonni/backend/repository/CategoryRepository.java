@@ -41,5 +41,4 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
     Category findByName(String name);
 
-    //List<Category> findParentCategoryChain(Category category);
 }

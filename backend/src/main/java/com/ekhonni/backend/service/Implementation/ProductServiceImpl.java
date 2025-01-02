@@ -8,6 +8,7 @@
 package com.ekhonni.backend.service.Implementation;
 
 import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -76,6 +77,7 @@ public class ProductServiceImpl extends BaseService<Product, Long> implements Pr
 
     @Override
     public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
+        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
         String categoryName = productFilter.getCategoryName();
         Category category = categoryRepository.findByNameAndActive(categoryName, true);
         return productRepository.findAllProjectionByFilter(productFilter, category.getId());

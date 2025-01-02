@@ -7,6 +7,7 @@
 
 package com.ekhonni.backend.filter;
 
+import com.ekhonni.backend.enums.ProductSort;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,5 +19,5 @@ public class ProductFilter {
     private Double minPrice;
     private Double maxPrice;
     private String productCondition;
-
+    private ProductSort sortBy;
 }
