@@ -1,7 +1,10 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.UserUpdateDTO;
+import com.ekhonni.backend.projection.NotificationDetailsProjection;
+import com.ekhonni.backend.projection.NotificationPreviewProjection;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.service.NotificationService;
 import com.ekhonni.backend.service.PasswordResetService;
 import com.ekhonni.backend.service.UserService;
 import lombok.AllArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -24,6 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordResetService passwordResetService;
+    private final NotificationService notificationService;
 
     @GetMapping("/{id}/profile")
     public UserProjection getUserById(@PathVariable UUID id) {
@@ -72,4 +77,15 @@ public class UserController {
         // To be implemented
     }
 
+    @GetMapping("{id}/notifications")
+    @PreAuthorize("#id == authentication.principal.id")
+    public List<NotificationPreviewProjection> getPreviewNotifications(@PathVariable UUID id) {
+        return notificationService.get(id);
+    }
+
+    @GetMapping("/{id}/notifications/{notificationId}")
+    @PreAuthorize("#id == authentication.principal.id")
+    public List<NotificationDetailsProjection> getDetailsNotification(@PathVariable UUID id, @PathVariable Long notificationId) {
+        return notificationService.get(id, notificationId);
+    }
 }

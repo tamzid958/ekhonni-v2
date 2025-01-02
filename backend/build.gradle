@@ -62,8 +62,13 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//.   Email Service
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+//.   Time Utils
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.1.Final'
+
+
 }
 
 tasks.named('test') {
