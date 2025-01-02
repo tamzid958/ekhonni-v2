@@ -5,7 +5,7 @@
  * Project Name: backend
  */
 
-package com.ekhonni.backend.Request;
+package com.ekhonni.backend.request;
 
 import com.ekhonni.backend.enums.ProductCondition;
 import lombok.AllArgsConstructor;

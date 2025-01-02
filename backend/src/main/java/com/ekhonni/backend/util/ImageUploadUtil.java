@@ -14,24 +14,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ImageUploadUtil {
-    private ImageUploadUtil() {
 
-    }
-
-    public static String saveImage(String uploadDir, MultipartFile file) throws IOException {
-        String imagePath = null;
+    public static List<String> saveImage(String uploadDir, List<MultipartFile> images) throws IOException {
+        List<String> imagePaths = new ArrayList<>();
         File directory = new File(uploadDir);
         if (!directory.exists()) {
             directory.mkdir();
         }
 
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, filename);
-        Files.write(filePath, file.getBytes());
-        imagePath = filePath.toString();
-        return imagePath;
+        for (MultipartFile image : images) {
+            String imagePath = null;
+            String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, filename);
+            Files.write(filePath, image.getBytes());
+            imagePath = filePath.toString();
+            imagePaths.add(imagePath);
+        }
+        return imagePaths;
     }
 }

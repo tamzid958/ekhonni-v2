@@ -8,27 +8,29 @@
 package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.enums.ProductCondition;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public record ProductDTO(@NotBlank
                          String name,
                          @Positive
-                         @Column(nullable = false)
                          Double price,
                          @NotBlank
                          String description,
                          @Enumerated(EnumType.STRING)
-                         @Column(nullable = false)
                          ProductCondition condition,
+                         @NotBlank
                          String category,
-                         MultipartFile image
+                         @NotNull
+                         List<MultipartFile> images
 ) {
-    
+
 }
 
 

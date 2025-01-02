@@ -21,7 +21,7 @@ public class Watchlist extends BaseEntity<Long> {
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    User watcher;
+    User user;
 
 
     @ManyToMany
