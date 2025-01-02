@@ -45,12 +45,14 @@ public class JWTFilter extends OncePerRequestFilter {
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 validateAndAuthenticateToken(request, response, token, email);
             }
-            filterChain.doFilter(request, response);
+
         } catch (Exception e) {
             // exceptions to be refactored
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Invalid JWT Token");
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private boolean isBearerToken(String authHeader) {

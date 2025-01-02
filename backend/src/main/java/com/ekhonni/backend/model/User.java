@@ -52,7 +52,7 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getRole().toString()));
+        return List.of(new SimpleGrantedAuthority(this.getRole().getName()));
     }
 
     @Override

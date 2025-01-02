@@ -60,6 +60,13 @@ public class UserService extends BaseService<User, UUID> {
         return userRepository.existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(id);
     }
 
+    public boolean isSuperAdmin(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        String s = user.getRole().getName();
+        boolean b = s.equals("SUPER_ADMIN");
+        return b;
+    }
+
     public boolean isActive(String email) {
         return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
     }

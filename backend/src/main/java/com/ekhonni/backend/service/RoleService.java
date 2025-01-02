@@ -3,12 +3,19 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.exception.RoleAlreadyExistsException;
 import com.ekhonni.backend.exception.RoleCannotBeDeletedException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
+import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.RoleRepository;
+import com.ekhonni.backend.repository.UserRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Author: Md Jahid Hasan
@@ -17,11 +24,15 @@ import java.util.Objects;
 @Service
 public class RoleService extends BaseService<Role, Long> {
 
-    RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    private final PrivilegeService privilegeService;
+    private final UserRepository userRepository;
 
-    public RoleService(RoleRepository roleRepository) {
+    public RoleService(RoleRepository roleRepository, PrivilegeService privilegeService, UserRepository userRepository) {
         super(roleRepository);
         this.roleRepository = roleRepository;
+        this.privilegeService = privilegeService;
+        this.userRepository = userRepository;
     }
 
     public void delete(long id) {
@@ -44,5 +55,26 @@ public class RoleService extends BaseService<Role, Long> {
         roleRepository.save(newRole);
 
         return "New Role added";
+    }
+
+    public boolean hasPrivilegeAccess(Role role, Privilege privilege) {
+        if (role == null || privilege == null) return false;
+
+        List<Privilege> privilegeList = privilegeService.getAllOfRole(role);
+
+        return privilegeList.stream().anyMatch(p -> p.getId().equals(privilege.getId()));
+    }
+
+    @Transactional
+    @Modifying
+    public String assign(UUID userId, long roleId) {
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+
+        if (!role.getName().equals("SUPER_ADMIN")) user.setRole(role);
+        else throw new RuntimeException("Super Admin role cannot be set to user");
+        return "Role assigned to user";
     }
 }

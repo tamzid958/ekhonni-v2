@@ -7,7 +7,6 @@ import com.ekhonni.backend.service.RoleService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,30 +33,27 @@ public class RoleController {
         return roleService.get(id);
     }
 
-    @PostMapping("/add")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PostMapping("/")
     public String addRole(@RequestBody Role role) {
         return roleService.add(role);
     }
 
-    @PatchMapping("/{id}/update")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @PatchMapping("/{id}")
     public Role updateRole(@PathVariable long id, @RequestBody Role role) {
         return roleService.update(id, role);
     }
 
-    @DeleteMapping("/{id}/delete")
-    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    @DeleteMapping("/{id}")
     public void deleteRole(@PathVariable long id) {
         roleService.delete(id);
     }
 
     @PostMapping("/{roleId}/assign/privilege/{privilegeId}")
-    public String assignPrivilege(@PathVariable("roleId") long roleId, @PathVariable long privilegeId) {
+    public String assignPrivilege(@PathVariable("roleId") long roleId, @PathVariable("privilegeId") long privilegeId) {
         return privilegeService.assign(roleId, privilegeId);
     }
 
-    @GetMapping("/{roleId}/privilege")
+    @GetMapping("/{roleId}/privilege/")
     public Page<Privilege> getAllPrivilegeOfRole(@PathVariable("roleId") long roleId, Pageable pageable) {
         return privilegeService.getAllOfRole(roleId, pageable);
     }

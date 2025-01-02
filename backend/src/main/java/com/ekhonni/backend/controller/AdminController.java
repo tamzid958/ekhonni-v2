@@ -2,6 +2,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
+import com.ekhonni.backend.service.RoleService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,8 @@ import java.util.UUID;
 @RequestMapping("/api/v2/admin")
 public class AdminController {
 
-    AdminService adminService;
+    private final AdminService adminService;
+    private final RoleService roleService;
 
 //    @PostMapping("/add-admin")
 //    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
@@ -35,12 +37,18 @@ public class AdminController {
 //        return ResponseEntity.ok("admin removed");
 //    }
 
-    @GetMapping("/users")
+    @GetMapping("/users/")
     public Page<UserProjection> getAllUser(Pageable pageable) {
         return adminService.getAllUser(UserProjection.class, pageable);
     }
 
-    @GetMapping("/users/deleted")
+    @PostMapping("user/{userId}/assign/role/{roleId}")
+    @PreAuthorize("(@userService.isActive(#userId)")
+    public String assignRole(@PathVariable("userId") UUID userId, @PathVariable("roleId") long roleId) {
+        return roleService.assign(userId, roleId);
+    }
+
+    @GetMapping("/users/deleted/")
     public Page<UserProjection> getAllDeletedUser(Pageable pageable) {
         return adminService.getAllDeleted(UserProjection.class, pageable);
     }
@@ -51,7 +59,7 @@ public class AdminController {
         adminService.block(id);
     }
 
-    @GetMapping("/users/blocked")
+    @GetMapping("/users/blocked/")
     public Page<UserProjection> getAllBlockedUser(Pageable pageable) {
         return adminService.getAllBlocked(UserProjection.class, pageable);
     }

@@ -10,8 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 /**
  * Author: Md Jahid Hasan
@@ -37,16 +35,16 @@ public class PrivilegeController {
         return privilegeService.get(privilegeId);
     }
 
-    @PostMapping("/add")
-    public String addPrivilege(@RequestBody PrivilegeDTO privilegeDTO) {
-        return privilegeService.add(privilegeDTO);
-    }
-
-
-    @PostMapping("/add-multiple")
-    public String addMultiplePrivilege(@RequestBody List<PrivilegeDTO> privilegeDTOList) {
-        return privilegeService.addMultiple(privilegeDTOList);
-    }
+//    @PostMapping("/add")
+//    public String addPrivilege(@RequestBody PrivilegeDTO privilegeDTO) {
+//        return privilegeService.add(privilegeDTO);
+//    }
+//
+//
+//    @PostMapping("/add-multiple")
+//    public String addMultiplePrivilege(@RequestBody List<PrivilegeDTO> privilegeDTOList) {
+//        return privilegeService.addMultiple(privilegeDTOList);
+//    }
 
     @PatchMapping("/{privilegeId}/update")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")

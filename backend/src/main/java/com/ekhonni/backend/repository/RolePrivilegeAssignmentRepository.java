@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Author: Md Jahid Hasan
  * Date: 12/30/24
@@ -12,4 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RolePrivilegeAssignmentRepository extends BaseRepository<RolePrivilegeAssignment, Long> {
     Page<RolePrivilegeAssignment> findAllByRoleId(long roleId, Pageable pageable);
+
+    List<RolePrivilegeAssignment> findAllByRoleId(long roleId);
+
 }

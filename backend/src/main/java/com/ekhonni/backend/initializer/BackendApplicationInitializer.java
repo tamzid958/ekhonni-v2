@@ -1,16 +1,22 @@
 package com.ekhonni.backend.initializer;
 
+import com.ekhonni.backend.dto.PrivilegeDTO;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.service.PrivilegeService;
+import com.ekhonni.backend.util.JsonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Author: Md Jahid Hasan
@@ -23,6 +29,8 @@ public class BackendApplicationInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
+    private final JsonUtil jsonUtil;
+    private final PrivilegeService privilegeService;
     @Value("${spring.security.admin.email}")
     private String adminEmail;
     @Value("${spring.security.admin.password}")
@@ -35,7 +43,7 @@ public class BackendApplicationInitializer implements CommandLineRunner {
             Role user = new Role("USER", "A General Registered User");
             roleRepository.save(user);
         }
-        
+
 
         if (!roleRepository.existsByName("SUPER_ADMIN")) {
             Role superAdmin = new Role("SUPER_ADMIN", "An Admin with highest level of privilege");
@@ -59,6 +67,12 @@ public class BackendApplicationInitializer implements CommandLineRunner {
 
             }
         }
+
+
+        List<PrivilegeDTO> privilegeList = jsonUtil.readListFromJsonFile("static/privileges.json", new TypeReference<List<PrivilegeDTO>>() {
+        });
+
+        privilegeService.addMultiple(privilegeList);
 
 
     }

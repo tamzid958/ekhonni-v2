@@ -28,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}/profile")
-    @PreAuthorize("@userService.isActive(#id)")
+    @PreAuthorize("(@userService.isActive(#id) && (#id == authentication.principal.id || !@userService.isSuperAdmin(#id)))")
     public UserProjection getUserById(@PathVariable UUID id) {
         return userService.get(id, UserProjection.class);
     }

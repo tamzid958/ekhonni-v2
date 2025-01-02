@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -36,20 +37,30 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     }
 
     @Transactional
-    public String add(PrivilegeDTO privilegeDTO) {
+    public void add(PrivilegeDTO privilegeDTO) {
 
-        Privilege privilege = new Privilege(
-                privilegeDTO.name(),
-                privilegeDTO.description(),
-                privilegeDTO.httpMethod(),
-                privilegeDTO.endpoint()
-        );
+        if (!privilegeRepository.existsByHttpMethodAndEndpoint(privilegeDTO.httpMethod(), privilegeDTO.endpoint())) {
+            Privilege privilege = new Privilege(
+                    privilegeDTO.name(),
+                    privilegeDTO.description(),
+                    privilegeDTO.httpMethod(),
+                    privilegeDTO.endpoint()
+            );
 
-        privilegeRepository.save(privilege);
+            privilegeRepository.save(privilege);
 
-        assignPrivilegeToSuperAdmin(privilege);
+            assignPrivilegeToSuperAdmin(privilege);
+        }
 
-        return "privilege added";
+    }
+
+    @Transactional
+    public void addMultiple(List<PrivilegeDTO> privilegeDTOList) {
+
+        for (PrivilegeDTO privilegeDTO : privilegeDTOList) {
+            this.add(privilegeDTO);
+        }
+
     }
 
     private void assignPrivilegeToSuperAdmin(Privilege privilege) {
@@ -60,24 +71,6 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
         rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
     }
 
-    @Transactional
-    public String addMultiple(List<PrivilegeDTO> privilegeDTOList) {
-
-        for (PrivilegeDTO privilegeDTO : privilegeDTOList) {
-            Privilege privilege = new Privilege(
-                    privilegeDTO.name(),
-                    privilegeDTO.description(),
-                    privilegeDTO.httpMethod(),
-                    privilegeDTO.endpoint()
-            );
-            privilegeRepository.save(privilege);
-
-            assignPrivilegeToSuperAdmin(privilege);
-
-        }
-
-        return "Multiple privilege added";
-    }
 
     public String assign(long roleId, long privilegeId) {
         Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
@@ -94,5 +87,19 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
         Page<RolePrivilegeAssignment> rolePrivilegeAssignments = rolePrivilegeAssignmentRepository.findAllByRoleId(roleId, pageable);
 
         return rolePrivilegeAssignments.map(RolePrivilegeAssignment::getPrivilege);
+    }
+
+    public List<Privilege> getAllOfRole(Role role) {
+        long roleId = role.getId();
+
+        List<RolePrivilegeAssignment> rolePrivilegeAssignments = rolePrivilegeAssignmentRepository.findAllByRoleId(roleId);
+
+        return rolePrivilegeAssignments.stream()
+                .map(RolePrivilegeAssignment::getPrivilege)
+                .collect(Collectors.toList());
+    }
+
+    public Privilege getByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
+        return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(PrivilegeNotFoundException::new);
     }
 }
