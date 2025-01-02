@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -85,7 +86,7 @@ public class UserController {
 
     @GetMapping("/{id}/notifications/{notificationId}")
     @PreAuthorize("#id == authentication.principal.id")
-    public List<NotificationDetailsProjection> getDetailsNotification(@PathVariable UUID id, @PathVariable Long notificationId) {
+    public Optional<List<NotificationDetailsProjection>> getDetailsNotification(@PathVariable UUID id, @PathVariable Long notificationId) {
         return notificationService.get(id, notificationId);
     }
 }

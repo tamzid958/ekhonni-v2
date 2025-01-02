@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -34,7 +35,7 @@ public class NotificationService {
                 .toList();
     }
 
-    public List<NotificationDetailsProjection> get(UUID userId, Long id) {
+    public Optional<List<NotificationDetailsProjection>> get(UUID userId, Long id) {
         return notificationRepository.findByIdAndRecipientId(id, userId);
     }
 }
