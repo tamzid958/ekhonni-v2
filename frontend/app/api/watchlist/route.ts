@@ -1,5 +1,3 @@
-// app/api/watchlist/route.ts
-
 export async function GET(req: Request) {
     const watchlistItems = [
         {

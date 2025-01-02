@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 
 interface ChatPageProps {
@@ -11,24 +11,27 @@ interface ChatPageProps {
 
 const ChatPage = ({ params }: ChatPageProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const { id } = params;
+  const name = searchParams.get("name") || "Unknown User";
 
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hi there!", sender: "other" },
-    { id: 2, text: "Hello! How can I help you?", sender: "me" },
+    { id: 1, text: "Hi there!", sender: "other", timestamp: "12:00 PM" },
+    { id: 2, text: "Hello! How can I help you?", sender: "me", timestamp: "12:01 PM" },
   ]);
   const [newMessage, setNewMessage] = useState("");
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
-      setMessages([...messages, { id: Date.now(), text: newMessage, sender: "me" }]);
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setMessages([...messages, { id: Date.now(), text: newMessage, sender: "me", timestamp }]);
       setNewMessage("");
     }
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto min-h-screen">
-
       <button
         onClick={() => router.back()}
         className="flex items-center text-black-100 hover:text-gray-300 mb-4"
@@ -37,7 +40,8 @@ const ChatPage = ({ params }: ChatPageProps) => {
         Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-4">Chat with User {id}</h1>
+      <h1 className="text-2xl font-bold mb-4">Chat with {name}</h1>
+
       <div className="h-[60vh] bg-gray-100 p-4 rounded-lg overflow-y-auto">
         {messages.map((message) => (
           <div
@@ -46,10 +50,14 @@ const ChatPage = ({ params }: ChatPageProps) => {
               message.sender === "me" ? "ml-auto bg-blue-500 text-white" : "mr-auto bg-gray-300"
             } rounded-lg`}
           >
-            {message.text}
+            <div className="flex justify-between">
+              <p>{message.text}</p>
+              <span className="text-xs text-gray-500">{message.timestamp}</span>
+            </div>
           </div>
         ))}
       </div>
+
       <div className="mt-4 flex">
         <input
           type="text"

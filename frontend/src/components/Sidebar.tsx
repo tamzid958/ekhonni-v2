@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation'; // Import usePathname hook
+import { usePathname } from 'next/navigation';
 import {
   X,
   LogOut,
@@ -49,6 +49,7 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeButton, setActiveButton] = useState(""); // Track active button
 
   const handleClose = () => {
     setIsSidebarOpen(false);
@@ -65,12 +66,16 @@ export function AppSidebar() {
     router.push('/');
   };
 
+  const handleButtonClick = (url) => {
+    setActiveButton(url);
+    router.push(url);
+  };
+
   return (
     <>
       {isSidebarOpen && (
         <Sidebar side="right" variant="floating">
           <SidebarContent>
-            {/* Close Button */}
             <button
               onClick={handleClose}
               className="justify-end p-4 text-black-500 font-bold hover:text-red-700"
@@ -78,7 +83,6 @@ export function AppSidebar() {
               <X className="w-6 h-6" />
             </button>
 
-            {/* Sidebar Menu */}
             <SidebarGroup className="mt-0">
               <SidebarGroupLabel className="pt-2">Menu</SidebarGroupLabel>
               <SidebarGroupContent className="font-bold">
@@ -86,14 +90,13 @@ export function AppSidebar() {
                   {items.map((item) => (
                     <SidebarMenuButton
                       key={item.title}
-                      onClick={() => router.push(item.url)}
+                      onClick={() => handleButtonClick(item.url)}
                     >
                       <SidebarMenuItem
-                        href={item.url}
                         className={`flex items-center space-x-2 pt-1 ${
-                          pathname === item.url
-                            ? 'bg-blue-500 text-white rounded'
-                            : 'text-gray-700 hover:bg-gray-200'
+                          pathname === item.url || activeButton === item.url
+                            ? 'bg-blue-500 text-white rounded w-full'
+                            : 'text-black-700 hover:bg-black-200'
                         }`}
                       >
                         <item.icon className="w-6 h-6" />
@@ -104,8 +107,14 @@ export function AppSidebar() {
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <SidebarMenuButton>
-                        <SidebarMenuItem className="flex items-center space-x-2 pt-1">
+                      <SidebarMenuButton onClick={() => setActiveButton("logout")}>
+                        <SidebarMenuItem
+                          className={`flex items-center space-x-2 pt-1 ${
+                            activeButton === "logout"
+                              ? 'bg-blue-500 text-white rounded w-full'
+                              : 'text-black-700 hover:bg-black-200'
+                          }`}
+                        >
                           <LogOut className="w-6 h-6" />
                           <span>Log Out</span>
                         </SidebarMenuItem>
@@ -119,8 +128,12 @@ export function AppSidebar() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel onClick={handleCancelButton}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleLogout}>Log Out</AlertDialogAction>
+                        <AlertDialogCancel onClick={handleCancelButton}>
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction onClick={handleLogout}>
+                          Log Out
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
