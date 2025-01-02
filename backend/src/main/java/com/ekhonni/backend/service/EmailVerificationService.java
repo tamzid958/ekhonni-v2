@@ -8,6 +8,7 @@ import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,21 @@ public class EmailVerificationService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
+    private final EmailService emailService;
+
+
+    @Value("${spring.constant.email-verification-url}")
+    private String emailVerificationUrl;
+
+
+    public void send(String recipientEmail, String token) {
+
+        String subject = "Email Verification";
+        String url = emailVerificationUrl + token;
+        String message = "Please click the following link to verify your email: " + url;
+
+        emailService.send(recipientEmail, subject, message);
+    }
 
 
     public String verify(String token) {

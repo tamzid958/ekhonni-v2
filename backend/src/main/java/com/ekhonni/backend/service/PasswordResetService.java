@@ -7,6 +7,7 @@ import com.ekhonni.backend.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class PasswordResetService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${spring.constant.password-reset-url}")
+    private String passwordResetUrl;
+
     public String requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
@@ -38,11 +42,16 @@ public class PasswordResetService {
 
         VerificationToken verificationToken = verificationTokenService.create(user);
 
-        emailService.sendPasswordResetEmail(email, verificationToken.getToken());
+        String subject = "Password Reset";
+        String url = passwordResetUrl + verificationToken.getToken();
+        String message = "Please click the following link to reset your password: " + url;
+
+        emailService.send(email, subject, message);
 
         return "A password reset link has been sent to your email. Please use the following link to reset your password";
 
     }
+
 
     public String reset(String token, String newPassword) {
 
