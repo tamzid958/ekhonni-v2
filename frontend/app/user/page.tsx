@@ -5,8 +5,12 @@ import React from "react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
+
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
+
+  console.log(session);
 
   if (status === "loading") {
     return <p>Loading...</p>;
