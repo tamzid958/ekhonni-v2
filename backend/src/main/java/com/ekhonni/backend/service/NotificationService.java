@@ -1,15 +1,15 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.projection.NotificationDetailsProjection;
-import com.ekhonni.backend.projection.NotificationPreviewProjection;
+import com.ekhonni.backend.dto.NotificationDetailsDTO;
+import com.ekhonni.backend.dto.NotificationPreviewDTO;
 import com.ekhonni.backend.repository.NotificationRepository;
+import com.ekhonni.backend.util.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,18 +24,26 @@ import java.util.UUID;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final TimeUtils timeUtils;
 
-
-    public List<NotificationPreviewProjection> get(UUID userId) {
-        return notificationRepository.findByRecipientId(userId).stream()
-                .peek(preview -> {
-                    System.out.println("Notification Title: " + preview.getTitle());
-                    System.out.println("Time Ago: " + preview.getTimeAgo());
-                })
+    public List<NotificationPreviewDTO> get(UUID userId) {
+        return notificationRepository.findByRecipientId(userId)
+                .stream()
+                .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getTitle(),
+                                timeUtils.timeAgo(notifications.getCreatedAt())
+                        )
+                )
                 .toList();
     }
 
-    public Optional<List<NotificationDetailsProjection>> get(UUID userId, Long id) {
-        return notificationRepository.findByIdAndRecipientId(id, userId);
+
+    public NotificationDetailsDTO get(Long id) {
+        return notificationRepository.findById(id)
+                .map(notification -> new NotificationDetailsDTO(
+                        notification.getMessage(),
+                        timeUtils.timeAgo(notification.getCreatedAt())
+                ))
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
     }
 }

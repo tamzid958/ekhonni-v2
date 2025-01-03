@@ -9,10 +9,7 @@ import java.time.LocalDateTime;
 
 public interface NotificationDetailsProjection {
 
-    String getTitle();
-
     String getMessage();
 
     LocalDateTime getCreatedAt();
-
 }
