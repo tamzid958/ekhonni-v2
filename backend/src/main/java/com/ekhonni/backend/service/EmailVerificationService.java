@@ -39,7 +39,13 @@ public class EmailVerificationService {
 
         String subject = "Email Verification";
         String url = emailVerificationUrl + token;
-        String message = "Please click the following link to verify your email: " + url;
+        String message = String.format(
+                "Dear User,\n\n" +
+                        "Thank you for registering with Ekhonni. To complete your registration, please verify your email address by clicking the link below:\n\n" +
+                        "Verification Link: %s\n\n" +
+                        "Thank you,\nThe Ekhonni Team",
+                url
+        );
 
         emailService.send(recipientEmail, subject, message);
     }

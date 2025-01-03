@@ -24,13 +24,13 @@ public class EmailService {
     JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
-    private String senderEmail;
+    private String hostEmail;
 
 
     public void send(String recipientEmail, String subject, String message) {
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom(senderEmail);
+        email.setFrom(hostEmail);
         email.setTo(recipientEmail);
         email.setSubject(subject);
         email.setText(message);

@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return ResponseEntity.ok(passwordResetService.reset(resetPasswordDTO.token(), resetPasswordDTO.newPassword()));
     }
 }

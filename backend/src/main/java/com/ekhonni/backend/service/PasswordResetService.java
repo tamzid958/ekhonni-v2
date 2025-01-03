@@ -42,9 +42,18 @@ public class PasswordResetService {
 
         VerificationToken verificationToken = verificationTokenService.create(user);
 
-        String subject = "Password Reset";
-        String url = passwordResetUrl + verificationToken.getToken();
-        String message = "Please click the following link to reset your password: " + url;
+        String subject = "Password Reset Request";
+        String message = String.format(
+                "Dear User,\n\n" +
+                        "We received a request to reset your password for your Ekhonni account.\n\n" +
+                        "Please use the token below to reset your password:\n\n" +
+                        "Token: %s\n\n" +
+                        "To proceed, visit the following link:\n%s\n\n" +
+                        "If you did not request this, please ignore this email .\n\n" +
+                        "Thank you,\nThe Ekhonni Team",
+                verificationToken.getToken(),
+                passwordResetUrl
+        );
 
         emailService.send(email, subject, message);
 
