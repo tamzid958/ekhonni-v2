@@ -5,7 +5,7 @@
  * Project Name: backend
  */
 
-package com.ekhonni.backend.projection.viewer;
+package com.ekhonni.backend.projection.category;
 
 public interface ViewerCategoryProjection {
     Long getId();

@@ -13,7 +13,7 @@ import com.ekhonni.backend.dto.CategorySubCategoryDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.projection.viewer.ViewerCategoryProjection;
+import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

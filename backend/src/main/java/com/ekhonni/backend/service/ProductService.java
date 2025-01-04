@@ -77,6 +77,8 @@ public class ProductService extends BaseService<Product, Long> {
         String categoryName = productFilter.getCategoryName();
         Category category = categoryRepository.findByNameAndActive(categoryName, true);
         return productRepository.findAllProjectionByFilter(productFilter, category.getId());
+
+
     }
 
 
@@ -104,5 +106,19 @@ public class ProductService extends BaseService<Product, Long> {
 
     public List<String> getImages(Long id) {
         return productRepository.findImagePathsById(id);
+    }
+
+    public List<Long> getCategoryIds(String name) {
+        Category category = categoryRepository.findByName(name);
+        Long categoryId = category.getId();
+        List<Long> categoryIds = categoryRepository.findSubCategoryIds(categoryId);
+        return categoryIds;
+    }
+
+    public List<Product> getAllProductProjection(String name) {
+        List<Long> categoryIds = getCategoryIds(name);
+        System.out.println(categoryIds);
+        return productRepository.findByCategoryIdIn(categoryIds);
+
     }
 }

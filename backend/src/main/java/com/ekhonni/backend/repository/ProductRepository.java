@@ -57,4 +57,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query("SELECT p.imagePaths FROM Product p WHERE p.id = :id")
     List<String> findImagePathsById(Long id);
+
+
+    List<Product> findByCategoryIdIn(List<Long> categoryIds);
+
 }

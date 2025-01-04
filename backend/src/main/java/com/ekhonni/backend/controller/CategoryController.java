@@ -30,7 +30,7 @@ public record CategoryController(CategoryService categoryService) {
 
     @GetMapping("/all")
     public ApiResponse<?> getAllCategories() {
-        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategories());
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
     }
 
 

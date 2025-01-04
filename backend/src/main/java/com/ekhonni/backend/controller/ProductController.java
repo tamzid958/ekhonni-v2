@@ -78,5 +78,10 @@ public record ProductController(ProductService productService) {
 //        return new ApiResponse<>(HTTPStatus.FOUND, productService.getImages(id));
 //    }
 
+    @GetMapping("/categoryIds")
+    public ApiResponse<?> getSomething(@RequestParam("name") String name) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllProductProjection(name));
+    }
+
 
 }
