@@ -62,8 +62,9 @@ public class Transaction extends BaseEntity<Long> {
     public String toString() {
         return "Transaction{" +
                 "id=" + getId() +
-                "status=" + status +
+                ", status=" + status +
                 ", sessionKey='" + sessionKey + '\'' +
+                ", updatedAt='" + getUpdatedAt() + '\'' +
                 '}';
     }
 }

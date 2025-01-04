@@ -4,6 +4,7 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PaymentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v2/payment")
 @Slf4j
+@Tag(name = "Payment", description = "Manage payment operations")
 public record PaymentController(PaymentService paymentService) {
 
     @PostMapping("/initiate/{bid_id}")

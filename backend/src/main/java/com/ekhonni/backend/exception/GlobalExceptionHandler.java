@@ -34,43 +34,43 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(InvalidTransactionException.class)
     public ResponseEntity<ErrorResponse> handleInvalidTransactionException(InvalidTransactionException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
     }
 
     @ExceptionHandler(InitiatePaymentException.class)
     public ResponseEntity<ErrorResponse> handleSSLCommerzPaymentException(InitiatePaymentException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(BidNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFoundException(AccountNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ResponseEntity<ErrorResponse> handleUnsupportedEncodingException(UnsupportedEncodingException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 

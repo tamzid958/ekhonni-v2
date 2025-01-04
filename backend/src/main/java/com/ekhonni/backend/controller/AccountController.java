@@ -75,7 +75,7 @@ public record AccountController(AccountService accountService) {
         return new ApiResponse<>(HTTPStatus.FOUND, null);
     }
 
-    @DeleteMapping("/{id}/deletePermanently-permanently")
+    @DeleteMapping("/{id}/delete-permanently")
     public ApiResponse<?> delete(@PathVariable("id") Long id) {
         accountService.deletePermanently(id);
         return new ApiResponse<>(HTTPStatus.FOUND, null);

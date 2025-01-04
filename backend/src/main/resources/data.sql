@@ -45,8 +45,8 @@ INSERT INTO product (id, name, price, description, approved, sold, condition, ca
 
 -- Insert Bids
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1, 1, (SELECT id FROM users WHERE email = 'jane@example.com'), 680.00, 'USD', 'PENDING', NOW(), NOW()),
-(2, 1, (SELECT id FROM users WHERE email = 'sarah@example.com'), 685.00, 'USD', 'PENDING', NOW(), NOW()),
+(1, 1, (SELECT id FROM users WHERE email = 'jane@example.com'), 680.00, 'BDT', 'ACCEPTED', NOW(), NOW()),
+(2, 1, (SELECT id FROM users WHERE email = 'sarah@example.com'), 685.00, 'USD', 'ACCEPTED', NOW(), NOW()),
 (3, 2, (SELECT id FROM users WHERE email = 'mike@example.com'), 1250.00, 'USD', 'PENDING', NOW(), NOW()),
 (4, 3, (SELECT id FROM users WHERE email = 'john@example.com'), 180.00, 'USD', 'PENDING', NOW(), NOW()),
 (5, 4, (SELECT id FROM users WHERE email = 'sarah@example.com'), 280.00, 'USD', 'PENDING', NOW(), NOW());

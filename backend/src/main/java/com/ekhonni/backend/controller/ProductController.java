@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v2/products")
+@RequestMapping("/api/v2/product")
 public record ProductController(ProductService productService) {
 
 

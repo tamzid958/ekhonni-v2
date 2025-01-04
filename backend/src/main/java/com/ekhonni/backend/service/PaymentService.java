@@ -9,25 +9,26 @@ import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
-import com.ekhonni.backend.projection.PaymentResponseProjection;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.MaxRetriesExceededException;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.CircuitBreakingException;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -41,7 +42,6 @@ public class PaymentService {
 
     private final TransactionService transactionService;
     private final BidService bidService;
-    private final ProjectionFactory projectionFactory;
     private final Util util;
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
@@ -49,47 +49,56 @@ public class PaymentService {
     @Modifying
     @Transactional
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    @Retry(name = "retryPayment", fallbackMethod = "retryPaymentFallback")
-    public PaymentResponseProjection initiatePayment(Long bidId) throws Exception {
+    @Retry(name = "retryPayment")
+    public PaymentInitiationResponse initiatePayment(Long bidId) throws Exception {
         Bid bid = bidService.get(bidId)
                 .orElseThrow(() -> {
                     log.warn("Payment request for invalid bid: {}", bidId);
                     return new InvalidTransactionException();
                 });
-        if (bid.getStatus() == BidStatus.PAID) {
-            log.warn("Duplicate payment request for bid: {}", bidId);
-            throw new InitiatePaymentException();
-        }
-        if (bid.getStatus() != BidStatus.ACCEPTED) {
-            log.warn("Payment request for unaccepted bid: {}", bidId);
-            throw new InvalidTransactionException();
-        }
+
+        validateBidStatus(bid);
 
         Transaction transaction = transactionService.findByBidId(bidId)
-                .orElse(transactionService.create(bid));
+                .orElseGet(() -> transactionService.create(bid));
 
-        log.info("Transaction : {}", transaction);
+        log.info("Transaction before setting session key: {}", transaction);
 
         String requestBody = prepareRequestBody(transaction);
         InitialResponse response = sendPaymentRequest(requestBody);
         validateInitialResponse(response);
-        transaction.setSessionKey(response.getSessionkey());
+
+        transactionService.updateSessionKey(transaction, response.getSessionkey());
         log.info("Transaction after setting session key: {}", transaction);
-        return projectionFactory.createProjection(
-                PaymentResponseProjection.class,
-                response
-        );
+
+        return new PaymentInitiationResponse(response.getGatewayPageURL());
     }
 
-    public PaymentResponseProjection initiatePaymentFallback(Long bidId, Exception e) {
-        log.warn("Initiate payment fallback triggered for bid {} due to error: {}", bidId, e.getMessage());
-        throw new InitiatePaymentException("Payment service not available");
+    public PaymentInitiationResponse initiatePaymentFallback(Long bidId, Exception e) {
+
+        if (e instanceof InvalidTransactionException) {
+            throw (InvalidTransactionException) e;
+        }
+
+        if (e instanceof InitiatePaymentException || e instanceof RestClientException) {
+            log.warn("Initiate payment fallback triggered for bid {} due to error: {}", bidId, e.getMessage());
+            throw new InitiatePaymentException("Payment initiation failed");
+        }
+
+        if (e instanceof CallNotPermittedException) {
+            log.warn("Circuit breaker open for bid {}", bidId);
+            throw new CircuitBreakingException("Payment service not available");
+        }
+
+        if (e instanceof MaxRetriesExceededException) {
+            log.warn("All retries failed for bid {}: {}", bidId, e.getMessage());
+            throw new InitiatePaymentException("Payment initiation failed");
+        }
+
+        log.error("Unexpected error for bid {}", bidId, e);
+        throw new InitiatePaymentException("Payment processing failed");
     }
 
-    public PaymentResponseProjection retryPaymentFallback(Long bidId, Exception e) {
-        log.warn("All retries failed for bid {} due to error: {}", bidId, e.getMessage());
-        throw new InitiatePaymentException("Payment initiation failed");
-    }
 
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
         return util.getParamsString(transaction, true);
@@ -104,7 +113,14 @@ public class PaymentService {
                 .body(InitialResponse.class);
     }
 
+    @Modifying
+    @Transactional
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+        String host = request.getHeader("Host");
+        log.info("Request from Origin: {}, Referer: {}, Host: {}", origin, referer, host);
+
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
 
@@ -128,6 +144,8 @@ public class PaymentService {
             throw new InvalidTransactionException();
         }
 
+        // implement FAILED, SUCCESS_WITH_RISK
+
         if (!verifyPaymentResponse(transaction, response)) {
             updateFailedTransactionStatus(transaction, response.getStatus());
             log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
@@ -140,8 +158,11 @@ public class PaymentService {
         }
     }
 
+    @Modifying
+    @Transactional
     private ValidationResponse getValidationResponse(String validationId) {
-        String validationUrl = sslCommerzConfig.getValidatorApiUrl() + "?val_id=" + validationId
+        String validationUrl = sslCommerzConfig.getValidatorApiUrl()
+                + "?val_id=" + validationId
                 + "&store_id=" + sslCommerzConfig.getStoreId()
                 + "&store_passwd=" + sslCommerzConfig.getStorePassword()
                 + "&v=1&format=json";
@@ -188,8 +209,19 @@ public class PaymentService {
         }
     }
 
+    private void validateBidStatus(Bid bid) {
+        if (bid.getStatus() == BidStatus.PAID) {
+            log.warn("Duplicate payment request for bid: {}", bid.getId());
+            throw new InvalidTransactionException();
+        }
+        if (bid.getStatus() != BidStatus.ACCEPTED) {
+            log.warn("Payment request for unaccepted bid: {}", bid.getId());
+            throw new InvalidTransactionException();
+        }
+    }
+
     private boolean verifyPaymentResponse(Transaction transaction, PaymentResponse response) {
-        if (!"VALID".equals(response.getStatus()) && !"VALIDATED".equals(response.getStatus())) {
+        if (!("VALID".equals(response.getStatus()) || "VALIDATED".equals(response.getStatus()))) {
             return false;
         }
         try {
@@ -224,9 +256,7 @@ public class PaymentService {
         transaction.setBankTransactionId(response.getBankTranId());
         transaction.getBid().setStatus(BidStatus.PAID);
 
-        Account buyerAccount = transaction.getBid().getBidder().getAccount();
         Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
-        buyerAccount.setBalance(buyerAccount.getBalance() - transaction.getAmount());
         sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getAmount());
     }
 

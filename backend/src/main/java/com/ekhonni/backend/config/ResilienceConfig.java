@@ -36,8 +36,12 @@ public class ResilienceConfig {
                 .minimumNumberOfCalls(3)
                 .permittedNumberOfCallsInHalfOpenState(3)
                 .automaticTransitionFromOpenToHalfOpenEnabled(true)
-                .recordExceptions(InitiatePaymentException.class, RestClientException.class)
-                .ignoreExceptions(UnsupportedEncodingException.class)
+                .recordExceptions(
+                        InitiatePaymentException.class,
+                        RestClientException.class)
+                .ignoreExceptions(
+                        UnsupportedEncodingException.class,
+                        InvalidTransactionException.class)
                 .build();
     }
 
