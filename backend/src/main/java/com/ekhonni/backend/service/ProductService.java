@@ -9,7 +9,6 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.ProductDTO;
-import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -17,11 +16,13 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,14 +73,14 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
-        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
-        String categoryName = productFilter.getCategoryName();
-        Category category = categoryRepository.findByNameAndActive(categoryName, true);
-        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
-
-
-    }
+//    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
+//        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
+//        String categoryName = productFilter.getCategoryName();
+//        Category category = categoryRepository.findByNameAndActive(categoryName, true);
+//        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
+//
+//
+//    }
 
 
     public List<ProductProjection> search(String searchText, Pageable pageable) {
@@ -111,8 +112,9 @@ public class ProductService extends BaseService<Product, Long> {
     public List<Long> getCategoryIds(String name) {
         Category category = categoryRepository.findByName(name);
         Long categoryId = category.getId();
-        List<Long> categoryIds = categoryRepository.findSubCategoryIds(categoryId);
-        return categoryIds;
+        return categoryRepository.findSubCategoryIds(categoryId);
+
+
     }
 
     public List<Product> getAllProductProjection(String name) {
@@ -120,5 +122,11 @@ public class ProductService extends BaseService<Product, Long> {
         System.out.println(categoryIds);
         return productRepository.findByCategoryIdIn(categoryIds);
 
+    }
+
+    public List<ProductProjection> checkSpecification(ProductFilter filter) {
+        List<Long> categoryIds = getCategoryIds(filter.getCategoryName());
+        Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
+        return productRepository.findAllWithFilter(spec);
     }
 }
