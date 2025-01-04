@@ -14,7 +14,6 @@ import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -33,11 +32,11 @@ public record ProductController(ProductService productService) {
         return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
     }
 
-    @GetMapping("/filter")
-    public ApiResponse<?> getAllProductsFiltered(@Valid @RequestBody ProductFilter productFilter) {
-        List<ProductProjection> productProjections = productService.getAllFiltered(productFilter);
-        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
-    }
+//    @GetMapping("/filter")
+//    public ApiResponse<?> getAllProductsFiltered(@Valid @RequestBody ProductFilter productFilter) {
+//        List<ProductProjection> productProjections = productService.getAllFiltered(productFilter);
+//        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+//    }
 
 
     @PostMapping
@@ -85,9 +84,8 @@ public record ProductController(ProductService productService) {
 
 
     @GetMapping("/spec")
-    public ApiResponse<?> getSpec(@RequestParam("name") String name, @RequestParam("minPrice") Double minPrice
-            , @RequestParam("maxPrice") Double maxPrice) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productService.checkSpecification(name, minPrice, maxPrice));
+    public ApiResponse<?> getSpec(@RequestBody ProductFilter filter) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.checkSpecification(filter));
     }
 
 }

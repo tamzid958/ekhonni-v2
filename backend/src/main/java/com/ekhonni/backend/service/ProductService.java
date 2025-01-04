@@ -9,7 +9,6 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.ProductDTO;
-import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -17,7 +16,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.specification.ProductSpecification;
+import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
@@ -74,14 +73,14 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
-        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
-        String categoryName = productFilter.getCategoryName();
-        Category category = categoryRepository.findByNameAndActive(categoryName, true);
-        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
-
-
-    }
+//    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
+//        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
+//        String categoryName = productFilter.getCategoryName();
+//        Category category = categoryRepository.findByNameAndActive(categoryName, true);
+//        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
+//
+//
+//    }
 
 
     public List<ProductProjection> search(String searchText, Pageable pageable) {
@@ -125,23 +124,9 @@ public class ProductService extends BaseService<Product, Long> {
 
     }
 
-    public List<Product> checkSpecification(String name, Double minPrice, Double maxPrice) {
-        List<Long> categoryIds = getCategoryIds(name);
-
-        Specification<Product> spec = Specification.where(null);
-
-        if (minPrice != null) {
-            spec = spec.and(ProductSpecification.hasMinimumPrice(minPrice));
-        }
-
-        if (maxPrice != null) {
-            spec = spec.and(ProductSpecification.hasMaximumPrice(maxPrice));
-        }
-
-        if (categoryIds != null && !categoryIds.isEmpty()) {
-            spec = spec.and(ProductSpecification.belongsToCategories(categoryIds));
-        }
-
-        return productRepository.findAll(spec);
+    public List<ProductProjection> checkSpecification(ProductFilter filter) {
+        List<Long> categoryIds = getCategoryIds(filter.getCategoryName());
+        Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
+        return productRepository.findAllWithFilter(spec);
     }
 }
