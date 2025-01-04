@@ -30,6 +30,13 @@ public class ProductSpecificationBuilder {
         if (filter.getProductCondition() != null) {
             spec = spec.and(ProductSpecification.hasCondition(ProductCondition.valueOf(filter.getProductCondition())));
         }
+        if (filter.getSearchTerm() != null) {
+            spec = spec.and(ProductSpecification.hasTerm(filter.getSearchTerm()));
+        }
+        if (filter.getSortBy() != null) {
+            spec = spec.and(ProductSpecification.applySorting(filter.getSortBy()));
+        }
+
         return spec;
     }
 }

@@ -19,5 +19,7 @@ public class ProductFilter {
     private Double minPrice;
     private Double maxPrice;
     private String productCondition;
+    private String searchTerm;
     private ProductSort sortBy;
+
 }
