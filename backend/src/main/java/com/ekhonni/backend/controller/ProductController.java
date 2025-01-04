@@ -84,4 +84,10 @@ public record ProductController(ProductService productService) {
     }
 
 
+    @GetMapping("/spec")
+    public ApiResponse<?> getSpec(@RequestParam("name") String name, @RequestParam("minPrice") Double minPrice
+            , @RequestParam("maxPrice") Double maxPrice) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.checkSpecification(name, minPrice, maxPrice));
+    }
+
 }

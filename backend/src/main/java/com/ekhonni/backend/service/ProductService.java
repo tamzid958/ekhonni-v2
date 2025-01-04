@@ -17,11 +17,13 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.specification.ProductSpecification;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -111,8 +113,9 @@ public class ProductService extends BaseService<Product, Long> {
     public List<Long> getCategoryIds(String name) {
         Category category = categoryRepository.findByName(name);
         Long categoryId = category.getId();
-        List<Long> categoryIds = categoryRepository.findSubCategoryIds(categoryId);
-        return categoryIds;
+        return categoryRepository.findSubCategoryIds(categoryId);
+
+
     }
 
     public List<Product> getAllProductProjection(String name) {
@@ -120,5 +123,25 @@ public class ProductService extends BaseService<Product, Long> {
         System.out.println(categoryIds);
         return productRepository.findByCategoryIdIn(categoryIds);
 
+    }
+
+    public List<Product> checkSpecification(String name, Double minPrice, Double maxPrice) {
+        List<Long> categoryIds = getCategoryIds(name);
+
+        Specification<Product> spec = Specification.where(null);
+
+        if (minPrice != null) {
+            spec = spec.and(ProductSpecification.hasMinimumPrice(minPrice));
+        }
+
+        if (maxPrice != null) {
+            spec = spec.and(ProductSpecification.hasMaximumPrice(maxPrice));
+        }
+
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            spec = spec.and(ProductSpecification.belongsToCategories(categoryIds));
+        }
+
+        return productRepository.findAll(spec);
     }
 }
