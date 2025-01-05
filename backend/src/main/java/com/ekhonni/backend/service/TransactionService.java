@@ -26,18 +26,26 @@ public class TransactionService extends BaseService<Transaction, Long> {
         this.transactionRepository = transactionRepository;
     }
 
+    @Modifying
     @Transactional
     public Transaction create(Bid bid) {
         Transaction transaction = new Transaction();
         transaction.setBid(bid);
         transaction.setStatus(TransactionStatus.PENDING);
-        return transactionRepository.save(transaction);
+        transactionRepository.save(transaction);
+        return transaction;
     }
 
     @Modifying
     @Transactional
     public void updateSessionKey(Transaction transaction, String sessionKey) {
         transaction.setSessionKey(sessionKey);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateStatus(Transaction transaction, String status) {
+        transaction.setStatus(TransactionStatus.valueOf(status));
     }
 
     @Transactional

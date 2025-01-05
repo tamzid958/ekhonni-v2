@@ -119,7 +119,8 @@ public class PaymentService {
         String origin = request.getHeader("Origin");
         String referer = request.getHeader("Referer");
         String host = request.getHeader("Host");
-        log.info("Request from Origin: {}, Referer: {}, Host: {}", origin, referer, host);
+        String server = request.getServerName();
+        log.info("Request from Server: {}, Origin: {}, Referer: {}, Host: {}", server, origin, referer, host);
 
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
