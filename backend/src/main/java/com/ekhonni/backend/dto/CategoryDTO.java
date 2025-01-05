@@ -7,37 +7,11 @@
 
 package com.ekhonni.backend.dto;
 
-import com.ekhonni.backend.model.Category;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.Column;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-
-public class CategoryDTO {
-
-    private Long id;
-    private String name;
-    private boolean active;
-    private List<CategoryDTO> subCategories;
-
-
-    public CategoryDTO(Category category) {
-        this.id = category.getId();
-        this.name = category.getName();
-        this.active = category.isActive();
-        this.subCategories = category.getSubCategories() != null ?
-                 category.getSubCategories().stream()
-                .map(CategoryDTO::new)
-                .collect(Collectors.toList())
-                : null;
-    }
+public record CategoryDTO(
+        @Column(nullable = false, unique = true)
+        String name,
+        String parentCategory
+) {
 }

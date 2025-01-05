@@ -8,32 +8,33 @@
 package com.ekhonni.backend.response;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
+
 
 @Setter
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-
-@JsonPropertyOrder({"success", "status_code", "message", "data"})
+@JsonPropertyOrder({"statusCode", "success", "message", "data"})
 public class ApiResponse<T> {
-    @JsonProperty("status_code")
     private int statusCode;
-    private boolean success;
-    private String message;
+    private boolean isSuccess;
     private T data;
+    private String message;
 
-    public ApiResponse(boolean success, String message, T data, HttpStatus httpStatus) {
-        this.success = success;
-        this.message = message;
+    public ApiResponse(HTTPStatus status, T data) {
+        this.statusCode = status.getCode();
         this.data = data;
-        this.statusCode = httpStatus.value();
+        this.isSuccess = status.isSuccess();
+        this.message = status.isSuccess() ? "successful" : "failed";
     }
 
 }
+
+
+

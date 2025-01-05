@@ -1,32 +1,34 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.config.SSLCommerzConfig;
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.exception.InvalidTransactionException;
+import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
-import com.ekhonni.backend.projection.PaymentResponseProjection;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.MaxRetriesExceededException;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.CircuitBreakingException;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -34,55 +36,69 @@ import java.util.TreeMap;
  * Date: 12/15/24
  */
 @Service
+@AllArgsConstructor
 @Slf4j
 public class PaymentService {
 
     private final TransactionService transactionService;
-    private final ProjectionFactory projectionFactory;
+    private final BidService bidService;
     private final Util util;
-    private final String paymentApiUrl;
-    private final String storeId;
-    private final String storePassword;
-    private final String validatorApiUrl;
+    private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
-    private final Set<String> allowedIps;
 
-    public PaymentService(TransactionService transactionService,
-                          ProjectionFactory projectionFactory,
-                          Util util,
-                          SSLCommerzConfig sslCommerzConfig,
-                          RestClient restClient) {
-        this.transactionService = transactionService;
-        this.projectionFactory = projectionFactory;
-        this.util = util;
-        this.paymentApiUrl = sslCommerzConfig.getApiUrl();
-        this.storeId = sslCommerzConfig.getStoreId();
-        this.storePassword = sslCommerzConfig.getStorePassword();
-        this.validatorApiUrl = sslCommerzConfig.getValidatorApiUrl();
-        this.restClient = restClient;
-        this.allowedIps = sslCommerzConfig.getAllowedIps();
-    }
-
+    @Modifying
+    @Transactional
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    @Retry(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
-    public PaymentResponseProjection initiatePayment(Long bidId) throws UnsupportedEncodingException {
-        try {
-            Transaction transaction = transactionService.create(bidId);
-            String requestBody = prepareRequestBody(transaction);
-            InitialResponse response = sendPaymentRequest(requestBody);
-            validateInitialResponse(response);
-            return handleInitialResponse(response, transaction);
-        } catch (Exception e) {
-            log.warn("Error processing transaction for bid {}: {}", bidId, e.getMessage());
-            transactionService.deletePermanentlyByBidId(bidId);
-            throw e;
-        }
+    @Retry(name = "retryPayment")
+    public PaymentInitiationResponse initiatePayment(Long bidId) throws Exception {
+        Bid bid = bidService.get(bidId)
+                .orElseThrow(() -> {
+                    log.warn("Payment request for invalid bid: {}", bidId);
+                    return new InvalidTransactionException();
+                });
+
+        validateBidStatus(bid);
+
+        Transaction transaction = transactionService.findByBidId(bidId)
+                .orElseGet(() -> transactionService.create(bid));
+
+        log.info("Transaction before setting session key: {}", transaction);
+
+        String requestBody = prepareRequestBody(transaction);
+        InitialResponse response = sendPaymentRequest(requestBody);
+        validateInitialResponse(response);
+
+        transactionService.updateSessionKey(transaction, response.getSessionkey());
+        log.info("Transaction after setting session key: {}", transaction);
+
+        return new PaymentInitiationResponse(response.getGatewayPageURL());
     }
 
-    public PaymentResponseProjection initiatePaymentFallback(Long bidId, Throwable throwable) {
-        log.warn("Fallback triggered for bid {} due to error: {}", bidId, throwable.getMessage());
-        throw new InitiatePaymentException("Payment error");
+    public PaymentInitiationResponse initiatePaymentFallback(Long bidId, Exception e) {
+
+        if (e instanceof InvalidTransactionException) {
+            throw (InvalidTransactionException) e;
+        }
+
+        if (e instanceof InitiatePaymentException || e instanceof RestClientException) {
+            log.warn("Initiate payment fallback triggered for bid {} due to error: {}", bidId, e.getMessage());
+            throw new InitiatePaymentException("Payment initiation failed");
+        }
+
+        if (e instanceof CallNotPermittedException) {
+            log.warn("Circuit breaker open for bid {}", bidId);
+            throw new CircuitBreakingException("Payment service not available");
+        }
+
+        if (e instanceof MaxRetriesExceededException) {
+            log.warn("All retries failed for bid {}: {}", bidId, e.getMessage());
+            throw new InitiatePaymentException("Payment initiation failed");
+        }
+
+        log.error("Unexpected error for bid {}", bidId, e);
+        throw new InitiatePaymentException("Payment processing failed");
     }
+
 
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
         return util.getParamsString(transaction, true);
@@ -90,35 +106,31 @@ public class PaymentService {
 
     private InitialResponse sendPaymentRequest(String requestBody) {
         return restClient.post()
-                .uri(paymentApiUrl)
+                .uri(sslCommerzConfig.getApiUrl())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(requestBody)
                 .retrieve()
                 .body(InitialResponse.class);
     }
 
-    private PaymentResponseProjection handleInitialResponse(InitialResponse response, Transaction transaction) {
-        if (response != null && "SUCCESS".equals(response.getStatus())) {
-            transaction.setSessionKey(response.getSessionkey());
-            return projectionFactory.createProjection(
-                    PaymentResponseProjection.class,
-                    response
-            );
-        } else {
-            throw new InitiatePaymentException("Initial response not successful");
-        }
-    }
-
+    @Modifying
+    @Transactional
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+        String referer = request.getHeader("Referer");
+        String host = request.getHeader("Host");
+        log.info("Request from Origin: {}, Referer: {}, Host: {}", origin, referer, host);
+
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
-        if (!allowedIps.contains(gatewayIpAddress)) {
+
+        if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
             log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
         }
 
         if (ipnResponse == null) {
-            log.warn("Ipn response is null");
+            log.warn("Null ipn response in payment");
             throw new InvalidTransactionException();
         }
         IpnResponse response = util.extractIpnResponse(ipnResponse);
@@ -127,59 +139,51 @@ public class PaymentService {
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
         if (!ipnHashVerify(ipnResponse)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("IPN signature verification failed for transaction_id : {}", ipnResponse.get("tran_id"));
+            updateFailedTransactionStatus(transaction, "INVALID");
+            log.warn("IPN signature verification failed for transaction : {}", ipnResponse.get("tran_id"));
             throw new InvalidTransactionException();
         }
 
-        if (!verifyStatus(response.getStatus())) {
-            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
-            updateStatus(transaction, status);
-            log.warn("transaction_id: {}, status: {}", response.getTranId(), response.getStatus());
-            throw new InvalidTransactionException();
-        }
+        // implement FAILED, SUCCESS_WITH_RISK
 
-        if (!verifyAmount(transaction, response)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("Amount or currency don't match for transaction_id: {}", response.getTranId());
+        if (!verifyPaymentResponse(transaction, response)) {
+            updateFailedTransactionStatus(transaction, response.getStatus());
+            log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
 
         if (!validate(response.getValId())) {
-            log.warn("Validation failed for transaction_id: {}", response.getTranId());
+            log.warn("Validation failed for transaction: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
     }
 
-    private boolean validate(String validationId) {
-        String validationUrl = validatorApiUrl + "?val_id=" + validationId
-                + "&store_id=" + storeId
-                + "&store_passwd=" + storePassword
+    @Modifying
+    @Transactional
+    private ValidationResponse getValidationResponse(String validationId) {
+        String validationUrl = sslCommerzConfig.getValidatorApiUrl()
+                + "?val_id=" + validationId
+                + "&store_id=" + sslCommerzConfig.getStoreId()
+                + "&store_passwd=" + sslCommerzConfig.getStorePassword()
                 + "&v=1&format=json";
 
-        ValidationResponse response = restClient.get()
+        return restClient.get()
                 .uri(validationUrl)
                 .retrieve()
                 .body(ValidationResponse.class);
+    }
 
+    private boolean validate(String validationId) {
+        ValidationResponse response = getValidationResponse(validationId);
         if (response == null) {
             return false;
         }
 
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
-        if (!verifyStatus(response.getStatus())) {
-            String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
-            updateStatus(transaction, status);
-            log.warn("Validation transaction_id: {}, status: {}",
-                    response.getTranId(), response.getStatus());
-            return false;
-        }
-
-        if (!verifyAmount(transaction, response)) {
-            updateStatus(transaction, "INVALID");
-            log.warn("Validation amount or currency don't match for transaction_id: {}",
-                    response.getTranId());
+        if (!verifyPaymentResponse(transaction, response)) {
+            updateFailedTransactionStatus(transaction, response.getStatus());
+            log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
             return false;
         }
 
@@ -195,42 +199,52 @@ public class PaymentService {
             log.error(e.getMessage());
             throw new InvalidTransactionException();
         }
-        return transactionService.get(transactionId);
+        return transactionService.get(transactionId)
+                .orElseThrow(InvalidTransactionException::new);
     }
 
     private void validateInitialResponse(InitialResponse response) {
-        if (response == null) {
-            throw new InitiatePaymentException("No response from payment gateway");
-        }
-        if (response.getStatus() == null) {
-            throw new InitiatePaymentException("Invalid response status");
+        if (response == null || !"SUCCESS".equals(response.getStatus())) {
+            throw new InitiatePaymentException("Payment initiation error");
         }
     }
 
-    private boolean verifyStatus(String status) {
-        return "VALID".equals(status) || "VALIDATED".equals(status);
+    private void validateBidStatus(Bid bid) {
+        if (bid.getStatus() == BidStatus.PAID) {
+            log.warn("Duplicate payment request for bid: {}", bid.getId());
+            throw new InvalidTransactionException();
+        }
+        if (bid.getStatus() != BidStatus.ACCEPTED) {
+            log.warn("Payment request for unaccepted bid: {}", bid.getId());
+            throw new InvalidTransactionException();
+        }
     }
 
-    private boolean verifyAmount(Transaction transaction, PaymentResponse response) {
+    private boolean verifyPaymentResponse(Transaction transaction, PaymentResponse response) {
+        if (!("VALID".equals(response.getStatus()) || "VALIDATED".equals(response.getStatus()))) {
+            return false;
+        }
         try {
             double currencyRate = Double.parseDouble(response.getCurrencyRate());
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());
             double responseBdtAmount = Double.parseDouble(response.getAmount());
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            log.info("Expected BDT amount: {}, Response Amount: {}, Difference: {}", expectedBdtAmount, responseBdtAmount, Math.abs(expectedBdtAmount - responseBdtAmount));
             double marginOfError = 0.01;
             return response.getCurrencyType().equals(transaction.getCurrency())
                     && responseAmount == transaction.getAmount()
                     && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
         } catch (NumberFormatException e) {
-            log.error(e.getMessage());
+            log.error("Invalid number format in transaction: {}", e.getMessage());
             return false;
         }
     }
 
     @Modifying
     @Transactional
-    private void updateStatus(Transaction transaction, String status) {
+    private void updateFailedTransactionStatus(Transaction transaction, String status) {
+        if (status == null || status.equals("VALID")) {
+            status = "INVALID";
+        }
         transaction.setStatus(TransactionStatus.valueOf(status));
     }
 
@@ -240,7 +254,12 @@ public class PaymentService {
         transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
+        transaction.getBid().setStatus(BidStatus.PAID);
+
+        Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
+        sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getAmount());
     }
+
 
     private String getGatewayIpAddress(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
@@ -264,7 +283,7 @@ public class PaymentService {
                         sortedMap.put(key, response.get(key));
                     }
                 }
-                String hashedPass = md5(storePassword);
+                String hashedPass = md5(sslCommerzConfig.getStorePassword());
                 sortedMap.put("store_passwd", hashedPass);
 
                 StringBuilder hashStringBuilder = new StringBuilder();

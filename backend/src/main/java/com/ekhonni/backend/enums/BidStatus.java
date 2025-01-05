@@ -8,5 +8,6 @@ public enum BidStatus {
     PENDING,
     ACCEPTED,
     REJECTED,
-    PAID
+    PAID,
+    BLOCKED
 }

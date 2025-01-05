@@ -2,7 +2,6 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.repository.BaseRepository;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Author: Asif Iqbal
@@ -32,9 +32,8 @@ public abstract class BaseService<T, ID> {
      * ==================================================
      * Entity, Projection, Pageable Entity and Projection
      */
-    public T get(ID id) {
-        return repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(EntityNotFoundException::new);
+    public Optional<T> get(ID id) {
+        return repository.findByIdAndDeletedAtIsNull(id);
     }
 
     public <P> P get(ID id, Class<P> projection) {

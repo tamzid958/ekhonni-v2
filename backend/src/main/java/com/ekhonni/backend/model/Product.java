@@ -9,14 +9,10 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.ProductCondition;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -24,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "product")
-
+@ToString
 public class Product extends BaseEntity<Long> {
 
     @NotBlank
@@ -32,13 +28,13 @@ public class Product extends BaseEntity<Long> {
 
     @Positive
     @Column(nullable = false)
-    private Long price;
+    private Double price;
 
     @NotBlank
     private String description;
 
-    private boolean approved = false;
-    private boolean sold = false;
+    private boolean approved;
+    private boolean sold;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,9 +44,12 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private User user;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
+
+    @NotBlank
+    private String imagePath;
 
 }
+

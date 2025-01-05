@@ -1,6 +1,7 @@
 package com.ekhonni.backend.config;
 
 import com.ekhonni.backend.exception.InitiatePaymentException;
+import com.ekhonni.backend.exception.InvalidTransactionException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
@@ -33,10 +34,14 @@ public class ResilienceConfig {
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .slidingWindowSize(5)
                 .minimumNumberOfCalls(3)
-                .permittedNumberOfCallsInHalfOpenState(2)
+                .permittedNumberOfCallsInHalfOpenState(3)
                 .automaticTransitionFromOpenToHalfOpenEnabled(true)
-                .recordExceptions(InitiatePaymentException.class, RestClientException.class)
-                .ignoreExceptions(UnsupportedEncodingException.class, IllegalArgumentException.class)
+                .recordExceptions(
+                        InitiatePaymentException.class,
+                        RestClientException.class)
+                .ignoreExceptions(
+                        UnsupportedEncodingException.class,
+                        InvalidTransactionException.class)
                 .build();
     }
 
@@ -49,7 +54,11 @@ public class ResilienceConfig {
                         2.0,
                         Duration.ofSeconds(10)
                 ))
-                .retryExceptions(InitiatePaymentException.class, RestClientException.class)
+                .retryExceptions(
+                        InitiatePaymentException.class,
+                        RestClientException.class,
+                        UnsupportedEncodingException.class)
+                .ignoreExceptions(InvalidTransactionException.class)
                 .build();
     }
 
@@ -83,7 +92,7 @@ public class ResilienceConfig {
     public RetryRegistry retryRegistry(RetryConfig retryConfig) {
         RetryRegistry registry = RetryRegistry.of(retryConfig);
 
-        Retry retry = registry.retry("initiatePayment", retryConfig);
+        Retry retry = registry.retry("retryPayment", retryConfig);
 
         retry.getEventPublisher()
                 .onRetry(event -> {

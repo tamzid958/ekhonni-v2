@@ -51,10 +51,20 @@ public class Transaction extends BaseEntity<Long> {
     }
 
     public User getSeller() {
-        return getProduct().getUser();
+        return getProduct().getSeller();
     }
 
     public Account getSellerAccount() {
         return getSeller().getAccount();
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + getId() +
+                ", status=" + status +
+                ", sessionKey='" + sessionKey + '\'' +
+                ", updatedAt='" + getUpdatedAt() + '\'' +
+                '}';
     }
 }

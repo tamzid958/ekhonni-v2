@@ -9,67 +9,76 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.CategoryDTO;
-import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.dto.CategoryUpdateDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RequestMapping("/category")
+@RequestMapping("/api/v2/category")
 @RestController
 public record CategoryController(CategoryService categoryService) {
 
 
-
-
+    // done
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Category category) {
-        Category savedCategory = categoryService.save(category);
-        return ResponseEntity.status(HttpStatus.CREATED).body("category created");
+    public ApiResponse<?> createCategory(@RequestBody CategoryDTO categoryDTO) {
+        try {
+            categoryService.save(categoryDTO);
+            return new ApiResponse<>(HTTPStatus.CREATED, null);
+        } catch (RuntimeException e) {
+            return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
+        }
+    }
+
+    //done
+    @GetMapping("/all")
+    public ApiResponse<?> getAllCategories() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategories());
+    }
+
+    //done
+    @GetMapping("/{name}/subCategories")
+    public ApiResponse<?> getSubCategories(@PathVariable("name") String name) {
+        try {
+            return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubCategories(name));
+        } catch (RuntimeException e) {
+            return new ApiResponse<>(HTTPStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, null);
+        }
+
     }
 
 
-    @GetMapping
-    public List<CategoryDTO> getAll(){
-        return categoryService.getAll();
+    @DeleteMapping("/{name}")
+    public ApiResponse<?> delete(@PathVariable String name) {
+
+        try {
+            categoryService.delete(name);
+            return new ApiResponse<>(HTTPStatus.DELETED, null);
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
-    @GetMapping("/{id}")
-    public CategoryDTO getOne(@PathVariable Long id) {
-        return categoryService.getOne(id);
+    @PatchMapping("/{name}")
+    public ApiResponse<?> updateCategory(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
+        try {
+            categoryService.update(categoryUpdateDTO);
+            return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        } catch (Exception e) {
+            return new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
-//    @GetMapping
-//    public ApiResponse<List<CategoryDTO>> getAll(){
-//       return new ApiResponse<>(true, "ok", categoryService.getAll(), HttpStatus.);
-//    }
-//
 
-//    @GetMapping
-//    public ResponseEntity<List<CategoryDTO>> getAll(){
-//        List<CategoryDTO> categoryDTOs = categoryService.getAll();
-//        return ResponseEntity.ok(categoryDTOs);
-//    }
-//
-
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deletePermanently(@PathVariable Long id) {
-//        categoryService.deletePermanently(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
-    //    @PatchMapping("/{id}")
-    //    update information
-
-
-
-
-
-
-
+    @GetMapping("/chain/{name}")
+    public ApiResponse<?> chain(@PathVariable String name) {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getChainCategories(name));
+    }
 
 
 }
