@@ -18,15 +18,17 @@ import java.util.List;
 public class ProductSpecificationBuilder {
     public static Specification<Product> build(ProductFilter filter, List<Long> categoryIds) {
         Specification<Product> spec = Specification.where(null);
+        if (categoryIds != null && filter.getCategoryName() != null) {
+            spec = spec.and(ProductSpecification.belongsToCategories(categoryIds));
+        }
+
         if (filter.getMinPrice() != null) {
             spec = spec.and(ProductSpecification.hasMinimumPrice(filter.getMinPrice()));
         }
         if (filter.getMaxPrice() != null) {
             spec = spec.and(ProductSpecification.hasMaximumPrice(filter.getMaxPrice()));
         }
-        if (categoryIds != null && filter.getCategoryName() != null) {
-            spec = spec.and(ProductSpecification.belongsToCategories(categoryIds));
-        }
+
         if (filter.getProductCondition() != null) {
             spec = spec.and(ProductSpecification.hasCondition(ProductCondition.valueOf(filter.getProductCondition())));
         }
