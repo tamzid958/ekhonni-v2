@@ -7,8 +7,11 @@ import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,5 +79,9 @@ public class RoleService extends BaseService<Role, Long> {
         if (!role.getName().equals("SUPER_ADMIN")) user.setRole(role);
         else throw new RuntimeException("Super Admin role cannot be set to user");
         return "Role assigned to user";
+    }
+
+    public Page<UserProjection> getAllUserAssigned(long roleId, Class<UserProjection> projection, Pageable pageable) {
+        return userRepository.getAllByRoleId(roleId, UserProjection.class, pageable);
     }
 }

@@ -1,5 +1,6 @@
 package com.ekhonni.backend.filter;
 
+import com.ekhonni.backend.exception.InvalidJwtTokenException;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import com.ekhonni.backend.util.JWTUtil;
 import jakarta.servlet.FilterChain;
@@ -47,9 +48,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // exceptions to be refactored
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid JWT Token");
+            throw new InvalidJwtTokenException();
         }
 
         filterChain.doFilter(request, response);
@@ -65,10 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private void validateAndAuthenticateToken(HttpServletRequest request, HttpServletResponse response, String token, String email) throws IOException {
         if (jwtUtil.isExpired(token)) {
-            // exceptions to be refactored
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid JWT Token");
-            return;
+            throw new InvalidJwtTokenException();
         }
 
         UserDetails user = userDetailsServiceImpl.loadUserByUsername(email);

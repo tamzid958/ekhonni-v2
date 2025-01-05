@@ -35,11 +35,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
-    @ExceptionHandler(PrivilegeNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlePrivilegeNotFoundException(PrivilegeNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
-    }
+//    @ExceptionHandler(PrivilegeNotFoundException.class)
+//    public ResponseEntity<ErrorResponse> handlePrivilegeNotFoundException(PrivilegeNotFoundException ex) {
+//        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+//    }
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex) {

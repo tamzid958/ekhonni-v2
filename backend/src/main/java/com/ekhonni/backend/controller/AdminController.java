@@ -65,22 +65,6 @@ public class AdminController {
     }
 
 
-    @GetMapping("/products/deleted")
-    public void getAllDeletedProduct(Pageable pageable) {
-        // To be implemented
-    }
-
-    @PostMapping("/product/{id}/approve")
-    public void approveProduct(Pageable pageable) {
-        // To be implemented
-    }
-
-    @PostMapping("/product/{id}/decline")
-    public void declineProduct(Pageable pageable) {
-        // To be implemented
-    }
-
-
     @PostMapping("/user/{id}/warn")
     public void warnUser() {
         // To be implemented

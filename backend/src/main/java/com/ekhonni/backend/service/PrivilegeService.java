@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
+import com.ekhonni.backend.exception.NoResourceFoundException;
 import com.ekhonni.backend.exception.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
@@ -100,6 +101,6 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     }
 
     public Privilege getByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
-        return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(PrivilegeNotFoundException::new);
+        return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(NoResourceFoundException::new);
     }
 }

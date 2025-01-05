@@ -2,6 +2,9 @@ package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.UserProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -20,4 +23,6 @@ public interface UserRepository extends BaseRepository<User, UUID> {
     boolean existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(UUID id);
 
     boolean existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(String email);
+
+    Page<UserProjection> getAllByRoleId(long roleId, Class<UserProjection> userProjectionClass, Pageable pageable);
 }

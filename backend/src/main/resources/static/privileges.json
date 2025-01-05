@@ -238,5 +238,17 @@
     "description": "Admin declining of products",
     "httpMethod": "POST",
     "endpoint": "/api/v2/admin/product/{id}/decline"
+  },
+  {
+    "name": "Retrieve API Documentation",
+    "description": "Available API endpoints Documented",
+    "httpMethod": "GET",
+    "endpoint": "/swagger-ui.html"
+  },
+  {
+    "name": "Retrieve Users of a Role",
+    "description": "Get all users assigned to a role",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/role/{id}/users/"
   }
 ]

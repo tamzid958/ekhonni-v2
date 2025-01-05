@@ -2,6 +2,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
+import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.PrivilegeService;
 import com.ekhonni.backend.service.RoleService;
 import lombok.AllArgsConstructor;
@@ -56,5 +57,10 @@ public class RoleController {
     @GetMapping("/{roleId}/privilege/")
     public Page<Privilege> getAllPrivilegeOfRole(@PathVariable("roleId") long roleId, Pageable pageable) {
         return privilegeService.getAllOfRole(roleId, pageable);
+    }
+
+    @GetMapping("/{roleId}/users/")
+    public Page<UserProjection> getAllUsersAssignedToRole(@PathVariable("roleId") long roleId, Pageable pageable) {
+        return roleService.getAllUserAssigned(roleId, UserProjection.class, pageable);
     }
 }
