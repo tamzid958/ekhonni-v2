@@ -59,6 +59,7 @@ public class BackendApplicationInitializer implements CommandLineRunner {
                         "Shafipur, Kaliakair, Gazipur",
                         superAdmin,
                         account,
+                        null,
                         null
                 );
 

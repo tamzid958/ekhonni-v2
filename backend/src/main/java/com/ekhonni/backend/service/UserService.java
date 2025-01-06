@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
+import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
@@ -63,11 +64,14 @@ public class UserService extends BaseService<User, UUID> {
     public boolean isSuperAdmin(UUID id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         String s = user.getRole().getName();
-        boolean b = s.equals("SUPER_ADMIN");
-        return b;
+        return s.equals("SUPER_ADMIN");
     }
 
     public boolean isActive(String email) {
         return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
+    }
+
+    public String getNewAccessToken(RefreshTokenDTO refreshTokenDTO) {
+        return "new AuthToken()";
     }
 }

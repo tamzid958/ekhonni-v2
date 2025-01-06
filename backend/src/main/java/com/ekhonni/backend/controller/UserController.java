@@ -2,7 +2,7 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
-import com.ekhonni.backend.dto.TokenDTO;
+import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +28,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}/profile")
+
+    @GetMapping("/{id}")
     @PreAuthorize("(@userService.isActive(#id) && (#id == authentication.principal.id || !@userService.isSuperAdmin(#id)))")
     public UserProjection getUserById(@PathVariable UUID id) {
         return userService.get(id, UserProjection.class);
     }
 
 
-    @PatchMapping("/{id}/update")
+    @PatchMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public UserUpdateDTO updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
@@ -53,17 +55,18 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/refresh-token")
+    @PostMapping("/{id}/refresh-token/")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public void getRefreshedToken(@RequestBody TokenDTO tokenDTO) {
-        // To be implemented
+    public String getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        Object ob = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.getNewAccessToken(refreshTokenDTO);
     }
 
 

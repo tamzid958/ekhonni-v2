@@ -5,6 +5,7 @@ import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
@@ -53,6 +54,7 @@ public class AuthService {
                 userDTO.address(),
                 userRole,
                 account,
+                null,
                 null
         );
 
@@ -63,7 +65,7 @@ public class AuthService {
     }
 
 
-    public String signIn(AuthDTO authDTO) {
+    public AuthToken signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
 
@@ -73,8 +75,13 @@ public class AuthService {
 
         Authentication authenticatedUser = authenticationManager.authenticate(authentication);
 
+        String accessToken = jwtUtil.generateAccessToken(authenticatedUser);
 
-        return jwtUtil.generateToken(authenticatedUser);
+        String refreshToken = jwtUtil.generateRefreshToken(authenticatedUser);
+
+//        userRepository.findByEmail(email).setRefreshToken(new RefreshToken(refreshToken));
+
+        return new AuthToken(accessToken, refreshToken);
     }
 
 

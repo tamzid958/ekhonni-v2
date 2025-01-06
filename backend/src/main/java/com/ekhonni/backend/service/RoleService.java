@@ -74,14 +74,48 @@ public class RoleService extends BaseService<Role, Long> {
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Role currentRole = user.getRole();
 
-        if (!role.getName().equals("SUPER_ADMIN")) user.setRole(role);
-        else throw new RuntimeException("Super Admin role cannot be set to user");
+        Role newRole = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+
+        validateRoleAssignment(currentRole, newRole);
+
+        user.setRole(newRole);
+
         return "Role assigned to user";
     }
 
+    private void validateRoleAssignment(Role currentRole, Role newRole) {
+        if (newRole.getName().equals("SUPER_ADMIN"))
+            throw new IllegalArgumentException("Super Admin role cannot be set to user");
+        if (newRole.getName().equals(currentRole.getName()))
+            throw new IllegalArgumentException("Already a " + newRole.getName());
+    }
+
     public Page<UserProjection> getAllUserAssigned(long roleId, Class<UserProjection> projection, Pageable pageable) {
-        return userRepository.getAllByRoleId(roleId, UserProjection.class, pageable);
+        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        return userRepository.getAllByRole(role, UserProjection.class, pageable);
+    }
+
+    @Transactional
+    @Modifying
+    public String remove(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Role currentRole = user.getRole();
+
+        validateRoleRemoval(currentRole);
+
+        user.setRole(roleRepository.findByName("USER").orElseThrow(RoleNotFoundException::new));
+
+        return "Role removed from user";
+    }
+
+    private void validateRoleRemoval(Role currentRole) {
+        if (currentRole.getName().equals("SUPER_ADMIN"))
+            throw new IllegalArgumentException("Super Admin role cannot be removed");
+        if (currentRole.getName().equals("USER"))
+            throw new IllegalArgumentException("Default role USER cannot be removed");
+
     }
 }

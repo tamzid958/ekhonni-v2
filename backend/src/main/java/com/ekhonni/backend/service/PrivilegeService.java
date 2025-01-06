@@ -103,4 +103,15 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     public Privilege getByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
         return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(NoResourceFoundException::new);
     }
+
+    public String remove(long roleId, long privilegeId) {
+        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(PrivilegeNotFoundException::new);
+
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
+
+        rolePrivilegeAssignmentRepository.delete(rolePrivilegeAssignment);
+
+        return "Privilege removed from role";
+    }
 }

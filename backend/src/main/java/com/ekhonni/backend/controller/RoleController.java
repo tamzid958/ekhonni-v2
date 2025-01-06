@@ -54,6 +54,11 @@ public class RoleController {
         return privilegeService.assign(roleId, privilegeId);
     }
 
+    @PostMapping("/{roleId}/remove/privilege/{privilegeId}")
+    public String removePrivilege(@PathVariable("roleId") long roleId, @PathVariable("privilegeId") long privilegeId) {
+        return privilegeService.remove(roleId, privilegeId);
+    }
+
     @GetMapping("/{roleId}/privilege/")
     public Page<Privilege> getAllPrivilegeOfRole(@PathVariable("roleId") long roleId, Pageable pageable) {
         return privilegeService.getAllOfRole(roleId, pageable);

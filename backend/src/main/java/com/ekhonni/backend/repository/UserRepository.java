@@ -24,5 +24,5 @@ public interface UserRepository extends BaseRepository<User, UUID> {
 
     boolean existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(String email);
 
-    Page<UserProjection> getAllByRoleId(long roleId, Class<UserProjection> userProjectionClass, Pageable pageable);
+    Page<UserProjection> getAllByRole(Role role, Class<UserProjection> userProjectionClass, Pageable pageable);
 }

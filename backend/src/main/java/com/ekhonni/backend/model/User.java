@@ -47,6 +47,9 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
+    @JoinColumn(name = "refresh_token_id", referencedColumnName = "id")
+    private RefreshToken refreshToken;
     @Column
     private LocalDateTime blockedAt;
 

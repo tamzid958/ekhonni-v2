@@ -111,25 +111,43 @@
     "name": "Assign user a role ",
     "description": "Allows assigning user a role",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/users/{userId}/assign/role/{roleId}"
+    "endpoint": "/api/v2/admin/user/{id}/assign/role/{id}"
+  },
+  {
+    "name": "remove user from assigned role ",
+    "description": "Allows removing user from assigned role (default role is user)",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/{id}/remove/role/"
   },
   {
     "name": "Get User Profile",
     "description": "Allows retrieving the user profile",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/user/{id}/profile"
+    "endpoint": "/api/v2/user/{id}"
+  },
+  {
+    "name": "Update User",
+    "description": "Allows update a user",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}"
   },
   {
     "name": "Delete User",
     "description": "Allows deleting a user",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/user/{id}/delete"
+    "endpoint": "/api/v2/user/{id}"
+  },
+  {
+    "name": "Refresh Token",
+    "description": "Allows retrieving new user token",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/refresh-token/"
   },
   {
     "name": "Update Privilege",
     "description": "Allows updating a privilege",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/privilege/{id}/update"
+    "endpoint": "/api/v2/privilege/{id}"
   },
   {
     "name": "Get Role Privileges",

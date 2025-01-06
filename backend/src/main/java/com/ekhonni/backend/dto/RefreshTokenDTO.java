@@ -7,6 +7,6 @@ import jakarta.validation.constraints.NotNull;
  * Author: Md Jahid Hasan
  * Date: 12/26/24
  */
-public record TokenDTO(@NotNull @NotBlank
-                       String token) {
+public record RefreshTokenDTO(@NotNull @NotBlank
+                       String refreshToken) {
 }

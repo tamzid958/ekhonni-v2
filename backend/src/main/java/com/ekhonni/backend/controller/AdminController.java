@@ -43,9 +43,15 @@ public class AdminController {
     }
 
     @PostMapping("user/{userId}/assign/role/{roleId}")
-    @PreAuthorize("(@userService.isActive(#userId)")
+    @PreAuthorize("@userService.isActive(#userId)")
     public String assignRole(@PathVariable("userId") UUID userId, @PathVariable("roleId") long roleId) {
         return roleService.assign(userId, roleId);
+    }
+
+    @PostMapping("user/{userId}/remove/role/")
+    @PreAuthorize("@userService.isActive(#userId)")
+    public String removeRole(@PathVariable("userId") UUID userId) {
+        return roleService.remove(userId);
     }
 
     @GetMapping("/users/deleted/")
