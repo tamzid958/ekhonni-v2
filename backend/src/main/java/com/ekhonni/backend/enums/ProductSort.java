@@ -8,7 +8,6 @@
 package com.ekhonni.backend.enums;
 
 public enum ProductSort {
-    bestMatch,
     priceLowToHigh,
     priceHighToLow,
     newlyListed
