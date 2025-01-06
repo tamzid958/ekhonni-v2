@@ -14,6 +14,6 @@ public enum TransactionStatus {
     UNATTEMPTED,
     EXPIRED,
     VALIDATED,
-    INVALID_TRANSACTION,
-    NO_STATUS
+    INITIATION_FAILED,
+    NO_RESPONSE
 }
