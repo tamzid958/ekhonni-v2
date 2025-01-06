@@ -10,6 +10,7 @@ import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.JWTUtil;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,7 @@ public class AuthService {
     private final VerificationTokenService verificationTokenService;
     private final EmailVerificationService emailVerificationService;
 
+    @Transactional
     public String create(UserDTO userRegDTO) {
         if (userRepository.findByEmail(userRegDTO.email()) != null) throw new UserAlreadyExistsException();
 

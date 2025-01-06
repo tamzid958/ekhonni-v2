@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -17,7 +18,6 @@ import java.util.UUID;
 public interface UserRepository extends BaseRepository<User, UUID> {
 
     User findByEmail(String email);
-
     @Modifying
     @Transactional
     @Query("""

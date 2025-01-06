@@ -33,4 +33,3 @@ public class Bid extends BaseEntity<Long> {
     private BidStatus status;
 
 }
-

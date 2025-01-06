@@ -13,27 +13,27 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 (8, 'Furniture', true, 3, NOW(), NOW());
 
 -- Insert Users
-INSERT INTO users (id, name, email, password, role, phone, address, created_at, updated_at) VALUES
-(gen_random_uuid(), 'John Doe', 'john@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567890', '123 Main St', NOW(), NOW()),
-(gen_random_uuid(), 'Jane Smith', 'jane@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567891', '456 Oak Ave', NOW(), NOW()),
-(gen_random_uuid(), 'Admin User', 'admin@example.com', '$2a$10$xxxxxxxxxxx', 'ADMIN', '+1234567892', '789 Admin St', NOW(), NOW()),
-(gen_random_uuid(), 'Sarah Wilson', 'sarah@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567893', '321 Pine Rd', NOW(), NOW()),
-(gen_random_uuid(), 'Mike Johnson', 'mike@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567894', '654 Elm St', NOW(), NOW());
+INSERT INTO users (id, name, email, password, role, phone, address, created_at, updated_at,verified) VALUES
+(gen_random_uuid(), 'John Doe', 'john@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567890', '123 Main St', NOW(), NOW(),'true'),
+(gen_random_uuid(), 'Jane Smith', 'jane@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567891', '456 Oak Ave', NOW(), NOW(),'true'),
+(gen_random_uuid(), 'Admin User', 'admin@example.com', '$2a$10$xxxxxxxxxxx', 'ADMIN', '+1234567892', '789 Admin St', NOW(), NOW(),'true'),
+(gen_random_uuid(), 'Sarah Wilson', 'sarah@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567893', '321 Pine Rd', NOW(), NOW(),'true'),
+(gen_random_uuid(), 'Mike Johnson', 'mike@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567894', '654 Elm St', NOW(), NOW(),'true');
 
 -- Insert Accounts (assuming user IDs from above)
 INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
-(1, 1000.00, 'ACTIVE', NOW(), NOW()),
-(2, 1500.00, 'ACTIVE', NOW(), NOW()),
-(3, 2000.00, 'ACTIVE', NOW(), NOW()),
-(4, 750.00, 'ACTIVE', NOW(), NOW()),
-(5, 1250.00, 'ACTIVE', NOW(), NOW());
+(101, 1000.00, 'ACTIVE', NOW(), NOW()),
+(102, 1500.00, 'ACTIVE', NOW(), NOW()),
+(103, 2000.00, 'ACTIVE', NOW(), NOW()),
+(104, 750.00, 'ACTIVE', NOW(), NOW()),
+(105, 1250.00, 'ACTIVE', NOW(), NOW());
 
 -- Update users with account IDs
-UPDATE users SET account_id = 1 WHERE email = 'john@example.com';
-UPDATE users SET account_id = 2 WHERE email = 'jane@example.com';
-UPDATE users SET account_id = 3 WHERE email = 'admin@example.com';
-UPDATE users SET account_id = 4 WHERE email = 'sarah@example.com';
-UPDATE users SET account_id = 5 WHERE email = 'mike@example.com';
+UPDATE users SET account_id = 101 WHERE email = 'john@example.com';
+UPDATE users SET account_id = 102 WHERE email = 'jane@example.com';
+UPDATE users SET account_id = 103 WHERE email = 'admin@example.com';
+UPDATE users SET account_id = 104 WHERE email = 'sarah@example.com';
+UPDATE users SET account_id = 105 WHERE email = 'mike@example.com';
 
 -- Insert Products
 INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, image_path, created_at, updated_at) VALUES
