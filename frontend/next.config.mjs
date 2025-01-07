@@ -15,6 +15,7 @@ const nextConfig = {
       'lh3.googleusercontent.com',
     ],
   },
+
 };
 
 export default nextConfig;
