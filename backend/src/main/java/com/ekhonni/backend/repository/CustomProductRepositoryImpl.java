@@ -32,8 +32,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductProjection> query = cb.createQuery(ProductProjection.class);
         Root<Product> root = query.from(Product.class);
-
-
+        
         Predicate predicate = spec.toPredicate(root, query, cb);
         query.where(predicate);
 

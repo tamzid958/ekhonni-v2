@@ -7,7 +7,6 @@
 
 package com.ekhonni.backend.specificationbuilder;
 
-import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.specification.ProductSpecification;
@@ -23,7 +22,6 @@ public class ProductSpecificationBuilder {
         if (filter.getCategoryName() != null) {
             spec = spec.and(ProductSpecification.belongsToCategories(categoryIds));
         }
-
         if (filter.getMinPrice() != null) {
             spec = spec.and(ProductSpecification.hasMinimumPrice(filter.getMinPrice()));
         }
@@ -31,7 +29,7 @@ public class ProductSpecificationBuilder {
             spec = spec.and(ProductSpecification.hasMaximumPrice(filter.getMaxPrice()));
         }
         if (filter.getCondition() != null) {
-            spec = spec.and(ProductSpecification.hasCondition(ProductCondition.valueOf(String.valueOf(filter.getCondition()))));
+            spec = spec.and(ProductSpecification.hasCondition(filter.getCondition()));
         }
         if (filter.getSearchTerm() != null) {
             spec = spec.and(ProductSpecification.hasTerm(filter.getSearchTerm()));

@@ -65,27 +65,13 @@ public class ProductService extends BaseService<Product, Long> {
                     imagePaths
             );
 
+            System.out.println(product);
             productRepository.save(product);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
     }
-
-
-//    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
-//        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
-//        String categoryName = productFilter.getCategoryName();
-//        Category category = categoryRepository.findByNameAndActive(categoryName, true);
-//        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
-//
-//
-//    }
-
-//
-//    public List<ProductProjection> search(String searchText, Pageable pageable) {
-//        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(searchText, searchText, searchText);
-//    }
 
 
     @Transactional
@@ -105,27 +91,9 @@ public class ProductService extends BaseService<Product, Long> {
         return true;
     }
 
-//    public List<String> getImages(Long id) {
-//        return productRepository.findImagePathsById(id);
-//    }
-
-    public List<Long> getCategoryIds(String name) {
-        Category category = categoryRepository.findByName(name);
-        Long categoryId = category.getId();
-        return categoryRepository.findSubCategoryIds(categoryId);
-
-
-    }
-
-//    public List<Product> getAllProductProjection(String name) {
-//        List<Long> categoryIds = getCategoryIds(name);
-//        System.out.println(categoryIds);
-//        return productRepository.findByCategoryIdIn(categoryIds);
-//
-//    }
 
     public List<ProductProjection> getAllFiltered(ProductFilter filter) {
-        List<Long> categoryIds = getCategoryIds(filter.getCategoryName());
+        List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         return productRepository.findAllFiltered(spec);
     }

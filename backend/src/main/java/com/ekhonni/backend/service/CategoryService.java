@@ -106,13 +106,21 @@ public class CategoryService extends BaseService<Category, Long> {
         if (category == null) {
             throw new CategoryNotFoundException();
         }
-        List<String> chain = new ArrayList<>();
-        chain.add(category.getName());
+        List<String> sequence = new ArrayList<>();
+        sequence.add(category.getName());
         while (category.getParentCategory() != null) {
-            chain.add(category.getParentCategory().getName());
+            sequence.add(category.getParentCategory().getName());
             category = categoryRepository.findByNameAndActive(category.getParentCategory().getName(), true);
         }
-        return chain;
+        return sequence;
+    }
+
+
+    public List<Long> getActiveCategoryIds(String name) {
+        Category category = categoryRepository.findByName(name);
+        if (category == null) throw new CategoryNotFoundException();
+        Long categoryId = category.getId();
+        return categoryRepository.findSubCategoryIds(categoryId);
     }
 
 

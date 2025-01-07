@@ -46,12 +46,13 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
             WITH RECURSIVE category_tree AS (
                 SELECT id
                 FROM category
-                WHERE id = :parentId
+                WHERE id = :parentId AND active = true
                 UNION ALL
                 SELECT c.id
                 FROM category c
                 INNER JOIN category_tree ct
                 ON c.parent_category_id = ct.id
+                WHERE c.active = true
             )
             SELECT id FROM category_tree
             """, nativeQuery = true)

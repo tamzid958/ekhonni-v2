@@ -59,7 +59,7 @@ public record ProductController(ProductService productService) {
 
 
     @GetMapping("/filter")
-    public ApiResponse<?> getSpec(@RequestBody ProductFilter filter) {
+    public ApiResponse<?> getFilteredProducts(@RequestBody ProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 
