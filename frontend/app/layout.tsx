@@ -30,7 +30,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
       <CustomErrorBoundary customFallback={<div>Something went wrong.</div>}>

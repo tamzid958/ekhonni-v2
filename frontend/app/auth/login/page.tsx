@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 
+
 const signupSchema = z.object({
-  firstName: z.string().min(1, "First Name is required"),
-  lastName: z.string().min(1, "Last Name is required"),
+  name: z.string().min(1, "Your Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z
@@ -54,8 +54,7 @@ export default function AuthForm() {
           redirect: false,
           email: (data as SignupFormValues).email,
           password: (data as SignupFormValues).password,
-          firstName: (data as SignupFormValues).firstName,
-          lastName: (data as SignupFormValues).lastName,
+          name: (data as SignupFormValues).name,
           phone: (data as SignupFormValues).phone,
           address: (data as SignupFormValues).address,
         });
@@ -93,37 +92,26 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-50">
-      <Card className="w-96 max-h-[96vh] flex flex-col">
-        <CardContent className="overflow-auto flex-grow">
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-card shadow-">
+        <CardContent className="overflow-auto ">
           <h2 className="text-lg font-bold mb-4 mt-4 text-center">
             {isSignup ? "Sign Up" : "Log In"}
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {isSignup && (
               <>
+                {/*// Signup form fields*/}
                 <div>
-                  <label className="block mb-1 text-sm font-medium">First Name</label>
+                  <label className="block mb-1 text-sm font-medium">Your Name</label>
                   <Input
                     type="text"
-                    {...register("firstName")}
-                    placeholder="Enter your first name"
+                    {...register("name")}
+                    placeholder="Enter your  name"
                     className="w-full"
                   />
-                  {errors.firstName && (
-                    <p className="text-sm text-red-600">{errors.firstName.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block mb-1 text-sm font-medium">Last Name</label>
-                  <Input
-                    type="text"
-                    {...register("lastName")}
-                    placeholder="Enter your last name"
-                    className="w-full"
-                  />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-600">{errors.lastName.message}</p>
+                  {errors.name && (
+                    <p className="text-sm text-red-600">{errors?.name.message}</p>
                   )}
                 </div>
                 <div>
@@ -172,6 +160,13 @@ export default function AuthForm() {
                 placeholder="Enter your password"
                 className="w-full"
               />
+
+              {!isSignup &&
+                (<CardContent className="flex font-medium text-sm justify-end text-blue-500 mt-1 cursor-pointer">
+                 <p> Forget Password? </p>
+              </CardContent>
+              )}
+
               {errors.password && (
                 <p className="text-sm text-red-600">{errors.password.message}</p>
               )}
@@ -181,17 +176,18 @@ export default function AuthForm() {
                 <label className="block mb-1 text-sm font-medium">Confirm Password</label>
                 <Input
                   type="password"
-                  {...register("confirmPassword")}
+                  {...register('confirmPassword')}
                   placeholder="Confirm your password"
                   className="w-full"
                 />
+
                 {errors?.confirmPassword && (
                   <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
                 )}
               </div>
             )}
             <Button type="submit" className="w-full">
-              {isSignup ? "Sign Up" : "Log In"}
+            {isSignup ? "Sign Up" : "Log In"}
             </Button>
           </form>
           <div className="relative my-4">

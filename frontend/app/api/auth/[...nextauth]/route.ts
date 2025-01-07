@@ -2,28 +2,8 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import {redis, redlock} from '@/lib/redis';
+import { User, users } from '@/lib/users';
 
-export interface User {
-  id: number;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  address: string;
-}
-
-export const users: User[] = [
-  {
-    id: 1,
-    email: "test@example.com",
-    password: "password123",
-    firstName: "John",
-    lastName: "Doe",
-    phone: "1234567890",
-    address: "123 Main St",
-  },
-];
 
 let userIdCounter = 2;
 
@@ -34,14 +14,14 @@ const refreshAccessToken = async (token: any) => {
     const refreshedToken = {
       ...token,
       accessToken: `refreshed-${token.accessToken}`,
-      accessTokenExpires: Date.now() + 60,
+      accessTokenExpires: Date.now() + 30 * 1000,
     };
 
     await redis.set(
       `jwt:${token.id}`,
       JSON.stringify(refreshedToken),
       "EX",
-      60
+      30
     );
 
     return refreshedToken;
@@ -61,34 +41,30 @@ const options: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        firstName: { label: "First Name", type: "text", optional: true },
-        lastName: { label: "Last Name", type: "text", optional: true },
+        name: { label: "name", type: "text", optional: true },
         phone: { label: "Phone", type: "text", optional: true },
         address: { label: "Address", type: "text", optional: true },
       },
       async authorize(credentials) {
-        const { email, password, firstName, lastName, phone, address } =
+        const { email, password, name, phone, address } =
           credentials as {
             email: string;
             password: string;
-            firstName?: string;
-            lastName?: string;
+            name?: string;
             phone?: string;
             address?: string;
           };
 
-        if (firstName && lastName) {
+        if (name) {
           const existingUser = users.find((u) => u.email === email);
           if (existingUser) {
             throw new Error("User already exists.");
           }
-
           const newUser: User = {
             id: userIdCounter++,
             email,
             password,
-            firstName,
-            lastName,
+            name,
             phone: phone || "",
             address: address || "",
           };
@@ -98,7 +74,7 @@ const options: NextAuthOptions = {
           return {
             id: newUser.id,
             email: newUser.email,
-            name: `${newUser.firstName} ${newUser.lastName}`,
+            name: newUser.name,
           };
         } else {
           const user = users.find(
@@ -113,7 +89,7 @@ const options: NextAuthOptions = {
           return {
             id: user.id,
             email: user.email,
-            name: `${user.firstName} ${user.lastName}`,
+            name: name,
           };
         }
       },
@@ -128,7 +104,7 @@ const options: NextAuthOptions = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || "supersecret",
-    maxAge: 60,
+
   },
   pages: {
     signIn: "/auth/login",
@@ -144,16 +120,22 @@ const options: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          accessToken: user.accessToken || "default-access-token",
-          refreshToken: user.refreshToken || "default-refresh-token",
-          accessTokenExpires: Date.now() + 60,
+          accessToken: account.access_token || "default-access-token",
+          refreshToken: account.refreshToken || "default-refresh-token",
+          accessTokenExpires: Date.now() + 30 * 1000,
         };
 
         await redis.set(
           `jwt:${user.id}`,
           JSON.stringify(jwtToken),
           "EX",
-          60
+          30
+        );
+        await redis.set(
+          `refresh:${user.id}`,
+          jwtToken.refreshToken,
+          "EX",
+          7 * 24 * 60 * 60 // 7 days in seconds
         );
         return jwtToken;
       }
@@ -162,7 +144,6 @@ const options: NextAuthOptions = {
       if (storedToken) {
         return JSON.parse(storedToken);
       }
-
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
