@@ -23,4 +23,6 @@ public class ProductFilter {
     private String searchTerm;
     private ProductSort sortBy;
     private String abc;
+    private int page;
+    private int size;
 }

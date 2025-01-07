@@ -21,9 +21,14 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -92,10 +97,13 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public List<ProductProjection> getAllFiltered(ProductFilter filter) {
+    public Page<ProductProjection> getAllFiltered(ProductFilter filter) {
         List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
-        return productRepository.findAllFiltered(spec);
+        Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
+
+
+        return productRepository.findAllFiltered(spec,pageable);
     }
 
 
