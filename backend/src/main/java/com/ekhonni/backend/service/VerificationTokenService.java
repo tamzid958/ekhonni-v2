@@ -35,7 +35,7 @@ public class VerificationTokenService {
 
         VerificationToken verificationToken = new VerificationToken(
                 token,
-                LocalDateTime.now().plusMinutes(2),
+                LocalDateTime.now().plusMinutes(3),
                 user
         );
 

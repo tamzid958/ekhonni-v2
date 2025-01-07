@@ -29,7 +29,7 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {
-        
+
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 
@@ -54,7 +54,7 @@ public class AuthController {
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(passwordResetService.reset(resetPasswordDTO.token(), resetPasswordDTO.newPassword()));
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
     }
 }

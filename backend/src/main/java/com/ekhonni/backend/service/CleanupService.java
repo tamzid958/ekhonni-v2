@@ -26,7 +26,7 @@ public class CleanupService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
 
-    @Scheduled(fixedRate = 600)
+    @Scheduled(cron = "0 0 0 * * *")
     public void removedExpiredTokensAndUsers() {
 
         LocalDateTime now = LocalDateTime.now();
