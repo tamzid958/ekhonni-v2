@@ -4,16 +4,15 @@ import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
-import com.ekhonni.backend.model.Account;
-import com.ekhonni.backend.model.AuthToken;
-import com.ekhonni.backend.model.Role;
-import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.*;
 import com.ekhonni.backend.repository.AccountRepository;
+import com.ekhonni.backend.repository.RefreshTokenRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
-import com.ekhonni.backend.util.JWTUtil;
+import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +35,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
-    private final JWTUtil jwtUtil;
+    private final TokenUtil tokenUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public String create(UserDTO userDTO) {
@@ -65,23 +65,29 @@ public class AuthService {
     }
 
 
+    @Transactional
+    @Modifying
     public AuthToken signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
 
-        if (userRepository.findByEmail(email) == null) throw new BadCredentialsException("Bad credentials");
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) throw new BadCredentialsException("Bad credentials");
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
 
         Authentication authenticatedUser = authenticationManager.authenticate(authentication);
 
-        String accessToken = jwtUtil.generateAccessToken(authenticatedUser);
+        String accessToken = tokenUtil.generateJwtAccessToken(email);
 
-        String refreshToken = jwtUtil.generateRefreshToken(authenticatedUser);
+        RefreshToken refreshToken = tokenUtil.generateRefreshToken();
 
-//        userRepository.findByEmail(email).setRefreshToken(new RefreshToken(refreshToken));
+        refreshTokenRepository.save(refreshToken);
 
-        return new AuthToken(accessToken, refreshToken);
+        user.setRefreshToken(refreshToken);
+
+        return new AuthToken(accessToken, refreshToken.getValue());
     }
 
 

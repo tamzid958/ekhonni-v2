@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Author: Md Jahid Hasan
  * Date: 1/6/25
@@ -18,4 +20,5 @@ import lombok.Setter;
 @Entity
 public class RefreshToken extends BaseEntity<Long> {
     private String value;
+    private LocalDateTime expiration;
 }

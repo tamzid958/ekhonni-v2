@@ -2,7 +2,7 @@ package com.ekhonni.backend.filter;
 
 import com.ekhonni.backend.exception.InvalidJwtTokenException;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
-import com.ekhonni.backend.util.JWTUtil;
+import com.ekhonni.backend.util.TokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final JWTUtil jwtUtil;
+    private final TokenUtil tokenUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Override
@@ -42,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = extractToken(authHeader);
 
         try {
-            String email = jwtUtil.extractSubject(token);
+            String email = tokenUtil.extractSubject(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 validateAndAuthenticateToken(request, response, token, email);
             }
@@ -63,7 +63,7 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private void validateAndAuthenticateToken(HttpServletRequest request, HttpServletResponse response, String token, String email) throws IOException {
-        if (jwtUtil.isExpired(token)) {
+        if (tokenUtil.isAccessTokenExpired(token)) {
             throw new InvalidJwtTokenException();
         }
 

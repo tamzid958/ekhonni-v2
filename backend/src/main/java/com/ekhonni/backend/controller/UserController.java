@@ -4,13 +4,13 @@ import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
+import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,8 +64,7 @@ public class UserController {
 
     @PostMapping("/{id}/refresh-token/")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
-        Object ob = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public AuthToken getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
         return userService.getNewAccessToken(refreshTokenDTO);
     }
 

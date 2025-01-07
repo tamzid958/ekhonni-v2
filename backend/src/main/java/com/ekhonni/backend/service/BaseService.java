@@ -163,9 +163,8 @@ public class BaseService<T, ID> {
     public <D> D update(ID id, D dto) {
         T entity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
-        BeanUtils.copyProperties(dto, entity, BeanUtilHelper.getNullPropertyNames(dto));
+        BeanUtils.copyProperties(dto, entity, BeanUtilHelper.getBlankPropertyNames(dto));
         repository.save(entity);
         return dto;
     }
-
 }
