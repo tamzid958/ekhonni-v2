@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface data {
@@ -13,12 +13,13 @@ interface data {
 }
 
 export function CardDemo({ id, title, description, img, price }: data) {
-  console.log('id: ' + id);
+  // console.log('id: ' + id);
   return (
     <Link href={`/categoryProducts/products/${id}`} passHref>
-      <Card className="w-64 h-96 cursor-pointer hover:shadow-md bg-transparent shadow-none transition-shadow">
-        <CardContent className="pt-6">
-          <AspectRatio ratio={4 / 3} className="bg-muted">
+      <Card
+        className="w-64 h-96 cursor-pointer bg-transparent shadow-none transition-shadow border-none">
+        <CardContent className="px-0">
+          <AspectRatio ratio={1} className="bg-muted">
             <Image
               src={img}
               alt={`Image of ${title}`}
@@ -29,11 +30,11 @@ export function CardDemo({ id, title, description, img, price }: data) {
             />
           </AspectRatio>
         </CardContent>
-        <CardFooter className="flex-col items-start">
-          <CardTitle className="mb-2 text-xl">{title}</CardTitle>
-          <CardDescription className="text-md line-clamp-3 overflow-hidden text-ellipsis"
-                           title={description}>{description}</CardDescription>
-          <CardDescription className="text-lg mt-2">${price}</CardDescription>
+        <CardFooter className="px-0 flex-col items-start">
+          <CardTitle className="mb-2 text-lg font-sans font-medium hover:underline">{title}</CardTitle>
+          {/*<CardDescription className="text-md line-clamp-3 overflow-hidden text-ellipsis"*/}
+          {/*                 title={description}>{description}</CardDescription>*/}
+          <CardTitle className="text-2xl">${price}</CardTitle>
         </CardFooter>
       </Card>
     </Link>
