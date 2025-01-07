@@ -10,7 +10,6 @@ import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.service.PrivilegeService;
 import com.ekhonni.backend.util.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +22,6 @@ import java.util.List;
  * Date: 12/23/24
  */
 @Service
-@AllArgsConstructor
 public class BackendApplicationInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -35,6 +33,15 @@ public class BackendApplicationInitializer implements CommandLineRunner {
     private String adminEmail;
     @Value("${spring.security.admin.password}")
     private String adminPassword;
+
+    public BackendApplicationInitializer(PrivilegeService privilegeService, JsonUtil jsonUtil, RoleRepository roleRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.privilegeService = privilegeService;
+        this.jsonUtil = jsonUtil;
+        this.roleRepository = roleRepository;
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {

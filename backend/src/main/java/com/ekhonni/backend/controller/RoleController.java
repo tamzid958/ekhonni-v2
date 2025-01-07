@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.projection.UserProjection;
@@ -31,7 +32,7 @@ public class RoleController {
 
     @GetMapping("/{id}")
     public Role getRoleById(@PathVariable long id) {
-        return roleService.get(id);
+        return roleService.get(id).orElseThrow(() -> new RoleNotFoundException("Role not found"));
     }
 
     @PostMapping("/")

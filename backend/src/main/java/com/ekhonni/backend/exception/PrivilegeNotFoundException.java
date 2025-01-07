@@ -5,8 +5,7 @@ package com.ekhonni.backend.exception;
  * Date: 12/30/24
  */
 public class PrivilegeNotFoundException extends RuntimeException {
-    @Override
-    public String getMessage() {
-        return "Privilege not found.";
+    public PrivilegeNotFoundException(String message) {
+        super(message);
     }
 }

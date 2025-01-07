@@ -1,13 +1,32 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 3:06 PM
- * Date: 12/4/2024
+ * Time: 8:18 PM
+ * Date: 12/9/2024
  * Project Name: ekhonni-v2
  */
 
 package com.ekhonni.backend.projection;
 
-import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.ProductCondition;
 
-public class ProductProjection extends BaseEntity {
+import java.time.LocalDateTime;
+
+public interface ProductProjection {
+    Long getId();
+
+    Double getPrice();
+
+    String getName();
+
+    String getDescription();
+
+    LocalDateTime getCreatedAt();
+
+    LocalDateTime getUpdatedAt();
+
+    ProductCondition getCondition();
+
+    Long getCategoryId();
+
+    String getCategoryName();
 }

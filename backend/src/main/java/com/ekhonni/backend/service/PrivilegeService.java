@@ -65,7 +65,7 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     }
 
     private void assignPrivilegeToSuperAdmin(Privilege privilege) {
-        Role roleAdmin = roleRepository.findByName("SUPER_ADMIN").orElseThrow(RoleNotFoundException::new);
+        Role roleAdmin = roleRepository.findByName("SUPER_ADMIN").orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
 
         RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(roleAdmin, privilege);
 
@@ -74,8 +74,8 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
 
 
     public String assign(long roleId, long privilegeId) {
-        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
-        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(PrivilegeNotFoundException::new);
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
+        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found when assigning"));
 
         RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
 
@@ -105,8 +105,8 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     }
 
     public String remove(long roleId, long privilegeId) {
-        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
-        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(PrivilegeNotFoundException::new);
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when removing"));
+        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
 
         RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
 

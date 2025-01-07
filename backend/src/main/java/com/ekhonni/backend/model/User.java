@@ -63,6 +63,5 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
         return this.getEmail();
     }
 
-
 }
 

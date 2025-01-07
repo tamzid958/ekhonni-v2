@@ -1,6 +1,7 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
+import com.ekhonni.backend.exception.PrivilegeNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.service.PrivilegeService;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class PrivilegeController {
 
     @GetMapping("/{privilegeId}")
     public Privilege getPrivilegeById(@PathVariable("privilegeId") long privilegeId) {
-        return privilegeService.get(privilegeId);
+        return privilegeService.get(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not Found"));
     }
 
 //    @PostMapping("/add")
@@ -55,6 +56,6 @@ public class PrivilegeController {
     @DeleteMapping("/{privilegeId}/delete")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public void deletePrivilege(@PathVariable("privilegeId") long privilegeId) {
-        privilegeService.delete(privilegeId);
+        privilegeService.deletePermanently(privilegeId);
     }
 }

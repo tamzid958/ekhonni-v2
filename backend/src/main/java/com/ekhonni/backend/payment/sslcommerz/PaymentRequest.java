@@ -1,7 +1,6 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.ekhonni.backend.config.SSLCommerzConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,33 +17,38 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentRequest {
-    @Value("${sslcommerz.store.id}")
-    private String storeId;
-    @Value("${sslcommerz.store.password}")
-    private String storePasswd;
-    private String totalAmount;
-    private String tranId;
-    @Value("${payment.success.url}")
-    private String successUrl;
-    @Value("${payment.fail.url}")
-    private String failUrl;
-    @Value("${payment.cancel.url}")
-    private String cancelUrl;
-    @Value("${payment.ipn.url}")
-    private String IpnUrl;
-    private String cusName;
-    private String cusEmail;
-    private String cusAdd1;
-    private String cusCity;
-    private String cusPostcode;
-    private String cusCountry;
-    private String cusPhone;
-    private String shippingMethod;
-    private String productName;
-    private String productCategory;
-    private String productProfile;
+    private String store_id;
+    private String store_passwd;
+
+    private String tran_id;
+    private String total_amount;
+    private String currency;
+
+    private String success_url;
+    private String fail_url;
+    private String cancel_url;
+    private String ipn_url;
+
+    private String cus_name;
+    private String cus_email;
+    private String cus_add1;
+    private String cus_city;
+    private String cus_postcode;
+    private String cus_country;
+    private String cus_phone;
+    private String shipping_method;
+    private String product_name;
+    private String product_category;
+    private String product_profile;
+
+    public PaymentRequest(SSLCommerzConfig config) {
+        this.store_id = config.getStoreId();
+        this.store_passwd = config.getStorePassword();
+        this.success_url = config.getSuccessUrl();
+        this.fail_url = config.getFailUrl();
+        this.cancel_url = config.getCancelUrl();
+        this.ipn_url = config.getIpnUrl();
+    }
 }
 

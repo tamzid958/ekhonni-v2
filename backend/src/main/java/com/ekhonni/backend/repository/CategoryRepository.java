@@ -8,12 +8,37 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Category;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ekhonni.backend.projection.viewer.ViewerCategoryProjection;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface CategoryRepository extends JpaRepository<Category,Long> {
-    @Query("SELECT c FROM Category c WHERE c.parentCategory IS NULL AND c.active=true")
-    List<Category> findTopLevelCategories();
+@Repository
+public interface CategoryRepository extends BaseRepository<Category, Long> {
+
+    List<Category> findByParentCategoryIsNullAndActive(boolean active);
+
+    List<ViewerCategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            WITH RECURSIVE category_tree AS (
+                SELECT id FROM category WHERE parent_category_id = :parentId
+                UNION ALL
+                SELECT c.id FROM category c
+                INNER JOIN category_tree ct ON c.parent_category_id = ct.id
+            )
+            DELETE FROM category WHERE id IN (SELECT id FROM category_tree) OR id = :parentId
+            """, nativeQuery = true)
+    void deleteCategoryById(Long parentId);
+
+    Category findByNameAndActive(String name, boolean active);
+
+    Category findByName(String name);
+
 }

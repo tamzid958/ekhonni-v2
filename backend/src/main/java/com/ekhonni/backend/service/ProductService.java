@@ -9,79 +9,95 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.enums.ProductSort;
+import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.util.AuthUtil;
+import com.ekhonni.backend.util.ImageUploadUtil;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public record ProductService(ProductRepository productRepository) {
+public class ProductService extends BaseService<Product, Long> {
+    ProductRepository productRepository;
+    CategoryService categoryService;
+    CategoryRepository categoryRepository;
+
+    @Value("${upload.dir}")
+    String UPLOAD_DIR;
 
 
-    public Product create(Product product) {
-        return productRepository.save(product);
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository) {
+        super(productRepository);
+        this.productRepository = productRepository;
+        this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
-    public List<ProductDTO> getAll() {
-        // return  productRepository.findAll();
-        List<Product> products = productRepository.findAll();
 
-        if (products.isEmpty()) {
-            throw new RuntimeException("No products found!");
+    @Transactional
+    public void create(ProductDTO productDTO) {
+
+        try {
+            User user = AuthUtil.getAuthenticatedUser();
+            Category category = categoryRepository.findByName(productDTO.category());
+            String imagePath = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.image());
+
+            Product product = new Product(
+                    productDTO.name(),
+                    productDTO.price(),
+                    productDTO.description(),
+                    false,
+                    false,
+                    productDTO.condition(),
+                    category,
+                    user,
+                    imagePath
+            );
+            productRepository.save(product);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
-        return products.stream()
-                .map(ProductDTO::new)
-                .collect(Collectors.toList());
     }
 
 
-    public List<ProductDTO> getAllByCategoryId(Long categoryId) {
-
-        List<Product> products = productRepository.findAllProductsInCategoryTree(categoryId);
-        if (products.isEmpty()) {
-            throw new RuntimeException("No products found!");
-        }
-
-        return products.stream()
-                .map(ProductDTO::new)
-                .collect(Collectors.toList());
+    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
+        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
+        String categoryName = productFilter.getCategoryName();
+        Category category = categoryRepository.findByNameAndActive(categoryName, true);
+        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
     }
 
-//       public List<ProductDTO> getAll(){
-//           List<Product> products = productRepository.findAll();
-//           return products.stream()
-//                   .map(ProductDTO::new)
-//                   .toList();
-//
-//           //return productRepository.findAll();
-//       }
+
+    public List<ProductProjection> search(String searchText, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(searchText, searchText, searchText);
+    }
 
 
-//       public List<Product> getAllByCategory(Long categoryId){
-//           return productRepository.findAllProductByCategoryId(categoryId);
-//       }
-//       public ProductDTO getOne(Long id){
-//
-//           Product product = productRepository.findById(id)
-//                   .orElseThrow(() -> new ResourceNotFoundException("product not found"));
-//           return new ProductDTO(product);
-//
-//           //return productRepository.findById(id);
-//       }
+    @Transactional
+    public boolean approveProduct(Long id) {
+        productRepository.findById(id).ifPresent(product -> {
+            product.setApproved(true);
+            productRepository.save(product);
+        });
+        return productRepository.existsById(id);
+    }
 
-
-//       public boolean delete(Long id){
-//           Optional<Product> product = productRepository.findById(id);
-//           if(product.isPresent()){
-//               productRepository.deleteById(id);
-//               return  true;
-//           }
-//           return false;
-//
-//       }
-
-
+    public boolean declineProduct(Long id) {
+        productRepository.findById(id).ifPresent(product -> {
+            // notify seller
+        });
+        return true;
+    }
 }

@@ -9,72 +9,138 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.ProductDTO;
-import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/products")
-public record ProductController(ProductService productService){
+@RequestMapping("/api/v2/product")
+public record ProductController(ProductService productService) {
 
+
+    //done
     @GetMapping
-    public List<ProductDTO> getAll(){
-        return productService.getAll();
+    public ApiResponse<?> getAllProducts(Pageable pageable) {
+        Page<ProductProjection> productProjections = productService.getAll(ProductProjection.class, pageable);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
     }
 
-    @GetMapping("/by-categories/{category_id}")
-    public List<ProductDTO> getByCategoryId(@PathVariable("category_id") Long categoryId){
-        //System.out.println(categoryId);
-        return productService.getAllByCategoryId(categoryId);
+    @GetMapping("/filter")
+    public ApiResponse<?> getAllProductsFiltered(@RequestBody ProductFilter productFilter) {
+        List<ProductProjection> productProjections = productService.getAllFiltered(productFilter);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<ProductDTO>> getAll() {
-//        List<ProductDTO> productDTOs = productService.getAll();
-//        return ResponseEntity.status(HttpStatus.OK).body(productDTOs);
-//    }
 
-
-//    @GetMapping("/{id}")
-//    public ProductDTO getOne(@PathVariable("id") Long id) {
-//        return productService.getOne(id);
-//    }
-
-
-//    @GetMapping("/by/{category_id}")
-//    public ResponseEntity<List<Product>> getAllByCategory(@PathVariable("category_id") Long categoryId) {
-////        System.out.println(categoryId);
-//        List<Product> products = productService.getAllByCategory(categoryId);
-//        return ResponseEntity.status(HttpStatus.OK).body(products);
-//    }
-
-
-
-
+    //done (paused for now)
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(product));
+    public ApiResponse<?> createProduct(@ModelAttribute ProductDTO productDTO) {
+        productService.create(productDTO);
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
 
+    //done
+    @GetMapping("/{id}")
+    public ApiResponse<?> getOneProduct(@PathVariable Long id) {
+        ProductProjection productProjection = productService.get(id, ProductProjection.class);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjection);
+    }
 
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<String> deleteProduct(@PathVariable("id") Long id) {
-//        boolean isDeleted = productService.delete(id);
-//        if (isDeleted) return ResponseEntity.ok("Product deleted successfully");
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+    //done
+    @PatchMapping("/{id}")
+    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        ProductDTO updatedProductDTO = productService.update(id, productDTO);
+        return new ApiResponse<>(HTTPStatus.FOUND, updatedProductDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> deleteOneProduct(@PathVariable("id") Long id) {
+        productService.softDelete(id);
+        return new ApiResponse<>(HTTPStatus.DELETED, null);
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<?> getSearchProducts(@RequestParam("search_text") String searchText, Pageable pageable) {
+        List<ProductProjection> productProjections = productService.search(searchText, pageable);
+        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+    }
+
+
+    //    @GetMapping("/category/{category_name}")
+//    public ApiResponse<?> getByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
+//        Page<ProductProjection> productProjections = productService.getAllByCategoryName(categoryName, pageable);
+//        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+//        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
+//
+//    }
+//    @GetMapping("/category/filter")
+//    public ApiResponse<?> getAllProductsByCategoryName(@RequestBody ProductFilterDTO productFilterDTO, @NotNull final Pageable pageable) {
+//        Page<ProductProjection> productProjections = productService.getAllByCategoryName(productFilterDTO, pageable);
+//        return new ApiResponse<>(HTTPStatus.FOUND, productProjections);
+//        //   return new ApiResponse<>(HTTPStatus.FOUND, "hello");
 //
 //    }
 
 
+//
+//
+
+//
+//
+//    @DeleteMapping("/{id}")
+//    public ApiResponse<?> delete(@PathVariable("id") Long id){
+//        boolean isDeleted = productService.delete(id);
+//        return ApiResponse.setResponse(HTTPStatus.DELETED, isDeleted, null, "deleted");
+//    }
+//
+//    @PostMapping("/search")
+//    public ApiResponse<?> search(@RequestParam String searchText, Pageable pageable){
+//        Page<ProductProjection> productProjections = productService.search(searchText,pageable);
+//        return ApiResponse.setResponse(HTTPStatus.FOUND, true, productProjections, "products on search");
+//    }
+
+
+    //
+//    @PatchMapping("/products/{id}")
+//    public boolean approveProduct(@PathVariable("id") Long id){
+//        return productService.approveProduct(id);
+//    }
+//
+//    @PatchMapping("/products/{id}")
+//    public String  declineProduct(@PathVariable("id") Long id){
+//        productService.declineProduct(id);
+//        return "product declined";
+//    }
+//
+//    @PostMapping("/category")
+//    public ApiResponse<?> createCategory(@RequestBody Category category) {
+//        Category savedCategory = categoryService.save(category);
+//        return ApiResponse.setResponse(HTTPStatus.CREATED, true, null, "Category Created");
+//
+//    }
+//
+//    @DeleteMapping("/category/{id}")
+//    public ApiResponse<?> deleteCategory(@PathVariable Long id) {
+//        categoryService.delete(id);
+//        return ApiResponse.setResponse(HTTPStatus.DELETED, true, null, "successfully deleted");
+//    }
+//
+//
+//    @PatchMapping("/category/{id}")
+//    public String updateCategory(@PathVariable("id")Long id){
+//        //update category
+//        return "updated";
+//    }
 
 
 }

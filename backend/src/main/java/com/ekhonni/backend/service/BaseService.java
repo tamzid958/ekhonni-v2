@@ -3,7 +3,6 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.repository.BaseRepository;
 import com.ekhonni.backend.util.BeanUtilHelper;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -12,16 +11,22 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Author: Asif Iqbal
  * Date: 12/16/24
  */
 
-@AllArgsConstructor
+
 @NoArgsConstructor
-public class BaseService<T, ID> {
+public abstract class BaseService<T, ID> {
+
     private BaseRepository<T, ID> repository;
+
+    public BaseService(BaseRepository<T, ID> repository) {
+        this.repository = repository;
+    }
 
     /**
      * ==================================================
@@ -29,9 +34,8 @@ public class BaseService<T, ID> {
      * ==================================================
      * Entity, Projection, Pageable Entity and Projection
      */
-    public T get(ID id) {
-        return repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(EntityNotFoundException::new);
+    public Optional<T> get(ID id) {
+        return repository.findByIdAndDeletedAtIsNull(id);
     }
 
     public <P> P get(ID id, Class<P> projection) {
@@ -128,10 +132,10 @@ public class BaseService<T, ID> {
     }
 
     public void softDelete(List<ID> ids) {
-        repository.softDelete(ids);
+        repository.softDeleteSelected(ids);
     }
 
-    public void delete(ID id) {     // delete permanently
+    public void deletePermanently(ID id) {     // deletePermanently permanently
         repository.deleteById(id);
     }
 
@@ -146,11 +150,11 @@ public class BaseService<T, ID> {
     }
 
     public void restore(List<ID> ids) {
-        repository.restore(ids);
+        repository.restoreSelected(ids);
     }
 
-    public void restore() {
-        repository.restore();
+    public void restoreAll() {
+        repository.restoreAll();
     }
 
     /**
@@ -167,4 +171,5 @@ public class BaseService<T, ID> {
         repository.save(entity);
         return dto;
     }
+
 }

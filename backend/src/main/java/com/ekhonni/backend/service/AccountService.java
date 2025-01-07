@@ -19,10 +19,16 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class AccountService extends BaseService<Account, Long> {
+
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+        super(accountRepository);
+        this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
+    }
 
     public UserProjection getUser(Long id) {
         return accountRepository.findUser(id);
@@ -31,7 +37,7 @@ public class AccountService extends BaseService<Account, Long> {
     @Transactional
     public Account create(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Account account = new Account(0.0, "Active");
         user.setAccount(account);
         accountRepository.save(account);

@@ -3,6 +3,12 @@ HELP.md.gradle
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+#Docker
+Dockerfile
+docker-compose.yaml
+.tar
+/backend-app-image/
+
 # Ignore folders
 .idea/
 build/
@@ -14,7 +20,6 @@ build.gradle
 compose.yaml
 gradlew
 gradlew.bat
-compose.yaml
 
 # Build tool-specific files
 /.idea/

@@ -5,8 +5,8 @@ package com.ekhonni.backend.exception;
  * Date: 12/29/24
  */
 public class RoleNotFoundException extends RuntimeException {
-    @Override
-    public String getMessage() {
-        return "Role not found.";
+    public RoleNotFoundException(String message) {
+        super(message);
     }
+
 }

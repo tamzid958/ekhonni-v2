@@ -39,7 +39,7 @@ public class RoleService extends BaseService<Role, Long> {
     }
 
     public void delete(long id) {
-        Role role = roleRepository.findById(id).orElseThrow(RoleNotFoundException::new);
+        Role role = roleRepository.findById(id).orElseThrow(() -> new RoleNotFoundException("Role not found while deleting"));
 
         if (Objects.equals(role.getName(), "SUPER_ADMIN") || Objects.equals(role.getName(), "USER")) {
             throw new RoleCannotBeDeletedException();
@@ -72,11 +72,11 @@ public class RoleService extends BaseService<Role, Long> {
     @Modifying
     public String assign(UUID userId, long roleId) {
 
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found when assigning role"));
 
         Role currentRole = user.getRole();
 
-        Role newRole = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Role newRole = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found while assigning"));
 
         validateRoleAssignment(currentRole, newRole);
 
@@ -93,20 +93,20 @@ public class RoleService extends BaseService<Role, Long> {
     }
 
     public Page<UserProjection> getAllUserAssigned(long roleId, Class<UserProjection> projection, Pageable pageable) {
-        Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new UserNotFoundException("User not found when searching assigned user"));
         return userRepository.getAllByRole(role, UserProjection.class, pageable);
     }
 
     @Transactional
     @Modifying
     public String remove(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found when removing role"));
 
         Role currentRole = user.getRole();
 
         validateRoleRemoval(currentRole);
 
-        user.setRole(roleRepository.findByName("USER").orElseThrow(RoleNotFoundException::new));
+        user.setRole(roleRepository.findByName("USER").orElseThrow(() -> new RoleNotFoundException("Role not found while removing")));
 
         return "Role removed from user";
     }

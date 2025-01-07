@@ -44,7 +44,7 @@ public class AuthService {
 
         Account account = new Account(0.0, "Active");
 
-        Role userRole = roleRepository.findByName("USER").orElseThrow(RoleNotFoundException::new);
+        Role userRole = roleRepository.findByName("USER").orElseThrow(() -> new RoleNotFoundException("Role not found while creating"));
 
         User user = new User(
                 userDTO.name(),

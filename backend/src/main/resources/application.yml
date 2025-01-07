@@ -1,0 +1,23 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # or specifically list needed endpoints
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        resilience4j.circuitbreaker: true
+        resilience4j.retry: true
+
+resilience4j:
+  circuitbreaker:
+    metrics:
+      enabled: true
+  retry:
+    metrics:
+      enabled: true

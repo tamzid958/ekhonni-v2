@@ -52,7 +52,7 @@ public class UserService extends BaseService<User, UUID> {
     @Transactional
     @Modifying
     public String updatePassword(UUID id, PasswordDTO passwordDTO) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found when updating password"));
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordDTO.currentPassword());
 
@@ -67,7 +67,7 @@ public class UserService extends BaseService<User, UUID> {
     }
 
     public boolean isSuperAdmin(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found when checking role"));
         String s = user.getRole().getName();
         return s.equals("SUPER_ADMIN");
     }
