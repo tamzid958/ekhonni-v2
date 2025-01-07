@@ -1,13 +1,13 @@
 import AboutPage from '@/components/AboutPage';
 import React from 'react';
 
-const UserAbout = () => {
+const SellerAbout = () => {
   return (
     <AboutPage
       fetchUrl="/api/userProfileAbout"
-      title="About Buyer"
+      title="About the Seller"
     />
   );
 };
 
-export default UserAbout;
+export default SellerAbout;
