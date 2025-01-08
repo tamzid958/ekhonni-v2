@@ -3,7 +3,7 @@ import Sidebar from '@/components/CategorySidebar';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CardDemo } from '@/components/Card';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface Data {
   id: string;
@@ -60,7 +60,13 @@ export default async function CategoryProductPage({ searchParams }: Props) {
             <div className="w-full mb-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-semibold py-4">Best Selling</h2>
-                <span><Button className="text-xl" variant="link">See All</Button> </span>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Best Selling' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span>
               </div>
               <ScrollArea className="w-full overflow-x-auto">
                 {products.filter((product) => product.label === 'Best Selling').length === 0 ? (
@@ -84,7 +90,13 @@ export default async function CategoryProductPage({ searchParams }: Props) {
             <div className="w-full mb-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-semibold py-4">Limited Time Deals</h2>
-                <span><Button className="text-xl" variant="link">See All</Button> </span>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Limited Time Deals' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span>
               </div>
               <ScrollArea className="w-full overflow-x-auto">
                 {products.filter((product) => product.label === 'Limited Time Deals').length === 0 ? (
@@ -108,8 +120,13 @@ export default async function CategoryProductPage({ searchParams }: Props) {
             <div className="w-full mb-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-semibold py-4">Top Rated</h2>
-                <span><Button className="text-xl" variant="link">See All</Button> </span>
-              </div>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Top Rated' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span></div>
               <ScrollArea className="w-full overflow-x-auto">
                 {products.filter((product) => product.label === 'Top Rated').length === 0 ? (
                   <p className="text-center text-gray-500">No products found in this label.</p>
