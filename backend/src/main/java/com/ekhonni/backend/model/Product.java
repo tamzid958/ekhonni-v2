@@ -50,8 +50,11 @@ public class Product extends BaseEntity<Long> {
     @ManyToOne(optional = false)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
-    
-    private List<String> imagePaths = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<ProductImage> images;
+
 
 
 }

@@ -56,6 +56,31 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
+    @ExceptionHandler(PrivilegeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePrivilegeNotFoundException(PrivilegeNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+    }
+
+    @ExceptionHandler(RoleCannotBeDeletedException.class)
+    public ResponseEntity<ErrorResponse> handleRoleCannotBeDeletedException(RoleCannotBeDeletedException ex) {
+        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
+    }
+
+    @ExceptionHandler(RoleAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleRoleAlreadyExistsException(RoleAlreadyExistsException ex) {
+        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
+    }
+
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
@@ -78,4 +103,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(Exception ex) {
         return ResponseEntity.status(400).body("Error: " + ex.getMessage());
     }
+
+
 }

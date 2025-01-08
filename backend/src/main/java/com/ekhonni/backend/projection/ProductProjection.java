@@ -8,12 +8,11 @@
 package com.ekhonni.backend.projection;
 
 import com.ekhonni.backend.enums.ProductCondition;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.ekhonni.backend.model.ProductImage;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -30,5 +29,20 @@ public class ProductProjection {
     private ProductCondition condition;
     private Long categoryId;
     private String categoryName;
-    private List<String> imagePaths;
+    private List<ProductImage> images= new ArrayList<>();
+
+    public ProductProjection(Long id, Double price, String name, String description,
+                            LocalDateTime createdAt, LocalDateTime updatedAt,
+                            ProductCondition condition, Long categoryId,
+                            String categoryName) {
+        this.id = id;
+        this.price = price;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.condition = condition;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
 }

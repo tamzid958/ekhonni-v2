@@ -46,8 +46,7 @@ public class PaymentService {
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
 
-    @Modifying
-    @Transactional
+
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "retryPayment")
     public PaymentInitiationResponse initiatePayment(Long bidId) throws Exception {
@@ -91,11 +90,15 @@ public class PaymentService {
         }
 
         if (e instanceof MaxRetriesExceededException) {
+            Transaction transaction = transactionService.findByBidId(bidId)
+                    .orElseThrow(InvalidTransactionException::new);
+            transactionService.updateStatus(transaction, TransactionStatus.INITIATION_FAILED);
+
             log.warn("All retries failed for bid {}: {}", bidId, e.getMessage());
             throw new InitiatePaymentException("Payment initiation failed");
         }
 
-        log.error("Unexpected error for bid {}", bidId, e);
+        log.error("Unexpected payment error for bid {}: {}", bidId, e.getMessage());
         throw new InitiatePaymentException("Payment processing failed");
     }
 
@@ -113,8 +116,7 @@ public class PaymentService {
                 .body(InitialResponse.class);
     }
 
-    @Modifying
-    @Transactional
+
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
         String origin = request.getHeader("Origin");
         String referer = request.getHeader("Referer");
@@ -132,23 +134,31 @@ public class PaymentService {
 
         if (ipnResponse == null) {
             log.warn("Null ipn response in payment");
-            throw new InvalidTransactionException();
+            return;
         }
+
         IpnResponse response = util.extractIpnResponse(ipnResponse);
         log.info("Ipn response: {}", response);
 
         Transaction transaction = getTransactionFromResponse(response.getTranId());
 
         if (!ipnHashVerify(ipnResponse)) {
-            updateFailedTransactionStatus(transaction, "INVALID");
+            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
             log.warn("IPN signature verification failed for transaction : {}", ipnResponse.get("tran_id"));
             throw new InvalidTransactionException();
         }
 
-        // implement FAILED, SUCCESS_WITH_RISK
+        String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
+        if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
+            transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
+            log.warn("Transaction; {} status: {}", response.getTranId(), status);
+            return;
+        }
+
+        // handle risk_level = SUCCESS_WITH_RISK
 
         if (!verifyPaymentResponse(transaction, response)) {
-            updateFailedTransactionStatus(transaction, response.getStatus());
+            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
             log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
             throw new InvalidTransactionException();
         }
@@ -175,6 +185,7 @@ public class PaymentService {
     }
 
     private boolean validate(String validationId) {
+
         ValidationResponse response = getValidationResponse(validationId);
         if (response == null) {
             return false;
@@ -222,9 +233,7 @@ public class PaymentService {
     }
 
     private boolean verifyPaymentResponse(Transaction transaction, PaymentResponse response) {
-        if (!("VALID".equals(response.getStatus()) || "VALIDATED".equals(response.getStatus()))) {
-            return false;
-        }
+
         try {
             double currencyRate = Double.parseDouble(response.getCurrencyRate());
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());

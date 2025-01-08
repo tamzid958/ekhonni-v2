@@ -1,0 +1,110 @@
+/**
+ * Author: Rifat Shariar Sakil
+ * Time: 8:45 PM
+ * Date: 12/3/2024
+ * Project Name: ekhonni-v2
+ */
+
+package com.ekhonni.backend.service;
+
+
+import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.dto.CategorySubCategoryDTO;
+import com.ekhonni.backend.dto.CategoryUpdateDTO;
+import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.projection.CategoryProjection;
+import com.ekhonni.backend.repository.CategoryRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@Slf4j
+public class CategoryService extends BaseService<Category, Long> {
+
+    CategoryRepository categoryRepository;
+
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        super(categoryRepository);
+        this.categoryRepository = categoryRepository;
+    }
+
+    public Category getByName(String name) {
+        return categoryRepository.findByName(name);
+    }
+
+
+    // done
+    public void save(CategoryDTO categoryDTO) {
+        Category parentCategory = null;
+        if (categoryDTO.parentCategory() != null) parentCategory = getByName(categoryDTO.parentCategory());
+        if (categoryDTO.parentCategory() != null && parentCategory == null)
+            throw new RuntimeException("parent category by this name not found");
+        Category category = new Category(
+                categoryDTO.name(),
+                true,
+                parentCategory
+        );
+        categoryRepository.save(category);
+    }
+
+
+    //done
+    public CategorySubCategoryDTO getSubCategories(String name) {
+        Category category = getByName(name);
+        if (category == null) {
+            throw new RuntimeException("No category found by this name");
+        }
+
+        List<String> subCategoryNames = categoryRepository.findAllByParentCategoryAndActive(category, true)
+                .stream()
+                .map(CategoryProjection::getName)
+                .collect(Collectors.toList());
+
+        return new CategorySubCategoryDTO(category.getName(), subCategoryNames);
+    }
+
+
+    public List<CategorySubCategoryDTO> getAllCategories() {
+        List<Category> rootCat = categoryRepository.findByParentCategoryIsNullAndActive(true);
+        System.out.println(rootCat);
+        return categoryRepository.findByParentCategoryIsNullAndActive(true).stream()
+                .map(rootCategory -> {
+                    List<String> subCategoryNames = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true).stream()
+                            .map(CategoryProjection::getName)
+                            .collect(Collectors.toList());
+                    return new CategorySubCategoryDTO(rootCategory.getName(), subCategoryNames);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    public void delete(String name) {
+        Category category = getByName(name);
+        if (category == null) {
+            throw new RuntimeException("category not found");
+        }
+        categoryRepository.deleteCategoryById(category.getId());
+    }
+
+//    public List<CategoryProjection> getFeatured() {
+//        return categoryRepository.findAllByParentCategoryIsNull();
+//    }
+
+    @Transactional
+    public void updateCategory(CategoryUpdateDTO categoryUpdateDTO) {
+        Category category = getByName(categoryUpdateDTO.name());
+        if (category == null) {
+            throw new RuntimeException("no such category found by this name");
+        }
+        category.setActive(categoryUpdateDTO.active());
+        categoryRepository.save(category);
+
+    }
+
+
+}

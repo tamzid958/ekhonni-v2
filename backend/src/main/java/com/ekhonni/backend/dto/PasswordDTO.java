@@ -7,5 +7,7 @@ import jakarta.validation.constraints.NotBlank;
  * Date: 12/22/24
  */
 public record PasswordDTO(@NotBlank(message = "password cannot be blank")
-                          String password) {
+                          String currentPassword,
+                          @NotBlank(message = "password cannot be blank")
+                          String newPassword) {
 }

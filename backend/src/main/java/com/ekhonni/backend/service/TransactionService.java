@@ -44,8 +44,8 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     @Modifying
     @Transactional
-    public void updateStatus(Transaction transaction, String status) {
-        transaction.setStatus(TransactionStatus.valueOf(status));
+    public void updateStatus(Transaction transaction, TransactionStatus status) {
+        transaction.setStatus(status);
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +26,8 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {
-        
+    @PreAuthorize("@userService.isActive(#authDTO.email())")
+    public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 
@@ -34,10 +35,11 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> create(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
 
         return ResponseEntity.ok(authService.create(userDTO));
 
     }
+
 
 }

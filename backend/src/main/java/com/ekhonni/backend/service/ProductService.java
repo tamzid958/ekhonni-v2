@@ -12,6 +12,7 @@ import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +58,13 @@ public class ProductService extends BaseService<Product, Long> {
         try {
             User user = AuthUtil.getAuthenticatedUser();
             Category category = categoryRepository.findByName(productDTO.category());
+
             List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.images());
+            List<ProductImage> images = new ArrayList<>();
+            for (String imagePath : imagePaths) {
+                ProductImage image = new ProductImage(imagePath);
+                images.add(image);
+            }
 
 
             Product product = new Product(
@@ -67,10 +76,9 @@ public class ProductService extends BaseService<Product, Long> {
                     productDTO.condition(),
                     category,
                     user,
-                    imagePaths
+                    images
             );
 
-            System.out.println(product);
             productRepository.save(product);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -101,8 +109,6 @@ public class ProductService extends BaseService<Product, Long> {
         List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
-
-
         return productRepository.findAllFiltered(spec,pageable);
     }
 
