@@ -5,13 +5,19 @@ import {Button} from "@/components/ui/button";
 import {ShoppingCart} from "lucide-react"
 import Link from "next/link";
 
-export function QuickBid() {
+type Props = {
+    title?: string;
+}
+
+export function QuickBid({title}: Props) {
     return (
         <div className="bg-brand-bright pl-40 pr-40 pt-10 pb-16 ">
             <div>
-                <h2 className="flex justify-center text-4xl font-sans text-black">START YOUR BIDDING HERE</h2>
+                <h2 className="flex justify-center text-4xl font-sans text-black">{title}</h2>
                 <Link href="/categoryProducts">
-                    <Button variant="link" className="text-xl text-bold ">SEE ALL</Button>
+                    <Button variant="link"
+                            className="text-xl text-bold border-2 border-black bg-brand-bright p-1">SEE
+                        ALL</Button>
                 </Link>
             </div>
             <Carousel

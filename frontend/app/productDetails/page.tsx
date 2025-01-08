@@ -4,6 +4,10 @@ import {CakeSlice, Star} from 'lucide-react';
 import {Button} from "@/components/ui/button";
 import {QuickBid} from "@/components/QuickBid";
 
+//product condition stars -> image or icons?
+//border and bg in the product description??
+//fixed div on the right div
+
 export default function productDetails() {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -77,55 +81,59 @@ export default function productDetails() {
                     </div>
                 </div>
             </div>
-            <hr/>
-            <div className="flex flex-col pt-8 pl-40">
-                <div className="text-4xl font-bold">PRODUCT DESCRIPTION</div>
-                <div>
-                    <div className="text-xl font-bold pt-4">
-                        Description
-                    </div>
-                    <div className="pt-4">
-                        Hermès Vert dau Matte Alligator Birkin 20 Sellier Gold Hardware, 2023
-                    </div>
-                    <ul className="list-disc list-inside space-y-1 pt-1">
-                        <li>The interior is lined in a tonal Chèvre leather</li>
-                        <li>Includes lock, two keys, clochette, clochette dust bag, felt protector, dust bag, and box
-                        </li>
-                        <li>This item is final sale and not eligible for return</li>
-                    </ul>
 
-                    <div className="text-xl font-bold pt-4">
-                        <div>
-                            Condition Report
+            <div className="flex flex-col pt-8 pl-40 pr-40">
+                <div className="flex justify-center text-4xl pb-4">PRODUCT DESCRIPTION</div>
+                <div className="flex flex-row border-black border-[1px] rounded-2xl p-6 w-full ">
+                    <div className="flex flex-col w-3/4 pl-4">
+                        <div className="text-xl font-bold">
+                            Description
                         </div>
-                        <div className="pl-0 pb-2 inline-flex">
-                            <Star className="w-[1.25rem] h-[1.25rem]"/>
-                            <Star className="w-[1.25rem] h-[1.25rem]"/>
-                            <Star className="w-[1.25rem] h-[1.25rem]"/>
-                            <Star className="w-[1.25rem] h-[1.25rem]"/>
-                            <Star className="w-[1.25rem] h-[1.25rem]"/>
+                        <div className="pt-4">
+                            Hermès Vert dau Matte Alligator Birkin 20 Sellier Gold Hardware, 2023
+                        </div>
+                        <ul className="list-disc list-inside space-y-1 pt-1">
+                            <li>The interior is lined in a tonal Chèvre leather</li>
+                            <li>Includes lock, two keys, clochette, clochette dust bag, felt protector, dust bag, and
+                                box
+                            </li>
+                            <li>This item is final sale and not eligible for return</li>
+                        </ul>
+                        <div className="text-xl font-bold pt-4">
+                            <div className="pb-4">
+                                Condition Report
+                            </div>
+                            <div className="pl-0 pb-2 inline-flex">
+                                <Star className="w-[1.25rem] h-[1.25rem]"/>
+                                <Star className="w-[1.25rem] h-[1.25rem]"/>
+                                <Star className="w-[1.25rem] h-[1.25rem]"/>
+                                <Star className="w-[1.25rem] h-[1.25rem]"/>
+                                <Star className="w-[1.25rem] h-[1.25rem]"/>
+                            </div>
+                        </div>
+                        <div className="p-0">
+                            No visible signs of wear. Plastic on hardware.
                         </div>
                     </div>
-                    <div className="p-0">
-                        No visible signs of wear. Plastic on hardware.
-                    </div>
 
-                    <div className="text-xl font-bold pt-4">
-                        YEAR
-                    </div>
-                    <div className="pt-4">
-                        2024
-                    </div>
+                    <div className="flex flex-col w-1/4">
+                        <div className="text-xl font-bold pt-4">
+                            YEAR
+                        </div>
+                        <div className="pt-4">
+                            2024
+                        </div>
 
-                    <div className="text-xl font-bold pt-4 pb-4">
-                        Dimensions
+                        <div className="text-xl font-bold pt-4 pb-4">
+                            Dimensions
+                        </div>
+                        <div className="">Height: 6.1 inches / 15.5 cm</div>
+                        <div className="">Width: 7.87 inches / 20 cm</div>
+                        <div className="">Depth: 4.33 inches / 11 cm</div>
                     </div>
-                    <div className="">Height: 6.1 inches / 15.5 cm</div>
-                    <div className="">Width: 7.87 inches / 20 cm</div>
-                    <div className="">Depth: 4.33 inches / 11 cm</div>
                 </div>
             </div>
-            <QuickBid/>
+            <QuickBid title={"SIMILAR PRODUCTS"}/>
         </div>
     );
 }
