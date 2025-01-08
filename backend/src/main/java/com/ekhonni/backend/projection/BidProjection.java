@@ -4,8 +4,14 @@ import java.util.UUID;
 
 public interface BidProjection {
     Long getId();
+
     Long getProductId();
+
     UUID getBidderId();
-    double getAmount();
+
+    String getBidderName();
+
+    Double getAmount();
+
     String getStatus();
 }

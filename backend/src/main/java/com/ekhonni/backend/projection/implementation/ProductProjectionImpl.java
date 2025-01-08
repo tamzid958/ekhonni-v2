@@ -10,7 +10,10 @@ package com.ekhonni.backend.projection.implementation;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.projection.ProductProjection;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +33,8 @@ public class ProductProjectionImpl implements ProductProjection {
     private ProductCondition condition;
     private Long categoryId;
     private String categoryName;
-    private List<ProductImage> images= new ArrayList<>();
+    private List<ProductImage> images = new ArrayList<>();
+    private List<BidProjectionImpl> bids = new ArrayList<>();
 
     public ProductProjectionImpl(Long id, Double price, String name, String description,
                                  LocalDateTime createdAt, LocalDateTime updatedAt,

@@ -4,7 +4,10 @@ import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.BidStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -31,6 +34,10 @@ public class Bid extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BidStatus status;
+
+    public String getBidderName() {
+        return bidder.getName();
+    }
 
 }
 
