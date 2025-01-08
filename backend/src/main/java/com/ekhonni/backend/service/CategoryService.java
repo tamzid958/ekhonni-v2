@@ -11,8 +11,9 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.CategoryDTO;
 import com.ekhonni.backend.dto.CategorySubCategoryDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
+import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.projection.viewer.ViewerCategoryProjection;
+import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,6 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    // done
     public void save(CategoryDTO categoryDTO) {
         Category parentCategory = null;
         if (categoryDTO.parentCategory() != null)
@@ -50,23 +50,20 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    //done
-    public CategorySubCategoryDTO getSubCategories(String name) {
+    public CategorySubCategoryDTO getSub(String name) {
         Category parent = categoryRepository.findByName(name);
-        if (parent == null) throw new RuntimeException("no category found by this name");
-
-        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), new ArrayList<>());
+        if (parent == null) throw new CategoryNotFoundException();
+        List<String> sequenceOfCategory = getSequence(name);
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
-
         for (ViewerCategoryProjection child : children) {
             categorySubCategoryDTO.getSubCategories().add(child.getName());
         }
-
         return categorySubCategoryDTO;
     }
 
 
-    public List<CategorySubCategoryDTO> getAllCategories() {
+    public List<CategorySubCategoryDTO> getAllCategorySubCategoryDTO() {
 
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
         List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
@@ -86,7 +83,7 @@ public class CategoryService extends BaseService<Category, Long> {
     public void delete(String name) {
         Category category = categoryRepository.findByName(name);
         if (category == null) {
-            throw new RuntimeException("category not found");
+            throw new CategoryNotFoundException();
         }
         categoryRepository.deleteCategoryById(category.getId());
     }
@@ -96,23 +93,34 @@ public class CategoryService extends BaseService<Category, Long> {
     public void update(CategoryUpdateDTO categoryUpdateDTO) {
         Category category = categoryRepository.findByName(categoryUpdateDTO.name());
         if (category == null) {
-            throw new RuntimeException("no such category found by this name");
+            throw new CategoryNotFoundException();
         }
         category.setActive(categoryUpdateDTO.active());
         categoryRepository.save(category);
 
     }
 
-    public List<String> getChainCategories(String name) {
+    public List<String> getSequence(String name) {
 
         Category category = categoryRepository.findByNameAndActive(name, true);
-        List<String> chain = new ArrayList<>();
-        chain.add(category.getName());
+        if (category == null) {
+            throw new CategoryNotFoundException();
+        }
+        List<String> sequence = new ArrayList<>();
+        sequence.add(category.getName());
         while (category.getParentCategory() != null) {
-            chain.add(category.getParentCategory().getName());
+            sequence.add(category.getParentCategory().getName());
             category = categoryRepository.findByNameAndActive(category.getParentCategory().getName(), true);
         }
-        return chain;
+        return sequence;
+    }
+
+
+    public List<Long> getActiveCategoryIds(String name) {
+        Category category = categoryRepository.findByName(name);
+        if (category == null) throw new CategoryNotFoundException();
+        Long categoryId = category.getId();
+        return categoryRepository.findSubCategoryIds(categoryId);
     }
 
 

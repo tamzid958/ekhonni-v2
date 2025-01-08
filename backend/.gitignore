@@ -87,3 +87,7 @@ nbdist/
 # Ignore backups and caches
 *.bak
 *.cache
+
+
+# Ignore trash
+src/main/java/com/ekhonni/backend/trash/
