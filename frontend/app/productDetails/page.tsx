@@ -89,7 +89,7 @@ export default function productDetails() {
 
             <div className="flex flex-col pt-8 pl-40 pr-40">
                 <div className="flex justify-center text-4xl pb-4">PRODUCT DESCRIPTION</div>
-                <div className="flex flex-row border-black border-[2px] rounded-2xl p-6 w-full ">
+                <div className="flex flex-row border-gray-400 border-[1px] rounded-2xl p-6 w-full ">
                     <div className="flex flex-col w-3/4 pl-4">
                         <div className="text-xl font-bold">
                             Description
