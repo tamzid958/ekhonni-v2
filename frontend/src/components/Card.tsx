@@ -32,7 +32,7 @@ export function CardDemo({ title, description, img, price }: data) {
       <CardFooter className="flex-col items-start">
         <CardTitle className="mb-2 text-xl">{title}</CardTitle>
         <CardDescription className="text-md">{description}</CardDescription>
-        <CardDescription className="text-lg mt-2">${price}</CardDescription>
+        <CardDescription className="text-lg mt-2">৳ {price}</CardDescription>
       </CardFooter>
     </Card>
   );

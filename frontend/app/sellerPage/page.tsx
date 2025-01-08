@@ -1,6 +1,8 @@
 import React from 'react';
 const SellerPage: React.FC = () => {
-  return <div>Welcome to the seller page!</div>;
+  return <div>
+
+  </div>;
 };
 
 export default SellerPage;
