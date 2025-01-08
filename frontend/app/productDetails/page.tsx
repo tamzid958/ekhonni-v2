@@ -78,13 +78,18 @@ export default function productDetails() {
                             <div className="font-bold w-40">DELIEVERY FROM:</div>
                             <div className="pl-2 italic">DHAKA</div>
                         </div>
+                        <br/>
+                        <div className="pt-2 inline-flex">
+                            <div className="font-bold w-40">POST CREATED AT:</div>
+                            <div className="pl-2 italic">7 JANUARY 2025</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="flex flex-col pt-8 pl-40 pr-40">
                 <div className="flex justify-center text-4xl pb-4">PRODUCT DESCRIPTION</div>
-                <div className="flex flex-row border-black border-[1px] rounded-2xl p-6 w-full ">
+                <div className="flex flex-row border-black border-[2px] rounded-2xl p-6 w-full ">
                     <div className="flex flex-col w-3/4 pl-4">
                         <div className="text-xl font-bold">
                             Description
