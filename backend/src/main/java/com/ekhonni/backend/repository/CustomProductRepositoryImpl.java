@@ -9,7 +9,7 @@ package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductImage;
-import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -21,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -31,10 +30,10 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
     private EntityManager entityManager;
 
     @Override
-    public Page<ProductProjection> findAllFiltered(Specification<Product> spec, Pageable pageable) {
+    public Page<ProductProjectionImpl> findAllFiltered(Specification<Product> spec, Pageable pageable) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductProjection> query = cb.createQuery(ProductProjection.class);
+        CriteriaQuery<ProductProjectionImpl> query = cb.createQuery(ProductProjectionImpl.class);
         Root<Product> root = query.from(Product.class);
 
 
@@ -42,7 +41,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         query.where(predicate);
 
         query.select(cb.construct(
-                ProductProjection.class,
+                ProductProjectionImpl.class,
                 root.get("id"),
                 root.get("price"),
                 root.get("name"),
@@ -56,7 +55,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         ));
 
 
-        TypedQuery<ProductProjection> typedQuery = entityManager.createQuery(query);
+        TypedQuery<ProductProjectionImpl> typedQuery = entityManager.createQuery(query);
 
         int page = Math.max(1,pageable.getPageNumber());
         int size = Math.max(1,pageable.getPageSize());
@@ -64,11 +63,11 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         int firstResult = (page-1) * size;
         typedQuery.setFirstResult(firstResult);
         typedQuery.setMaxResults(size);
-        List<ProductProjection> products = typedQuery.getResultList();
+        List<ProductProjectionImpl> products = typedQuery.getResultList();
 
 
         // fetch images of fetched products
-        for (ProductProjection product : products) {
+        for (ProductProjectionImpl product : products) {
             Long productId = product.getId();
             List<ProductImage> images = getImagesOfProduct(productId);
             product.setImages(images);

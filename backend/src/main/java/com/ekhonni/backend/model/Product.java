@@ -56,6 +56,13 @@ public class Product extends BaseEntity<Long> {
     private List<ProductImage> images;
 
 
+    public Long getCategoryId() {
+        return category.getId();
+    }
+    public String getCategoryName() {
+        return category.getName();
+    }
+
 
 }
 

@@ -8,19 +8,16 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 
-import java.util.List;
-
-
 @Repository
 public interface CustomProductRepository {
 
-    Page<ProductProjection> findAllFiltered(Specification<Product> spec, Pageable pageable);
+    Page<ProductProjectionImpl> findAllFiltered(Specification<Product> spec, Pageable pageable);
 
 }

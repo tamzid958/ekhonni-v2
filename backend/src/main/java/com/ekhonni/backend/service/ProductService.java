@@ -14,7 +14,7 @@ import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
@@ -105,12 +105,15 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public Page<ProductProjection> getAllFiltered(ProductFilter filter) {
+    public Page<ProductProjectionImpl> getAllFiltered(ProductFilter filter) {
         List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
         return productRepository.findAllFiltered(spec,pageable);
     }
+
+
+
 
 
 }
