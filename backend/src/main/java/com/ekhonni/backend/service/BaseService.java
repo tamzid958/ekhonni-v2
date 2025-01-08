@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.exception.EntityNotFoundException;
 import com.ekhonni.backend.repository.BaseRepository;
+import com.ekhonni.backend.util.BeanUtilHelper;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import java.util.Optional;
  * Author: Asif Iqbal
  * Date: 12/16/24
  */
+
 
 @NoArgsConstructor
 public abstract class BaseService<T, ID> {
@@ -98,6 +100,7 @@ public abstract class BaseService<T, ID> {
         return repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
     }
+
     public <P> P getIncludingDeleted(ID id, Class<P> projection) {
         return repository.findById(id, projection)
                 .orElseThrow(EntityNotFoundException::new);
@@ -164,7 +167,7 @@ public abstract class BaseService<T, ID> {
     public <D> D update(ID id, D dto) {
         T entity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
-        BeanUtils.copyProperties(dto, entity);
+        BeanUtils.copyProperties(dto, entity, BeanUtilHelper.getBlankPropertyNames(dto));
         repository.save(entity);
         return dto;
     }

@@ -9,6 +9,7 @@ import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,8 @@ public class AuthController {
     PasswordResetService passwordResetService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody AuthDTO authDTO) {
+    @PreAuthorize("@userService.isActive(#authDTO.email())")
+    public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
 
 
         return ResponseEntity.ok(authService.signIn(authDTO));
@@ -37,7 +39,7 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> create(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
 
         return ResponseEntity.ok(authService.create(userDTO));
 
@@ -57,4 +59,5 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
         return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
     }
+
 }

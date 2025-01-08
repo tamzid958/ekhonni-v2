@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ekhonni
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_CACHE_TYPE: redis
+      SPRING_CACHE_HOST: cache
+      SPRING_CACHE_PORT: 6379
+      SPRING_MAIL_HOST: smtp.mailersend.net
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: MS_KQsFN4@trial-351ndgw08654zqx8.mlsender.net
+      SPRING_MAIL_PASSWORD: kinbfc4FVTcvN4hH
+    depends_on:
+      db:
+        condition: service_healthy  # Add health check dependency
+      cache:
+        condition: service_healthy  # Add health check dependency
+    restart: unless-stopped  # Add restart policy
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: ekhonni
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck: # Add healthcheck
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d ekhonni" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:7
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    healthcheck: # Add healthcheck
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

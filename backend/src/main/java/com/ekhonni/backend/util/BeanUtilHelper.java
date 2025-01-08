@@ -12,16 +12,20 @@ import java.util.Set;
  */
 public class BeanUtilHelper {
 
-    // Utility method to get names of null properties in dto
-    public static String[] getNullPropertyNames(Object source) {
+    // Utility method to get names of properties that are blank (for String fields)
+    public static String[] getBlankPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
-        Set<String> nullPropertyNames = new HashSet<>();
+        Set<String> blankPropertyNames = new HashSet<>();
+
         for (java.beans.PropertyDescriptor pd : pds) {
-            if (src.getPropertyValue(pd.getName()) == null) {
-                nullPropertyNames.add(pd.getName());
+            // Check for blank values (for String fields)
+            if (src.getPropertyValue(pd.getName()) instanceof String &&
+                    ((String) src.getPropertyValue(pd.getName())).isBlank()) {
+                blankPropertyNames.add(pd.getName());
             }
         }
-        return nullPropertyNames.toArray(new String[0]);
+
+        return blankPropertyNames.toArray(new String[0]);
     }
 }

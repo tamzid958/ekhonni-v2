@@ -22,18 +22,18 @@ INSERT INTO users (id, name, email, password, role, phone, address, created_at, 
 
 -- Insert Accounts (assuming user IDs from above)
 INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
-(1, 1000.00, 'ACTIVE', NOW(), NOW()),
-(2, 1500.00, 'ACTIVE', NOW(), NOW()),
-(3, 2000.00, 'ACTIVE', NOW(), NOW()),
-(4, 750.00, 'ACTIVE', NOW(), NOW()),
-(5, 1250.00, 'ACTIVE', NOW(), NOW());
+(101, 1000.00, 'ACTIVE', NOW(), NOW()),
+(102, 1500.00, 'ACTIVE', NOW(), NOW()),
+(103, 2000.00, 'ACTIVE', NOW(), NOW()),
+(104, 750.00, 'ACTIVE', NOW(), NOW()),
+(105, 1250.00, 'ACTIVE', NOW(), NOW());
 
 -- Update users with account IDs
-UPDATE users SET account_id = 1 WHERE email = 'john@example.com';
-UPDATE users SET account_id = 2 WHERE email = 'jane@example.com';
-UPDATE users SET account_id = 3 WHERE email = 'admin@example.com';
-UPDATE users SET account_id = 4 WHERE email = 'sarah@example.com';
-UPDATE users SET account_id = 5 WHERE email = 'mike@example.com';
+UPDATE users SET account_id = 101 WHERE email = 'john@example.com';
+UPDATE users SET account_id = 102 WHERE email = 'jane@example.com';
+UPDATE users SET account_id = 103 WHERE email = 'admin@example.com';
+UPDATE users SET account_id = 104 WHERE email = 'sarah@example.com';
+UPDATE users SET account_id = 105 WHERE email = 'mike@example.com';
 
 -- Insert Products
 INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, image_path, created_at, updated_at) VALUES

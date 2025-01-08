@@ -76,7 +76,6 @@ public class OpenApiConfig {
                 .build();
     }
 
-
     @Bean
     public GroupedOpenApi adminApi() {
         return GroupedOpenApi.builder()

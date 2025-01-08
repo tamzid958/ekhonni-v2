@@ -7,10 +7,10 @@
 
 package com.ekhonni.backend.dto;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 public record CategoryDTO(
-        @Column(nullable = false, unique = true)
+        @NotBlank
         String name,
         String parentCategory
 ) {

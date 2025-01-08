@@ -5,7 +5,9 @@ HELP.md.gradle
 
 #Docker
 Dockerfile
-docker-compose.yml
+docker-compose.yaml
+.tar
+/backend-app-image/
 
 # Ignore folders
 .idea/
@@ -85,3 +87,7 @@ nbdist/
 # Ignore backups and caches
 *.bak
 *.cache
+
+
+# Ignore trash
+src/main/java/com/ekhonni/backend/trash/
