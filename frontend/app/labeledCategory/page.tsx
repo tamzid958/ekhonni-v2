@@ -37,7 +37,7 @@ export default async function labeledCategory({ searchParams }: Props) {
   }
 
   return (
-    <div className="bg-gray-100 flex flex-col">
+    <div className="bg-gray-100 flex-1 min-h-screen flex-col">
       <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden flex-grow">
         <h1 className="text-5xl font-bold my-12">
           {category} Category : {label} Products
