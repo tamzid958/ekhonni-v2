@@ -248,13 +248,263 @@ const mockData = [
     category: 'Travel & Nature',
     label: 'Best Selling',
   },
+  {
+    id: '26',
+    title: 'Coastal Escape',
+    description:
+      'Discover the beauty of the coastline with pristine beaches, dramatic cliffs, and a peaceful atmosphere. Perfect for those seeking a tranquil retreat by the sea.',
+    img: 'https://via.placeholder.com/415',
+    price: 180,
+    category: 'Travel & Nature',
+    label: 'Best Selling',
+  },
+  {
+    id: '27',
+    title: 'Mountain Trek',
+    description:
+      'Embark on an exhilarating trek through rugged mountains, with breathtaking views and challenging terrain. A journey for the adventurous at heart.',
+    img: 'https://via.placeholder.com/416',
+    price: 220,
+    category: 'Travel & Nature',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '28',
+    title: 'Seaside Cottage',
+    description:
+      'Stay in a cozy cottage by the sea, offering spectacular ocean views and a peaceful escape from the hustle and bustle of everyday life.',
+    img: 'https://via.placeholder.com/417',
+    price: 250,
+    category: 'Travel & Nature',
+    label: 'Top Rated',
+  },
+  {
+    id: '29',
+    title: 'Luxury Watch',
+    description:
+      'A beautifully designed luxury watch, offering sophistication, precision, and timeless elegance. The perfect accessory for any occasion.',
+    img: 'https://via.placeholder.com/418',
+    price: 300,
+    category: 'Accessories',
+    label: 'Best Selling',
+  },
+  {
+    id: '30',
+    title: 'Smart Home Hub',
+    description:
+      'A smart home hub that allows you to control your entire home with a simple voice command. The future of home automation at your fingertips.',
+    img: 'https://via.placeholder.com/419',
+    price: 180,
+    category: 'Electronics',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '31',
+    title: 'Urban Jungle',
+    description:
+      'A lush indoor plant collection that brings a touch of nature into your home, creating a calming and refreshing environment.',
+    img: 'https://via.placeholder.com/420',
+    price: 100,
+    category: 'Home Decor',
+    label: 'Top Rated',
+  },
+  {
+    id: '32',
+    title: 'Antique Painting',
+    description:
+      'A rare and exquisite antique painting that adds historical charm and artistic beauty to any collection or home decor.',
+    img: 'https://via.placeholder.com/421',
+    price: 250,
+    category: 'Antiques',
+    label: 'Best Selling',
+  },
+  {
+    id: '33',
+    title: 'Digital Camera',
+    description:
+      'Capture stunning photos with this high-performance digital camera, perfect for both professionals and hobbyists.',
+    img: 'https://via.placeholder.com/422',
+    price: 350,
+    category: 'Electronics',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '34',
+    title: 'Elegant Necklace',
+    description:
+      'A beautifully crafted necklace made from precious materials, offering elegance and charm for any occasion.',
+    img: 'https://via.placeholder.com/423',
+    price: 120,
+    category: 'Jewelry',
+    label: 'Top Rated',
+  },
+  {
+    id: '35',
+    title: 'Winter Wonderland',
+    description:
+      'Experience the magic of winter with snow-capped mountains, serene landscapes, and festive holiday cheer. The ultimate winter getaway.',
+    img: 'https://via.placeholder.com/424',
+    price: 160,
+    category: 'Travel & Nature',
+    label: 'Best Selling',
+  },
+  {
+    id: '36',
+    title: 'Designer Sofa',
+    description:
+      'A chic and comfortable designer sofa that complements any modern living room, offering style and relaxation.',
+    img: 'https://via.placeholder.com/425',
+    price: 500,
+    category: 'Home Decor',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '37',
+    title: 'Gourmet Coffee Set',
+    description:
+      'Indulge in the finest coffee blends with this gourmet coffee set. Perfect for coffee lovers who appreciate high-quality beans and expert brewing.',
+    img: 'https://via.placeholder.com/426',
+    price: 90,
+    category: 'Food & Drink',
+    label: 'Top Rated',
+  },
+  {
+    id: '38',
+    title: 'Vintage Car',
+    description:
+      'Own a piece of automotive history with this classic vintage car. A collector’s dream, featuring elegant design and powerful performance.',
+    img: 'https://via.placeholder.com/427',
+    price: 35000,
+    category: 'Automobiles',
+    label: 'Best Selling',
+  },
+  {
+    id: '39',
+    title: 'Outdoor Adventure Gear',
+    description:
+      'Everything you need for the perfect outdoor adventure, including tents, sleeping bags, and backpacks designed for comfort and durability.',
+    img: 'https://via.placeholder.com/428',
+    price: 150,
+    category: 'Sports & Outdoors',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '40',
+    title: 'Yoga Mat',
+    description:
+      'A high-quality yoga mat designed for comfort and stability during your practice, available in various colors.',
+    img: 'https://via.placeholder.com/429',
+    price: 45,
+    category: 'Fitness',
+    label: 'Top Rated',
+  },
+  {
+    id: '41',
+    title: 'Classic Piano',
+    description:
+      'A grand piano that combines classical design with exceptional sound, perfect for music lovers and professional musicians alike.',
+    img: 'https://via.placeholder.com/430',
+    price: 5000,
+    category: 'Music Instruments',
+    label: 'Best Selling',
+  },
+  {
+    id: '42',
+    title: 'Smart Fitness Tracker',
+    description:
+      'Monitor your health and fitness goals with this smart fitness tracker, offering advanced features and a sleek design.',
+    img: 'https://via.placeholder.com/431',
+    price: 120,
+    category: 'Electronics',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '43',
+    title: 'Bohemian Rug',
+    description:
+      'A vibrant and unique bohemian rug that adds character and warmth to your living space, made from high-quality materials.',
+    img: 'https://via.placeholder.com/432',
+    price: 180,
+    category: 'Home Decor',
+    label: 'Top Rated',
+  },
+  {
+    id: '44',
+    title: 'Smart Glasses',
+    description:
+      'A pair of stylish smart glasses that combine fashion and technology, offering hands-free control and augmented reality features.',
+    img: 'https://via.placeholder.com/433',
+    price: 300,
+    category: 'Electronics',
+    label: 'Best Selling',
+  },
+  {
+    id: '45',
+    title: 'Ocean Breeze',
+    description:
+      'Breathe in the refreshing ocean breeze while enjoying a relaxing beach getaway. A perfect destination for unwinding and rejuvenation.',
+    img: 'https://via.placeholder.com/434',
+    price: 220,
+    category: 'Travel & Nature',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '46',
+    title: 'Crystal Glassware',
+    description:
+      'Exquisite crystal glassware that adds elegance to your dining table. Perfect for special occasions or as a gift for loved ones.',
+    img: 'https://via.placeholder.com/435',
+    price: 150,
+    category: 'Home Decor',
+    label: 'Top Rated',
+  },
+  {
+    id: '47',
+    title: 'Electric Guitar',
+    description:
+      'A high-quality electric guitar that offers exceptional sound and playability, ideal for both beginners and seasoned musicians.',
+    img: 'https://via.placeholder.com/436',
+    price: 250,
+    category: 'Music Instruments',
+    label: 'Best Selling',
+  },
+  {
+    id: '48',
+    title: 'Luxury Handbag',
+    description:
+      'A luxurious handbag made from premium materials, offering both style and functionality. A timeless accessory for any fashion-forward individual.',
+    img: 'https://via.placeholder.com/437',
+    price: 600,
+    category: 'Fashion',
+    label: 'Limited Time Deals',
+  },
+  {
+    id: '49',
+    title: 'Sailing Adventure',
+    description:
+      'Set sail on a thrilling adventure across the open sea, exploring new destinations and experiencing the beauty of the ocean.',
+    img: 'https://via.placeholder.com/438',
+    price: 300,
+    category: 'Travel & Nature',
+    label: 'Top Rated',
+  },
+  {
+    id: '50',
+    title: 'Gourmet Chocolate Box',
+    description:
+      'Indulge in an assortment of the finest gourmet chocolates, carefully curated to provide an exceptional tasting experience.',
+    img: 'https://via.placeholder.com/439',
+    price: 80,
+    category: 'Food & Drink',
+    label: 'Best Selling',
+  },
 ];
 
 export const fetchAllProducts = (): typeof mockData => {
   return mockData;
 };
 
-// Fetch products by category
+// Fetch products by categoryProducts
 export const fetchProductsByCategory = (category: string): typeof mockData => {
   if (category === 'All') {
     return mockData;

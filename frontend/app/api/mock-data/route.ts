@@ -1,8 +1,14 @@
-import { fetchAllProducts, fetchProductById, fetchProductsByCategory } from '../../_data/products';
+import {
+  fetchAllProducts,
+  fetchProductById,
+  fetchProductsByCategory,
+  fetchProductsByLabel,
+} from '../../_data/products';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get('category');
+  const label = searchParams.get('label');
   const id = searchParams.get('id');
 
   try {
@@ -18,7 +24,19 @@ export async function GET(req: Request) {
       });
     }
 
-    // Fetch products by category
+    if (category && label) {
+      const filteredProducts =
+        fetchProductsByCategory(category).filter(
+          product => product.label === label,
+        );
+
+      return new Response(JSON.stringify(filteredProducts), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Fetch products by categoryProducts
     if (category) {
       const products = fetchProductsByCategory(category);
       return new Response(JSON.stringify(products), {
@@ -26,6 +44,15 @@ export async function GET(req: Request) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    if (label) {
+      const productsByLabel = fetchProductsByLabel(label);
+      return new Response(JSON.stringify(productsByLabel), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
 
     // Fetch all products
     const allProducts = fetchAllProducts();

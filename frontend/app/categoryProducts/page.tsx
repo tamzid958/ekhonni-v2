@@ -74,7 +74,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
                 ) : (
                   <div className="flex w-[1000px] space-x-4 py-4">
                     {products
-                      .filter((product) => product.label === 'Best Selling')
+                      .filter((product) => product.label === 'Best Selling').slice(0, 10)
                       .map((item) => (
                         <CardDemo key={item.id} {...item} />
                       ))}
@@ -104,7 +104,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
                 ) : (
                   <div className="flex w-[1000px] space-x-4 py-4">
                     {products
-                      .filter((product) => product.label === 'Limited Time Deals')
+                      .filter((product) => product.label === 'Limited Time Deals').slice(0, 10)
                       .map((item) => (
                         <CardDemo key={item.id} {...item} />
                       ))}
@@ -133,7 +133,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
                 ) : (
                   <div className="flex w-[1000px] space-x-4 py-4">
                     {products
-                      .filter((product) => product.label === 'Top Rated')
+                      .filter((product) => product.label === 'Top Rated').slice(0, 10)
                       .map((item) => (
                         <CardDemo key={item.id} {...item} />
                       ))}
