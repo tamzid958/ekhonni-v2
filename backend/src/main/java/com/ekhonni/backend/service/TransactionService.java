@@ -1,8 +1,11 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
+import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.payment.sslcommerz.ValidationResponse;
 import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +49,18 @@ public class TransactionService extends BaseService<Transaction, Long> {
     @Transactional
     public void updateStatus(Transaction transaction, TransactionStatus status) {
         transaction.setStatus(status);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateSuccessfulTransaction(Transaction transaction, ValidationResponse response) {
+        transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
+        transaction.setValidationId(response.getValId());
+        transaction.setBankTransactionId(response.getBankTranId());
+        transaction.getBid().setStatus(BidStatus.PAID);
+
+        Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
+        sellerAccount.setBalance(sellerAccount.getBalance() + Double.parseDouble(response.getAmount()));
     }
 
     @Transactional

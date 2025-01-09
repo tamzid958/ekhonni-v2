@@ -10,6 +10,7 @@ package com.ekhonni.backend.util;
 import com.ekhonni.backend.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 
 // need to change
@@ -21,7 +22,8 @@ public class AuthUtil {
 
     public static User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+
+        if(authentication instanceof AnonymousAuthenticationFilter) {
             throw new RuntimeException("User not authenticated");
         }
         Object principal = authentication.getPrincipal();

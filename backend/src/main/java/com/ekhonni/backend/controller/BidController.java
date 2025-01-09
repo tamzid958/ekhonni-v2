@@ -11,7 +11,9 @@ import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,31 +21,31 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/bid")
+@AllArgsConstructor
 @Tag(name = "Bid", description = "Manage bid operations")
-public record BidController(BidService bidService) {
+public class BidController {
 
-    @PostMapping
+    BidService bidService;
+
+    @PostMapping()
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<BidResponseDTO> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
         return new ApiResponse<>(HTTPStatus.CREATED, bidService.create(bidCreateDTO));
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping("/{id}")
-    public Bid get(@PathVariable Long id) {
-        return bidService.get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
+    public ApiResponse<BidProjection> get(@PathVariable Long id) {
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.get(id, BidProjection.class)) ;
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
     @GetMapping
-    public List<BidProjection> getAll(){
-        return bidService.getAll(BidProjection.class);
+    public ApiResponse<List<BidProjection>> getAll(){
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getAll(BidProjection.class));
     }
 
-    @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping("/{id}/update")
     public BidCreateDTO update(@PathVariable Long id, @RequestBody BidCreateDTO bidCreateDTO){
         return bidService.update(id, bidCreateDTO);
     }
-
 
 }

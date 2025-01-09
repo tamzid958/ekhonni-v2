@@ -76,6 +76,8 @@ public record ProductController(ProductService productService) {
     }
 
 
+
+
     //    @GetMapping("/category/{category_name}")
 //    public ApiResponse<?> getByCategoryName(@PathVariable("category_name") String categoryName, @NotNull final Pageable pageable) {
 //        Page<ProductProjection> productProjections = productService.getAllByCategoryName(categoryName, pageable);

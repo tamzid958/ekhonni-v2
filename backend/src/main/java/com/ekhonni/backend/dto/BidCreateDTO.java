@@ -9,8 +9,6 @@ import java.util.UUID;
 public record BidCreateDTO(
         @NotNull(message = "Product id cannot be null")
         Long productId,
-        @NotNull(message = "Bidder id cannot be blank")
-        UUID bidderId,
         @NotNull(message = "Amount cannot be null")
         @Digits(integer = 10, fraction = 2, message = "Amount must have up to 10 integer digits and 2 decimal places")
         @Positive

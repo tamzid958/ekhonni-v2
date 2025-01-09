@@ -3,11 +3,14 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.InitiatePaymentException;
 import com.ekhonni.backend.response.ApiResponse;
+import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,11 +22,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v2/payment")
+@AllArgsConstructor
 @Slf4j
 @Tag(name = "Payment", description = "Manage payment operations")
-public record PaymentController(PaymentService paymentService) {
+public class PaymentController {
+
+    PaymentService paymentService;
+    BidService bidService;
 
     @PostMapping("/initiate/{bid_id}")
+    @PreAuthorize("@bidService.getBidderId(#bidId) == authentication.principal.id")
     public ApiResponse<?> initiatePayment(@PathVariable("bid_id") Long bidId) throws Exception {
         return new ApiResponse<>(HTTPStatus.ACCEPTED, paymentService.initiatePayment(bidId));
     }
