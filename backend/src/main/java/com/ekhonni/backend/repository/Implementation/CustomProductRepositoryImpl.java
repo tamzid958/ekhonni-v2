@@ -31,10 +31,10 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
     private EntityManager entityManager;
 
     @Override
-    public Page<ProductResponseDTO> findAllFiltered(Specification<Product> spec, Pageable pageable) {
+    public List<Long> findAllFiltered(Specification<Product> spec,Pageable pageable) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductResponseDTO> query = cb.createQuery(ProductResponseDTO.class);
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<Product> root = query.from(Product.class);
 
 
@@ -42,62 +42,26 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         query.where(predicate);
 
 
-        query.select(cb.construct(
-                ProductResponseDTO.class,
-                root.get("id"),
-                root.get("price"),
-                root.get("name"),
-                root.get("description"),
-                root.get("createdAt"),
-                root.get("updatedAt"),
-                root.get("condition"),
-                root.get("seller").get("id"),
-                root.get("seller").get("name"),
-                root.get("category").get("id"),
-                root.get("category").get("name")
-        ));
+        query.select(root.get("id")).where(predicate);
 
-
-        TypedQuery<ProductResponseDTO> typedQuery = entityManager.createQuery(query);
 
         int page = Math.max(1, pageable.getPageNumber());
         int size = Math.max(1, pageable.getPageSize());
 
         int firstResult = (page - 1) * size;
-        typedQuery.setFirstResult(firstResult);
-        typedQuery.setMaxResults(size);
-        List<ProductResponseDTO> products = typedQuery.getResultList();
+        TypedQuery<Long> idQuery = entityManager.createQuery(query);
+        idQuery.setFirstResult(firstResult);
+        idQuery.setMaxResults(size);
 
 
-        // fetch and set images to relative product
-        for (ProductResponseDTO product : products) {
-            Long productId = product.getId();
-            List<ProductImage> images = getImagesOfProduct(productId);
-            product.setImages(images);
-        }
+        List<Long> productIds = idQuery.getResultList();
 
 
-        // totalElements
-        long total = 0;
-        return new PageImpl<>(products, pageable, total);
+        return productIds;
     }
 
 
 
-    private List<ProductImage> getImagesOfProduct(Long productId) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ProductImage> query = cb.createQuery(ProductImage.class);
-        Root<Product> root = query.from(Product.class);
-
-        Join<Product, ProductImage> imageJoin = root.join("images", JoinType.LEFT);
-
-        query.select(imageJoin)
-                .where(cb.equal(root.get("id"), productId));
-
-        TypedQuery<ProductImage> typedQuery = entityManager.createQuery(query);
-        return typedQuery.getResultList();
-
-    }
 
 
 }

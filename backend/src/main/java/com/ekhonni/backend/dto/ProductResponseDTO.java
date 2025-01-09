@@ -36,18 +36,4 @@ public class ProductResponseDTO {
     private List<BidResponseDTO> bids = new ArrayList<>();
 
 
-    public ProductResponseDTO(Long id, Double price, String name, String description,
-                              LocalDateTime createdAt, LocalDateTime updatedAt,
-                              ProductCondition condition, UUID sellerId, String sellerName, Long categoryId, String categoryName) {
-        this.id = id;
-        this.price = price;
-        this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.condition = condition;
-        this.seller = new ProductSellerDTO(sellerId,sellerName);
-        this.category = new ProductCategoryDTO(categoryId,categoryName);
-    }
-
 }

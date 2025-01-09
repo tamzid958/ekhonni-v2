@@ -14,10 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface CustomProductRepository {
 
-    Page<ProductResponseDTO> findAllFiltered(Specification<Product> spec, Pageable pageable);
+    List<Long> findAllFiltered(Specification<Product> spec, Pageable pageable);
 
 }

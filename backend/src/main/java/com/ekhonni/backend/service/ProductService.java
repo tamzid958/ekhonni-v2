@@ -23,6 +23,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 
 import org.springframework.stereotype.Service;
@@ -106,12 +107,16 @@ public class ProductService extends BaseService<Product, Long> {
     public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
         List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
-        Page<ProductResponseDTO> productResponseDTOS = productRepository.findAllFiltered(spec,pageable);
-        productResponseDTOS.forEach(productResponseDTO -> {
-            productResponseDTO.setBids(null);
-        });
-        return productResponseDTOS;
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> productProjections = productRepository.findByIdIn(productIds);
+        List<ProductResponseDTO> productResponseDTOS = productProjections.stream()
+                .map(ProductProjectionConverter::convert)
+                .peek(dto -> dto.setBids(null))
+                .toList();
+
+        long totalElements = 0;
+        return new PageImpl<>(productResponseDTOS, pageable, totalElements);
     }
 
 
