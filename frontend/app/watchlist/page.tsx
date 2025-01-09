@@ -3,15 +3,16 @@ import React from 'react';
 
 // Define the WatchlistItem type for TypeScript
 interface WatchlistItem {
-  id: number;
-  title: string;
-  img: string;
-  price: number;
-  shipping: number;
-  timeLeft: string;
-  condition: string;
-  bidsAmount: number;
-  sellerProfile: string;
+    id: number;
+    title: string;
+    img: string;
+    price: number;
+    yourBid?: number;
+    shipping: number;
+    timeLeft: string;
+    condition: string;
+    bidsAmount: number;
+    sellerProfile: string;
 }
 
 export default async function WatchlistPage() {
@@ -29,7 +30,7 @@ export default async function WatchlistPage() {
         <h1 className="text-2xl font-bold">My Watchlist</h1>
         <div className="space-y-6">
           {watchlistItems.map((item) => (
-            <HorizontalCard key={item.id} watchlistItem={item} />
+              <HorizontalCard key={item.id} watchlistItem={item} showBidSection={false}/>
           ))}
         </div>
       </div>

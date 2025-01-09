@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 
@@ -19,13 +20,14 @@ export function NavBar({ placeholder }: Props) {
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
-
   return (
     <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
       <div className="font-bold ml-16 mt-2">
         <Link href="/">
           <img src="frame.png" alt="logo" className="h-[75px]" />
-        </Link></div>
+        </Link>
+      </div>
+
       <div className="w-[680px] flex justify-center items-center">
         <div className="w-full relative">
           <input
@@ -38,20 +40,36 @@ export function NavBar({ placeholder }: Props) {
           />
           <div className="absolute left-[92%] top-1/2 transform -translate-y-1/2">
             <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
-              <Search className="text-muted-foreground" size={18} />
-              <span className="sr-only">Search Button</span>
+              <Link href="/search">
+                <Search className="text-muted-foreground" size={18} />
+              </Link>
+              {/*<span className="sr-only">Search Button</span>*/}
             </Button>
           </div>
         </div>
       </div>
       <div className="flex gap-4 mr-28 mt-4">
-        <Link href="/watchlist">
+        <Link href="/cart">
           <Button variant="custom" size="icon2" className="rounded-full">
             <ShoppingCart />
           </Button>
         </Link>
-        
-        <Button variant="custom" size="icon2" className="rounded-full"><Bell /></Button>
+        <Select>
+          <SelectTrigger
+            className="text-primary bg-brand-mid hover:bg-brand-light h-12 w-12 px-3 rounded-full focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
+            <Bell className="w-5 h-5" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Notifications</SelectLabel>
+              <SelectItem value="update">System Update Available</SelectItem>
+              <SelectItem value="message">New Message from John</SelectItem>
+              <SelectItem value="reminder">Meeting Reminder: 2 PM</SelectItem>
+              <SelectItem value="offer">Exclusive Offer: 20% Off</SelectItem>
+              <SelectItem value="alert">Security Alert: Unusual Login Attempt</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
         <SidebarProvider>
           <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
@@ -59,7 +77,6 @@ export function NavBar({ placeholder }: Props) {
           </Button>
           {isSidebarOpen && <AppSidebar />}
         </SidebarProvider>
-
       </div>
 
       {/* Trigger Sidebar */}

@@ -1,9 +1,9 @@
 import React from 'react';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
 
-import { QuickBid } from '@/components/QuickBid';
-import { Ads } from '@/components/Ads';
-import { Category } from '@/components/Category';
+import {QuickBid} from '@/components/QuickBid';
+import {Ads} from '@/components/Ads';
+import {Category} from '@/components/Category';
 
 
 export default function Home() {
@@ -12,8 +12,7 @@ export default function Home() {
         <CustomErrorBoundary>
 
             <Ads />
-
-            <QuickBid />
+            <QuickBid title={"START YOUR BIDDING HERE"}/>
             <Category />
 
         </CustomErrorBoundary>
