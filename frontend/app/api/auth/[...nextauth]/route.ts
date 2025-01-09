@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import {redis, redlock} from '@/lib/redis';
-import { User, users } from '@/lib/users';
+import { User, users } from '@/data/users';
 
 
 let userIdCounter = 2;
