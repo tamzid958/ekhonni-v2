@@ -12,12 +12,13 @@ import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.*;
-import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
+import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
+import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
@@ -106,11 +108,17 @@ public class ProductService extends BaseService<Product, Long> {
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
         Page<ProductResponseDTO> productResponseDTOS = productRepository.findAllFiltered(spec,pageable);
+        productResponseDTOS.forEach(productResponseDTO -> {
+            productResponseDTO.setBids(null);
+        });
         return productResponseDTOS;
     }
 
 
-
-
-
+    public ProductResponseDTO getOne(Long id) {
+        ProductProjection projection = productRepository.findProjectionById(id);
+        ProductResponseDTO product = ProductProjectionConverter.convert(projection);
+        product.setBids(null);
+        return product;
+    }
 }

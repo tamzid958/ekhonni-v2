@@ -8,6 +8,8 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -63,6 +65,10 @@ public class Product extends BaseEntity<Long> {
     public String getCategoryName() {
         return category.getName();
     }
+    public String getSellerName() {return seller.getUsername();}
+    public ProductSellerDTO getSellerDTO() {return new ProductSellerDTO(seller.getId(),seller.getUsername());}
+    public ProductCategoryDTO getCategoryDTO() {return new ProductCategoryDTO(category.getId(),category.getName());}
+
 
 
 }

@@ -7,6 +7,8 @@
 
 package com.ekhonni.backend.projection;
 
+import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.model.ProductImage;
 
@@ -28,9 +30,9 @@ public interface ProductProjection {
 
     ProductCondition getCondition();
 
-    Long getCategoryId();
+    ProductCategoryDTO getCategoryDTO();
 
-    String getCategoryName();
+    ProductSellerDTO getSellerDTO();
 
     List<ProductImage> getImages();
 

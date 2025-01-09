@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductFilter {
+public class ProductFilter{
     private String categoryName;
     private Double minPrice;
     private Double maxPrice;

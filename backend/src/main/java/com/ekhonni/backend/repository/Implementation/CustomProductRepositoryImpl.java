@@ -54,6 +54,8 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
                 root.get("createdAt"),
                 root.get("updatedAt"),
                 root.get("condition"),
+                root.get("seller").get("id"),
+                root.get("seller").get("name"),
                 root.get("category").get("id"),
                 root.get("category").get("name")
         ));
@@ -89,7 +91,6 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductImage> query = cb.createQuery(ProductImage.class);
         Root<Product> root = query.from(Product.class);
-
 
         Join<Product, ProductImage> imageJoin = root.join("images", JoinType.LEFT);
 
