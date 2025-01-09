@@ -92,8 +92,8 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-card shadow-">
+    <div className="flex items-center justify-center h-screen bg-white">
+      <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-2xl">
         <CardContent className="overflow-auto ">
           <h2 className="text-lg font-bold mb-4 mt-4 text-center">
             {isSignup ? "Sign Up" : "Log In"}
@@ -108,7 +108,7 @@ export default function AuthForm() {
                     type="text"
                     {...register("name")}
                     placeholder="Enter your  name"
-                    className="w-full"
+                    className="w-full border-black bg-gray-100"
                   />
                   {errors.name && (
                     <p className="text-sm text-red-600">{errors?.name.message}</p>
@@ -120,7 +120,7 @@ export default function AuthForm() {
                     type="text"
                     {...register("phone")}
                     placeholder="Enter your phone number"
-                    className="w-full"
+                    className="w-full border-black bg-gray-100"
                   />
                   {errors.phone && (
                     <p className="text-sm text-red-600">{errors.phone.message}</p>
@@ -132,7 +132,7 @@ export default function AuthForm() {
                     type="text"
                     {...register("address")}
                     placeholder="Enter your address"
-                    className="w-full"
+                    className="w-full border-black bg-gray-100"
                   />
                   {errors.address && (
                     <p className="text-sm text-red-600">{errors.address.message}</p>
@@ -146,7 +146,7 @@ export default function AuthForm() {
                 type="email"
                 {...register("email")}
                 placeholder="Enter your email"
-                className="w-full"
+                className="w-full border-black bg-gray-100"
               />
               {errors.email && (
                 <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -158,14 +158,14 @@ export default function AuthForm() {
                 type="password"
                 {...register("password")}
                 placeholder="Enter your password"
-                className="w-full"
+                className="w-full border-black bg-gray-100"
               />
 
               {!isSignup &&
                 (<CardContent className="flex font-medium text-sm justify-end text-blue-500 mt-1 cursor-pointer">
-                 <p> Forget Password? </p>
-              </CardContent>
-              )}
+                    <p> Forget Password? </p>
+                  </CardContent>
+                )}
 
               {errors.password && (
                 <p className="text-sm text-red-600">{errors.password.message}</p>
@@ -178,7 +178,7 @@ export default function AuthForm() {
                   type="password"
                   {...register('confirmPassword')}
                   placeholder="Confirm your password"
-                  className="w-full"
+                  className="w-full border-black bg-gray-100"
                 />
 
                 {errors?.confirmPassword && (
@@ -187,7 +187,7 @@ export default function AuthForm() {
               </div>
             )}
             <Button type="submit" className="w-full">
-            {isSignup ? "Sign Up" : "Log In"}
+              {isSignup ? "Sign Up" : "Log In"}
             </Button>
           </form>
           <div className="relative my-4">
