@@ -115,7 +115,7 @@ const watchlistItems = [
 
 export async function GET(req: Request) {
 
-  console.log('GET /api/watchlist');
+  // console.log('GET /api/watchlist');
 
   return new Response(JSON.stringify(watchlistItems), {
     status: 200,
