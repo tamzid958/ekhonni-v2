@@ -8,7 +8,7 @@ const UserAbout: React.FC = () => {
   return (
     <AboutPage
       fetchUrl={fetchUrl}
-      title="About Buyer"
+      title="About Seller"
     />
   );
 };

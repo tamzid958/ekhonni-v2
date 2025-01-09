@@ -1,0 +1,110 @@
+const sellerData = [
+  {
+    id: '1',
+    name: 'John Doe',
+    profileImage: 'https://via.placeholder.com/150',
+    rating: 4.8,
+    totalSales: 150,
+    location: 'New York, USA',
+    bio: 'Experienced seller with a passion for high-quality travel gear. I aim to provide exceptional products and services to every customer.',
+    contact: {
+      email: 'johndoe@example.com',
+      phone: '+1234567890',
+    },
+    socialLinks: {
+      website: 'https://www.johndoe.com',
+      instagram: 'https://www.instagram.com/johndoe',
+      facebook: 'https://www.facebook.com/johndoe',
+    },
+    itemsSold: [
+      {
+        id: '1',
+        title: 'Mountain View Backpack',
+        price: 100,
+        category: 'Travel Gear',
+        img: 'https://via.placeholder.com/400',
+      },
+      {
+        id: '2',
+        title: 'Ocean Breeze Tent',
+        price: 200,
+        category: 'Camping Equipment',
+        img: 'https://via.placeholder.com/401',
+      },
+      {
+        id: '3',
+        title: 'Smart Hiking Shoes',
+        price: 150,
+        category: 'Footwear',
+        img: 'https://via.placeholder.com/402',
+      },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    profileImage: 'https://via.placeholder.com/150',
+    rating: 4.5,
+    totalSales: 95,
+    location: 'Los Angeles, USA',
+    bio: 'Selling premium electronics and gadgets. Always striving to offer the latest and greatest in tech for all kinds of users.',
+    contact: {
+      email: 'janesmith@example.com',
+      phone: '+1987654321',
+    },
+    socialLinks: {
+      website: 'https://www.janesmith.com',
+      twitter: 'https://www.twitter.com/janesmith',
+      linkedin: 'https://www.linkedin.com/in/janesmith',
+    },
+    itemsSold: [
+      {
+        id: '1',
+        title: 'Smartphone 2025',
+        price: 180,
+        category: 'Electronics',
+        img: 'https://via.placeholder.com/404',
+      },
+      {
+        id: '2',
+        title: 'Bluetooth Headphones',
+        price: 80,
+        category: 'Accessories',
+        img: 'https://via.placeholder.com/405',
+      },
+    ],
+  },
+  {
+    id: '3',
+    name: 'Alice Johnson',
+    profileImage: 'https://via.placeholder.com/150',
+    rating: 4.9,
+    totalSales: 250,
+    location: 'San Francisco, USA',
+    bio: 'A passionate seller of vintage items, home decor, and antiques. Bringing timeless pieces to your home.',
+    contact: {
+      email: 'alicejohnson@example.com',
+      phone: '+1122334455',
+    },
+    socialLinks: {
+      website: 'https://www.alicejohnson.com',
+      pinterest: 'https://www.pinterest.com/alicejohnson',
+    },
+    itemsSold: [
+      {
+        id: '1',
+        title: 'Vintage Wall Clock',
+        price: 120,
+        category: 'Antiques',
+        img: 'https://via.placeholder.com/406',
+      },
+      {
+        id: '2',
+        title: 'Designer Vase',
+        price: 130,
+        category: 'Home Decor',
+        img: 'https://via.placeholder.com/407',
+      },
+    ],
+  },
+];
