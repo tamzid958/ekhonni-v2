@@ -17,18 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record ProductDTO(@NotBlank
-                         String name,
-                         @Positive
-                         Double price,
-                         @NotBlank
-                         String description,
-                         @Enumerated(EnumType.STRING)
-                         ProductCondition condition,
-                         @NotBlank
-                         String category,
-                         @NotNull
-                         List<MultipartFile> images
+public record ProductCreateDTO(
+          @NotBlank
+          String name,
+          @Positive
+          Double price,
+          @NotBlank
+          String description,
+          @Enumerated(EnumType.STRING)
+          ProductCondition condition,
+          @NotBlank
+          String category,
+          @NotNull
+          List<MultipartFile> images
 ) {
 
 }

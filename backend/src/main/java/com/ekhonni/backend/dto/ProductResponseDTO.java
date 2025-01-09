@@ -1,20 +1,15 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 8:18 PM
- * Date: 12/9/2024
+ * Time: 1:48 PM
+ * Date: 1/9/25
  * Project Name: ekhonni-v2
  */
 
-package com.ekhonni.backend.projection.implementation;
+package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.enums.ProductCondition;
-import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.ProductImage;
-import com.ekhonni.backend.projection.ProductProjection;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,8 +17,10 @@ import java.util.List;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-public  class ProductProjectionImpl implements ProductProjection {
+
+public class ProductResponseDTO {
     private Long id;
     private Double price;
     private String name;
@@ -34,11 +31,12 @@ public  class ProductProjectionImpl implements ProductProjection {
     private Long categoryId;
     private String categoryName;
     private List<ProductImage> images = new ArrayList<>();
+    private List<BidResponseDTO> bids = new ArrayList<>();
 
-    public ProductProjectionImpl(Long id, Double price, String name, String description,
-                                 LocalDateTime createdAt, LocalDateTime updatedAt,
-                                 ProductCondition condition, Long categoryId,
-                                 String categoryName) {
+
+    public ProductResponseDTO(Long id, Double price, String name, String description,
+                              LocalDateTime createdAt, LocalDateTime updatedAt,
+                              ProductCondition condition, Long categoryId, String categoryName) {
         this.id = id;
         this.price = price;
         this.name = name;
@@ -49,4 +47,5 @@ public  class ProductProjectionImpl implements ProductProjection {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
+
 }

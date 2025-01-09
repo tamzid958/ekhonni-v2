@@ -8,11 +8,10 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.projection.ProductProjection;
-import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
 import org.springframework.data.domain.Page;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/product")
 public record ProductController(ProductService productService) {
 
-
     @GetMapping
     public ApiResponse<?> getAllProducts(Pageable pageable) {
         Page<ProductProjection> productProjections = productService.getAll(ProductProjection.class, pageable);
@@ -33,8 +31,8 @@ public record ProductController(ProductService productService) {
 
 
     @PostMapping
-    public ApiResponse<?> createProduct(@ModelAttribute ProductDTO productDTO) {
-        productService.create(productDTO);
+    public ApiResponse<?> createProduct(@ModelAttribute ProductCreateDTO productCreateDTO) {
+        productService.create(productCreateDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
@@ -47,9 +45,9 @@ public record ProductController(ProductService productService) {
 
 
     @PatchMapping("/{id}")
-    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
-        ProductDTO updatedProductDTO = productService.update(id, productDTO);
-        return new ApiResponse<>(HTTPStatus.FOUND, updatedProductDTO);
+    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @RequestBody ProductCreateDTO productCreateDTO) {
+        ProductCreateDTO updatedProductCreateDTO = productService.update(id, productCreateDTO);
+        return new ApiResponse<>(HTTPStatus.FOUND, updatedProductCreateDTO);
     }
 
     @DeleteMapping("/{id}")

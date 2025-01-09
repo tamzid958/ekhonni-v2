@@ -8,12 +8,10 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.ProductDTO;
+import com.ekhonni.backend.dto.ProductCreateDTO;
+import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.model.ProductImage;
-import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.*;
 import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
@@ -51,29 +49,27 @@ public class ProductService extends BaseService<Product, Long> {
         this.categoryRepository = categoryRepository;
     }
 
-
     @Transactional
-    public void create(ProductDTO productDTO) {
+    public void create(ProductCreateDTO productCreateDTO) {
 
         try {
             User user = AuthUtil.getAuthenticatedUser();
-            Category category = categoryRepository.findByName(productDTO.category());
+            Category category = categoryRepository.findByName(productCreateDTO.category());
 
-            List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.images());
+            List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, productCreateDTO.images());
             List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 ProductImage image = new ProductImage(imagePath);
                 images.add(image);
             }
 
-
             Product product = new Product(
-                    productDTO.name(),
-                    productDTO.price(),
-                    productDTO.description(),
+                    productCreateDTO.name(),
+                    productCreateDTO.price(),
+                    productCreateDTO.description(),
                     false,
                     false,
-                    productDTO.condition(),
+                    productCreateDTO.condition(),
                     category,
                     user,
                     images
@@ -105,11 +101,12 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public Page<ProductProjectionImpl> getAllFiltered(ProductFilter filter) {
+    public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
         List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
-        return productRepository.findAllFiltered(spec,pageable);
+        Page<ProductResponseDTO> productResponseDTOS = productRepository.findAllFiltered(spec,pageable);
+        return productResponseDTOS;
     }
 
 

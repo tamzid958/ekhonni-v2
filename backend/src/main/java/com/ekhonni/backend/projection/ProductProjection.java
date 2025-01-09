@@ -34,5 +34,4 @@ public interface ProductProjection {
 
     List<ProductImage> getImages();
 
-
 }
