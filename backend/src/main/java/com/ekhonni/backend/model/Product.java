@@ -11,7 +11,6 @@ import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -60,14 +59,14 @@ public class Product extends BaseEntity<Long> {
 
 
     public Long getCategoryId() {
-        return category.getId();
+        return this.getCategory().getId();
     }
     public String getCategoryName() {
-        return category.getName();
+        return this.getCategory().getName();
     }
-    public String getSellerName() {return seller.getUsername();}
-    public ProductSellerDTO getSellerDTO() {return new ProductSellerDTO(seller.getId(),seller.getUsername());}
-    public ProductCategoryDTO getCategoryDTO() {return new ProductCategoryDTO(category.getId(),category.getName());}
+    public String getSellerName() {return this.getSeller().getUsername();}
+    public ProductSellerDTO getSellerDTO() {return new ProductSellerDTO(this.getSeller().getId(),this.getSeller().getName());}
+    public ProductCategoryDTO getCategoryDTO() {return new ProductCategoryDTO(this.getCategory().getId(),this.getCategory().getName());}
 
 
 

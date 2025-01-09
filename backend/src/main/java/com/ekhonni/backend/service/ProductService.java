@@ -117,6 +117,7 @@ public class ProductService extends BaseService<Product, Long> {
 
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
+
         ProductResponseDTO product = ProductProjectionConverter.convert(projection);
         product.setBids(null);
         return product;
