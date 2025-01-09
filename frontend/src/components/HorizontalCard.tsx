@@ -1,9 +1,9 @@
-import {Separator} from "@/components/ui/separator";
-import {Card, CardContent, CardDescription, CardFooter, CardTitle,} from "@/components/ui/card";
-import {Checkbox} from "@/components/ui/checkbox";
-import Image from "next/image";
-import {Button} from "@/components/ui/button";
-import * as React from "react";
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import * as React from 'react';
 
 
 interface WatchlistItem {
@@ -48,21 +48,19 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({
             {/* Checkbox */}
             <div className="ml-4">
                 {showCheckBox && (
-                    <>
-                        <Checkbox/>
-                    </>
+                    <Checkbox/>
                 )}
             </div>
 
-            {/* Product Image */}
-            <CardContent className="w-24 h-24 relative">
-                <Image
-                    src={img}
-                    alt={title}
-                    layout="fill"
-                    className="rounded-md object-cover"
-                />
-            </CardContent>
+      {/* Product Image */}
+      <CardContent className="w-24 h-24 relative">
+        <Image
+          src={img}
+          alt={title}
+          layout="fill"
+          className="rounded-md object-cover"
+        />
+      </CardContent>
 
             {/* Product Details */}
             <CardContent className="p-3 flex-1 flex flex-col space-y-2">

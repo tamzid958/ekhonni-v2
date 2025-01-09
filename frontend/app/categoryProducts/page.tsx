@@ -1,54 +1,150 @@
 import React from 'react';
+import Sidebar from '@/components/CategorySidebar';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CardDemo } from '@/components/Card';
+import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
-interface data {
+interface Data {
+  id: string;
   title: string;
   description: string;
   img: string;
   price: number;
   category: string;
+  label: string;
 }
 
-export default async function CategoryProductPage() {
-  const response = await fetch('http://localhost:3000/api/allProduct', { cache: 'no-store' });
+interface Props {
+  searchParams: { category?: string };
+}
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch data');
+export default async function CategoryProductPage({ searchParams }: Props) {
+  const selectedCategory = searchParams.category || 'All';
+
+  // Directly fetch products data
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
+  const url =
+    selectedCategory === 'All'
+      ? `${baseUrl}/api/mock-data`
+      : `${baseUrl}/api/mock-data?category=${encodeURIComponent(selectedCategory)}`;
+
+  let products: Data[] = [];
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+
+    products = await response.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
   }
 
-  const allProductsItems: data[] = await response.json();
-
   return (
-    <div className="space-y-6 container mx-auto my-4 px-4">
-      <h1 className="text-2xl font-bold my-6">All Products</h1>
+    <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">
+      <h1 className="text-5xl font-bold my-12">
+        {selectedCategory === 'All' ? 'All Products' : `${selectedCategory} Products`}
+      </h1>
 
-      {/* Best Selling Section */}
-      <div>
-        <h2 className="text-xl font-semibold my-4">Best Selling</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
-          ))}
-        </div>
-      </div>
+      <div className="flex">
+        {/* Sidebar */}
+        <Sidebar selectedCategory={selectedCategory} />
 
-      {/* Limited Time Deals Section */}
-      <div>
-        <h2 className="text-xl font-semibold my-4">Limited Time Deals</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
-          ))}
-        </div>
-      </div>
+        {/* Main Content */}
+        <div className="flex-1 ml-6">
+          <div className="container mx-auto px-4 w-full space-y-6">
+            <Separator className="mt-4" />
+            {/* Best Selling Section */}
+            <div className="w-full mb-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-3xl font-semibold py-4">Best Selling</h2>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Best Selling' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span>
+              </div>
+              <ScrollArea className="w-full overflow-x-auto">
+                {products.filter((product) => product.label === 'Best Selling').length === 0 ? (
+                  <p className="text-center text-gray-500">No products found in this label.</p>
+                ) : (
+                  <div className="flex w-[1000px] space-x-4 py-4">
+                    {products
+                      .filter((product) => product.label === 'Best Selling').slice(0, 10)
+                      .map((item) => (
+                        <CardDemo key={item.id} {...item} />
+                      ))}
+                  </div>
+                )}
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
 
-      {/* Top Rated Section */}
-      <div>
-        <h2 className="text-xl font-semibold my-4">Top Rated</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {allProductsItems.map((item) => (
-            <CardDemo key={item.title} {...item} />
-          ))}
+            <Separator />
+
+            {/* Limited Time Deals Section */}
+            <div className="w-full mb-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-3xl font-semibold py-4">Limited Time Deals</h2>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Limited Time Deals' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span>
+              </div>
+              <ScrollArea className="w-full overflow-x-auto">
+                {products.filter((product) => product.label === 'Limited Time Deals').length === 0 ? (
+                  <p className="text-center text-gray-500">No products found in this label.</p>
+                ) : (
+                  <div className="flex w-[1000px] space-x-4 py-4">
+                    {products
+                      .filter((product) => product.label === 'Limited Time Deals').slice(0, 10)
+                      .map((item) => (
+                        <CardDemo key={item.id} {...item} />
+                      ))}
+                  </div>
+                )}
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+
+            <Separator />
+
+            {/* Top Rated Section */}
+            <div className="w-full mb-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-3xl font-semibold py-4">Top Rated</h2>
+                <span>
+                  <Link href={{
+                    pathname: '/labeledCategory',
+                    query: { category: selectedCategory, label: 'Top Rated' },
+                  }}
+                        className="text-xl"
+                  > See All </Link> </span></div>
+              <ScrollArea className="w-full overflow-x-auto">
+                {products.filter((product) => product.label === 'Top Rated').length === 0 ? (
+                  <p className="text-center text-gray-500">No products found in this label.</p>
+                ) : (
+                  <div className="flex w-[1000px] space-x-4 py-4">
+                    {products
+                      .filter((product) => product.label === 'Top Rated').slice(0, 10)
+                      .map((item) => (
+                        <CardDemo key={item.id} {...item} />
+                      ))}
+                  </div>
+                )}
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+
+            <Separator />
+          </div>
         </div>
       </div>
     </div>
