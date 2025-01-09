@@ -5,7 +5,7 @@ HELP.md.gradle
 
 #Docker
 Dockerfile
-docker-compose.yaml
+docker-compose.yml
 .tar
 /backend-app-image/
 

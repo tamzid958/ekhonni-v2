@@ -9,6 +9,6 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class ClientResponse {
+public class InitiatePaymentResponse {
     private String gatewayPageURL;
 }

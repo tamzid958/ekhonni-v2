@@ -1,4 +1,4 @@
-package com.ekhonni.backend.exception;
+package com.ekhonni.backend.exception.bid;
 
 /**
  * Author: Asif Iqbal

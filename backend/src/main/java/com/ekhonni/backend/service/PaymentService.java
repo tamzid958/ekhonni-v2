@@ -3,13 +3,11 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.config.SSLCommerzConfig;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
-import com.ekhonni.backend.exception.InitiatePaymentException;
-import com.ekhonni.backend.exception.InvalidTransactionException;
+import com.ekhonni.backend.exception.payment.InitiatePaymentException;
+import com.ekhonni.backend.exception.payment.InvalidTransactionException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.payment.sslcommerz.*;
-import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -22,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.CircuitBreakingException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -33,7 +30,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 
 /**
  * Author: Asif Iqbal
@@ -53,7 +49,7 @@ public class PaymentService {
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "retryPayment")
-    public ClientResponse initiatePayment(Long bidId) throws Exception {
+    public InitiatePaymentResponse initiatePayment(Long bidId) throws Exception {
         Bid bid = bidService.get(bidId)
                 .orElseThrow(() -> {
                     log.warn("Payment request for invalid bid: {}", bidId);
@@ -70,10 +66,10 @@ public class PaymentService {
         verifyInitialResponse(response);
 
         transactionService.updateSessionKey(transaction, response.getSessionkey());
-        return new ClientResponse(response.getGatewayPageURL());
+        return new InitiatePaymentResponse(response.getGatewayPageURL());
     }
 
-    public ClientResponse initiatePaymentFallback(Long bidId, Exception e) {
+    public InitiatePaymentResponse initiatePaymentFallback(Long bidId, Exception e) {
 
         if (e instanceof InvalidTransactionException) {
             throw (InvalidTransactionException) e;

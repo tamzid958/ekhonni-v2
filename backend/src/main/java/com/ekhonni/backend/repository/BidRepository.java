@@ -1,16 +1,21 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Bid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface BidRepository extends BaseRepository<Bid, Long> {
-    List<Bid> findByProductId(Long productId);
+    <P> List<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection);
+
+    <P> Page<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection, Pageable pageable);
 
     @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
     Optional<UUID> findBidderIdById(Long id);
