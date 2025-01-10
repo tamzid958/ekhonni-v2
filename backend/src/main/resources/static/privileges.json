@@ -36,22 +36,22 @@
     "endpoint": "/api/v2/account"
   },
   {
-    "name": "Create Bid Log",
-    "description": "Allows creating bid log entries",
+    "name": "Create Bid ",
+    "description": "Allows creating bid  entries",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/bidlog/create"
+    "endpoint": "/api/v2/bid/create"
   },
   {
-    "name": "Get Bid Logs",
-    "description": "Allows viewing all bid logs",
+    "name": "Get Bid",
+    "description": "Allows viewing all bid",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bidlog"
+    "endpoint": "/api/v2/bid"
   },
   {
     "name": "Get Products",
     "description": "Allows viewing all products",
     "httpMethod": "GET",
-    "endpoint": "/products"
+    "endpoint": "/api/v2/product"
   },
   {
     "name": "Create Product",
@@ -268,5 +268,11 @@
     "description": "Get all users assigned to a role",
     "httpMethod": "GET",
     "endpoint": "/api/v2/role/{id}/users/"
+  },
+  {
+    "name": "Retrieve notifications",
+    "description": "Get all the notifications of a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/{id}/notifications"
   }
 ]

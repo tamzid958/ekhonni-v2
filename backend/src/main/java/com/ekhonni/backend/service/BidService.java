@@ -7,11 +7,11 @@ import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.BidRepository;
 import jakarta.transaction.Transactional;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 @Setter
@@ -21,12 +21,14 @@ public class BidService extends BaseService<Bid, Long> {
     private final BidRepository bidRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final NotificationService notificationService;
 
-    public BidService(BidRepository bidRepository, UserService userRepository, ProductService productService) {
+    public BidService(BidRepository bidRepository, UserService userRepository, ProductService productService, NotificationService notificationService) {
         super(bidRepository);
         this.bidRepository = bidRepository;
         this.userService = userRepository;
         this.productService = productService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -37,6 +39,10 @@ public class BidService extends BaseService<Bid, Long> {
                 .orElseThrow(() -> new UserNotFoundException("Bidder does not exist for bid"));
         Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), bidCreateDTO.currency(), BidStatus.PENDING);
         bidRepository.save(bid);
+
+
+        notificationService.createForNewBid(product, bidCreateDTO);
+
         return BidResponseDTO.from(bidCreateDTO, bid.getId(), bid.getStatus());
     }
 }

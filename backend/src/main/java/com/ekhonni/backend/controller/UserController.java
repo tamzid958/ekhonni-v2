@@ -1,15 +1,11 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.NotificationDetailsDTO;
-import com.ekhonni.backend.dto.NotificationPreviewDTO;
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.projection.UserProjection;
-import com.ekhonni.backend.service.NotificationService;
-import com.ekhonni.backend.service.PasswordResetService;
 import com.ekhonni.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -32,9 +27,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordResetService passwordResetService;
-    private final NotificationService notificationService;
-
 
     @GetMapping("/{id}")
     @PreAuthorize("(@userService.isActive(#id) && (#id == authentication.principal.id || !@userService.isSuperAdmin(#id)))")
@@ -75,17 +67,4 @@ public class UserController {
         return userService.getNewAccessToken(refreshTokenDTO);
     }
 
-
-
-    @GetMapping("{id}/notifications")
-    @PreAuthorize("#id == authentication.principal.id")
-    public List<NotificationPreviewDTO> getPreviewNotifications(@PathVariable UUID id) {
-        return notificationService.get(id);
-    }
-
-    @GetMapping("/{id}/notifications/{notificationId}")
-    @PreAuthorize("#id == authentication.principal.id")
-    public NotificationDetailsDTO getDetailsNotification(@PathVariable UUID id, @PathVariable Long notificationId) {
-        return notificationService.get(notificationId);
-    }
 }

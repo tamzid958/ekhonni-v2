@@ -1,7 +1,12 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.dto.NotificationDetailsDTO;
+import com.ekhonni.backend.dto.BidCreateDTO;
 import com.ekhonni.backend.dto.NotificationPreviewDTO;
+import com.ekhonni.backend.enums.NotificationType;
+import com.ekhonni.backend.model.Bid;
+import com.ekhonni.backend.model.Notification;
+import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.NotificationRepository;
 import com.ekhonni.backend.util.TimeUtils;
 import lombok.AllArgsConstructor;
@@ -14,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Author: Safayet Rafi
- * Date: 12/31/24
+ * Date: 01/09/26
  */
 
 @Setter
@@ -30,20 +35,77 @@ public class NotificationService {
         return notificationRepository.findByRecipientId(userId)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
-                                notifications.getTitle(),
+                                notifications.getMessage(),
                                 timeUtils.timeAgo(notifications.getCreatedAt())
                         )
                 )
                 .toList();
     }
 
+    public void create(User recipient, NotificationType type, String message, String redirectUrl) {
+        Notification notification = new Notification(
+                recipient,
+                type,
+                message,
+                null,
+                redirectUrl
+        );
+        notificationRepository.save(notification);
+    }
 
-    public NotificationDetailsDTO get(Long id) {
-        return notificationRepository.findById(id)
-                .map(notification -> new NotificationDetailsDTO(
-                        notification.getMessage(),
-                        timeUtils.timeAgo(notification.getCreatedAt())
-                ))
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+    public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {
+        User seller = product.getSeller();
+        NotificationType type = NotificationType.NEW_BID;
+        String message = String.format(
+                "Your product %s has received a new bid of %s %s",
+                product.getName(),
+                bidCreateDTO.amount(),
+                bidCreateDTO.currency()
+        );
+        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        create(seller, type, message, redirectUrl);
+    }
+
+    public void createForProductAccepted(Product product) {
+        User seller = product.getSeller();
+        NotificationType type = NotificationType.PRODUCT_ACCEPTED;
+        String message = String.format(
+                "Your product %s has been accepted by the admin.",
+                product.getName()
+        );
+        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        create(seller, type, message, redirectUrl);
+    }
+
+    public void createForProductRejected(Product product) {
+        User seller = product.getSeller();
+        NotificationType type = NotificationType.PRODUCT_REJECTED;
+        String message = String.format(
+                "Sorry, your product %s has been rejected by the admin.",
+                product.getName()
+        );
+        create(seller, type, message, null);
+    }
+
+    public void createForProductDeleted(Product prouduct) {
+        User seller = prouduct.getSeller();
+        NotificationType type = NotificationType.PRODUCT_DELETED;
+        String message = String.format(
+                "Sorry, your product %s has been deleted by the admin",
+                prouduct.getName()
+        );
+        create(seller, type, message, null);
+    }
+
+    public void createForBidAccepted(Bid bid) {
+        User bidder = bid.getBidder();
+        Product product = bid.getProduct();
+        NotificationType type = NotificationType.BID_ACCEPTED;
+        String message = String.format(
+                "Congratulations! Your bid for the product %s has been accepted.",
+                product.getName()
+        );
+        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        create(bidder, type, message, redirectUrl);
     }
 }

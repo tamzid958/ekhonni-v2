@@ -37,11 +37,11 @@ UPDATE users SET account_id = 105 WHERE email = 'mike@example.com';
 
 -- Insert Products
 INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, image_path, created_at, updated_at) VALUES
-(1, 'iPhone 13', 699.99, 'Latest iPhone model', true, false, 'NEW', 4, (SELECT id FROM users WHERE email = 'john@example.com'), '/images/iphone13.jpg', NOW(), NOW()),
-(2, 'MacBook Pro', 1299.99, 'M1 Chip MacBook', true, false, 'NEW', 5, (SELECT id FROM users WHERE email = 'jane@example.com'), '/images/macbook.jpg', NOW(), NOW()),
-(3, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 6, (SELECT id FROM users WHERE email = 'sarah@example.com'), '/images/jacket.jpg', NOW(), NOW()),
-(4, 'Designer Dress', 299.99, 'Evening gown', true, false, 'NEW', 7, (SELECT id FROM users WHERE email = 'mike@example.com'), '/images/dress.jpg', NOW(), NOW()),
-(5, 'Sofa Set', 899.99, 'Modern 3-piece sofa', true, false, 'NEW', 8, (SELECT id FROM users WHERE email = 'john@example.com'), '/images/sofa.jpg', NOW(), NOW());
+(1, 'iPhone 13', 699.99, 'Latest iPhone model', true, false, 'NEW', 4, (SELECT id FROM users WHERE email = 'safayetrafi461@gmail.com'), '/images/iphone13.jpg', NOW(), NOW()),
+(2, 'MacBook Pro', 1299.99, 'M1 Chip MacBook', true, false, 'NEW', 5, (SELECT id FROM users WHERE email = 'safayetrafi461@gmail.com'), '/images/macbook.jpg', NOW(), NOW()),
+(3, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 6, (SELECT id FROM users WHERE email = 'abdullah26@student.sust.edu'), '/images/jacket.jpg', NOW(), NOW()),
+(4, 'Designer Dress', 299.99, 'Evening gown', true, false, 'NEW', 7, (SELECT id FROM users WHERE email = 'abdullah26@student.sust.edu'), '/images/dress.jpg', NOW(), NOW()),
+(5, 'Sofa Set', 899.99, 'Modern 3-piece sofa', true, false, 'NEW', 8, (SELECT id FROM users WHERE email = 'abdullah26@student.sust.edu'), '/images/sofa.jpg', NOW(), NOW());
 
 -- Insert Bids
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
