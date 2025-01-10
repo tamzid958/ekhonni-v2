@@ -26,7 +26,6 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -135,22 +134,22 @@ public class ProductService extends BaseService<Product, Long> {
 
     @Modifying
     @Transactional
-    public String updateOne(Long id, @Valid ProductUpdateDTO dto) throws IOException {
+    public String updateOne(Long id, ProductUpdateDTO dto) throws IOException {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
 
         Category category = categoryRepository.findByName(dto.category());
-        if (category == null) throw new CategoryNotFoundException();
+        if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-        
+
         List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, dto.images());
-        product.getImages().clear();
         List<ProductImage> newImages = new ArrayList<>();
         for (String imagePath : imagePaths) {
             newImages.add(new ProductImage(imagePath));
         }
 
+        product.getImages().clear();
         product.getImages().addAll(newImages);
         product.setName(dto.name());
         product.setDescription(dto.description());
@@ -161,7 +160,6 @@ public class ProductService extends BaseService<Product, Long> {
 
 
         productRepository.save(product);
-
         return "updated";
     }
 

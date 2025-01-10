@@ -52,7 +52,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     public CategorySubCategoryDTO getSub(String name) {
         Category parent = categoryRepository.findByName(name);
-        if (parent == null) throw new CategoryNotFoundException();
+        if (parent == null) throw new CategoryNotFoundException("category by this name not found");
         List<String> sequenceOfCategory = getSequence(name);
         CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
@@ -83,7 +83,7 @@ public class CategoryService extends BaseService<Category, Long> {
     public void delete(String name) {
         Category category = categoryRepository.findByName(name);
         if (category == null) {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("category by this name not found");
         }
         categoryRepository.deleteCategoryById(category.getId());
     }
@@ -93,7 +93,7 @@ public class CategoryService extends BaseService<Category, Long> {
     public void update(CategoryUpdateDTO categoryUpdateDTO) {
         Category category = categoryRepository.findByName(categoryUpdateDTO.name());
         if (category == null) {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("category by this name not found");
         }
         category.setActive(categoryUpdateDTO.active());
         categoryRepository.save(category);
@@ -104,7 +104,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
         Category category = categoryRepository.findByNameAndActive(name, true);
         if (category == null) {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("category by this name not found");
         }
         List<String> sequence = new ArrayList<>();
         sequence.add(category.getName());
@@ -118,7 +118,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     public List<Long> getActiveCategoryIds(String name) {
         Category category = categoryRepository.findByName(name);
-        if (category == null) throw new CategoryNotFoundException();
+        if (category == null) throw new CategoryNotFoundException("category by this name not found");
         Long categoryId = category.getId();
         return categoryRepository.findSubCategoryIds(categoryId);
     }
