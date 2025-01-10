@@ -12,7 +12,9 @@ import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.dto.ProductUpdateDTO;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
+import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
+import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -35,7 +37,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +46,8 @@ public class ProductService extends BaseService<Product, Long> {
     CategoryService categoryService;
     CategoryRepository categoryRepository;
 
-    @Value("${upload.dir}")
-    String UPLOAD_DIR;
+    @Value("${product.upload.dir}")
+    String PRODUCT_UPLOAD_DIR;
 
 
     public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository) {
@@ -57,13 +58,14 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
     @Transactional
-    public void create(ProductCreateDTO productCreateDTO) {
+    public void create(ProductCreateDTO dto) {
 
         try {
             User user = AuthUtil.getAuthenticatedUser();
-            Category category = categoryRepository.findByName(productCreateDTO.category());
+            Category category = categoryRepository.findByNameAndActive(dto.category(), true);
+            if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-            List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, productCreateDTO.images());
+            List<String> imagePaths = ImageUploadUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
             List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 ProductImage image = new ProductImage(imagePath);
@@ -71,13 +73,13 @@ public class ProductService extends BaseService<Product, Long> {
             }
 
             Product product = new Product(
-                    productCreateDTO.name(),
-                    productCreateDTO.price(),
-                    productCreateDTO.description(),
-                    productCreateDTO.location(),
+                    dto.name(),
+                    dto.price(),
+                    dto.description(),
+                    dto.location(),
                     false,
                     false,
-                    productCreateDTO.condition(),
+                    dto.condition(),
                     category,
                     user,
                     images
@@ -85,7 +87,7 @@ public class ProductService extends BaseService<Product, Long> {
 
             productRepository.save(product);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new ProductNotCreatedException(e.getMessage());
         }
 
     }
@@ -114,13 +116,13 @@ public class ProductService extends BaseService<Product, Long> {
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
         List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> productProjections = productRepository.findByIdIn(productIds);
-        List<ProductResponseDTO> productResponseDTOS = productProjections.stream()
+        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .peek(dto -> dto.setBids(null))
                 .toList();
         long totalElements = 0;
-        return new PageImpl<>(productResponseDTOS, pageable, totalElements);
+        return new PageImpl<>(products, pageable, totalElements);
     }
 
 
@@ -134,33 +136,38 @@ public class ProductService extends BaseService<Product, Long> {
 
     @Modifying
     @Transactional
-    public String updateOne(Long id, ProductUpdateDTO dto) throws IOException {
+    public String updateOne(Long id, ProductUpdateDTO dto) {
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
+        try {
+            Product product = productRepository.findById(id)
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
 
-        Category category = categoryRepository.findByName(dto.category());
-        if (category == null) throw new CategoryNotFoundException("category by this name not found");
+            Category category = categoryRepository.findByName(dto.category());
+            if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
 
-        List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, dto.images());
-        List<ProductImage> newImages = new ArrayList<>();
-        for (String imagePath : imagePaths) {
-            newImages.add(new ProductImage(imagePath));
+            List<String> imagePaths = ImageUploadUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
+            List<ProductImage> newImages = new ArrayList<>();
+            for (String imagePath : imagePaths) {
+                newImages.add(new ProductImage(imagePath));
+            }
+
+            product.getImages().clear();
+            product.getImages().addAll(newImages);
+            product.setName(dto.name());
+            product.setDescription(dto.description());
+            product.setPrice(dto.price());
+            product.setLocation(dto.location());
+            product.setCondition(dto.condition());
+            product.setCategory(category);
+
+
+            productRepository.save(product);
+            return "updated";
+        } catch (Exception e) {
+            throw new ProductNotUpdatedException(e.getMessage());
         }
-
-        product.getImages().clear();
-        product.getImages().addAll(newImages);
-        product.setName(dto.name());
-        product.setDescription(dto.description());
-        product.setPrice(dto.price());
-        product.setLocation(dto.location());
-        product.setCondition(dto.condition());
-        product.setCategory(category);
-
-
-        productRepository.save(product);
-        return "updated";
+        
     }
 
 }

@@ -18,8 +18,6 @@ import com.ekhonni.backend.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 
 @RestController
 @RequestMapping("/api/v2/product")
@@ -40,8 +38,8 @@ public record ProductController(ProductService productService) {
 
 
     @PatchMapping("/{id}")
-    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO) throws IOException {
-        return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, productUpdateDTO));
+    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
     }
 
 
