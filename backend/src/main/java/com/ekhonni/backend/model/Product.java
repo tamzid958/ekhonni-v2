@@ -16,7 +16,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -38,6 +37,9 @@ public class Product extends BaseEntity<Long> {
     @NotBlank
     private String description;
 
+    @NotBlank
+    private String location;
+
     private boolean approved;
     private boolean sold;
 
@@ -53,7 +55,7 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images;
 
@@ -61,13 +63,22 @@ public class Product extends BaseEntity<Long> {
     public Long getCategoryId() {
         return this.getCategory().getId();
     }
+
     public String getCategoryName() {
         return this.getCategory().getName();
     }
-    public String getSellerName() {return this.getSeller().getUsername();}
-    public ProductSellerDTO getSellerDTO() {return new ProductSellerDTO(this.getSeller().getId(),this.getSeller().getName());}
-    public ProductCategoryDTO getCategoryDTO() {return new ProductCategoryDTO(this.getCategory().getId(),this.getCategory().getName());}
 
+    public String getSellerName() {
+        return this.getSeller().getUsername();
+    }
+
+    public ProductSellerDTO getSellerDTO() {
+        return new ProductSellerDTO(this.getSeller().getId(), this.getSeller().getName());
+    }
+
+    public ProductCategoryDTO getCategoryDTO() {
+        return new ProductCategoryDTO(this.getCategory().getId(), this.getCategory().getName());
+    }
 
 
 }

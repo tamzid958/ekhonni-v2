@@ -10,23 +10,23 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
+import com.ekhonni.backend.dto.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 
 @RestController
 @RequestMapping("/api/v2/product")
 public record ProductController(ProductService productService) {
 
-
     @PostMapping
-    public ApiResponse<?> createProduct(@ModelAttribute ProductCreateDTO productCreateDTO) {
+    public ApiResponse<?> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
         productService.create(productCreateDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
@@ -40,11 +40,9 @@ public record ProductController(ProductService productService) {
 
 
     @PatchMapping("/{id}")
-    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @RequestBody ProductCreateDTO productCreateDTO) {
-        ProductCreateDTO updatedProductCreateDTO = productService.update(id, productCreateDTO);
-        return new ApiResponse<>(HTTPStatus.FOUND, updatedProductCreateDTO);
+    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO productUpdateDTO) throws IOException {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, productUpdateDTO));
     }
-
 
 
     @DeleteMapping("/{id}")

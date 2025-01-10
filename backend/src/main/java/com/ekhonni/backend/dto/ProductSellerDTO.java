@@ -19,5 +19,4 @@ import java.util.UUID;
 public class ProductSellerDTO {
     private UUID sellerId;
     private String sellerName;
-
 }

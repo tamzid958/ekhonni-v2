@@ -9,18 +9,19 @@ package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.model.ProductImage;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ProductResponseDTO {
     private Long id;
     private Double price;
@@ -31,9 +32,6 @@ public class ProductResponseDTO {
     private ProductCondition condition;
     private ProductSellerDTO seller;
     private ProductCategoryDTO category;
-
     private List<ProductImage> images = new ArrayList<>();
     private List<BidResponseDTO> bids = new ArrayList<>();
-
-
 }

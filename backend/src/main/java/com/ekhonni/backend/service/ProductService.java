@@ -10,8 +10,14 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
+import com.ekhonni.backend.dto.ProductUpdateDTO;
+import com.ekhonni.backend.exception.CategoryNotFoundException;
+import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.model.*;
+import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.ProductImage;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
@@ -20,20 +26,19 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.jpa.domain.Specification;
-
-import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
@@ -70,6 +75,7 @@ public class ProductService extends BaseService<Product, Long> {
                     productCreateDTO.name(),
                     productCreateDTO.price(),
                     productCreateDTO.description(),
+                    productCreateDTO.location(),
                     false,
                     false,
                     productCreateDTO.condition(),
@@ -114,7 +120,6 @@ public class ProductService extends BaseService<Product, Long> {
                 .map(ProductProjectionConverter::convert)
                 .peek(dto -> dto.setBids(null))
                 .toList();
-
         long totalElements = 0;
         return new PageImpl<>(productResponseDTOS, pageable, totalElements);
     }
@@ -122,9 +127,42 @@ public class ProductService extends BaseService<Product, Long> {
 
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
-
         ProductResponseDTO product = ProductProjectionConverter.convert(projection);
         product.setBids(null);
         return product;
     }
+
+
+    @Modifying
+    @Transactional
+    public String updateOne(Long id, @Valid ProductUpdateDTO dto) throws IOException {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
+
+        Category category = categoryRepository.findByName(dto.category());
+        if (category == null) throw new CategoryNotFoundException();
+
+        
+        List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, dto.images());
+        product.getImages().clear();
+        List<ProductImage> newImages = new ArrayList<>();
+        for (String imagePath : imagePaths) {
+            newImages.add(new ProductImage(imagePath));
+        }
+
+        product.getImages().addAll(newImages);
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPrice(dto.price());
+        product.setLocation(dto.location());
+        product.setCondition(dto.condition());
+        product.setCategory(category);
+
+
+        productRepository.save(product);
+
+        return "updated";
+    }
+
 }

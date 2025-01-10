@@ -1,7 +1,7 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 12:50 AM
- * Date: 12/9/2024
+ * Time: 11:18 PM
+ * Date: 1/9/2025
  * Project Name: ekhonni-v2
  */
 
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record ProductCreateDTO(
+public record ProductUpdateDTO(
         @NotBlank(message = "Product name cannot be null")
         String name,
         @NotNull(message = "Price cannot be null")
@@ -36,5 +36,3 @@ public record ProductCreateDTO(
         List<MultipartFile> images
 ) {
 }
-
-
