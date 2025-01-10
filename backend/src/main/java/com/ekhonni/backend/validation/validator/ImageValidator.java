@@ -26,14 +26,14 @@ public class ImageValidator implements ConstraintValidator<ImageOnly, MultipartF
     );
 
     @Override
-    public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
+    public boolean isValid(MultipartFile image, ConstraintValidatorContext context) {
         try {
-            validateFile(file);
+            validateFile(image);
         } catch (ImageUploadException e) {
             setConstraintViolationMessage(context, e.getMessage());
             return false;
         } catch (Exception e) {
-            setConstraintViolationMessage(context, "An unexpected error occurred while validating the file.");
+            setConstraintViolationMessage(context, "An unexpected error occurred while validating the image.");
             return false;
         }
         return true;
@@ -49,8 +49,8 @@ public class ImageValidator implements ConstraintValidator<ImageOnly, MultipartF
             throw new ImageUploadException("Invalid image type. Only JPEG, PNG, GIF, BMP, and WEBP files are supported.");
         }
 
-        String filename = image.getOriginalFilename();
-        if (filename == null || SUPPORTED_EXTENSIONS.stream().noneMatch(filename.toLowerCase()::endsWith)) {
+        String imageName = image.getOriginalFilename();
+        if (imageName == null || SUPPORTED_EXTENSIONS.stream().noneMatch(imageName.toLowerCase()::endsWith)) {
             throw new ImageUploadException("Invalid image extension. Only .jpg, .jpeg, .png, .gif, .bmp, and .webp are allowed.");
         }
     }
