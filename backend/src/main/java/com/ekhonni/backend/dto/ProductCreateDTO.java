@@ -8,6 +8,7 @@
 package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.validation.annotation.ImageOnly;
 import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,9 +33,10 @@ public record ProductCreateDTO(
         ProductCondition condition,
         @NotBlank(message = "Category cannot be null")
         String category,
-        @NotNull(message = "Images list cannot be null")
+        @NonEmptyMultipartFile
+        @ImageOnly
         @Size(min = 2, max = 2, message = "Exactly 2 images are required")
-        List<@NonEmptyMultipartFile MultipartFile> images
+        List<MultipartFile> images
 ) {
 }
 

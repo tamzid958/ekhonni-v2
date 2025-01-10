@@ -112,7 +112,7 @@ public class ProductService extends BaseService<Product, Long> {
 
 
     public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
-        List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
+        List<Long> categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
         List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
@@ -167,7 +167,7 @@ public class ProductService extends BaseService<Product, Long> {
         } catch (Exception e) {
             throw new ProductNotUpdatedException(e.getMessage());
         }
-        
+
     }
 
 }

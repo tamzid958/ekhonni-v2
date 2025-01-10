@@ -116,11 +116,11 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    public List<Long> getActiveCategoryIds(String name) {
-        Category category = categoryRepository.findByName(name);
+    public List<Long> getRelatedActiveIds(String name) {
+        Category category = categoryRepository.findByNameAndActive(name, true);
         if (category == null) throw new CategoryNotFoundException("category by this name not found");
         Long categoryId = category.getId();
-        return categoryRepository.findSubCategoryIds(categoryId);
+        return categoryRepository.findRelatedActiveIds(categoryId);
     }
 
 

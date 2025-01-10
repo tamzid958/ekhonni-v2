@@ -8,7 +8,7 @@
 package com.ekhonni.backend.validation.validator;
 
 import com.ekhonni.backend.exception.ImageUploadException;
-import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
+import com.ekhonni.backend.validation.annotation.ImageOnly;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
 
-public class NonEmptyMultipartFileValidator implements ConstraintValidator<NonEmptyMultipartFile, MultipartFile> {
+public class ImageValidator implements ConstraintValidator<ImageOnly, MultipartFile> {
 
     private static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp", "image/webp"
@@ -32,23 +32,26 @@ public class NonEmptyMultipartFileValidator implements ConstraintValidator<NonEm
         } catch (ImageUploadException e) {
             setConstraintViolationMessage(context, e.getMessage());
             return false;
+        } catch (Exception e) {
+            setConstraintViolationMessage(context, "An unexpected error occurred while validating the file.");
+            return false;
         }
         return true;
     }
 
-    private void validateFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new ImageUploadException("File must not be null or empty.");
+    private void validateFile(MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            throw new ImageUploadException("Image must not be null or empty.");
         }
 
-        String contentType = file.getContentType();
+        String contentType = image.getContentType();
         if (contentType == null || !SUPPORTED_CONTENT_TYPES.contains(contentType.toLowerCase())) {
-            throw new ImageUploadException("Invalid file type. Only JPEG, PNG, GIF, BMP, and WEBP files are supported.");
+            throw new ImageUploadException("Invalid image type. Only JPEG, PNG, GIF, BMP, and WEBP files are supported.");
         }
 
-        String filename = file.getOriginalFilename();
+        String filename = image.getOriginalFilename();
         if (filename == null || SUPPORTED_EXTENSIONS.stream().noneMatch(filename.toLowerCase()::endsWith)) {
-            throw new ImageUploadException("Invalid file extension. Only .jpg, .jpeg, .png, .gif, .bmp, and .webp are allowed.");
+            throw new ImageUploadException("Invalid image extension. Only .jpg, .jpeg, .png, .gif, .bmp, and .webp are allowed.");
         }
     }
 
