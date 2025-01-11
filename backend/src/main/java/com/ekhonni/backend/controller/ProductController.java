@@ -11,8 +11,11 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.projection.BuyerBidProjection;
 import com.ekhonni.backend.projection.ProductProjection;
+import com.ekhonni.backend.projection.SellerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
+import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/product")
-public record ProductController(ProductService productService) {
+public record ProductController(ProductService productService, BidService bidService) {
 
 
     //done
@@ -143,6 +146,12 @@ public record ProductController(ProductService productService) {
 //        //update category
 //        return "updated";
 //    }
+
+    @GetMapping("/{id}/bid")
+    public ApiResponse<?> getAllBidsForProduct(@PathVariable("id") Long id, Pageable pageable) {
+        return new ApiResponse<>(HTTPStatus.ACCEPTED,
+                bidService.getAllBidsForProduct(id, BuyerBidProjection.class, pageable));
+    }
 
 
 }

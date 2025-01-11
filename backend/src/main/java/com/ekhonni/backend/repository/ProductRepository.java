@@ -17,6 +17,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product>, BaseRepository<Product, Long> {
@@ -55,5 +57,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     List<ProductProjection> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(String text1, String text2, String text3);
 
-
+    @Query("SELECT p.seller.id FROM Product p WHERE id = :id")
+    Optional<UUID> findSellerIdById(Long id);
 }

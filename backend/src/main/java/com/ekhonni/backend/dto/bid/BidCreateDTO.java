@@ -1,10 +1,8 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.bid;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-
-import java.util.UUID;
 
 public record BidCreateDTO(
         @NotNull(message = "Product id cannot be null")

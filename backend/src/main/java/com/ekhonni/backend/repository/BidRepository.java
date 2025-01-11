@@ -1,5 +1,6 @@
 package com.ekhonni.backend.repository;
 
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.model.Bid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,6 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
     Optional<UUID> findBidderIdById(Long id);
+
+    boolean existsByProductIdAndStatus(Long productId, BidStatus status);
 }

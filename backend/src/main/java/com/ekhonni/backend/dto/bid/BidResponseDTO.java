@@ -1,4 +1,4 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.bid;
 
 import com.ekhonni.backend.enums.BidStatus;
 

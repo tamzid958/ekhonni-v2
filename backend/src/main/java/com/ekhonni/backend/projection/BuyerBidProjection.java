@@ -3,11 +3,10 @@ package com.ekhonni.backend.projection;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public interface BidProjection {
-    Long getId();
+public interface BuyerBidProjection {
     Long getProductId();
-    UUID getBidderId();
     Double getAmount();
     String getStatus();
-    LocalDateTime createdAt();
+    String getCurrency();
+    LocalDateTime getCreatedAt();
 }

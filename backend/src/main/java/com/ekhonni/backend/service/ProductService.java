@@ -10,6 +10,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.enums.ProductSort;
+import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -21,11 +22,11 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
@@ -99,5 +100,10 @@ public class ProductService extends BaseService<Product, Long> {
             // notify seller
         });
         return true;
+    }
+
+    public UUID getSellerId(Long id) {
+        return productRepository.findSellerIdById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
     }
 }

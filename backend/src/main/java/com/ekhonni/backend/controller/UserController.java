@@ -3,9 +3,15 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.projection.SellerBidProjection;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.response.ApiResponse;
+import com.ekhonni.backend.service.BidService;
+import com.ekhonni.backend.service.ProductService;
 import com.ekhonni.backend.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +30,8 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final BidService bidService;
+    private final ProductService productService;
 
     @GetMapping("/{id}/profile")
     public UserProjection getUserById(@PathVariable UUID id) {
@@ -71,4 +79,14 @@ public class UserController {
     public void getUploadedProducts() {
         // To be implemented
     }
+
+    @GetMapping("/{id}/product/{product_id}/bid")
+    @PreAuthorize("#id == authentication.principal.id && #id == @productService.getSellerId(#productId)")
+    public ApiResponse<?> getAllBidsForProduct(@PathVariable UUID id,
+                                               @PathVariable("product_id") Long productId,
+                                               Pageable pageable) {
+        return new ApiResponse<>(HTTPStatus.ACCEPTED,
+                bidService.getAllBidsForProduct(productId, SellerBidProjection.class, pageable));
+    }
+
 }
