@@ -5,11 +5,9 @@ import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +26,10 @@ public class NotificationController {
 
     @GetMapping("/{id}/notifications")
     @PreAuthorize("#id == authentication.principal.id")
-    public List<NotificationPreviewDTO> getPreviewNotifications(@PathVariable UUID id) {
-        return notificationService.get(id);
+    public List<NotificationPreviewDTO> getPreviewNotifications(
+            @PathVariable UUID id,
+            @RequestParam(required = false) LocalDateTime lastFetchTime
+    ) {
+        return notificationService.getAllNew(id, lastFetchTime);
     }
 }

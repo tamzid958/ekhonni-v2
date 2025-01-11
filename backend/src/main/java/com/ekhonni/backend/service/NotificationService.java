@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,8 +32,8 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final TimeUtils timeUtils;
 
-    public List<NotificationPreviewDTO> get(UUID userId) {
-        return notificationRepository.findByRecipientId(userId)
+    public List<NotificationPreviewDTO> getAll(UUID recipientId) {
+        return notificationRepository.findByRecipientId(recipientId)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
                                 notifications.getMessage(),
@@ -41,6 +42,19 @@ public class NotificationService {
                 )
                 .toList();
     }
+
+    public List<NotificationPreviewDTO> getAllNew(UUID recipientId, LocalDateTime lastFetchTime) {
+        if (lastFetchTime == null) return getAll(recipientId);
+        return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime)
+                .stream()
+                .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getMessage(),
+                                timeUtils.timeAgo(notifications.getCreatedAt())
+                        )
+                )
+                .toList();
+    }
+
 
     public void create(User recipient, NotificationType type, String message, String redirectUrl) {
         Notification notification = new Notification(
