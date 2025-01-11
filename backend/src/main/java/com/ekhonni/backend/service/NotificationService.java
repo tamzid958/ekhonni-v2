@@ -12,6 +12,7 @@ import com.ekhonni.backend.util.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class NotificationService {
     private final TimeUtils timeUtils;
 
     public List<NotificationPreviewDTO> getAll(UUID recipientId) {
-        return notificationRepository.findByRecipientId(recipientId)
+        return notificationRepository.findByRecipientId(recipientId, Sort.by(Sort.Order.desc("createdAt")))
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
                                 notifications.getMessage(),
@@ -46,7 +47,7 @@ public class NotificationService {
 
     public List<NotificationPreviewDTO> getAllNew(UUID recipientId, LocalDateTime lastFetchTime) {
         if (lastFetchTime == null) return getAll(recipientId);
-        return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime)
+        return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime, Sort.by(Sort.Order.desc("createdAt")))
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
                                 notifications.getMessage(),
