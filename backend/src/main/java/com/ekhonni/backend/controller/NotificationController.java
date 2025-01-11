@@ -32,4 +32,10 @@ public class NotificationController {
     ) {
         return notificationService.getAllNew(id, lastFetchTime);
     }
+
+    @DeleteMapping("/{userId}/notifications/{notificationId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public void delete(@PathVariable UUID userId, @PathVariable Long notificationId) {
+        notificationService.delete(userId, notificationId);
+    }
 }
