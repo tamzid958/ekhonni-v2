@@ -19,8 +19,8 @@ spring:
       ddl-auto: ${JPA_DDL_AUTO:create-drop}
     properties:
       hibernate:
-        format_sql: ${JPA_FORMAT_SQL}
-        highlight_sql: ${JPA_HIGHLIGHT_SQL}
+        format_sql: ${JPA_FORMAT_SQL:true}
+        highlight_sql: ${JPA_HIGHLIGHT_SQL:true}
 
   security:
     jwt:
@@ -63,29 +63,10 @@ spring:
     ansi:
       enabled: ALWAYS
 
-server:
-  address: ${SERVER_ADDRESS}
-
-sslcommerz:
-  store-id: ${SSLCOMMERZ_STORE_ID}
-  store-password: ${SSLCOMMERZ_STORE_PASSWORD}
-  success-url: ${BASE_URL}/success
-  fail-url: ${BASE_URL}/fail
-  cancel-url: ${BASE_URL}/cancel
-  ipn-url: ${SSLCOMMERZ_IPN_URL}
-  api-url: ${SSLCOMMERZ_API_URL}
-  validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
-  connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
-  read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
-  allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
-
 sql:
   init:
     mode: ${SQL_INIT_MODE:always}
     platform: ${SQL_INIT_PLATFORM:postgresql}
-
-upload:
-  dir: ${UPLOAD_DIR}
 
 logging:
   pattern:
@@ -106,6 +87,87 @@ logging:
   logback:
     rollingpolicy:
       max-file-size: 10MB
-      max-history: 7
       file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
+      max-history: 7
 
+server:
+  address: ${SERVER_ADDRESS}
+
+sslcommerz:
+  store-id: ${SSLCOMMERZ_STORE_ID}
+  store-password: ${SSLCOMMERZ_STORE_PASSWORD}
+  success-url: ${BASE_URL}/success
+  fail-url: ${BASE_URL}/fail
+  cancel-url: ${BASE_URL}/cancel
+  ipn-url: ${SSLCOMMERZ_IPN_URL}
+  api-url: ${SSLCOMMERZ_API_URL}
+  validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
+  connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
+  read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
+  allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
+
+upload:
+  dir: ${UPLOAD_DIR}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
+      base-path: /actuator
+      cors:
+        allowed-origins: "*"
+        allowed-methods: GET,POST
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    git:
+      enabled: true
+    build:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 10ms, 100ms
+    enable:
+      jvm: true
+      process: true
+      system: true
+      http: true
+  health:
+    diskspace:
+      enabled: true
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    mail:
+      enabled: true
+
+# Optional: Info endpoint custom data
+info:
+  app:
+    name: ${spring.application.name}
+    description: Ekhonni Backend Service
+    version: 1.0.0
+  contact:
+    email: asif783810@gmail.com
+    team: Backend Team
+  environment: ${spring.profiles.active}
