@@ -1,23 +1,111 @@
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"  # or specifically list needed endpoints
-  endpoint:
-    health:
-      show-details: always
-  metrics:
-    tags:
-      application: ${spring.application.name}
-    distribution:
-      percentiles-histogram:
-        resilience4j.circuitbreaker: true
-        resilience4j.retry: true
+spring:
 
-resilience4j:
-  circuitbreaker:
-    metrics:
-      enabled: true
-  retry:
-    metrics:
-      enabled: true
+  application:
+    name: ${APPLICATION_NAME}
+
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: ${JPA_GENERATE_DDL:true}
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:create-drop}
+    properties:
+      hibernate:
+        format_sql: ${JPA_FORMAT_SQL}
+        highlight_sql: ${JPA_HIGHLIGHT_SQL}
+
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      access:
+        token:
+          expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh:
+      token:
+        expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+
+    admin:
+      email: ${ADMIN_EMAIL}
+      password: ${ADMIN_PASSWORD}
+
+  constant:
+    public:
+      urls: ${PUBLIC_URLS}
+    user:
+      urls: ${USER_URLS}
+    admin:
+      urls: ${ADMIN_URLS}
+    email-verification-url: ${EMAIL_VERIFICATION_URL}
+    password-reset-url: ${PASSWORD_RESET_URL}
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+server:
+  address: ${SERVER_ADDRESS}
+
+sslcommerz:
+  store-id: ${SSLCOMMERZ_STORE_ID}
+  store-password: ${SSLCOMMERZ_STORE_PASSWORD}
+  success-url: ${BASE_URL}/success
+  fail-url: ${BASE_URL}/fail
+  cancel-url: ${BASE_URL}/cancel
+  ipn-url: ${SSLCOMMERZ_IPN_URL}
+  api-url: ${SSLCOMMERZ_API_URL}
+  validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
+  connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
+  read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
+  allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
+
+sql:
+  init:
+    mode: ${SQL_INIT_MODE:always}
+    platform: ${SQL_INIT_PLATFORM:postgresql}
+
+upload:
+  dir: ${UPLOAD_DIR}
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.ekhonni: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 7
+
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
+

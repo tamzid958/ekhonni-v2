@@ -18,13 +18,20 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +59,8 @@ public class ProductService extends BaseService<Product, Long> {
         try {
             User user = AuthUtil.getAuthenticatedUser();
             Category category = categoryRepository.findByName(productDTO.category());
-            String imagePath = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.image());
+            List<String> imagePaths = ImageUploadUtil.saveImage(UPLOAD_DIR, productDTO.images());
+
 
             Product product = new Product(
                     productDTO.name(),
@@ -63,26 +71,15 @@ public class ProductService extends BaseService<Product, Long> {
                     productDTO.condition(),
                     category,
                     user,
-                    imagePath
+                    imagePaths
             );
+
+            System.out.println(product);
             productRepository.save(product);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-    }
-
-
-    public List<ProductProjection> getAllFiltered(ProductFilter productFilter) {
-        if (productFilter.getSortBy() == null) productFilter.setSortBy(ProductSort.bestMatch);
-        String categoryName = productFilter.getCategoryName();
-        Category category = categoryRepository.findByNameAndActive(categoryName, true);
-        return productRepository.findAllProjectionByFilter(productFilter, category.getId());
-    }
-
-
-    public List<ProductProjection> search(String searchText, Pageable pageable) {
-        return productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCategoryNameContainingIgnoreCase(searchText, searchText, searchText);
     }
 
 
@@ -95,12 +92,25 @@ public class ProductService extends BaseService<Product, Long> {
         return productRepository.existsById(id);
     }
 
+
     public boolean declineProduct(Long id) {
         productRepository.findById(id).ifPresent(product -> {
             // notify seller
         });
         return true;
     }
+
+
+    public Page<ProductProjection> getAllFiltered(ProductFilter filter) {
+        List<Long> categoryIds = categoryService.getActiveCategoryIds(filter.getCategoryName());
+        Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
+        Pageable pageable = PageRequest.of(filter.getPage(),filter.getSize());
+
+
+        return productRepository.findAllFiltered(spec,pageable);
+    }
+
+
 
     public UUID getSellerId(Long id) {
         return productRepository.findSellerIdById(id)

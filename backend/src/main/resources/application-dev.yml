@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ekhonni_db
+    username: myuser
+    password: password
+
+  security:
+    jwt:
+      secret: +bvMrs/ybTJLZNszKj0lmus9UnwL4JydIhQbxOv+V5M=
+      expiration: 7200000
+
+  constant:
+    public:
+      urls: >
+        api/v2/auth/**,
+        /swagger-ui/**,
+        /swagger-ui.html,
+        /v3/api-docs/**,
+        /swagger-resources/**,
+        /webjars/**,
+        /swagger-ui/index.html,
+        /api-docs/**,
+        /api/v2/payment/ipn
+    user:
+      urls: >
+        api/v2/user/**,
+        /api/v2/product/**,
+        /api/v2/bid/**,
+        /api/v2/payment/**
+    admin:
+      urls: /**
+    email-verification-url: http://localhost:8080/api/v2/auth/verify-email?token=
+    password-reset-url: http://localhost:8080/api/v2/auth/reset-password?token=
+
+  mail:
+    host: smtp.mailersend.net
+    port: 587
+    username: MS_BUlVXG@trial-3zxk54vdp814jy6v.mlsender.net
+    password: GGKEexeIOAfwiirK
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+sslcommerz:
+  store-id: dynam675920884ad3b
+  store-password: dynam675920884ad3b@ssl

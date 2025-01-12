@@ -1,15 +1,15 @@
 package com.ekhonni.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Author: Md Jahid Hasan
  * Date: 12/22/24
  */
-public record UserUpdateDTO(@NotBlank(message = "name cannot be blank")
+public record UserUpdateDTO(@NotNull(message = "name cannot be null")
                             String name,
-                            @NotBlank(message = "phone cannot be blank")
+                            @NotNull(message = "phone cannot be null")
                             String phone,
-                            @NotBlank(message = "address cannot be blank")
+                            @NotNull(message = "address cannot be null")
                             String address) {
 }

@@ -2,14 +2,17 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
+import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.projection.SellerBidProjection;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
 import com.ekhonni.backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -39,45 +42,36 @@ public class UserController {
     }
 
 
-    @PatchMapping("/{id}/update")
-    @PreAuthorize("#id == authentication.principal.id")
-    public UserUpdateDTO updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    @PatchMapping("/{id}")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public UserUpdateDTO updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
     }
 
     @PatchMapping("/{id}/change-email")
-    @PreAuthorize("#id == authentication.principal.id")
-    public String updateUserEmail(@PathVariable UUID id, @RequestBody EmailDTO emailDTO) {
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public String updateUserEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
         return userService.updateEmail(id, emailDTO);
     }
 
     @PatchMapping("/{id}/change-password")
-    @PreAuthorize("#id == authentication.principal.id")
-    public String updateUserPassword(@PathVariable UUID id, @RequestBody PasswordDTO passwordDTO) {
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public String updateUserPassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
         return userService.updatePassword(id, passwordDTO);
     }
 
 
-    @DeleteMapping("/{id}/delete")
-    @PreAuthorize("#id == authentication.principal.id")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/wishlists")
-    public void getUserWishlists() {
-        // To be implemented
-    }
-
-    @GetMapping("/{id}/bids")
-    public void getUserBids() {
-        // To be implemented
-    }
-
-    @GetMapping("/{id}/products")
-    public void getUploadedProducts() {
-        // To be implemented
+    @PostMapping("/{id}/refresh-token/")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public AuthToken getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        return userService.getNewAccessToken(refreshTokenDTO);
     }
 
     @GetMapping("/{id}/product/{product_id}/bid")
