@@ -1,17 +1,15 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.NotificationPreviewDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,21 +27,21 @@ public class NotificationController {
 
     @GetMapping
     @PreAuthorize("#userId == authentication.principal.id")
-    public List<NotificationPreviewDTO> getPreviewNotifications(
+    public ApiResponse<?> getPreviewNotifications(
             @PathVariable UUID userId,
             @RequestParam(required = false) LocalDateTime lastFetchTime,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            Pageable pageable
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        return notificationService.getAllNew(userId, lastFetchTime, pageable);
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, notificationService.getAllNew(userId, lastFetchTime, pageable));
     }
+
 
     @DeleteMapping("/{notificationId}/delete")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public void delete(@PathVariable UUID userId, @PathVariable Long notificationId) {
         notificationService.delete(userId, notificationId);
     }
+
 
     @GetMapping("/{notificationId}/redirect")
     @PreAuthorize("#userId == authentication.principal.id")
