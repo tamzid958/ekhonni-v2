@@ -65,6 +65,14 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
+    public String redirect(UUID userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        notification.setReadAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+        return notification.getRedirectUrl();
+    }
 
     public void create(User recipient, NotificationType type, String message, String redirectUrl) {
         Notification notification = new Notification(

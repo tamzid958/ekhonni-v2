@@ -20,28 +20,34 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("/api/v2/user")
+@RequestMapping("/api/v2/user/{userId}/notifications")
 @AllArgsConstructor
 @Validated
 public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/{id}/notifications")
-    @PreAuthorize("#id == authentication.principal.id")
+    @GetMapping
+    @PreAuthorize("#userId == authentication.principal.id")
     public List<NotificationPreviewDTO> getPreviewNotifications(
-            @PathVariable UUID id,
+            @PathVariable UUID userId,
             @RequestParam(required = false) LocalDateTime lastFetchTime,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        return notificationService.getAllNew(id, lastFetchTime, pageable);
+        return notificationService.getAllNew(userId, lastFetchTime, pageable);
     }
 
-    @DeleteMapping("/{userId}/notifications/{notificationId}")
+    @DeleteMapping("/{notificationId}/delete")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public void delete(@PathVariable UUID userId, @PathVariable Long notificationId) {
         notificationService.delete(userId, notificationId);
+    }
+
+    @GetMapping("/{notificationId}/redirect")
+    @PreAuthorize("#userId == authentication.principal.id")
+    public String redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
+        return notificationService.redirect(userId, notificationId);
     }
 }
