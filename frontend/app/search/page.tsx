@@ -16,7 +16,7 @@ interface data {
   price: number;
 }
 
-export function CardDemo({ title, description, img, price }: data) {
+function CardDemo({ title, description, img, price }: data) {
   return (
     <Card className="bg-transparent shadow-none">
       <CardContent className="pt-6">
