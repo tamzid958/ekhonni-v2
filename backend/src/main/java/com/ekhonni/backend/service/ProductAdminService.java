@@ -77,4 +77,21 @@ public class ProductAdminService {
         return "Post declined";
 
     }
+
+    @Transactional
+    public String deleteOne(Long id){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product doesn't exist"));
+
+        if (product.getStatus() != ProductStatus.APPROVED) {
+            throw new IllegalStateException("Product is not for archive");
+        }
+        product.setStatus(ProductStatus.ARCHIVED);
+        productRepository.save(product);
+
+        // should we work with projection or product
+        // notify seller.
+
+        return "Post Archived";
+    }
 }
