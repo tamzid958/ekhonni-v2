@@ -36,11 +36,19 @@ public class CategoryService extends BaseService<Category, Long> {
 
 
     public String save(CategoryCreateDTO dto) {
+        Category old = categoryRepository.findByName(dto.name());
+        if (old != null) throw new CategoryNotFoundException("Category already exists");
+
         Category parentCategory = null;
         if (dto.parentCategory() != null)
             parentCategory = categoryRepository.findByName(dto.parentCategory());
         if (dto.parentCategory() != null && parentCategory == null)
             throw new CategoryNotFoundException("Parent category by this name not found");
+
+        if (dto.parentCategory() != null && !parentCategory.isActive()) {
+            throw new CategoryNotFoundException("Parent category is inactive");
+        }
+
         Category category = new Category(
                 dto.name(),
                 true,
@@ -92,10 +100,19 @@ public class CategoryService extends BaseService<Category, Long> {
 
     @Transactional
     public void update(CategoryUpdateDTO categoryUpdateDTO) {
+        //category not found
         Category category = categoryRepository.findByName(categoryUpdateDTO.name());
         if (category == null) {
             throw new CategoryNotFoundException("Category by this name not found");
         }
+
+        // parent is inactive
+//        Category parent = category.getParentCategory();
+//        if(parent!=null && !parent.isActive()){
+//            throw new CategoryNotFoundException("Parent category is inactive");
+//        }
+
+        //update th
         category.setActive(categoryUpdateDTO.active());
         categoryRepository.save(category);
 

@@ -10,6 +10,7 @@ package com.ekhonni.backend.projection;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.ProductImage;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public interface ProductProjection {
     String getName();
 
     String getDescription();
+
+    ProductStatus getStatus();
 
     LocalDateTime getCreatedAt();
 

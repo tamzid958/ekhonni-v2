@@ -11,6 +11,7 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.dto.ProductUpdateDTO;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
@@ -72,13 +73,14 @@ public class ProductService extends BaseService<Product, Long> {
                 images.add(image);
             }
 
+            ProductStatus status = ProductStatus.PENDING_APPROVAL;
+
             Product product = new Product(
                     dto.name(),
                     dto.price(),
                     dto.description(),
                     dto.location(),
-                    false,
-                    false,
+                    status,
                     dto.condition(),
                     category,
                     user,
@@ -93,22 +95,22 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    @Transactional
-    public boolean approveProduct(Long id) {
-        productRepository.findById(id).ifPresent(product -> {
-            product.setApproved(true);
-            productRepository.save(product);
-        });
-        return productRepository.existsById(id);
-    }
+//    @Transactional
+//    public boolean approveProduct(Long id) {
+//        productRepository.findById(id).ifPresent(product -> {
+//            product.setApproved(true);
+//            productRepository.save(product);
+//        });
+//        return productRepository.existsById(id);
+//    }
 
 
-    public boolean declineProduct(Long id) {
-        productRepository.findById(id).ifPresent(product -> {
-            // notify seller
-        });
-        return true;
-    }
+//    public boolean declineProduct(Long id) {
+//        productRepository.findById(id).ifPresent(product -> {
+//            // notify seller
+//        });
+//        return true;
+//    }
 
 
     public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {

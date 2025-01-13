@@ -11,7 +11,7 @@ import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.projection.ProductProjection;
 
 public class ProductProjectionConverter {
-    public static ProductResponseDTO convert(ProductProjection projection){
+    public static ProductResponseDTO convert(ProductProjection projection) {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(projection.getId());
         dto.setPrice(projection.getPrice());
@@ -23,6 +23,7 @@ public class ProductProjectionConverter {
         dto.setCategory(projection.getCategoryDTO());
         dto.setSeller(projection.getSellerDTO());
         dto.setImages(projection.getImages());
+        dto.setStatus(projection.getStatus());
         return dto;
     }
 }

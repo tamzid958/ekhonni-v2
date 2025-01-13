@@ -11,6 +11,7 @@ import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.enums.ProductStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -40,8 +41,9 @@ public class Product extends BaseEntity<Long> {
     @NotBlank
     private String location;
 
-    private boolean approved;
-    private boolean sold;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,7 +53,7 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 

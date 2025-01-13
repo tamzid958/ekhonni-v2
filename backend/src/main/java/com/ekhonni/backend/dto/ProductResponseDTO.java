@@ -8,6 +8,7 @@
 package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class ProductResponseDTO {
     private Double price;
     private String name;
     private String description;
+    private ProductStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private ProductCondition condition;
