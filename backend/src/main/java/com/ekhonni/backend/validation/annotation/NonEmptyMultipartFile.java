@@ -8,6 +8,7 @@
 package com.ekhonni.backend.validation.annotation;
 
 import com.ekhonni.backend.validation.validator.NonEmptyMultipartFileListValidator;
+import com.ekhonni.backend.validation.validator.NonEmptyMultipartFileValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -18,7 +19,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = NonEmptyMultipartFileListValidator.class)
+@Constraint(validatedBy = {NonEmptyMultipartFileValidator.class, NonEmptyMultipartFileListValidator.class})
 public @interface NonEmptyMultipartFile {
     String message() default "All files must be non-empty!";
 

@@ -11,6 +11,7 @@ import com.ekhonni.backend.dto.bid.BidResponseDTO;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.ProductImage;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,20 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({
+        "id",
+        "price",
+        "name",
+        "description",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "condition",
+        "seller",
+        "category",
+        "images",
+        "bids"
+})
 public class ProductResponseDTO {
     private Long id;
     private Double price;

@@ -274,5 +274,75 @@
     "description": "Get all the notifications of a specific user",
     "httpMethod": "GET",
     "endpoint": "/api/v2/user/{id}/notifications"
-  }
+  },
+
+    {
+      "name": "Create category",
+      "description": "Create a new category",
+      "httpMethod": "POST",
+      "endpoint": "/api/v2/category"
+    },
+    {
+      "name": "Get all categories",
+      "description": "Retrieve all categories and their subcategories",
+      "httpMethod": "GET",
+      "endpoint": "/api/v2/category/all"
+    },
+    {
+      "name": "Get subcategories",
+      "description": "Retrieve all subcategories for a specific category",
+      "httpMethod": "GET",
+      "endpoint": "/api/v2/category/{name}/subCategories"
+    },
+    {
+      "name": "Delete category",
+      "description": "Delete a specific category by name",
+      "httpMethod": "DELETE",
+      "endpoint": "/api/v2/category/{name}"
+    },
+    {
+      "name": "Update category",
+      "description": "Update a specific category by name",
+      "httpMethod": "PATCH",
+      "endpoint": "/api/v2/category/{name}"
+    },
+
+    {
+      "name": "Create product",
+      "description": "Create a new product",
+      "httpMethod": "POST",
+      "endpoint": "/api/v2/product"
+    },
+    {
+      "name": "Get product details",
+      "description": "Retrieve details of a specific product by its ID",
+      "httpMethod": "GET",
+      "endpoint": "/api/v2/product/{id}"
+    },
+    {
+      "name": "Update product",
+      "description": "Update details of a specific product by its ID",
+      "httpMethod": "PATCH",
+      "endpoint": "/api/v2/product/{id}"
+    },
+    {
+      "name": "Delete product",
+      "description": "Soft delete a specific product by its ID",
+      "httpMethod": "DELETE",
+      "endpoint": "/api/v2/product/{id}"
+    },
+    {
+      "name": "Filter products",
+      "description": "Retrieve a list of products based on filter criteria",
+      "httpMethod": "GET",
+      "endpoint": "/api/v2/product/filter"
+    },
+    {
+      "name": "Get bids for product",
+      "description": "Retrieve all bids for a specific product with pagination support",
+      "httpMethod": "GET",
+      "endpoint": "/api/v2/product/{id}/bid"
+    }
+
+
 ]

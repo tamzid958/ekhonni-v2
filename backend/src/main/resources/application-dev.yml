@@ -12,7 +12,7 @@ spring:
   constant:
     public:
       urls: >
-        api/v2/auth/**,
+        /api/v2/auth/**,
         /swagger-ui/**,
         /swagger-ui.html,
         /v3/api-docs/**,
@@ -33,10 +33,10 @@ spring:
     password-reset-url: http://localhost:8080/api/v2/auth/reset-password?token=
 
   mail:
-    host: smtp.mailersend.net
-    port: 587
-    username: MS_BUlVXG@trial-3zxk54vdp814jy6v.mlsender.net
-    password: GGKEexeIOAfwiirK
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:

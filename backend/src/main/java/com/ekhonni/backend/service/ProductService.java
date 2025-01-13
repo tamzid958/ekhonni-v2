@@ -86,6 +86,7 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.condition(),
                     category,
                     user,
+                    null,
                     images
             );
 
