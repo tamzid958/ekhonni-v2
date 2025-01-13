@@ -36,8 +36,8 @@ public record ProductAdminController(ProductAdminService productAdminService) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.declineOne(id));
     }
 
-//    @DeleteMapping("/{id}")
-//    public ApiResponse<?> deleteOnePost(@PathVariable Long id) {
-//        return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.deleteOne(id));
-//    }
+    @DeleteMapping("/approved/{id}")
+    public ApiResponse<?> deleteOnePost(@PathVariable Long id) {
+        return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.deleteOne(id));
+    }
 }
