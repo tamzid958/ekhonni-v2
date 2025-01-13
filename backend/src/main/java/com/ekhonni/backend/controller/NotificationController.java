@@ -1,6 +1,5 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,12 +27,12 @@ public class NotificationController {
 
     @GetMapping
     @PreAuthorize("#userId == authentication.principal.id")
-    public ApiResponse<?> getPreviewNotifications(
+    public DeferredResult<ApiResponse<?>> get(
             @PathVariable UUID userId,
             @RequestParam(required = false) LocalDateTime lastFetchTime,
             Pageable pageable
     ) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, notificationService.getAllNew(userId, lastFetchTime, pageable));
+        return notificationService.handleLongPolling(userId, lastFetchTime, pageable);
     }
 
 
