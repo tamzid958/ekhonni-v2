@@ -12,8 +12,10 @@ const nextConfig = {
       'images.unsplash.com',
       'static.nike.com',
       'picsum.photos',
+      'lh3.googleusercontent.com',
     ],
   },
+
 };
 
 export default nextConfig;
