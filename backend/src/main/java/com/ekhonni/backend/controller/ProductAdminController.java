@@ -26,12 +26,12 @@ public record ProductAdminController(ProductAdminService productAdminService) {
         return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getOnePending(id));
     }
 
-    @PatchMapping("/pending/{id}")
+    @PatchMapping("/pending/{id}/approve")
     public ApiResponse<?> approveOnePost(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.OK, productAdminService.approveOne(id));
     }
 
-    @PatchMapping("/pending/{id}")
+    @PatchMapping("/pending/{id}/decline")
     public ApiResponse<?> declineOnePost(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.declineOne(id));
     }

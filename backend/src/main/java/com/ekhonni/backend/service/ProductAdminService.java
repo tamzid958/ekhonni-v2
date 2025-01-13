@@ -51,21 +51,30 @@ public class ProductAdminService {
 
         product.setStatus(ProductStatus.APPROVED);
         productRepository.save(product);
-        ;
 
-
+        // should we work with projection or product?
         // notify seller
 
         return "Product approved successfully";
     }
 
+    @Transactional
     public String declineOne(Long id) {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product doesn't exist"));
 
+        if (product.getStatus() != ProductStatus.PENDING_APPROVAL) {
+            throw new IllegalStateException("Product is not pending approval");
+        }
 
-        return "post declined";
+        product.setStatus(ProductStatus.DECLINED);
+        productRepository.save(product);
+
+        // should we work with projection or product?
+        // notify seller
+
+        return "Post declined";
 
     }
 }
