@@ -7,10 +7,9 @@
 
 package com.ekhonni.backend.projection;
 
-public interface CategoryProjection {
-    Long getId();
+import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 
-    String getName();
-
+public interface CategoryProjection extends ViewerCategoryProjection {
+    
     boolean isActive();
 }

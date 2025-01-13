@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CategorySubCategoryDTO {
-    private String category;
+    private String name;
     private List<String> subCategories;
     private List<String> chainCategories;
 }

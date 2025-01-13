@@ -8,7 +8,7 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.CategoryDTO;
+import com.ekhonni.backend.dto.CategoryCreateDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
@@ -22,9 +22,8 @@ public record CategoryController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ApiResponse<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        categoryService.save(categoryDTO);
-        return new ApiResponse<>(HTTPStatus.CREATED, null);
+    public ApiResponse<?> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
+        return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
     }
 
 

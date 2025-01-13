@@ -84,8 +84,9 @@ sql:
     mode: ${SQL_INIT_MODE:always}
     platform: ${SQL_INIT_PLATFORM:postgresql}
 
-upload:
-  dir: ${UPLOAD_DIR}
+product:
+  upload:
+    dir: ${UPLOAD_DIR}
 
 logging:
   pattern:
