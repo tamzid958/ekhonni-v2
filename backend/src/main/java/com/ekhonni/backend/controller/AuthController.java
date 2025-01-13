@@ -32,7 +32,6 @@ public class AuthController {
     @PreAuthorize("@userService.isActive(#authDTO.email())")
     public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
 
-
         return ResponseEntity.ok(authService.signIn(authDTO));
 
     }

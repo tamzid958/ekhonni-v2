@@ -58,6 +58,7 @@ public class AuthService {
                 account,
                 null,
                 null,
+                null,
                 false
         );
 
@@ -73,7 +74,7 @@ public class AuthService {
 
     @Transactional
     @Modifying
-    public AuthToken signIn(AuthDTO authDTO) {
+    public AuthClaim signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
         User user = userRepository.findByEmail(email);
@@ -96,7 +97,11 @@ public class AuthService {
 
         user.setRefreshToken(refreshToken);
 
-        return new AuthToken(accessToken, refreshToken.getValue());
+        return AuthClaim
+                .builder()
+                .id(user.getId())
+                .authToken(new AuthToken(accessToken, refreshToken.getValue()))
+                .build();
     }
 
 

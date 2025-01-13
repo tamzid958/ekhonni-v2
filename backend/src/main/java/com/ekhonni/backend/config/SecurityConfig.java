@@ -2,6 +2,7 @@ package com.ekhonni.backend.config;
 
 import com.ekhonni.backend.filter.ExceptionHandlerFilter;
 import com.ekhonni.backend.filter.JWTFilter;
+import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,9 +41,13 @@ public class SecurityConfig {
     private JWTFilter jwtFilter;
     private ExceptionHandlerFilter exceptionHandlerFilter;
     private AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
+    private RoleRepository roleRepository;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
+
+    @Value("${spring.constant.user.urls}")
+    private String[] USER_URLS;
 
 
     @Bean
@@ -56,6 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers(USER_URLS).hasAuthority("USER")
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)

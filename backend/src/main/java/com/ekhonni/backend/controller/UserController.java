@@ -1,9 +1,6 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.EmailDTO;
-import com.ekhonni.backend.dto.PasswordDTO;
-import com.ekhonni.backend.dto.RefreshTokenDTO;
-import com.ekhonni.backend.dto.UserUpdateDTO;
+import com.ekhonni.backend.dto.*;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.projection.SellerBidProjection;
@@ -20,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -36,28 +34,34 @@ public class UserController {
     private final BidService bidService;
     private final ProductService productService;
 
-    @GetMapping("/{id}/profile")
-    public UserProjection getUserById(@PathVariable UUID id) {
+    @GetMapping("/{id}")
+    public UserProjection getById(@PathVariable UUID id) {
         return userService.get(id, UserProjection.class);
     }
 
 
     @PatchMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public UserUpdateDTO updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+    public UserUpdateDTO update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
     }
 
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateUserEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
+    public String updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
         return userService.updateEmail(id, emailDTO);
     }
 
     @PatchMapping("/{id}/change-password")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateUserPassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
+    public String updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
         return userService.updatePassword(id, passwordDTO);
+    }
+
+    @PatchMapping("/{id}/image")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public String upload(@PathVariable UUID id, @Valid @ModelAttribute ProfileImageDTO profileImageDTO) throws IOException {
+        return userService.upload(id, profileImageDTO);
     }
 
 

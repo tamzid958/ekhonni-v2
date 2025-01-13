@@ -26,7 +26,7 @@ import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
-import com.ekhonni.backend.util.ImageUploadUtil;
+import com.ekhonni.backend.util.ImageUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,7 +68,7 @@ public class ProductService extends BaseService<Product, Long> {
             Category category = categoryRepository.findByNameAndActive(dto.category(), true);
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-            List<String> imagePaths = ImageUploadUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
+            List<String> imagePaths = ImageUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
             List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 ProductImage image = new ProductImage(imagePath);
@@ -150,7 +150,7 @@ public class ProductService extends BaseService<Product, Long> {
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
 
-            List<String> imagePaths = ImageUploadUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
+            List<String> imagePaths = ImageUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
             List<ProductImage> newImages = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 newImages.add(new ProductImage(imagePath));

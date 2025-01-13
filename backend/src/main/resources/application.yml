@@ -65,6 +65,7 @@ spring:
 
 server:
   address: ${SERVER_ADDRESS}
+  port: ${PORT}
 
 sslcommerz:
   store-id: ${SSLCOMMERZ_STORE_ID}
@@ -87,6 +88,11 @@ sql:
 product:
   upload:
     dir: ${UPLOAD_DIR}
+
+profile:
+  image:
+    upload:
+      dir: ${PROFILE_UPLOAD_DIR}
 
 logging:
   pattern:
