@@ -15,12 +15,13 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: ${JPA_GENERATE_DDL:true}
+    show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:create-drop}
     properties:
       hibernate:
-        format_sql: ${JPA_FORMAT_SQL:true}
-        highlight_sql: ${JPA_HIGHLIGHT_SQL:true}
+        format_sql: ${JPA_FORMAT_SQL:false}
+        highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
 
   security:
     jwt:
@@ -47,10 +48,10 @@ spring:
     password-reset-url: ${PASSWORD_RESET_URL}
 
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: ${SMTP_MAIL_HOST}
+    port: ${SMTP_MAIL_PORT}
+    username: ${SMTP_MAIL_USERNAME}
+    password: ${SMTP_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -76,19 +77,6 @@ logging:
     org.springframework: INFO
     org.hibernate: INFO
     com.ekhonni: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-  file:
-    name: logs/application.log
-    max-size: 10MB
-    max-history: 7
-
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
-      max-history: 7
 
 server:
   address: ${SERVER_ADDRESS}
