@@ -3,7 +3,8 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
 import com.ekhonni.backend.dto.bid.BidResponseDTO;
 import com.ekhonni.backend.enums.BidStatus;
-import com.ekhonni.backend.exception.*;
+import com.ekhonni.backend.exception.ProductNotFoundException;
+import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.exception.bid.BidAlreadyAcceptedException;
 import com.ekhonni.backend.exception.bid.BidCurrencyMismatchException;
 import com.ekhonni.backend.exception.bid.BidNotFoundException;
@@ -14,7 +15,8 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -56,7 +58,7 @@ public class BidService extends BaseService<Bid, Long> {
 
     @Modifying
     @Transactional
-    public BidResponseDTO update(Long id, BidCreateDTO bidCreateDTO) {
+    public BidResponseDTO updateBid(Long id, BidCreateDTO bidCreateDTO) {
         Bid bid = bidRepository.findById(id)
                 .orElseThrow(() -> new BidNotFoundException("Bid not found"));
         if (!bidCreateDTO.currency().equals(bid.getCurrency())) {
@@ -64,6 +66,9 @@ public class BidService extends BaseService<Bid, Long> {
         }
         if (bidCreateDTO.amount() <= bid.getAmount()) {
             throw new InvalidBidAmountException("Amount must be greater than previous bid");
+        }
+        if (bidRepository.existsByProductIdAndStatus(bid.getProduct().getId(), BidStatus.ACCEPTED)) {
+            throw new BidAlreadyAcceptedException();
         }
         bidRepository.softDelete(id);
         return create(bidCreateDTO);

@@ -25,7 +25,6 @@ public class JsonUtil {
 
     public <T> List<T> readListFromJsonFile(String filePath, TypeReference<List<T>> typeReference) throws IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
-        System.out.println("Resource exists: " + resource.exists());
         try (InputStream inputStream = resource.getInputStream()) {
             return objectMapper.readValue(inputStream, typeReference);
         }
