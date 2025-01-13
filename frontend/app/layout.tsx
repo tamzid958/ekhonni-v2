@@ -7,8 +7,7 @@ import { TopCAtegory } from '@/components/TopCategory';
 import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
-import SessionWrapper from './wrapper/client/SessionWrapper';
-
+import SessionWrapper from './wrapper/client/SessionWrapper'
 
 
 const geistSans = localFont({

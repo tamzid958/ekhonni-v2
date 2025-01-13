@@ -1,11 +1,11 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import {redis, redlock} from '@/lib/redis';
-import { User, users } from '@/data/users';
-
-
-let userIdCounter = 2;
+import {redis} from '@/lib/redis';
+import { User } from '@/data/types/user';
+import axios from 'axios';
+import { axiosInstance } from '@/data/services/fetcher';
+import  jwtDecode  from 'jwt-decode';
 
 const refreshAccessToken = async (token: any) => {
   try {
@@ -41,57 +41,42 @@ const options: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        name: { label: "name", type: "text", optional: true },
-        phone: { label: "Phone", type: "text", optional: true },
-        address: { label: "Address", type: "text", optional: true },
       },
       async authorize(credentials) {
-        const { email, password, name, phone, address } =
+        const { email, password } =
           credentials as {
             email: string;
             password: string;
-            name?: string;
-            phone?: string;
-            address?: string;
           };
 
-        if (name) {
-          const existingUser = users.find((u) => u.email === email);
-          if (existingUser) {
-            throw new Error("User already exists.");
+        if (email && password) {
+          const response = await axiosInstance.post("/api/v2/auth/sign-in", {
+              email,
+              password,
+            });
+          if (response.status === 200 && typeof response.data === "string") {
+            const token = response.data;
+            const decoded = jwtDecode(token);
+
+            console.log("User signed in:", decoded);
+            const { id, email, name } = decoded ;
+
+            console.log("New user signed up:", id,  email, name);
+
+            return {
+              id: id,
+              email: email,
+              name: name,
+              accesstoken: token,
+            }
           }
-          const newUser: User = {
-            id: userIdCounter++,
-            email,
-            password,
-            name,
-            phone: phone || "",
-            address: address || "",
-          };
-
-          users.push(newUser);
-          console.log("New user signed up:", newUser);
-          return {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-          };
-        } else {
-          const user = users.find(
-            (u) => u.email === email && u.password === password
-          );
-          if (!user) {
-            throw new Error("Invalid email or password.");
+          else{
+            const errorData = response.data;
+            console.error("Signup failed:", errorData);
+            throw new Error(errorData['message'] || "Signup failed.");
           }
-
-          console.log("User logged in:", user);
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: name,
-          };
         }
+
       },
     }),
     GoogleProvider({

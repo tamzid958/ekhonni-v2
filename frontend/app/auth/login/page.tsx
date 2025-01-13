@@ -9,6 +9,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
+import { axiosInstance } from '@/data/services/fetcher';
 
 
 const signupSchema = z.object({
@@ -50,27 +51,36 @@ export default function AuthForm() {
   const onSubmit: SubmitHandler<SignupFormValues | LoginFormValues> = async (data) => {
     if (isSignup) {
       try {
-        const result = await signIn("credentials", {
-          redirect: false,
-          email: (data as SignupFormValues).email,
-          password: (data as SignupFormValues).password,
-          name: (data as SignupFormValues).name,
-          phone: (data as SignupFormValues).phone,
-          address: (data as SignupFormValues).address,
-        });
-
-        if (result?.error) {
-          console.error("Signup error:", result.error);
-          alert(result.error);
-        } else {
-          alert("Signup successful! Please log in.");
-          setIsSignup(false);
+        const result = await axiosInstance.post("192.168.68.217:9090/api/v2/auth/sign-up", {
+              name: (data as SignupFormValues).name,
+              email: (data as SignupFormValues).email,
+              password: (data as SignupFormValues).password,
+              phone: (data as SignupFormValues).phone,
+              address: (data as SignupFormValues).address,
+            });
+        if (!result) {
+          const errorData = await result.data;
+          console.error("Signup failed:", errorData['error']);
+          alert(errorData['error'] || "Signup Failed");
+          return
         }
-      } catch (err) {
+
+         const res = await result.data;
+         console.log("SignUp Successfull", res);
+         alert("Signup successful! Please log in.");
+        setIsSignup(false);
+
+        if(result.status === 200){
+          const email = (data as SignupFormValues).email;
+
+        }
+
+      }
+      catch (err) {
         console.error("Signup error:", err);
         alert("Something went wrong. Please try again.");
       }
-    } else {
+    }else {
       try {
         const result = await signIn("credentials", {
           redirect: false,
@@ -110,8 +120,8 @@ export default function AuthForm() {
                     placeholder="Enter your  name"
                     className="w-full border-black bg-gray-100"
                   />
-                  {errors.name && (
-                    <p className="text-sm text-red-600">{errors?.name.message}</p>
+                  {errors['name'] && (
+                    <p className="text-sm text-red-600">{errors['name'].message}</p>
                   )}
                 </div>
                 <div>
@@ -122,8 +132,8 @@ export default function AuthForm() {
                     placeholder="Enter your phone number"
                     className="w-full border-black bg-gray-100"
                   />
-                  {errors.phone && (
-                    <p className="text-sm text-red-600">{errors.phone.message}</p>
+                  {errors['phone'] && (
+                    <p className="text-sm text-red-600">{errors['phone'].message}</p>
                   )}
                 </div>
                 <div>
@@ -134,8 +144,8 @@ export default function AuthForm() {
                     placeholder="Enter your address"
                     className="w-full border-black bg-gray-100"
                   />
-                  {errors.address && (
-                    <p className="text-sm text-red-600">{errors.address.message}</p>
+                  {errors['address'] && (
+                    <p className="text-sm text-red-600">{errors['address'].message}</p>
                   )}
                 </div>
               </>
@@ -181,8 +191,8 @@ export default function AuthForm() {
                   className="w-full border-black bg-gray-100"
                 />
 
-                {errors?.confirmPassword && (
-                  <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+                {errors['confirmPassword'] && (
+                  <p className="text-sm text-red-600">{errors['confirmPassword'].message}</p>
                 )}
               </div>
             )}
