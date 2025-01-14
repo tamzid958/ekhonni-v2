@@ -5,5 +5,5 @@ package com.ekhonni.backend.dto;
  * Date: 12/31/24
  */
 
-public record NotificationPreviewDTO(String message, String timeAgo) {
+public record NotificationPreviewDTO(Long id, String message, String timeAgo) {
 }

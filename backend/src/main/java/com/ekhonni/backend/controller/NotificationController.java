@@ -25,6 +25,11 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    /**
+     * ---------User API---------
+     */
+
+
     @GetMapping
     @PreAuthorize("#userId == authentication.principal.id")
     public DeferredResult<ApiResponse<?>> get(
@@ -36,16 +41,21 @@ public class NotificationController {
     }
 
 
-    @DeleteMapping("/{notificationId}/delete")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public void delete(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        notificationService.delete(userId, notificationId);
-    }
-
-
     @GetMapping("/{notificationId}/redirect")
     @PreAuthorize("#userId == authentication.principal.id")
     public String redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        return notificationService.redirect(userId, notificationId);
+        return notificationService.redirect(notificationId);
+    }
+
+
+    /**
+     * ---------Admin API---------
+     */
+
+
+    @DeleteMapping("/{notificationId}/delete")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    public void delete(@RequestParam UUID recipientId, @RequestParam Long notificationId) {
+        notificationService.delete(recipientId, notificationId);
     }
 }

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 
 public interface NotificationPreviewProjection {
 
+    Long getId();
+
     String getMessage();
 
     LocalDateTime getCreatedAt();
