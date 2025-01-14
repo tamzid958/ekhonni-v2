@@ -149,7 +149,6 @@ management:
     mail:
       enabled: true
 
-# Optional: Info endpoint custom data
 info:
   app:
     name: ${spring.application.name}

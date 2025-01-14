@@ -46,6 +46,8 @@ public class PaymentService {
     private final SslcommerzUtil sslcommerzUtil;
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
+    private static final double CURRENCY_CONVERSION_TOLERANCE = 0.01;
+
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "retryPayment")
@@ -237,10 +239,9 @@ public class PaymentService {
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());
             double responseBdtAmount = Double.parseDouble(response.getAmount());
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            double marginOfError = 0.01;
             return response.getCurrencyType().equals(transaction.getCurrency())
                     && responseAmount == transaction.getAmount()
-                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
+                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= CURRENCY_CONVERSION_TOLERANCE);
         } catch (NumberFormatException e) {
             log.warn("Invalid number format in transaction: {}", e.getMessage());
             return false;

@@ -54,18 +54,14 @@ public class TransactionService extends BaseService<Transaction, Long> {
     @Modifying
     @Transactional
     public void updateSuccessfulTransaction(Transaction transaction, ValidationResponse response) {
+        transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
         transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
         transaction.getBid().setStatus(BidStatus.PAID);
 
         Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
-        sellerAccount.setBalance(sellerAccount.getBalance() + Double.parseDouble(response.getAmount()));
-    }
-
-    @Transactional
-    public void deletePermanentlyByBidId(Long bidId) {
-        transactionRepository.deleteByBidId(bidId);
+        sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getBdtAmount());
     }
 
     public boolean existsByBidId(Long bidId) {
@@ -74,6 +70,11 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     public Optional<Transaction> findByBidId(Long bidId) {
         return transactionRepository.findByBidId(bidId);
+    }
+
+    @Transactional
+    public void deletePermanentlyByBidId(Long bidId) {
+        transactionRepository.deleteByBidId(bidId);
     }
 
 }
