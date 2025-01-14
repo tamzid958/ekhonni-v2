@@ -25,9 +25,13 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    /**
+     * ---------User API---------
+     */
+
     @GetMapping
     @PreAuthorize("#userId == authentication.principal.id")
-    public ApiResponse<?> getPreviewNotifications(
+    public ApiResponse<?> get(
             @PathVariable UUID userId,
             @RequestParam(required = false) LocalDateTime lastFetchTime,
             Pageable pageable
@@ -35,17 +39,21 @@ public class NotificationController {
         return new ApiResponse<>(HTTPStatus.ACCEPTED, notificationService.getAllNew(userId, lastFetchTime, pageable));
     }
 
+    @GetMapping("/{notificationId}/redirect")
+    @PreAuthorize("#userId == authentication.principal.id")
+    public String redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
+        return notificationService.redirect(userId, notificationId);
+    }
+
+
+    /**
+     * ---------Admin API---------
+     */
+
 
     @DeleteMapping("/{notificationId}/delete")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public void delete(@PathVariable UUID userId, @PathVariable Long notificationId) {
         notificationService.delete(userId, notificationId);
-    }
-
-
-    @GetMapping("/{notificationId}/redirect")
-    @PreAuthorize("#userId == authentication.principal.id")
-    public String redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        return notificationService.redirect(userId, notificationId);
     }
 }

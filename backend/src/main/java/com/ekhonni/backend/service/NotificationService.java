@@ -38,6 +38,7 @@ public class NotificationService {
         return notificationRepository.findByRecipientId(recipientId, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getId(),
                                 notifications.getMessage(),
                                 timeUtils.timeAgo(notifications.getCreatedAt())
                         )
@@ -50,6 +51,7 @@ public class NotificationService {
         return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getId(),
                                 notifications.getMessage(),
                                 timeUtils.timeAgo(notifications.getCreatedAt())
                         )
@@ -57,13 +59,6 @@ public class NotificationService {
                 .toList();
     }
 
-    @Transactional
-    public void delete(UUID userId, Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
-
-        notificationRepository.delete(notification);
-    }
 
     public String redirect(UUID userId, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
@@ -72,6 +67,15 @@ public class NotificationService {
         notification.setReadAt(LocalDateTime.now());
         notificationRepository.save(notification);
         return notification.getRedirectUrl();
+    }
+
+
+    @Transactional
+    public void delete(UUID userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        notificationRepository.delete(notification);
     }
 
     public void create(User recipient, NotificationType type, String message, String redirectUrl) {
