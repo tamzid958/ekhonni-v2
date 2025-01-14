@@ -12,10 +12,7 @@ import com.ekhonni.backend.dto.ProductCreateDTO;
 import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.dto.ProductUpdateDTO;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.exception.CategoryNotFoundException;
-import com.ekhonni.backend.exception.ProductNotCreatedException;
-import com.ekhonni.backend.exception.ProductNotFoundException;
-import com.ekhonni.backend.exception.ProductNotUpdatedException;
+import com.ekhonni.backend.exception.*;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -24,6 +21,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
@@ -40,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -47,16 +46,18 @@ public class ProductService extends BaseService<Product, Long> {
     ProductRepository productRepository;
     CategoryService categoryService;
     CategoryRepository categoryRepository;
+    UserRepository userRepository;
 
     @Value("${product.upload.dir}")
     String PRODUCT_UPLOAD_DIR;
 
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -77,6 +78,11 @@ public class ProductService extends BaseService<Product, Long> {
 
             ProductStatus status = ProductStatus.PENDING_APPROVAL;
 
+            UUID id = UUID.fromString("665e2027-bdf1-433d-a6f5-9171ab58d455");
+
+            Optional<User> optionalAdmin = userRepository.findById(id);
+            User admin = optionalAdmin.orElseThrow(() -> new UserNotFoundException("Admin user not found"));
+
             Product product = new Product(
                     dto.name(),
                     dto.price(),
@@ -86,7 +92,7 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.condition(),
                     category,
                     user,
-                    null,
+                    admin,
                     images
             );
 

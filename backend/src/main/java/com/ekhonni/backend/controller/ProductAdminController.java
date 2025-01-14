@@ -17,27 +17,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/admin/product")
 public record ProductAdminController(ProductAdminService productAdminService) {
     @GetMapping("/pending")
-    public ApiResponse<?> getPendingPosts(Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAllPending(pageable));
+    public ApiResponse<?> getAll(Pageable pageable) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAll(pageable));
     }
 
     @GetMapping("/pending/{id}")
-    public ApiResponse<?> getOnePendingPost(@PathVariable Long id) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getOnePending(id));
+    public ApiResponse<?> getOne(@PathVariable Long id) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getOne(id));
     }
 
     @PatchMapping("/pending/{id}/approve")
-    public ApiResponse<?> approveOnePost(@PathVariable Long id) {
+    public ApiResponse<?> approveOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.OK, productAdminService.approveOne(id));
     }
 
     @PatchMapping("/pending/{id}/decline")
-    public ApiResponse<?> declineOnePost(@PathVariable Long id) {
+    public ApiResponse<?> declineOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.declineOne(id));
     }
 
-    @DeleteMapping("/approved/{id}")
-    public ApiResponse<?> deleteOnePost(@PathVariable Long id) {
+    @DeleteMapping("/approve/{id}")
+    public ApiResponse<?> deleteOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.deleteOne(id));
     }
 }

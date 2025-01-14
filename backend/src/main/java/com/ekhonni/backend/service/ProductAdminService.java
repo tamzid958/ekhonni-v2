@@ -26,15 +26,13 @@ public class ProductAdminService {
         this.productRepository = productRepository;
     }
 
-//    public deleteOne(Long id) {
-//    }
 
-    public Page<ProductProjection> getAllPending(Pageable pageable) {
-        Page<ProductProjection> projections = productRepository.findAllByStatus(ProductStatus.PENDING_APPROVAL, pageable);
-        return projections;
+
+    public Page<ProductProjection> getAll(Pageable pageable) {
+        return productRepository.findAllByStatus(ProductStatus.PENDING_APPROVAL, pageable);
     }
 
-    public ProductProjection getOnePending(Long id) {
+    public ProductProjection getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
         if (projection == null) throw new ProductNotFoundException("product doesn't exist");
         return projection;
@@ -50,6 +48,8 @@ public class ProductAdminService {
         }
 
         product.setStatus(ProductStatus.APPROVED);
+        // add approvedBy
+        //product.setApprovedBy();
         productRepository.save(product);
 
         // should we work with projection or product?

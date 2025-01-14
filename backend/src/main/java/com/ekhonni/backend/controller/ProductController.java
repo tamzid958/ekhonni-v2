@@ -27,34 +27,34 @@ import org.springframework.web.bind.annotation.*;
 public record ProductController(ProductService productService, BidService bidService) {
 
     @PostMapping
-    public ApiResponse<?> createProduct(@Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
+    public ApiResponse<?> create(@Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
         productService.create(productCreateDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
 
     @GetMapping("/{id}")
-    public ApiResponse<?> getOneProduct(@PathVariable Long id) {
+    public ApiResponse<?> getOne(@PathVariable Long id) {
         ProductResponseDTO product = productService.getOne(id);
         return new ApiResponse<>(HTTPStatus.FOUND, product);
     }
 
 
     @PatchMapping("/{id}")
-    public ApiResponse<?> updateOneProduct(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
+    public ApiResponse<?> updateOne(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
     }
 
 
     @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteOneProduct(@PathVariable("id") Long id) {
+    public ApiResponse<?> deleteOne(@PathVariable("id") Long id) {
         productService.softDelete(id);
         return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
 
     @GetMapping("/filter")
-    public ApiResponse<?> getFilteredProducts(@RequestBody ProductFilter filter) {
+    public ApiResponse<?> getFiltered(@RequestBody ProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 

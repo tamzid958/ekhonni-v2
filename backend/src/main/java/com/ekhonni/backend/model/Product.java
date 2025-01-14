@@ -15,11 +15,14 @@ import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.validation.annotation.ImageOnly;
 import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -66,9 +69,6 @@ public class Product extends BaseEntity<Long> {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images;
-
-
-
 
 
 
