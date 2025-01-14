@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Author: Safayet Rafi
@@ -37,6 +39,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final TimeUtils timeUtils;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(32);
 
 
     public DeferredResult<ApiResponse<?>> handleLongPolling(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
@@ -44,7 +47,7 @@ public class NotificationService {
 
         DeferredResult<ApiResponse<?>> deferredResult = new DeferredResult<>(timeout);
 
-        new Thread(() -> {
+        executorService.submit(() -> {
             try {
                 boolean hasNewNotifications = false;
                 LocalDateTime pollingEndTime = LocalDateTime.now().plus(timeout, ChronoUnit.MILLIS);
@@ -66,7 +69,7 @@ public class NotificationService {
                         new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, "Polling interrupted")
                 );
             }
-        }).start();
+        });
 
         deferredResult.onTimeout(() -> deferredResult.setResult(
                 new ApiResponse<>(HTTPStatus.NO_CONTENT, "No new notifications available")
