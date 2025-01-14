@@ -15,6 +15,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,10 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findByProductIdAndDeletedAtIsNull(productId, projection, pageable);
     }
 
+    public <P> Page<P> getAuditForProduct(Long productId, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductId(productId, projection, pageable);
+    }
+
     @Transactional
     public BidResponseDTO create(BidCreateDTO bidCreateDTO) {
         Product product = productService.get(bidCreateDTO.productId())
@@ -59,8 +64,7 @@ public class BidService extends BaseService<Bid, Long> {
     @Modifying
     @Transactional
     public BidResponseDTO updateBid(Long id, BidCreateDTO bidCreateDTO) {
-        Bid bid = bidRepository.findById(id)
-                .orElseThrow(() -> new BidNotFoundException("Bid not found"));
+        Bid bid = bidRepository.findById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         if (!bidCreateDTO.currency().equals(bid.getCurrency())) {
             throw new BidCurrencyMismatchException("Bid currency don't match");
         }
@@ -90,9 +94,23 @@ public class BidService extends BaseService<Bid, Long> {
     }
 
     public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
-        Bid bid = bidRepository.findById(bidId)
-                .orElseThrow(() -> new BidNotFoundException("Bid not found"));
+        Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateStatus(Long id, BidStatus status) {
+        Bid bid = bidRepository.findById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
+        bid.setStatus(status);
+    }
+
+    public long getCountForProduct(Long productId) {
+        return bidRepository.countByProductIdAndDeletedAtIsNull(productId);
+    }
+
+    public long getAuditCountForProduct(Long productId) {
+        return bidRepository.countByProductId(productId);
     }
 
 }

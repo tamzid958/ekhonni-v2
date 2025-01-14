@@ -1,7 +1,12 @@
-package com.ekhonni.backend.projection;
+package com.ekhonni.backend.projection.bid;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+/**
+ * Author: Asif Iqbal
+ * Date: 1/10/25
+ */
 
 public interface SellerBidProjection {
     Long getId();

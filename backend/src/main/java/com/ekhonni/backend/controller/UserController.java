@@ -6,7 +6,7 @@ import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.dto.UserUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
-import com.ekhonni.backend.projection.SellerBidProjection;
+import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;

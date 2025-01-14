@@ -17,7 +17,7 @@ spring:
     generate-ddl: ${JPA_GENERATE_DDL:true}
     show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:create-drop}
+      ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
         format_sql: ${JPA_FORMAT_SQL:false}

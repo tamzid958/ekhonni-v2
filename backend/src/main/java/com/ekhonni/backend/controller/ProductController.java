@@ -11,7 +11,7 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.ProductDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.projection.BuyerBidProjection;
+import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
