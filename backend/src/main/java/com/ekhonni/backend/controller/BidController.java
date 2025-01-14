@@ -45,11 +45,6 @@ public class BidController {
                 bidService.getAllBidsForProduct(productId, BuyerBidProjection.class, pageable));
     }
 
-    @GetMapping
-    public ApiResponse<?> getAll(Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getAll(SellerBidProjection.class, pageable));
-    }
-
     @PostMapping()
     public ApiResponse<?> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
         return new ApiResponse<>(HTTPStatus.CREATED, bidService.create(bidCreateDTO));
@@ -69,6 +64,11 @@ public class BidController {
     }
 
     // Admin api
+
+    @GetMapping
+    public ApiResponse<?> getAll(Pageable pageable) {
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getAll(SellerBidProjection.class, pageable));
+    }
     @DeleteMapping("/{id}")
     public ApiResponse<?> delete(@PathVariable Long id) {
         bidService.softDelete(id);
