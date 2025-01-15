@@ -8,6 +8,8 @@ import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
 import SessionWrapper from './wrapper/client/SessionWrapper'
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '@/components/ErrorFallback';
 
 
 const geistSans = localFont({
@@ -36,13 +38,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
-      <CustomErrorBoundary customFallback={<div>Something went wrong.</div>}>
+      <CustomErrorBoundary>
         <div className="w-full">
           <NavBar placeholder="What are you looking for?" />
           <TopCAtegory />
         </div>
 
         <SessionWrapper>
+
           <main>{children}</main>
         </SessionWrapper>
         <div className="bg-gray-800 text-white">

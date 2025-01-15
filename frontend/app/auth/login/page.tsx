@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { axiosInstance } from '@/data/services/fetcher';
-
+import {useRouter}  from 'next/navigation';
 
 const signupSchema = z.object({
   name: z.string().min(1, "Your Name is required"),
@@ -39,6 +39,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function AuthForm() {
   const [isSignup, setIsSignup] = useState<boolean>(false);
+  const router = useRouter();
+
 
   const {
     register,
@@ -51,34 +53,45 @@ export default function AuthForm() {
   const onSubmit: SubmitHandler<SignupFormValues | LoginFormValues> = async (data) => {
     if (isSignup) {
       try {
-        const result = await axiosInstance.post("192.168.68.217:9090/api/v2/auth/sign-up", {
+        const result = await axiosInstance.post("/api/v2/auth/sign-up", {
               name: (data as SignupFormValues).name,
               email: (data as SignupFormValues).email,
               password: (data as SignupFormValues).password,
               phone: (data as SignupFormValues).phone,
               address: (data as SignupFormValues).address,
             });
-        if (!result) {
+        if(result.status === 200){
+
+          const res = await result.data;
+          console.log("SignUp Successfull", res);
+          alert("" + result.data.message);
+
+          router.push('/auth/verify-email');
+        }
+        else if(result.status ==404){
+          alert("Email already exist, please sign up with different email ");
+        }
+        else if(result.status != 200) {
           const errorData = await result.data;
           console.error("Signup failed:", errorData['error']);
-          alert(errorData['error'] || "Signup Failed");
-          return
+          throw  new Error("hello I am error from react error boundary");
+          alert(errorData.message);
+          return;
+        }
+        else {
+          alert("Something went wrong!!");
         }
 
-         const res = await result.data;
-         console.log("SignUp Successfull", res);
-         alert("Signup successful! Please log in.");
         setIsSignup(false);
-
-        if(result.status === 200){
-          const email = (data as SignupFormValues).email;
-
-        }
-
       }
-      catch (err) {
-        console.error("Signup error:", err);
-        alert("Something went wrong. Please try again.");
+      catch (err: any) {
+        console.log(err);
+        alert(err.message || "Signup failed.");
+        if (err.response && err.response.data?.error) {
+          alert(err.response.data.error);
+        } else {
+          alert(err.message);
+        }
       }
     }else {
       try {
