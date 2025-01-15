@@ -58,11 +58,14 @@ public record ProductController(ProductService productService, BidService bidSer
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 
+
+
     @GetMapping("/{id}/bid")
     public ApiResponse<?> getAllBidsForProduct(@PathVariable("id") Long id, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
                 bidService.getAllBidsForProduct(id, BuyerBidProjection.class, pageable));
     }
+
 
 
 }

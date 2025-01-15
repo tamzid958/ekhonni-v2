@@ -8,6 +8,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.enums.ProductStatus;
+import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -34,4 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
     //admin site
     Page<ProductProjection> findAllByStatus(ProductStatus status, Pageable pageable);
 
+
+    @Query("SELECT DISTINCT p.category FROM Product p WHERE p.seller.id = :id")
+    List<Category> findCategoriesBySeller(@Param("id") UUID id);
 }

@@ -14,7 +14,11 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RequestMapping("/api/v2/category")
 @RestController
@@ -22,18 +26,18 @@ public record CategoryController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ApiResponse<?> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
+    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto) {
         return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
     }
 
 
     @GetMapping("/all")
-    public ApiResponse<?> getAllCategories() {
+    public ApiResponse<?> getAll() {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
     }
 
 
-    @GetMapping("/{name}/subCategories")
+    @GetMapping("/{name}/subcategories")
     public ApiResponse<?> getSubCategories(@PathVariable("name") String name) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
     }
@@ -46,16 +50,21 @@ public record CategoryController(CategoryService categoryService) {
     }
 
     @PatchMapping("/{name}")
-    public ApiResponse<?> updateCategory(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
+    public ApiResponse<?> update(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
         categoryService.update(categoryUpdateDTO);
         return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
 
     }
 
-    @GetMapping("/sequence")
-    public ApiResponse<?> getSequenceOfCategories(@RequestParam("name") String name) {
-        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSequence(name));
-    }
+//    // user profile
+//    @GetMapping("/{user_id}/all")
+//    public ApiResponse<?> getUserCategory(@PathVariable("user_id") UUID userId){
+//        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getUserCategory(userId));
+//    }
 
+    @GetMapping("/all/{user_id}")
+    public ApiResponse<?> getCategoryTreeByUser(@PathVariable("user_id") String userId) {
+        return new ApiResponse<>(HTTPStatus.FOUND,   categoryService.findRootCategoriesBySeller(UUID.fromString(userId)));
+    }
 
 }

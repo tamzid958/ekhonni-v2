@@ -15,23 +15,26 @@ import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
+import com.ekhonni.backend.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
 public class CategoryService extends BaseService<Category, Long> {
 
     CategoryRepository categoryRepository;
+    ProductRepository productRepository;
+    private final Map<Long, String> rootCategoryCache = new HashMap<>();
 
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
         super(categoryRepository);
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
 
@@ -141,5 +144,41 @@ public class CategoryService extends BaseService<Category, Long> {
         return categoryRepository.findRelatedActiveIds(categoryId);
     }
 
+
+//    public List<CategorySubCategoryDTO> getUserCategory(UUID userId) {
+//
+//    }
+
+
+    public Set<String> findRootCategoriesBySeller(UUID sellerId) {
+
+        List<Category> categories = productRepository.findCategoriesBySeller(sellerId);
+        Set<String> rootCategoryNames = new HashSet<>();
+
+
+        for (Category category : categories) {
+            String rootCategoryName = getRootCategoryName(category);
+            rootCategoryNames.add(rootCategoryName);
+        }
+        return rootCategoryNames;
+    }
+
+
+    private String getRootCategoryName(Category category) {
+
+        if (rootCategoryCache.containsKey(category.getId())) {
+            return rootCategoryCache.get(category.getId());
+        }
+
+        Category currentCategory = category;
+        while (currentCategory.getParentCategory() != null) {
+            currentCategory = currentCategory.getParentCategory();
+        }
+
+        String rootCategoryName = currentCategory.getName();
+        rootCategoryCache.put(category.getId(), rootCategoryName);
+
+        return rootCategoryName;
+    }
 
 }
