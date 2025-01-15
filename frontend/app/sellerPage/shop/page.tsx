@@ -27,22 +27,23 @@ export default async function SellerShopPage({ searchParams }: { searchParams: {
     console.error('Error fetching products:', error);
   }
 
-  // Filter products by category if provided
+
   const filteredProducts = searchParams.category
     ? products.filter((product) => product.title.includes(searchParams.category))
     : products;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {filteredProducts.map((product) => (
-        <CardDemo
-          key={product.id}
-          title={product.title}
-          description={product.description}
-          img={product.img}
-          price={product.price}
-        />
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mt-6">
+      {filteredProducts.map((product) => {
+        return (
+          <CardDemo
+            key={product.id}
+            title={product.title}
+            description={product.description}
+            img={product.img}
+            price={product.price} id={''}          />
+        );
+      })}
     </div>
   );
 }

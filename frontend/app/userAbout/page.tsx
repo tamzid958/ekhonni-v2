@@ -6,10 +6,14 @@ const UserAbout: React.FC = () => {
   const fetchUrl = `${baseUrl}/api/userProfileAbout`;
 
   return (
-    <AboutPage
-      fetchUrl={fetchUrl}
-      title="About Buyer"
-    />
+
+    <div className="bg-[#FAF7F0]">
+      <AboutPage
+        fetchUrl={fetchUrl}
+        title="About Buyer"
+      />
+    </div>
+
   );
 };
 

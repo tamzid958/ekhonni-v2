@@ -13,7 +13,7 @@ interface data {
 }
 
 export function CardDemo({ id, title, description, img, price }: data) {
-  // console.log('id: ' + id);
+
   return (
     <Link href={`/categoryProducts/products/${id}`} passHref>
       <Card
