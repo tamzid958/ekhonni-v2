@@ -4,6 +4,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CardDemo } from '@/components/Card';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import CustomErrorBoundary from '@/components/ErrorBoundary';
 
 interface Data {
   id: string;
@@ -50,7 +51,9 @@ export default async function CategoryProductPage({ searchParams }: Props) {
 
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar selectedCategory={selectedCategory} />
+        <CustomErrorBoundary>
+          <Sidebar selectedCategory={selectedCategory} />
+        </CustomErrorBoundary>
 
         {/* Main Content */}
         <div className="flex-1 ml-6">
