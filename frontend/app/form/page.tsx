@@ -26,7 +26,6 @@ const categories = [
   'Toys',
 ] as const;
 
-
 const conditions = [
   'Revive',
   'Fair',
@@ -35,17 +34,21 @@ const conditions = [
   'Like New',
 ] as const;
 
+const locations = [
+  'Inside Dhaka',
+  'Outside Dhaka',
+  'Outside Bangladesh',
+] as const;
+
 const formSchema = z
   .object({
     productName: z.string().min(3),
-    productDescription: z.string().max(255),
+    productDescription: z.string().max(255).optional(),
     productCategory: z.enum(categories),
     productSubCategory: z.enum(categories),
     productCondition: z.enum(conditions),
-    emailAddress: z.string().email(),
-    password: z.string().min(3),
-    passwordConfirm: z.string(),
-    companyName: z.string().optional(),
+    productLocation: z.enum(locations),
+
   })
   .refine(
     (data) => data.password === data.passwordConfirm,
@@ -65,17 +68,39 @@ export default function Home() {
       companyName: '',
     },
   });
+  const stepFields = {
+    1: [
+      'productName',
+      'productDescription',
+      'productCategory',
+      'productSubCategory',
+      'productCondition',
+      'productLocation',
+    ],
+    2: [''],
+  };
 
   const productCategory = form.watch('productCategory');
   const productSubCategory = form.watch('productSubCategory');
-  // const productCategory = form.watch('productCategory');
+  const productLocation = form.watch('productLocation');
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     console.log('Form submitted:', values);
   };
 
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
+  const nextStep = async () => {
+    const fieldsToValidate = stepFields[step]; // Get fields for the current step
+    const isValid = await form.trigger(fieldsToValidate); // Validate only those fields
+
+    console.log('Validation result:', isValid);
+    if (isValid) {
+      setStep((prev) => prev + 1); // Move to the next step
+      console.log('Moving to next step:', step + 1);
+    }
+  };
+  const prevStep = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -86,6 +111,7 @@ export default function Home() {
         >
           {step === 1 && (
             <>
+              <h1 className="font-bold text-center text-3xl">Product Data</h1>
               <FormField
                 control={form.control}
                 name="productName"
@@ -145,6 +171,7 @@ export default function Home() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="productSubCategory"
@@ -194,47 +221,49 @@ export default function Home() {
                   </FormItem>
                 )}
               />
-              <Button onClick={nextStep} type="button" className="w-full">
+
+              <FormField
+                control={form.control}
+                name="productLocation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location of your Product</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select the product's Location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem key={location} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                onClick={nextStep}
+                type="button"
+                className="w-full"
+              >
                 Next
               </Button>
             </>
           )}
           {step === 2 && (
             <>
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Password"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="passwordConfirm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Confirm password"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <h1 className="font-bold text-center text-3xl">PRICING</h1>
+
+
+              //
+
+
               <div className="flex gap-4">
                 <Button onClick={prevStep} type="button" className="w-full">
                   Back
