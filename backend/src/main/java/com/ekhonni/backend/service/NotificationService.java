@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.time.LocalDateTime;
@@ -80,7 +79,7 @@ public class NotificationService {
 
 
     public List<NotificationPreviewDTO> getAll(UUID recipientId, Pageable pageable) {
-        return notificationRepository.findByRecipientId(recipientId, pageable)
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNull(recipientId, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
                                 notifications.getId(),
@@ -93,7 +92,7 @@ public class NotificationService {
 
     public List<NotificationPreviewDTO> getAllNew(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
         if (lastFetchTime == null) return getAll(recipientId, pageable);
-        return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
                                 notifications.getId(),
@@ -115,14 +114,6 @@ public class NotificationService {
     }
 
 
-    @Transactional
-    public void delete(UUID recipientId, Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
-
-        notificationRepository.delete(notification);
-    }
-
     public void create(User recipient, NotificationType type, String message, String redirectUrl) {
         Notification notification = new Notification(
                 recipient,
@@ -133,6 +124,7 @@ public class NotificationService {
         );
         notificationRepository.save(notification);
     }
+
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {
         User seller = product.getSeller();

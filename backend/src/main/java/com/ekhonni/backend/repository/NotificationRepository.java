@@ -16,8 +16,8 @@ import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    List<NotificationPreviewProjection> findByRecipientId(UUID recipientId, Pageable pageable);
+    List<NotificationPreviewProjection> findByRecipientIdOrRecipientIdIsNull(UUID recipientId, Pageable pageable);
 
-    List<NotificationPreviewProjection> findByRecipientIdAndCreatedAtAfter(UUID recipientId, LocalDateTime createdAt, Pageable pageable);
+    List<NotificationPreviewProjection> findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(UUID recipientId, LocalDateTime createdAt, Pageable pageable);
 
 }

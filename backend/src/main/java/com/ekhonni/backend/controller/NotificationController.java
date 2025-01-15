@@ -1,5 +1,7 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.enums.NotificationType;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
@@ -52,10 +54,13 @@ public class NotificationController {
      * ---------Admin API---------
      */
 
-
-    @DeleteMapping("/{notificationId}/delete")
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    public void delete(@RequestParam UUID recipientId, @RequestParam Long notificationId) {
-        notificationService.delete(recipientId, notificationId);
+    public void create(@RequestParam User recipient,
+                       @RequestParam NotificationType notificationType,
+                       @RequestParam String message,
+                       @RequestParam String redirectUrl) {
+
+        notificationService.create(recipient, notificationType, message, redirectUrl);
     }
 }
