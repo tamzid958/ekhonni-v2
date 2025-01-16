@@ -104,5 +104,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body("Error: " + ex.getMessage());
     }
 
-
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+    }
 }

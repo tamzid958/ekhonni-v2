@@ -5,6 +5,7 @@ import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
 import com.ekhonni.backend.dto.NotificationPreviewDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.NotificationType;
+import com.ekhonni.backend.exception.NotificationNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Notification;
 import com.ekhonni.backend.model.Product;
@@ -105,13 +106,13 @@ public class NotificationService {
     }
 
 
-    public String redirect(Long notificationId) {
+    public ApiResponse<?> redirect(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
 
         notification.setReadAt(LocalDateTime.now());
         notificationRepository.save(notification);
-        return notification.getRedirectUrl();
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, notification.getRedirectUrl());
     }
 
 
@@ -126,7 +127,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public String createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+    public ApiResponse<?> createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
         create(
                 null,
                 notificationCreateRequestDTO.type(),
@@ -134,7 +135,7 @@ public class NotificationService {
                 notificationCreateRequestDTO.redirectUrl()
         );
 
-        return "Notification created successfully";
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, "Notification created successfully");
     }
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {

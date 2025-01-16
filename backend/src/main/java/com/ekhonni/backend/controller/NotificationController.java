@@ -1,7 +1,6 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
-import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
@@ -46,7 +45,7 @@ public class NotificationController {
     @GetMapping("/{notificationId}/redirect")
     @PreAuthorize("#userId == authentication.principal.id")
     public ApiResponse<?> redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, notificationService.redirect(notificationId));
+        return notificationService.redirect(notificationId);
     }
 
 
@@ -57,6 +56,6 @@ public class NotificationController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ApiResponse<?> create(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, notificationService.createForAllUser(notificationCreateRequestDTO));
+        return notificationService.createForAllUser(notificationCreateRequestDTO);
     }
 }
