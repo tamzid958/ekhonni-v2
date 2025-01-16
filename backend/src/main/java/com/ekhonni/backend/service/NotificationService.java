@@ -126,13 +126,15 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+    public String createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
         create(
                 null,
                 notificationCreateRequestDTO.type(),
                 notificationCreateRequestDTO.message(),
                 notificationCreateRequestDTO.redirectUrl()
         );
+
+        return "Notification created successfully";
     }
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {
