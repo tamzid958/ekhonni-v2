@@ -12,6 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 import { axiosInstance } from '@/data/services/fetcher';
 import {useRouter}  from 'next/navigation';
 
+
 const signupSchema = z.object({
   name: z.string().min(1, "Your Name is required"),
   email: z.string().email("Invalid email address"),
@@ -61,12 +62,9 @@ export default function AuthForm() {
               address: (data as SignupFormValues).address,
             });
         if(result.status === 200){
+            alert("SignUp Successfull!! Please Verify Your Email.")
 
-          const res = await result.data;
-          console.log("SignUp Successfull", res);
-          alert("" + result.data.message);
-
-          router.push('/auth/verify-email');
+          router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
         }
         else if(result.status ==404){
           alert("Email already exist, please sign up with different email ");

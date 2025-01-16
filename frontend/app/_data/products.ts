@@ -451,7 +451,7 @@ const mockData = [
     id: '49',
     title: 'Sailing Adventure',
     description:
-      'Set sail on a thrilling adventure across the open sea, exploring new destinations and experiencing the beauty of the ocean.',
+      'Set sail on a thrilling adventure across the open sea, exploring register destinations and experiencing the beauty of the ocean.',
     img: 'https://picsum.photos/id/438/200/300',
     price: 300,
     category: 'Travel & Nature',
