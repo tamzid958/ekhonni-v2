@@ -6,11 +6,15 @@ import { ProductSection } from '@/components/ProductSection';
 
 interface Data {
   id: string;
-  title: string;
-  description: string;
-  img: string;
   price: number;
-  category: string;
+  name: string;
+  description: string;
+  status: string;
+  condition: string;
+  category: {
+    id: number;
+    name: string;
+  };
   label: string;
 }
 
@@ -59,19 +63,22 @@ export default async function CategoryProductPage({ searchParams }: Props) {
         <div className="flex-1 ml-6">
           <div className="container mx-auto px-4 w-full space-y-6">
             <Separator className="mt-4" />
-            {labels.map((label) => {
-              const filteredProducts = products.filter((product) => product.label === label).slice(0, 10);
-              return (
-                <div key={label}>
-                  <ProductSection
-                    key={label}
-                    title={label}
-                    products={filteredProducts}
-                    selectedCategory={selectedCategory} />
-                  <Separator />
-                </div>
-              );
-            })}
+
+            <ProductSection title={'All'} products={products} selectedCategory={selectedCategory} />
+
+            {/*{labels.map((label) => {*/}
+            {/*  const filteredProducts = products.filter((product) => product.label === label).slice(0, 10);*/}
+            {/*  return (*/}
+            {/*    <div key={label}>*/}
+            {/*      <ProductSection*/}
+            {/*        key={label}*/}
+            {/*        title={label}*/}
+            {/*        products={filteredProducts}*/}
+            {/*        selectedCategory={selectedCategory} />*/}
+            {/*      <Separator />*/}
+            {/*    </div>*/}
+            {/*  );*/}
+            {/*})}*/}
           </div>
         </div>
       </div>
