@@ -12,6 +12,7 @@ public enum NotificationType {
     PRODUCT_DELETED,
     BID_ACCEPTED,
     NEW_BID,
+    OFFER,
     NEW_REVIEW,
     PAYMENT_SUCCESSFUL,
     PAYMENT_UNSUCCESSFUL

@@ -1,7 +1,6 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.enums.NotificationType;
-import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.NotificationService;
 import lombok.AllArgsConstructor;
@@ -56,11 +55,7 @@ public class NotificationController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    public void create(@RequestParam User recipient,
-                       @RequestParam NotificationType notificationType,
-                       @RequestParam String message,
-                       @RequestParam String redirectUrl) {
-
-        notificationService.create(recipient, notificationType, message, redirectUrl);
+    public void create(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        notificationService.createForAllUser(notificationCreateRequestDTO);
     }
 }

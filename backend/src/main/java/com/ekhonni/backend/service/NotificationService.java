@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.BidCreateDTO;
+import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
 import com.ekhonni.backend.dto.NotificationPreviewDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.NotificationType;
@@ -125,6 +126,14 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public void createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        create(
+                null,
+                notificationCreateRequestDTO.type(),
+                notificationCreateRequestDTO.message(),
+                notificationCreateRequestDTO.redirectUrl()
+        );
+    }
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {
         User seller = product.getSeller();
