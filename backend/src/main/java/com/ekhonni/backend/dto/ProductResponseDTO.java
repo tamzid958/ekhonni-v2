@@ -50,6 +50,6 @@ public class ProductResponseDTO {
     private ProductCondition condition;
     private ProductSellerDTO seller;
     private ProductCategoryDTO category;
-    private List<ProductImage> images = new ArrayList<>();
+    private List<ProductImageDTO> images = new ArrayList<>();
     private List<BidResponseDTO> bids = new ArrayList<>();
 }

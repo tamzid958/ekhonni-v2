@@ -24,6 +24,7 @@ import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
+import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
@@ -47,17 +48,19 @@ public class ProductService extends BaseService<Product, Long> {
     CategoryService categoryService;
     CategoryRepository categoryRepository;
     UserRepository userRepository;
+    CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
 
     @Value("${product.upload.dir}")
     String PRODUCT_UPLOAD_DIR;
 
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository,CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
     }
 
 
@@ -69,7 +72,10 @@ public class ProductService extends BaseService<Product, Long> {
             Category category = categoryRepository.findByNameAndActive(dto.category(), true);
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-            List<String> imagePaths = ImageUploadUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
+         //   CloudinaryImageUploadUtil cloudinaryImageUploadUtil = new CloudinaryImageUploadUtil();
+
+
+            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages( dto.images());
             List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 ProductImage image = new ProductImage(imagePath);

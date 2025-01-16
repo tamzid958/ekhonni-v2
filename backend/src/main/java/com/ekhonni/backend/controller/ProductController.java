@@ -54,7 +54,7 @@ public record ProductController(ProductService productService, BidService bidSer
 
 
     @GetMapping("/filter")
-    public ApiResponse<?> getFiltered(@RequestBody ProductFilter filter) {
+    public ApiResponse<?> getFiltered(@ModelAttribute ProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 

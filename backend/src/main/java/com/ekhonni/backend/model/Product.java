@@ -9,6 +9,7 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductImageDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
@@ -54,15 +55,15 @@ public class Product extends BaseEntity<Long> {
     @Column(nullable = false)
     private ProductCondition condition;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "admin_id", nullable = false)
     private User approvedBy;
 
@@ -79,6 +80,12 @@ public class Product extends BaseEntity<Long> {
         return new ProductCategoryDTO(this.getCategory().getId(), this.getCategory().getName());
     }
 
+    public List<ProductImageDTO> getImagesDTO() {
+        return this.getImages()
+                .stream()
+                .map(image -> new ProductImageDTO(image.getImagePath()))
+                .toList();
+    }
 
 
 

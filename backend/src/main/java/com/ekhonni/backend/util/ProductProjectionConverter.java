@@ -22,7 +22,7 @@ public class ProductProjectionConverter {
         dto.setCondition(projection.getCondition());
         dto.setCategory(projection.getCategoryDTO());
         dto.setSeller(projection.getSellerDTO());
-        dto.setImages(projection.getImages());
+        dto.setImages(projection.getImagesDTO());
         dto.setStatus(projection.getStatus());
         return dto;
     }

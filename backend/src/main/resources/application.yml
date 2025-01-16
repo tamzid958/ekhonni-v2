@@ -110,3 +110,7 @@ logging:
       max-history: 7
       file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
 
+  cloudinary:
+    cloud_name : ${CLOUDINARY_CLOUD_NAME},
+    api_key : ${CLOUDINARY_API_KEY},
+    api_secret : ${CLOUDINARY_API_SECRET}

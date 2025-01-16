@@ -14,10 +14,11 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
-@SpringBootApplication
+
 @EnableJpaAuditing
 @EnableScheduling
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
+@SpringBootApplication(scanBasePackages = "com.ekhonni.backend")
 public class BackendApplication {
 
     public static void main(String[] args) {

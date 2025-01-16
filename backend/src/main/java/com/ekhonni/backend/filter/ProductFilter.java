@@ -22,6 +22,6 @@ public class ProductFilter{
     private ProductCondition condition;
     private String searchTerm;
     private ProductSort sortBy;
-    private int page;
-    private int size;
+    private int page=1;
+    private int size=10;
 }
