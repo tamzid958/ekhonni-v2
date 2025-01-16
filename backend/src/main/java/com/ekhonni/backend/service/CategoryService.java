@@ -13,9 +13,12 @@ import com.ekhonni.backend.dto.CategorySubCategoryDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.UserCategoryProjection;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     CategoryRepository categoryRepository;
     ProductRepository productRepository;
-    private final Map<Long, String> rootCategoryCache = new HashMap<>();
+
 
 
     public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
@@ -145,9 +148,6 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-//    public List<CategorySubCategoryDTO> getUserCategory(UUID userId) {
-//
-//    }
 
 
     public Set<String> findRootCategoriesBySeller(UUID sellerId) {
@@ -166,19 +166,13 @@ public class CategoryService extends BaseService<Category, Long> {
 
     private String getRootCategoryName(Category category) {
 
-        if (rootCategoryCache.containsKey(category.getId())) {
-            return rootCategoryCache.get(category.getId());
-        }
-
         Category currentCategory = category;
         while (currentCategory.getParentCategory() != null) {
             currentCategory = currentCategory.getParentCategory();
         }
-
-        String rootCategoryName = currentCategory.getName();
-        rootCategoryCache.put(category.getId(), rootCategoryName);
-
-        return rootCategoryName;
+        return currentCategory.getName();
     }
+
+
 
 }

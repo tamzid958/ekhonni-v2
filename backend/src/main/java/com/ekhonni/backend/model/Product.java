@@ -71,20 +71,6 @@ public class Product extends BaseEntity<Long> {
     private List<ProductImage> images;
 
 
-
-
-    public Long getCategoryId() {
-        return this.getCategory().getId();
-    }
-
-    public String getCategoryName() {
-        return this.getCategory().getName();
-    }
-
-    public String getSellerName() {
-        return this.getSeller().getUsername();
-    }
-
     public ProductSellerDTO getSellerDTO() {
         return new ProductSellerDTO(this.getSeller().getId(), this.getSeller().getName());
     }
@@ -92,6 +78,8 @@ public class Product extends BaseEntity<Long> {
     public ProductCategoryDTO getCategoryDTO() {
         return new ProductCategoryDTO(this.getCategory().getId(), this.getCategory().getName());
     }
+
+
 
 
 
