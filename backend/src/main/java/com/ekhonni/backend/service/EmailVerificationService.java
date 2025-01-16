@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Service
 public class EmailVerificationService {
 
-
+    private final VerificationTokenService verificationTokenService;
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
@@ -35,10 +35,18 @@ public class EmailVerificationService {
     private String emailVerificationUrl;
 
 
-    public void send(String recipientEmail, String token) {
+    public String send(User user) {
 
+        VerificationToken verificationToken;
+        if (verificationTokenRepository.findByUser(user) != null) {
+            verificationToken = verificationTokenService.replace(user);
+        } else {
+            verificationToken = verificationTokenService.create(user);
+        }
+
+        String recipientEmail = user.getEmail();
         String subject = "Email Verification";
-        String url = emailVerificationUrl + token;
+        String url = emailVerificationUrl + verificationToken.getToken();
         String message = String.format(
                 "Dear User,\n\n" +
                         "Thank you for registering with Ekhonni. To complete your registration, please verify your email address by clicking the link below:\n\n" +
@@ -48,6 +56,7 @@ public class EmailVerificationService {
         );
 
         emailService.send(recipientEmail, subject, message);
+        return "successful";
     }
 
 

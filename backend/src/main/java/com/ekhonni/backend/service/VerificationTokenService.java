@@ -31,15 +31,27 @@ public class VerificationTokenService {
 
     public VerificationToken create(User user) {
 
-        String token = tokenUtil.generate();
+        String token = tokenUtil.generateVerificationToken();
 
         VerificationToken verificationToken = new VerificationToken(
                 token,
-                LocalDateTime.now().plusMinutes(3),
+                LocalDateTime.now().plusMinutes(5),
                 user
         );
 
         return verificationTokenRepository.save(verificationToken);
+    }
+
+    public VerificationToken replace(User user) {
+
+        VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
+        String token = tokenUtil.generateVerificationToken();
+
+        verificationToken.setToken(token);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusMinutes(5));
+
+        return verificationTokenRepository.save(verificationToken);
+
     }
 
 }

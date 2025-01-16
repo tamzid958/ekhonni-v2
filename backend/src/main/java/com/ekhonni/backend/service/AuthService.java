@@ -64,8 +64,7 @@ public class AuthService {
         accountRepository.save(account);
         userRepository.save(user);
 
-        VerificationToken verificationToken = verificationTokenService.create(user);
-        emailVerificationService.send(user.getEmail(), verificationToken.getToken());
+        emailVerificationService.send(user);
 
         return "Sign up successful! Please verify your email to sign in";
     }

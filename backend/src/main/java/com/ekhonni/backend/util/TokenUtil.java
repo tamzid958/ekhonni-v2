@@ -109,7 +109,7 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String generate() {
+    public String generateVerificationToken() {
         String token = UUID.randomUUID().toString();
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

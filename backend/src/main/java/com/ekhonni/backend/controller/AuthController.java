@@ -1,12 +1,11 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.AuthDTO;
-import com.ekhonni.backend.dto.PasswordResetRequestDTO;
-import com.ekhonni.backend.dto.ResetPasswordDTO;
-import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.dto.*;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
+import com.ekhonni.backend.service.ResendEmailService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +26,7 @@ public class AuthController {
     AuthService authService;
     EmailVerificationService emailVerificationService;
     PasswordResetService passwordResetService;
+    ResendEmailService resendEmailService;
 
     @PostMapping("/sign-in")
     @PreAuthorize("@userService.isActive(#authDTO.email())")
@@ -48,6 +48,11 @@ public class AuthController {
     @GetMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
         return ResponseEntity.ok(emailVerificationService.verify(token));
+    }
+
+    @PostMapping("/resend-verification-email")
+    public String resendVerificationEmail(@Valid @RequestBody EmailDTO emailDTO) {
+        return resendEmailService.reSend(emailDTO);
     }
 
     @PostMapping("/password-reset-request")
