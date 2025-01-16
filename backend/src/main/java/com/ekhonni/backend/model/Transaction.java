@@ -63,8 +63,8 @@ public class Transaction extends BaseEntity<Long> {
         return "Transaction{" +
                 "id=" + getId() +
                 ", status=" + status +
-                ", sessionKey='" + sessionKey + '\'' +
-                ", updatedAt='" + getUpdatedAt() + '\'' +
-                '}';
+                ", sessionKey=" + sessionKey +
+                ", updatedAt=" + getUpdatedAt() +
+                "}";
     }
 }

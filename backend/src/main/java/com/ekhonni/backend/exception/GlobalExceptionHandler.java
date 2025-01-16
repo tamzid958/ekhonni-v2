@@ -31,72 +31,53 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
-    }
-
-    @ExceptionHandler(InvalidTransactionException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTransactionException(InvalidTransactionException ex) {
-        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
-    }
-
-    @ExceptionHandler(InitiatePaymentException.class)
-    public ResponseEntity<ErrorResponse> handleSSLCommerzPaymentException(InitiatePaymentException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
-    }
-
-    @ExceptionHandler(BidNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(PrivilegeNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlePrivilegeNotFoundException(PrivilegeNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(404));
     }
 
     @ExceptionHandler(RoleCannotBeDeletedException.class)
     public ResponseEntity<ErrorResponse> handleRoleCannotBeDeletedException(RoleCannotBeDeletedException ex) {
-        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(400));
     }
 
     @ExceptionHandler(RoleAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleRoleAlreadyExistsException(RoleAlreadyExistsException ex) {
-        ErrorResponse response = new ErrorResponse(400, ex.getMessage(), LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(400));
     }
 
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFoundException(AccountNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ResponseEntity<ErrorResponse> handleUnsupportedEncodingException(UnsupportedEncodingException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(Exception.class)
@@ -106,7 +87,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotificationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex) {
-        ErrorResponse response = new ErrorResponse(404, ex.getMessage(), LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(404));
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 }

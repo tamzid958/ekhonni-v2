@@ -42,7 +42,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     private void handleException(HttpServletResponse response, Exception e, HttpStatus status) throws IOException {
         ErrorResponse errorResponse = new ErrorResponse(
-                status.value(),
                 e.getMessage(),
                 LocalDateTime.now().toString()
         );

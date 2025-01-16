@@ -1,6 +1,5 @@
 package com.ekhonni.backend.payment.sslcommerz;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +9,6 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public class PaymentInitiationResponse {
+public class InitiatePaymentResponse {
     private String gatewayPageURL;
 }

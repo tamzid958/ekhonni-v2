@@ -1,27 +1,26 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.bid;
 
-import com.ekhonni.backend.dto.BidCreateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 public record BidResponseDTO(
-        Long bidId,
+        Long id,
         Long productId,
-        UUID bidderId,
         Double amount,
         String currency,
-        BidStatus status
+        BidStatus status,
+        LocalDateTime createdAt
 ) {
     // Factory method to create a response DTO from the original DTO and additional fields
-    public static BidResponseDTO from(BidCreateDTO createDTO, Long bidId, BidStatus status) {
+    public static BidResponseDTO from(BidCreateDTO createDTO, Long id, BidStatus status, LocalDateTime createdAt) {
         return new BidResponseDTO(
-                bidId,
+                id,
                 createDTO.productId(),
-                createDTO.bidderId(),
                 createDTO.amount(),
                 createDTO.currency(),
-                status
+                status,
+                createdAt
         );
     }
 }

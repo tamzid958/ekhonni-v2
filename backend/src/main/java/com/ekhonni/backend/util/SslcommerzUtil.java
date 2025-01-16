@@ -1,7 +1,10 @@
-package com.ekhonni.backend.payment.sslcommerz;
+package com.ekhonni.backend.util;
 
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.payment.sslcommerz.InitialResponse;
+import com.ekhonni.backend.payment.sslcommerz.IpnResponse;
+import com.ekhonni.backend.payment.sslcommerz.PaymentRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +20,7 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class Util {
+public class SslcommerzUtil {
 
     private final PaymentRequest paymentRequest;
 

@@ -5,9 +5,10 @@ HELP.md.gradle
 
 #Docker
 Dockerfile
-docker-compose.yaml
+docker-compose.yml
 .tar
 /backend-app-image/
+
 
 # Ignore folders
 .idea/
@@ -72,6 +73,7 @@ nbdist/
 # Sensitive and environment-specific files
 /src/main/resources/application-*.properties
 .env
+.env.example
 /config/
 
 # Editor-specific files
@@ -86,8 +88,4 @@ nbdist/
 
 # Ignore backups and caches
 *.bak
-*.cache
-
-
-# Ignore trash
-src/main/java/com/ekhonni/backend/trash/
+*.cache.env.example

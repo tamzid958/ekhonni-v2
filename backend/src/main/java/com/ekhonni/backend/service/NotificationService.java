@@ -1,8 +1,8 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.dto.BidCreateDTO;
 import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
 import com.ekhonni.backend.dto.NotificationPreviewDTO;
+import com.ekhonni.backend.dto.bid.BidCreateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.NotificationType;
 import com.ekhonni.backend.exception.NotificationNotFoundException;
