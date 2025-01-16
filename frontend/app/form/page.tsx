@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const categories = [
   'Automotive',
@@ -40,6 +41,7 @@ const locations = [
   'Outside Bangladesh',
 ] as const;
 
+
 const formSchema = z
   .object({
     productName: z.string().min(3),
@@ -49,6 +51,8 @@ const formSchema = z
     productCondition: z.enum(conditions),
     productLocation: z.enum(locations),
 
+    basePrice: z.number(),
+    mobile: z.boolean().default(false).optional(),
   })
   .refine(
     (data) => data.password === data.passwordConfirm,
@@ -62,22 +66,19 @@ export default function Home() {
     defaultValues: {
       productName: '',
       productDescription: '',
-      emailAddress: '',
-      password: '',
-      passwordConfirm: '',
-      companyName: '',
+      mobile: true,
     },
   });
   const stepFields = {
     1: [
-      'productName',
+      // 'productName',
       'productDescription',
-      'productCategory',
-      'productSubCategory',
-      'productCondition',
-      'productLocation',
+      // 'productCategory',
+      // 'productSubCategory',
+      // 'productCondition',
+      // 'productLocation',
     ],
-    2: [''],
+    2: ['basePrice'],
   };
 
   const productCategory = form.watch('productCategory');
@@ -259,11 +260,43 @@ export default function Home() {
           {step === 2 && (
             <>
               <h1 className="font-bold text-center text-3xl">PRICING</h1>
-
-
-              //
-
-
+              <FormField
+                control={form.control}
+                name="basePrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Base Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder=""
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Use different settings for my mobile devices
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              {/*<Button type="submit">Submit</Button>*/}
               <div className="flex gap-4">
                 <Button onClick={prevStep} type="button" className="w-full">
                   Back
@@ -274,6 +307,7 @@ export default function Home() {
               </div>
             </>
           )}
+
         </form>
       </Form>
     </main>
