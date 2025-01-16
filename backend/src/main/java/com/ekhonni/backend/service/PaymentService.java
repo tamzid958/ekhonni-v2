@@ -8,6 +8,7 @@ import com.ekhonni.backend.exception.payment.InvalidTransactionException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
+import com.ekhonni.backend.util.DomainUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -97,7 +98,6 @@ public class PaymentService {
         throw new InitiatePaymentException("Payment processing failed");
     }
 
-
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
         return sslcommerzUtil.getParamsString(transaction, true);
     }
@@ -133,6 +133,8 @@ public class PaymentService {
         String server = request.getServerName();
         log.info("Request from Server: {}, Origin: {}, Referer: {}, Host: {}", server, origin, referer, host);
 
+        log.info("Domain name: {}: ", DomainUtil.extractDomain(request));
+
         String gatewayIpAddress = getGatewayIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
 
@@ -144,31 +146,31 @@ public class PaymentService {
         IpnResponse response = sslcommerzUtil.extractIpnResponse(ipnResponse);
         log.info("Ipn response: {}", response);
 
-        Transaction transaction = getTransactionFromResponse(response.getTranId());
+        Transaction transaction = getDBTransactionFromResponse(response.getTranId());
 
         if (!ipnHashVerify(ipnResponse)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
-            log.warn("IPN signature verification failed for transaction : {}", ipnResponse.get("tran_id"));
+            transactionService.updateStatus(transaction, TransactionStatus.SIGNATURE_MISMATCH);
+            log.warn("IPN signature verification failed for transaction : {}", response.getTranId());
             throw new InvalidTransactionException();
         }
 
         String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
         if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
             transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
-            log.warn("Transaction; {} status: {}", response.getTranId(), status);
+            log.warn("Unsuccessful transaction: {}, status: {}", transaction.getId(), status);
             return;
         }
 
         // handle risk_level = SUCCESS_WITH_RISK
 
         if (!verifyTransactionParameters(transaction, response)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
-            log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
+            log.warn("Parameters don't match for transaction: {}", transaction.getId());
+            validateTransaction(response.getValId());
             throw new InvalidTransactionException();
         }
 
         if (!validateTransaction(response.getValId())) {
-            log.warn("Validation failed for transaction: {}", response.getTranId());
+            log.warn("Validation failed for transaction: {}", transaction.getId());
             throw new InvalidTransactionException();
         }
     }
@@ -193,18 +195,18 @@ public class PaymentService {
         if (response == null) {
             return false;
         }
-
-        Transaction transaction = getTransactionFromResponse(response.getTranId());
+        Transaction transaction = getDBTransactionFromResponse(response.getTranId());
         if (!verifyTransactionParameters(transaction, response)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
+            transactionService.updateStatus(transaction, TransactionStatus.PARAMETERS_MISMATCH);
+            transactionService.updateTransaction(transaction, response);
             log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
             return false;
         }
-        transactionService.updateSuccessfulTransaction(transaction, response);
+        transactionService.updateValidatedTransaction(transaction, response);
         return true;
     }
 
-    private Transaction getTransactionFromResponse(String trxId) {
+    private Transaction getDBTransactionFromResponse(String trxId) {
         long transactionId;
         try {
             transactionId = Long.parseLong(trxId);
@@ -246,15 +248,6 @@ public class PaymentService {
             log.warn("Invalid number format in transaction: {}", e.getMessage());
             return false;
         }
-    }
-
-    @Modifying
-    @Transactional
-    private void updateFailedTransactionStatus(Transaction transaction, String status) {
-        if (status == null || status.equals("VALID")) {
-            status = "INVALID";
-        }
-        transaction.setStatus(TransactionStatus.valueOf(status));
     }
 
     private String getGatewayIpAddress(HttpServletRequest request) {

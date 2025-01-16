@@ -12,10 +12,11 @@ import com.ekhonni.backend.exception.bid.InvalidBidAmountException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.bid.BidderBidProjection;
 import com.ekhonni.backend.repository.BidRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class BidService extends BaseService<Bid, Long> {
         this.productService = productService;
     }
 
-    public <P> Page<P> getAllBidsForProduct(Long productId, Class<P> projection, Pageable pageable) {
+    public <P> Page<P> getAllForProduct(Long productId, Class<P> projection, Pageable pageable) {
         return bidRepository.findByProductIdAndDeletedAtIsNull(productId, projection, pageable);
     }
 
@@ -54,6 +55,9 @@ public class BidService extends BaseService<Bid, Long> {
         Product product = productService.get(bidCreateDTO.productId())
                 .orElseThrow(() -> new ProductNotFoundException("Product not found for bid"));
         User authenticatedUser = AuthUtil.getAuthenticatedUser();
+        if (product.getSeller().getId().equals(authenticatedUser.getId())) {
+            throw new RuntimeException("Can not place bid for own product");
+        }
         User bidder = userService.get(authenticatedUser.getId())
                 .orElseThrow(() -> new UserNotFoundException("Bidder not found for bid"));
         Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), bidCreateDTO.currency(), BidStatus.PENDING);
@@ -113,4 +117,7 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.countByProductId(productId);
     }
 
+    public <P> Page<P> getAllForUser(Long bidderId, Class<P> projection, Pageable pageable) {
+        return bidRepository.findAllByBidderId(bidderId, projection, pageable);
+    }
 }

@@ -36,18 +36,6 @@
     "endpoint": "/api/v2/account"
   },
   {
-    "name": "Create Bid ",
-    "description": "Allows creating bid  entries",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/bid/create"
-  },
-  {
-    "name": "Get Bid",
-    "description": "Allows viewing all bid",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid"
-  },
-  {
     "name": "Get Products",
     "description": "Allows viewing all products",
     "httpMethod": "GET",
@@ -274,5 +262,107 @@
     "description": "Get all the notifications of a specific user",
     "httpMethod": "GET",
     "endpoint": "/api/v2/user/{id}/notifications"
+  },
+  {
+    "name": "Get Bid Details",
+    "description": "Allows bidder to view their own bid details",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}"
+  },
+  {
+    "name": "Get Product Buyer Bids",
+    "description": "Allows viewing all bids for a product (buyer view)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/buyer/{product_id}"
+  },
+  {
+    "name": "Get Product Bid Count",
+    "description": "Allows viewing bid count for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{product_id}/count"
+  },
+  {
+    "name": "Create Bid",
+    "description": "Allows creating a new bid",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/bid"
+  },
+  {
+    "name": "Update Bid",
+    "description": "Allows bidder to update their own bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/update"
+  },
+  {
+    "name": "Get Seller Product Bids",
+    "description": "Allows seller to view bids for their product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller/{product_id}"
+  },
+  {
+    "name": "Accept Bid",
+    "description": "Allows seller to accept a bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/accept"
+  },
+  {
+    "name": "Get All Bids Admin",
+    "description": "Allows admin to view all bids",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid"
+  },
+  {
+    "name": "Get Product Bids Admin",
+    "description": "Allows admin to view all bids for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{product_id}"
+  },
+  {
+    "name": "Get Product Bid Audit",
+    "description": "Allows viewing bid audit for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{product_id}/audit"
+  },
+  {
+    "name": "Get Product Bid Audit Count",
+    "description": "Allows viewing bid audit count for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{product_id}/audit-count"
+  },
+  {
+    "name": "Update Bid Status",
+    "description": "Allows admin to update bid status",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/update-status"
+  },
+  {
+    "name": "Restore Single Bid",
+    "description": "Allows restoring a single deleted bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/restore"
+  },
+  {
+    "name": "Restore Multiple Bids",
+    "description": "Allows restoring multiple deleted bids",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/restore"
+  },
+  {
+    "name": "Restore All Bids",
+    "description": "Allows restoring all deleted bids",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/restore-all"
+  },
+  {
+    "name": "Soft Delete Bid",
+    "description": "Allows soft deleting a bid",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid/{id}"
+  },
+  {
+    "name": "Permanent Delete Bid",
+    "description": "Allows permanently deleting a bid",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid/{id}/delete-permanently"
   }
 ]

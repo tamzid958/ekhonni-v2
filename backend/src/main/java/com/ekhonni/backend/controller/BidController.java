@@ -40,10 +40,17 @@ public class BidController {
         return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.get(id, BidderBidProjection.class)) ;
     }
 
+    @GetMapping("/bidder/{bidder_id}")
+    @PreAuthorize("bidderId == authentication.principal.id")
+    public ApiResponse<?> getAllForUser(@PathVariable("bidder_id") Long bidderId, Pageable pageable) {
+        return new ApiResponse<>( HTTPStatus.ACCEPTED,
+                bidService.getAllForUser(bidderId, BidderBidProjection.class, pageable));
+    }
+
     @GetMapping("/buyer/{product_id}")
     public ApiResponse<?> getAllForProductBuyer(@PathVariable("product_id") Long productId, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllBidsForProduct(productId, BuyerBidProjection.class, pageable));
+                bidService.getAllForProduct(productId, BuyerBidProjection.class, pageable));
     }
 
     @GetMapping("/{product_id}/count")
@@ -72,7 +79,7 @@ public class BidController {
     @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
     public ApiResponse<?> getAllForProductSeller(@PathVariable("product_id") Long productId, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllBidsForProduct(productId, SellerBidProjection.class, pageable));
+                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
     @PatchMapping("/{id}/accept")
@@ -96,7 +103,7 @@ public class BidController {
     @GetMapping("/{product_id}")
     public ApiResponse<?> getAllForProduct(@PathVariable("product_id") Long productId, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllBidsForProduct(productId, SellerBidProjection.class, pageable));
+                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
     @GetMapping("/{product_id}/audit")

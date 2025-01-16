@@ -5,14 +5,16 @@ import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.payment.sslcommerz.ValidationResponse;
+import com.ekhonni.backend.payment.sslcommerz.PaymentResponse;
 import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 /**
  * Author: Asif Iqbal
@@ -53,16 +55,32 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     @Modifying
     @Transactional
-    public void updateSuccessfulTransaction(Transaction transaction, ValidationResponse response) {
+    public void updateValidatedTransaction(Transaction transaction, PaymentResponse response) {
+        TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
+        if ("1".equals(response.getRiskLevel())) {
+            status = TransactionStatus.SUCCESS_WITH_RISK;
+        }
+        transaction.setStatus(status);
+        updateTransaction(transaction, response);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateTransaction(Transaction transaction, PaymentResponse response) {
         transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
-        transaction.setStatus(TransactionStatus.valueOf(response.getStatus()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
+        transaction.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         transaction.getBid().setStatus(BidStatus.PAID);
 
         Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
         sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getBdtAmount());
+        // add money to super admins account
     }
+
+    @Modifying
+    @Transactional
 
     public boolean existsByBidId(Long bidId) {
         return transactionRepository.existsByBidIdAndDeletedAtIsNull(bidId);

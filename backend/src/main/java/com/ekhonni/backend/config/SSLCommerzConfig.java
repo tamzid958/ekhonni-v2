@@ -25,6 +25,7 @@ public class SSLCommerzConfig {
     private String cancelUrl;
     private String ipnUrl;
     private String validatorApiUrl;
+    private String merchantTransIdValidatorApiUrl;
     private int connectionTimeout = 5000;
     private int readTimeout = 3000;
     private Set<String> allowedIps = new HashSet<>();

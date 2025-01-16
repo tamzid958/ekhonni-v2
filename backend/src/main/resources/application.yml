@@ -90,6 +90,7 @@ sslcommerz:
   ipn-url: ${SSLCOMMERZ_IPN_URL}
   api-url: ${SSLCOMMERZ_API_URL}
   validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
+  merchant-trans-id-validator-api-url: ${SSLCOMMERZ_MERCHANT_TRANS_ID_VALIDATION_API_URL}
   connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
@@ -153,8 +154,8 @@ info:
   app:
     name: ${spring.application.name}
     description: Ekhonni Backend Service
-    version: 1.0.0
+    version: 2.0.0
   contact:
-    email: asif783810@gmail.com
+    email: ekhonni72@gmail.com
     team: Backend Team
   environment: ${spring.profiles.active}

@@ -80,7 +80,7 @@ public class UserController {
                                                @PathVariable("product_id") Long productId,
                                                Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllBidsForProduct(productId, SellerBidProjection.class, pageable));
+                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
 }
