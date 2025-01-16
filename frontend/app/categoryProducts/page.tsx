@@ -41,9 +41,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
     console.error('Error fetching products:', error);
   }
 
-  const bestSellingProducts = products.filter((product) => product.label === 'Best Selling').slice(0, 10);
-  const limitedTimeDeals = products.filter((product) => product.label === 'Limited Time Deals').slice(0, 10);
-  const topRatedProducts = products.filter((product) => product.label === 'Top Rated').slice(0, 10);
+  const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
 
   return (
     <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">
@@ -61,29 +59,19 @@ export default async function CategoryProductPage({ searchParams }: Props) {
         <div className="flex-1 ml-6">
           <div className="container mx-auto px-4 w-full space-y-6">
             <Separator className="mt-4" />
-            {/* Best Selling Section */}
-
-            <ProductSection
-              title={'Best Selling'}
-              products={bestSellingProducts}
-              selectedCategory={selectedCategory} />
-
-            <Separator />
-
-            <ProductSection
-              title={'Limited Time Deals'}
-              products={limitedTimeDeals}
-
-              selectedCategory={selectedCategory} />
-
-            <Separator />
-
-            <ProductSection
-              title={'Top Rated'}
-              products={topRatedProducts}
-              selectedCategory={selectedCategory} />
-
-            <Separator />
+            {labels.map((label) => {
+              const filteredProducts = products.filter((product) => product.label === label).slice(0, 10);
+              return (
+                <div key={label}>
+                  <ProductSection
+                    key={label}
+                    title={label}
+                    products={filteredProducts}
+                    selectedCategory={selectedCategory} />
+                  <Separator />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
