@@ -1,10 +1,8 @@
 import React from 'react';
 import Sidebar from '@/components/CategorySidebar';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { CardDemo } from '@/components/Card';
 import { Separator } from '@/components/ui/separator';
-import Link from 'next/link';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
+import { ProductSection } from '@/components/ProductSection';
 
 interface Data {
   id: string;
@@ -43,6 +41,10 @@ export default async function CategoryProductPage({ searchParams }: Props) {
     console.error('Error fetching products:', error);
   }
 
+  const bestSellingProducts = products.filter((product) => product.label === 'Best Selling').slice(0, 10);
+  const limitedTimeDeals = products.filter((product) => product.label === 'Limited Time Deals').slice(0, 10);
+  const topRatedProducts = products.filter((product) => product.label === 'Top Rated').slice(0, 10);
+
   return (
     <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">
       <h1 className="text-5xl font-bold my-12">
@@ -60,91 +62,26 @@ export default async function CategoryProductPage({ searchParams }: Props) {
           <div className="container mx-auto px-4 w-full space-y-6">
             <Separator className="mt-4" />
             {/* Best Selling Section */}
-            <div className="w-full mb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-semibold py-4">Best Selling</h2>
-                <span>
-                  <Link href={{
-                    pathname: '/labeledCategory',
-                    query: { category: selectedCategory, label: 'Best Selling' },
-                  }}
-                        className="text-xl"
-                  > See All </Link> </span>
-              </div>
-              <ScrollArea className="w-full overflow-x-auto">
-                {products.filter((product) => product.label === 'Best Selling').length === 0 ? (
-                  <p className="text-center text-gray-500">No products found in this label.</p>
-                ) : (
-                  <div className="flex w-[1000px] space-x-4 py-4">
-                    {products
-                      .filter((product) => product.label === 'Best Selling').slice(0, 10)
-                      .map((item) => (
-                        <CardDemo key={item.id} {...item} />
-                      ))}
-                  </div>
-                )}
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+
+            <ProductSection
+              title={'Best Selling'}
+              products={bestSellingProducts}
+              selectedCategory={selectedCategory} />
 
             <Separator />
 
-            {/* Limited Time Deals Section */}
-            <div className="w-full mb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-semibold py-4">Limited Time Deals</h2>
-                <span>
-                  <Link href={{
-                    pathname: '/labeledCategory',
-                    query: { category: selectedCategory, label: 'Limited Time Deals' },
-                  }}
-                        className="text-xl"
-                  > See All </Link> </span>
-              </div>
-              <ScrollArea className="w-full overflow-x-auto">
-                {products.filter((product) => product.label === 'Limited Time Deals').length === 0 ? (
-                  <p className="text-center text-gray-500">No products found in this label.</p>
-                ) : (
-                  <div className="flex w-[1000px] space-x-4 py-4">
-                    {products
-                      .filter((product) => product.label === 'Limited Time Deals').slice(0, 10)
-                      .map((item) => (
-                        <CardDemo key={item.id} {...item} />
-                      ))}
-                  </div>
-                )}
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+            <ProductSection
+              title={'Limited Time Deals'}
+              products={limitedTimeDeals}
+
+              selectedCategory={selectedCategory} />
 
             <Separator />
 
-            {/* Top Rated Section */}
-            <div className="w-full mb-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-semibold py-4">Top Rated</h2>
-                <span>
-                  <Link href={{
-                    pathname: '/labeledCategory',
-                    query: { category: selectedCategory, label: 'Top Rated' },
-                  }}
-                        className="text-xl"
-                  > See All </Link> </span></div>
-              <ScrollArea className="w-full overflow-x-auto">
-                {products.filter((product) => product.label === 'Top Rated').length === 0 ? (
-                  <p className="text-center text-gray-500">No products found in this label.</p>
-                ) : (
-                  <div className="flex w-[1000px] space-x-4 py-4">
-                    {products
-                      .filter((product) => product.label === 'Top Rated').slice(0, 10)
-                      .map((item) => (
-                        <CardDemo key={item.id} {...item} />
-                      ))}
-                  </div>
-                )}
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+            <ProductSection
+              title={'Top Rated'}
+              products={topRatedProducts}
+              selectedCategory={selectedCategory} />
 
             <Separator />
           </div>
