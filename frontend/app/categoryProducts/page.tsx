@@ -15,6 +15,9 @@ interface Data {
     id: number;
     name: string;
   };
+  images: {
+    imagePath: string;
+  }[];
   label: string;
 }
 
@@ -27,10 +30,14 @@ export default async function CategoryProductPage({ searchParams }: Props) {
 
   // Directly fetch products data
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
-  const url =
-    selectedCategory === 'All'
-      ? `${baseUrl}/api/mock-data`
-      : `${baseUrl}/api/mock-data?category=${encodeURIComponent(selectedCategory)}`;
+  // const url =
+  //   selectedCategory === 'All'
+  //     ? `${baseUrl}/api/mock-data`
+  //     : `${baseUrl}/api/mock-data?category=${encodeURIComponent(selectedCategory)}`;
+
+  const url = selectedCategory === 'All' ?
+    `http://192.168.68.164:8080/api/v2/product/filter`
+    : `http://192.168.68.164:8080/api/v2/product/filter?categoryName=${encodeURIComponent(selectedCategory)}`;
 
   let products: Data[] = [];
   try {
@@ -40,7 +47,8 @@ export default async function CategoryProductPage({ searchParams }: Props) {
       throw new Error('Failed to fetch products');
     }
 
-    products = await response.json();
+    const json = await response.json();
+    products = json.data.content;
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -64,7 +72,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
           <div className="container mx-auto px-4 w-full space-y-6">
             <Separator className="mt-4" />
 
-            <ProductSection title={'All'} products={products} selectedCategory={selectedCategory} />
+            <ProductSection title={selectedCategory} products={products} selectedCategory={selectedCategory} />
 
             {/*{labels.map((label) => {*/}
             {/*  const filteredProducts = products.filter((product) => product.label === label).slice(0, 10);*/}

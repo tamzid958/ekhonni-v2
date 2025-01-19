@@ -5,11 +5,18 @@ import React from 'react';
 
 interface Data {
   id: string;
-  title: string;
-  description: string;
-  img: string;
   price: number;
-  category: string;
+  name: string;
+  description: string;
+  status: string;
+  condition: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  images: {
+    imagePath: string;
+  }[];
   label: string;
 }
 
@@ -37,8 +44,15 @@ export function ProductSection({ title, products, selectedCategory }: ProductSec
           <p className="text-center text-gray-500">No products found in this label.</p>
         ) : (
           <div className="flex w-[1000px] space-x-4 py-4">
-            {products.map((item) => (
-              <CardDemo key={item.id} {...item} />
+            {products.map((product) => (
+              <CardDemo
+                key={product.id}
+                id={product.id}
+                title={product.name}
+                description={product.description}
+                img={product.images[0].imagePath}
+                price={product.price}
+              />
             ))}
           </div>
         )}
