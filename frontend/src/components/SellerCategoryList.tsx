@@ -2,7 +2,7 @@ import React from 'react';
 
 
 type Props = {
-  categories: string[]; // Array of category names as strings
+  categories: string[];
   onCategorySelect: (categoryId: string) => void;
 };
 
@@ -13,7 +13,7 @@ const SellerCategoryList: React.FC<Props> = ({ categories, onCategorySelect }) =
         <div
           key={category}
           className="cursor-pointer py-2 px-4 "
-          onClick={() => onCategorySelect(category)} // use onCategorySelect here
+          onClick={() => onCategorySelect(category)}
         >
           {category}
         </div>
