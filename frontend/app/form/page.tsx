@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Trash2 } from 'lucide-react';
 
 const categories = [
   'Automotive',
@@ -41,23 +42,62 @@ const locations = [
   'Outside Bangladesh',
 ] as const;
 
+const shipping = [
+  'Standard shipping: Small to medium items',
+  'Freight: Oversized items',
+  'Local pickup only: Sell to buyers near you',
+] as const;
+
+const units = [
+  'Gram',
+  'Kilogram',
+] as const;
+
+const lengthUnits = [
+  'cm',
+  'meter',
+  'inch',
+  'feet',
+] as const;
 
 const formSchema = z
   .object({
-    productName: z.string().min(3),
+    productName: z.string(),
     productDescription: z.string().max(255).optional(),
     productCategory: z.enum(categories),
     productSubCategory: z.enum(categories),
     productCondition: z.enum(conditions),
     productLocation: z.enum(locations),
 
-    basePrice: z.number(),
-    mobile: z.boolean().default(false).optional(),
-  })
-  .refine(
-    (data) => data.password === data.passwordConfirm,
-    { message: 'Passwords do not match', path: ['passwordConfirm'] },
-  );
+    basePrice: z.number()
+      .min(0, { message: 'Price must be a positive number' })  // Ensures positive price
+      .refine(value => value === Math.round(value * 100) / 100, {
+        message: 'Price must have up to two decimal places',
+      }),
+    delievery: z.boolean().default(false).optional(),
+
+    shippingMethod: z.enum(shipping),
+    packageWeight: z
+      .number()
+      .min(0, { message: 'Weight must be a positive number' })  // Ensures positive price
+      .refine(value => value === Math.round(value * 100) / 100, {
+        message: 'Price must have up to two decimal places',
+      }),
+    WeightUnit: z.enum(units),
+    packageLength: z.number(),
+    packageWidth: z.number(),
+    packageHeight: z.number(),
+    lengthUnit: z.enum(lengthUnits),
+
+    images: z
+      .array(z.any()) // Accepts any type (files in this case)
+      .min(5, 'Please upload all images')
+      .optional(),
+  });
+// .refine(val => !isNaN(parseFloat(val)) && val.trim() !== '', {
+//   message: 'Please enter a valid number',
+// })
+// .transform(val => parseFloat(val));
 
 export default function Home() {
   const [step, setStep] = useState(1); // Track the current step
@@ -65,20 +105,33 @@ export default function Home() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: '',
-      productDescription: '',
-      mobile: true,
+      productDescription: '', // Optional field, can be an empty string
+      productCategory: '', // Choose a default from your categories enum
+      productSubCategory: '', // Choose a default from your categories enum
+      productCondition: '', // Choose a default from your conditions enum
+      productLocation: '', // Choose a default from your locations enum
+      // basePrice: 0, // Assuming default value of 0 for base price
+      delievery: false, // Default value is false for delievery
+      shippingMethod: '', // Choose a default from your shipping enum
+      // packageWeight: 0, // Default to 0 weight
+      WeightUnit: '', // Choose a default from your units enum
+      // packageLength: 0, // Default to 0 length
+      // packageWidth: 0, // Default to 0 width
+      // packageHeight: 0, // Default to 0 height
+      lengthUnit: '', // Choose a default from your lengthUnits enum
     },
   });
   const stepFields = {
     1: [
-      // 'productName',
+      'productName',
       'productDescription',
-      // 'productCategory',
-      // 'productSubCategory',
-      // 'productCondition',
-      // 'productLocation',
+      'productCategory',
+      'productSubCategory',
+      'productCondition',
+      'productLocation',
     ],
     2: ['basePrice'],
+    3: ['images'],
   };
 
   const productCategory = form.watch('productCategory');
@@ -259,7 +312,7 @@ export default function Home() {
           )}
           {step === 2 && (
             <>
-              <h1 className="font-bold text-center text-3xl">PRICING</h1>
+              <h1 className="font-bold text-center text-3xl">PRICING & SHIPPING</h1>
               <FormField
                 control={form.control}
                 name="basePrice"
@@ -270,7 +323,17 @@ export default function Home() {
                       <Input
                         placeholder=""
                         type="number"
-                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          const numberValue = parseFloat(inputValue);
+
+                          if (!isNaN(numberValue) && inputValue.trim() !== '') {
+                            field.onChange(numberValue);
+                          } else if (inputValue === '') {
+                            field.onChange(null);
+                          }
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -279,34 +342,277 @@ export default function Home() {
               />
               <FormField
                 control={form.control}
-                name="mobile"
+                name="delievery"
                 render={({ field }) => (
                   <FormItem>
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
+                    <div className="flex items-center space-x-3">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
                       <FormLabel>
-                        Use different settings for my mobile devices
+                        Free Delievery
                       </FormLabel>
                     </div>
                   </FormItem>
                 )}
               />
-              {/*<Button type="submit">Submit</Button>*/}
+              <FormField
+                control={form.control}
+                name="shippingMethod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Shipping Method</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Shipping method" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {shipping.map((method) => (
+                          <SelectItem key={method} value={method}>
+                            {method}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="packageWeight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Package Weight</FormLabel>
+                    <div className="flex items-center space-x-4">
+                      <FormControl>
+                        <Input
+                          placeholder=""
+                          type="number"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numberValue = parseFloat(inputValue);
+
+                            if (!isNaN(numberValue) && inputValue.trim() !== '') {
+                              field.onChange(numberValue);
+                            } else if (inputValue === '') {
+                              field.onChange(null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormField
+                        control={form.control}
+                        name="weightUnits"
+                        render={({ field }) => (
+                          <FormControl>
+                            <Select onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select an unit" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {units.map((unit) => (
+                                  <SelectItem key={unit} value={unit}>
+                                    {unit}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormItem>
+                <FormLabel>Product Dimensions</FormLabel>
+                <div className="flex items-center space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="packageLength"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Length"
+                          type="number"
+                          {...field}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <span>x</span>
+                  <FormField
+                    control={form.control}
+                    name="packageWidth"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Width"
+                          type="number"
+                          {...field}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <span>x</span>
+                  <FormField
+                    control={form.control}
+                    name="packageHeight"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Height"
+                          type="number"
+                          {...field}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lengthUnit"
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Unit" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {lengthUnits.map((unit) => (
+                            <SelectItem key={unit} value={unit}>
+                              {unit}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+
               <div className="flex gap-4">
                 <Button onClick={prevStep} type="button" className="w-full">
                   Back
                 </Button>
+                <Button
+                  onClick={nextStep}
+                  type="button"
+                  className="w-full"
+                >
+                  Next
+                </Button>
+
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <h1 className="font-bold text-center text-3xl">Images </h1>
+              {/* Image Upload Section */}
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Images</FormLabel>
+                    <div className="grid grid-cols-3 gap-4">
+                      {Array.from({ length: 7 }).map((_, index) => {
+                        const names = ['Front', 'Back', 'Left Side', 'Right side', 'Details', 'Damage', 'Other']; // Random names list
+                        const name = names[index]; // Get name based on index
+
+                        return (
+                          <div
+                            key={index}
+                            className={`${
+                              index === 0 ? 'col-span-3' : 'col-span-1'
+                            } border border-dashed border-gray-300 rounded-md p-2 flex items-center justify-center`}
+                          >
+                            <div className="relative w-full h-32">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const files = e.target.files;
+                                  if (files?.[0]) {
+                                    const updatedImages = [...(field.value || [])];
+                                    updatedImages[index] = files[0];
+                                    field.onChange(updatedImages);
+                                  }
+                                }}
+                                className="absolute inset-0 cursor-pointer w-full h-full opacity-0 z-10" // Hide file input behind container
+                                ref={(el) => {
+                                  if (el && !field.value?.[index]) {
+                                    el.value = ''; // Reset file input when image is removed
+                                  }
+                                }}
+                              />
+                              {field.value?.[index] && (
+                                <>
+                                  {/* Image preview */}
+                                  <img
+                                    src={URL.createObjectURL(field.value[index])}
+                                    alt={`Preview ${index + 1}`}
+                                    className="absolute inset-0 object-cover w-full h-full rounded-md z-20"
+                                  />
+                                  {/* Trash icon button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updatedImages = [...(field.value || [])];
+                                      updatedImages[index] = null; // Set the image slot to null (not removing it)
+                                      field.onChange(updatedImages); // Update the field value with the modified array
+                                    }}
+                                    className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md z-20"
+                                  >
+                                    <Trash2 size={20} />
+                                  </button>
+                                </>
+                              )}
+                              <div className="absolute inset-0 flex items-center justify-center z-0">
+                                {/*{index < 5 && <><span className="text-red-500">*</span>&nbsp;</>}*/}
+                                <span className="text-gray-500 ">{name}</span> {/* Display custom name */}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex gap-4">
+                <Button onClick={prevStep} type="button" className="w-full">
+                  Back
+                </Button>
+                {/*<Button*/}
+                {/*  onClick={nextStep}*/}
+                {/*  type="button"*/}
+                {/*  className="w-full"*/}
+                {/*>*/}
+                {/*  Next*/}
+                {/*</Button>*/}
                 <Button type="submit" className="w-full">
                   Submit
                 </Button>
               </div>
             </>
           )}
+
 
         </form>
       </Form>
