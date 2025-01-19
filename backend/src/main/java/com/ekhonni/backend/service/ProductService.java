@@ -129,7 +129,12 @@ public class ProductService extends BaseService<Product, Long> {
 
 
     public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
-        List<Long> categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
+        List<Long> categoryIds = new ArrayList<>();
+        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
+            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
+        }
+
+
         Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
         List<Long> productIds = productRepository.findAllFiltered(spec, pageable);

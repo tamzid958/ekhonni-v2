@@ -64,4 +64,10 @@ public class ProductSpecification {
             );
         };
     }
+
+
+    // default specification (returns all products without any filters)
+    public static Specification<Product> defaultSpec() {
+        return (product, cq, cb) -> cb.conjunction();  // Returns all products (no filter applied)
+    }
 }
