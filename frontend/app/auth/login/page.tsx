@@ -66,8 +66,13 @@ export default function AuthForm() {
 
           router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
         }
-        else if(result.status ==404){
+        else if(result.status === 404){
           alert("Email already exist, please sign up with different email ");
+        }
+        else if(result.status === 301)
+        {
+          alert("You have Signed Up Already.But Your Email is Not Verified, Please Verify.");
+          router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(true)}`)
         }
         else if(result.status != 200) {
           const errorData = await result.data;
@@ -77,7 +82,7 @@ export default function AuthForm() {
           return;
         }
         else {
-          alert("Something went wrong!!");
+          alert("Signup Failed!! Something went wrong!!");
         }
 
         setIsSignup(false);
