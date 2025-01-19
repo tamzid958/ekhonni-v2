@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.EmailTaskDTO;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
@@ -29,13 +30,14 @@ public class EmailVerificationService {
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
     private final EmailService emailService;
+    private final EmailProducerService emailProducerService;
 
 
     @Value("${spring.constant.email-verification-url}")
     private String emailVerificationUrl;
 
 
-    public String send(User user) {
+    public void send(User user) {
 
         VerificationToken verificationToken;
         if (verificationTokenRepository.findByUser(user) != null) {
@@ -55,8 +57,13 @@ public class EmailVerificationService {
                 url
         );
 
-        emailService.send(recipientEmail, subject, message);
-        return "successful";
+        EmailTaskDTO emailTaskDTO = new EmailTaskDTO(
+                recipientEmail,
+                subject,
+                message
+        );
+
+        emailProducerService.send(emailTaskDTO);
     }
 
 

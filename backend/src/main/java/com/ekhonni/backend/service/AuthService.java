@@ -37,7 +37,6 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final TokenUtil tokenUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final VerificationTokenService verificationTokenService;
     private final EmailVerificationService emailVerificationService;
 
     @Transactional

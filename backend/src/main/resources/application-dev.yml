@@ -169,3 +169,10 @@ info:
     email: asif783810@gmail.com
     team: Backend Team
   environment: ${spring.profiles.active}
+
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}

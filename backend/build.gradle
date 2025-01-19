@@ -67,10 +67,10 @@ dependencies {
 //.   Time Utils
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.1.Final'
 
-
-    implementation 'com.sun.mail:jakarta.mail:2.0.1'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-
+// RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 }
 
