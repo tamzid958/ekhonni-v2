@@ -147,6 +147,12 @@ public class BidController {
         return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
+    @DeleteMapping()
+    public ApiResponse<?> delete(@RequestBody List<Long> ids) {
+        bidService.softDelete(ids);
+        return new ApiResponse<>(HTTPStatus.DELETED, null);
+    }
+
     @DeleteMapping("/{id}/delete-permanently")
     public ApiResponse<?> deletePermanently(@PathVariable Long id) {
         bidService.deletePermanently(id);

@@ -8,7 +8,6 @@ import com.ekhonni.backend.exception.payment.InvalidTransactionException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
-import com.ekhonni.backend.util.DomainUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -26,9 +25,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -123,23 +125,26 @@ public class PaymentService {
     }
 
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
-        if (ipnResponse == null) {
-            log.warn("Null ipn response in payment");
-            return;
+
+        String protocol = request.getHeader("x-forwarded-proto");
+        String hostName = getHostName(getIpAddress(request));
+        log.info("Protocol: {}, domain name: {}", protocol, hostName);
+
+        if (!"https".equals(protocol)) {
+            log.warn("Connection not secure for transaction in request: {}", request.getRemoteHost());
+//            throw new InvalidTransactionException();
         }
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-        String host = request.getHeader("Host");
-        String server = request.getServerName();
-        log.info("Request from Server: {}, Origin: {}, Referer: {}, Host: {}", server, origin, referer, host);
 
-        log.info("Domain name: {}: ", DomainUtil.extractDomain(request));
+        if (!sslCommerzConfig.getDomain().equals(hostName)) {
+            log.warn("Transaction request from unknown domain in request: {}", request.getRemoteHost());
+//            throw new InvalidTransactionException();
+        }
 
-        String gatewayIpAddress = getGatewayIpAddress(request);
+        String gatewayIpAddress = getIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
 
         if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
-            log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
+            log.warn("Payment request from unknown ip: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
         }
 
@@ -161,8 +166,6 @@ public class PaymentService {
             return;
         }
 
-        // handle risk_level = SUCCESS_WITH_RISK
-
         if (!verifyTransactionParameters(transaction, response)) {
             log.warn("Parameters don't match for transaction: {}", transaction.getId());
             validateTransaction(response.getValId());
@@ -175,10 +178,8 @@ public class PaymentService {
         }
     }
 
-    @Modifying
-    @Transactional
     private ValidationResponse getValidationResponse(String validationId) {
-        String validationUrl = sslCommerzConfig.getValidatorApiUrl()
+        String validationUrl = sslCommerzConfig.getValidationApiUrl()
                 + "?val_id=" + validationId
                 + "&store_id=" + sslCommerzConfig.getStoreId()
                 + "&store_passwd=" + sslCommerzConfig.getStorePassword()
@@ -190,6 +191,8 @@ public class PaymentService {
                 .body(ValidationResponse.class);
     }
 
+    @Modifying
+    @Transactional
     private boolean validateTransaction(String validationId) {
         ValidationResponse response = getValidationResponse(validationId);
         if (response == null) {
@@ -250,12 +253,22 @@ public class PaymentService {
         }
     }
 
-    private String getGatewayIpAddress(HttpServletRequest request) {
+    private String getIpAddress(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
             return xForwardedFor.split(",")[0].trim();
         }
         return request.getRemoteAddr();
+    }
+
+    private String getHostName(String ipAddress) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            return inetAddress.getHostName();
+        } catch (UnknownHostException e) {
+            System.out.println("Hostname could not be resolved for IP: " + ipAddress);
+        }
+        return null;
     }
 
     private boolean ipnHashVerify(final Map<String, String> response) {

@@ -364,5 +364,35 @@
     "description": "Allows permanently deleting a bid",
     "httpMethod": "DELETE",
     "endpoint": "/api/v2/bid/{id}/delete-permanently"
+  },
+  {
+    "name": "Initiate Payment",
+    "description": "Allows a user to initiate a payment for a bid",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/initiate/{bid_id}"
+  },
+  {
+    "name": "Payment Success",
+    "description": "Handles the successful completion of a payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/success"
+  },
+  {
+    "name": "Payment Failure",
+    "description": "Handles a failed payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/fail"
+  },
+  {
+    "name": "Payment Cancel",
+    "description": "Handles payment cancellation",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cancel"
+  },
+  {
+    "name": "Instant Payment Notification",
+    "description": "Handles IPN requests from the payment gateway",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/ipn"
   }
 ]

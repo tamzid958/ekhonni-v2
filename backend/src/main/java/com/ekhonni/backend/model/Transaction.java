@@ -29,7 +29,6 @@ public class Transaction extends BaseEntity<Long> {
     private TransactionStatus status;
 
     private Double bdtAmount;
-
     private String sessionKey;
     private String validationId;
     private String bankTransactionId;

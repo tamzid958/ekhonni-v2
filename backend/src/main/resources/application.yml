@@ -10,11 +10,12 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: ${DB_DRIVER_CLASSNAME}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: ${JPA_GENERATE_DDL:true}
+    defer-datasource-initialization: ${JPA_DEFER_DATASOURCE_INIT:false}
     show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
@@ -22,6 +23,11 @@ spring:
       hibernate:
         format_sql: ${JPA_FORMAT_SQL:false}
         highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
+
+  sql:
+    init:
+      platform: ${SQL_INIT_PLATFORM:postgresql}
+      mode: ${SQL_INIT_MODE:never}
 
   security:
     jwt:
@@ -64,11 +70,6 @@ spring:
     ansi:
       enabled: ALWAYS
 
-sql:
-  init:
-    mode: ${SQL_INIT_MODE:always}
-    platform: ${SQL_INIT_PLATFORM:postgresql}
-
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
@@ -82,6 +83,7 @@ server:
   address: ${SERVER_ADDRESS}
 
 sslcommerz:
+  domain: ${SSLCOMMERZ_DOMAIN}
   store-id: ${SSLCOMMERZ_STORE_ID}
   store-password: ${SSLCOMMERZ_STORE_PASSWORD}
   success-url: ${BASE_URL}/success
@@ -89,8 +91,8 @@ sslcommerz:
   cancel-url: ${BASE_URL}/cancel
   ipn-url: ${SSLCOMMERZ_IPN_URL}
   api-url: ${SSLCOMMERZ_API_URL}
-  validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
-  merchant-trans-id-validator-api-url: ${SSLCOMMERZ_MERCHANT_TRANS_ID_VALIDATION_API_URL}
+  validation-api-url: ${SSLCOMMERZ_VALIDATION_API_URL}
+  merchant-trans-id-validation-api-url: ${SSLCOMMERZ_MERCHANT_TRANS_ID_VALIDATION_API_URL}
   connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}

@@ -42,5 +42,13 @@ public class WebConfig implements WebMvcConfigurer {
                 )
                 .allowCredentials(true)
                 .maxAge(3600);
+
+        registry.addMapping("/api/v2/payment/ipn")
+                .allowedOriginPatterns("developer.sslcommerz.com")
+                .allowedMethods("GET", "POST")
+                .allowedHeaders("Authorization", "Content-Type")
+                .exposedHeaders("Access-Control-Allow-Origin")
+                .allowCredentials(false)
+                .maxAge(1800);
     }
 }
