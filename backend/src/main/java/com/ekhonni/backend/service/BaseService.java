@@ -135,7 +135,7 @@ public abstract class BaseService<T, ID> {
         repository.softDeleteSelected(ids);
     }
 
-    public void deletePermanently(ID id) {     // deletePermanently permanently
+    public void deletePermanently(ID id) {
         repository.deleteById(id);
     }
 

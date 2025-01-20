@@ -2,9 +2,11 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
+import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.payment.sslcommerz.PaymentResponse;
 import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Author: Asif Iqbal
@@ -31,7 +34,12 @@ public class TransactionService extends BaseService<Transaction, Long> {
         this.transactionRepository = transactionRepository;
     }
 
-    @Modifying
+    public UUID getSellerId(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+        return transaction.getSeller().getId();
+    }
+
     @Transactional
     public Transaction create(Bid bid) {
         Transaction transaction = new Transaction();
