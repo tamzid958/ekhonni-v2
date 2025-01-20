@@ -6,6 +6,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class JsonUtil {
 
     public <T> List<T> readListFromJsonFile(String filePath, TypeReference<List<T>> typeReference) throws IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
-        String jsonContent = new String(Files.readAllBytes(resource.getFile().toPath()));
-        return objectMapper.readValue(jsonContent, typeReference);
+        try (InputStream inputStream = resource.getInputStream()) {
+            return objectMapper.readValue(inputStream, typeReference);
+        }
     }
 }
