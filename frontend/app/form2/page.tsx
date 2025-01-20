@@ -1,3 +1,5 @@
+//backup for form.tsx
+
 'use client';
 import * as z from 'zod';
 import { useState } from 'react';
@@ -9,12 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2 } from 'lucide-react';
-
-// TO-DO
-// 1. Add confirmation page
-// 2. decompose the file
-// 3. add instructions in images
-// 4. Add dimensions under one field(maybe it's a 3 size array)
 
 const categories = [
   'Automotive',
@@ -59,6 +55,13 @@ const units = [
   'Kilogram',
 ] as const;
 
+const lengthUnits = [
+  'cm',
+  'meter',
+  'inch',
+  'feet',
+] as const;
+
 const formSchema = z
   .object({
     productName: z
@@ -69,6 +72,12 @@ const formSchema = z
       .string()
       .max(1000, { message: 'Product description must not exceed 1000 characters' })
       .optional(),
+    productCategory: z.enum(categories, {
+      required_error: 'Product category is required',
+    }),
+    productSubCategory: z.enum(categories, {
+      required_error: 'Product subcategory is required',
+    }),
     productCondition: z.enum(conditions, {
       required_error: 'Product condition is required',
     }),
@@ -98,6 +107,21 @@ const formSchema = z
     weightUnit: z.enum(units, {
       required_error: 'Weight unit is required',
     }),
+    packageLength: z
+      .number()
+      .min(0, { message: 'Length must be a positive number' })
+      .max(1000000, { message: 'Length must not exceed 1000000 units' }),
+    packageWidth: z
+      .number()
+      .min(0, { message: 'Width must be a positive number' })
+      .max(1000000, { message: 'Width must not exceed 1000000 units' }),
+    packageHeight: z
+      .number()
+      .min(0, { message: 'Height must be a positive number' })
+      .max(1000000, { message: 'Height must not exceed 1000000 units' }),
+    lengthUnit: z.enum(lengthUnits, {
+      required_error: 'Length unit is required',
+    }),
     images: z
       .array(z.any())
       .min(1, { message: 'Please upload at least one image' })
@@ -111,6 +135,8 @@ export default function Home() {
     defaultValues: {
       productName: '',
       productDescription: '',
+      // productCategory: '',
+      // productSubCategory: '',
       // productCondition: '',
       // productLocation: '',
       // basePrice: 0,
@@ -118,24 +144,30 @@ export default function Home() {
       // shippingMethod: '',
       // packageWeight: 0,
       // weightUnit: 'Gram',
+      // packageLength: 0, // Default to 0 length
+      // packageWidth: 0, // Default to 0 width
+      // packageHeight: 0, // Default to 0 height
+      // lengthUnit: '',
     },
-    shouldUnregister: false,
   });
   const stepFields = {
     1: [
       'productName',
       'productDescription',
+      'productCategory',
+      'productSubCategory',
       'productCondition',
       'productLocation',
     ],
+    //2: ['basePrice', 'packageWeight'],
     2: ['basePrice', 'delievery', 'shippingMethod', 'packageWeight', 'weightUnit'],
     3: ['images'],
   };
 
+
+  const productCategory = form.watch('productCategory');
+  const productSubCategory = form.watch('productSubCategory');
   const productLocation = form.watch('productLocation');
-  const productCondition = form.watch('productCondition');
-  const shippingMethod = form.watch('shippingMethod');
-  const weightUnit = form.watch('weightUnit');
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     console.log('brrrrrrrr');
@@ -145,17 +177,15 @@ export default function Home() {
   };
 
   const nextStep = async () => {
-    const fieldsToValidate = stepFields[step];
-    const isValid = await form.trigger(fieldsToValidate);
+    const fieldsToValidate = stepFields[step]; // Get fields for the current step
+    const isValid = await form.trigger(fieldsToValidate); // Validate only those fields
 
     console.log('Validation result:', isValid);
-    console.log('Current values:', form.getValues());
     if (isValid) {
-      setStep((prev) => prev + 1);
+      setStep((prev) => prev + 1); // Move to the next step
       console.log('Moving to next step:', step + 1);
     }
   };
-
   const prevStep = () => {
     setStep((prev) => Math.max(prev - 1, 1));
   };
@@ -207,12 +237,61 @@ export default function Home() {
 
               <FormField
                 control={form.control}
+                name="productCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category of your Product</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="productSubCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sub-Category of your Product</FormLabel>
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a sub-category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="productCondition"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Current Condition of your Product</FormLabel>
-                    <Select onValueChange={field.onChange}
-                            value={field.value}>
+                    <Select onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select the condition" />
@@ -237,7 +316,7 @@ export default function Home() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location of your Product</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select the product's Location" />
@@ -320,7 +399,7 @@ export default function Home() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Shipping Method</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Shipping method" />
@@ -380,7 +459,7 @@ export default function Home() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Weight Unit</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select the Weight Unit" />
@@ -400,6 +479,105 @@ export default function Home() {
                   />
                 </div>
               </div>
+
+
+              <FormItem>
+                <FormLabel>Product Dimensions</FormLabel>
+                <div className="flex items-center space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="packageLength"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder=""
+                          type="number"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numberValue = parseFloat(inputValue);
+
+                            if (!isNaN(numberValue) && inputValue.trim() !== '') {
+                              field.onChange(numberValue);
+                            } else if (inputValue === '') {
+                              field.onChange(null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <span>x</span>
+                  <FormField
+                    control={form.control}
+                    name="packageWidth"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder=""
+                          type="number"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numberValue = parseFloat(inputValue);
+
+                            if (!isNaN(numberValue) && inputValue.trim() !== '') {
+                              field.onChange(numberValue);
+                            } else if (inputValue === '') {
+                              field.onChange(null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <span>x</span>
+                  <FormField
+                    control={form.control}
+                    name="packageHeight"
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder=""
+                          type="number"
+                          value={field.value || ''}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numberValue = parseFloat(inputValue);
+
+                            if (!isNaN(numberValue) && inputValue.trim() !== '') {
+                              field.onChange(numberValue);
+                            } else if (inputValue === '') {
+                              field.onChange(null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lengthUnit"
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Unit" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {lengthUnits.map((unit) => (
+                            <SelectItem key={unit} value={unit}>
+                              {unit}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
 
               <div className="flex gap-4">
                 <Button onClick={prevStep} type="button" className="w-full">
@@ -460,11 +638,13 @@ export default function Home() {
                               />
                               {field.value?.[index] && (
                                 <>
+                                  {/* Image preview */}
                                   <img
                                     src={URL.createObjectURL(field.value[index])}
                                     alt={`Preview ${index + 1}`}
                                     className="absolute inset-0 object-cover w-full h-full rounded-md z-20"
                                   />
+                                  {/* Trash icon button */}
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -508,6 +688,8 @@ export default function Home() {
               </div>
             </>
           )}
+
+
         </form>
       </Form>
     </main>
