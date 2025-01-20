@@ -47,7 +47,12 @@ public class PasswordResetService {
             throw new RuntimeException("Email not verified. Please verify your email to sign in.");
         }
 
-        VerificationToken verificationToken = verificationTokenService.create(user);
+        VerificationToken verificationToken;
+        if (verificationTokenRepository.findByUser(user) != null) {
+            verificationToken = verificationTokenService.replace(user);
+        } else {
+            verificationToken = verificationTokenService.create(user);
+        }
 
         String subject = "Password Reset Request";
         String url = passwordResetUrl + verificationToken.getToken();
