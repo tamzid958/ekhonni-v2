@@ -27,14 +27,14 @@ public class CleanupService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void removedExpiredTokensAndUsers() {
+    public void removeExpiredVerificationTokensAndUnverifiedUsers() {
 
         LocalDateTime now = LocalDateTime.now();
 
         List<UUID> userIds = verificationTokenRepository.findUnverifiedUserIdsWithExpiredTokens(now);
-        verificationTokenRepository.deleteExpiredTokens(now);
+        verificationTokenRepository.deleteByExpiryDateBefore(now);
         if (!userIds.isEmpty()) {
-            userRepository.deleteUsersByIds(userIds);
+            userRepository.deleteByIdIn(userIds);
         }
     }
 }

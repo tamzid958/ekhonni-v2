@@ -2,11 +2,11 @@ package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +26,8 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     VerificationToken findByUser(User user);
 
+
+
     @Query("""
                 SELECT t.user.id
                 FROM VerificationToken t
@@ -35,10 +37,6 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     @Modifying
     @Transactional
-    @Query("""
-                DELETE FROM VerificationToken t
-                WHERE t.expiryDate < :now
-            """)
-    void deleteExpiredTokens(LocalDateTime now);
+    void deleteByExpiryDateBefore(LocalDateTime now);
 
 }
