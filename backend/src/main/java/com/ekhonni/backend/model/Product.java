@@ -63,9 +63,10 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "admin_id", nullable = false)
-    private User approvedBy;
+    // add reviewedBy ( need to change)
+//    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "admin_id")
+//    private User approvedBy;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")

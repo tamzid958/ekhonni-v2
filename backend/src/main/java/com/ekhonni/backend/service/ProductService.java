@@ -14,6 +14,7 @@ import com.ekhonni.backend.dto.ProductUpdateDTO;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.*;
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductImage;
@@ -23,6 +24,7 @@ import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
+import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.ImageUploadUtil;
@@ -84,10 +86,10 @@ public class ProductService extends BaseService<Product, Long> {
 
             ProductStatus status = ProductStatus.PENDING_APPROVAL;
 
-            UUID id = UUID.fromString("665e2027-bdf1-433d-a6f5-9171ab58d455");
-
-            Optional<User> optionalAdmin = userRepository.findById(id);
-            User admin = optionalAdmin.orElseThrow(() -> new UserNotFoundException("Admin user not found"));
+//            UUID id = UUID.fromString("665e2027-bdf1-433d-a6f5-9171ab58d455");
+//
+//            Optional<User> optionalAdmin = userRepository.findById(id);
+//            User admin = optionalAdmin.orElseThrow(() -> new UserNotFoundException("Admin user not found"));
 
             Product product = new Product(
                     dto.name(),
@@ -98,7 +100,6 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.condition(),
                     category,
                     user,
-                    admin,
                     images
             );
 
@@ -196,5 +197,24 @@ public class ProductService extends BaseService<Product, Long> {
     public UUID getSellerId(Long id) {
         return productRepository.findSellerIdById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+    }
+
+    public Page<ProductResponseDTO> getAllFilteredForUser(UserProductFilter filter) {
+        List<Long> categoryIds = new ArrayList<>();
+        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
+            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
+        }
+
+
+        Specification<Product> spec = UserProductSpecificationBuilder.build(filter, categoryIds);
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        List<ProductResponseDTO> products = projections.stream()
+                .map(ProductProjectionConverter::convert)
+                .peek(dto -> dto.setBids(null))
+                .toList();
+        long totalElements = 0;
+        return new PageImpl<>(products, pageable, totalElements);
     }
 }

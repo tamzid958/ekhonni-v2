@@ -13,7 +13,8 @@ import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.dto.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.projection.BuyerBidProjection;
+import com.ekhonni.backend.filter.UserProductFilter;
+import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
@@ -55,8 +56,15 @@ public record ProductController(ProductService productService, BidService bidSer
 
     @GetMapping("/filter")
     public ApiResponse<?> getFiltered(@ModelAttribute ProductFilter filter) {
-        System.out.println(filter.getCategoryName());
+        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
+    }
+
+
+    @GetMapping("/user/filter")
+    public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
+        //System.out.println(filter.getCategoryName());
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
     }
 
 
@@ -64,7 +72,7 @@ public record ProductController(ProductService productService, BidService bidSer
     @GetMapping("/{id}/bid")
     public ApiResponse<?> getAllBidsForProduct(@PathVariable("id") Long id, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllBidsForProduct(id, BuyerBidProjection.class, pageable));
+                bidService.getAllForProduct(id, BuyerBidProjection.class, pageable));
     }
 
 

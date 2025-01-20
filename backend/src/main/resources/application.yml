@@ -97,77 +97,10 @@ sslcommerz:
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
 
+sql:
+  init:
+    mode: ${SQL_INIT_MODE:always}
+    platform: ${SQL_INIT_PLATFORM:postgresql}
+
 upload:
   dir: ${UPLOAD_DIR}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-        exclude: "env,beans"
-      base-path: /actuator
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET,POST
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-      probes:
-        enabled: true
-    info:
-      enabled: true
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  info:
-    env:
-      enabled: true
-    git:
-      enabled: true
-    build:
-      enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name}
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      sla:
-        http.server.requests: 10ms, 100ms
-    enable:
-      jvm: true
-      process: true
-      system: true
-      http: true
-  health:
-    diskspace:
-      enabled: true
-    db:
-      enabled: true
-    redis:
-      enabled: true
-    mail:
-      enabled: true
-
-info:
-  app:
-    name: ${spring.application.name}
-    description: Ekhonni Backend Service
-    version: 2.0.0
-  contact:
-    email: ekhonni72@gmail.com
-    team: Backend Team
-  environment: ${spring.profiles.active}
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      max-history: 7
-      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
-
-  cloudinary:
-    cloud_name : ${CLOUDINARY_CLOUD_NAME},
-    api_key : ${CLOUDINARY_API_KEY},
-    api_secret : ${CLOUDINARY_API_SECRET}
