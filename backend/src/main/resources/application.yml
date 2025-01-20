@@ -159,3 +159,14 @@ info:
     email: asif783810@gmail.com
     team: Backend Team
   environment: ${spring.profiles.active}
+
+
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
+  email-configuration:
+    queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
+    exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
+    routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}

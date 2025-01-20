@@ -8,8 +8,10 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * Author: Safayet Rafi
@@ -20,19 +22,31 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitMQConfig {
 
+    @Value("${rabbitmq.email-configuration.queue}")
+    private String emailQueue;
+
+    @Value("${rabbitmq.email-configuration.exchange}")
+    private String emailExchange;
+
+    @Value("${rabbitmq.email-configuration.routing-key}")
+    private String emailRoutingKey;
+
     @Bean
     public Queue emailQueue() {
-        return new Queue("emailQueue", true);
+        return new Queue(emailQueue, true);
     }
 
     @Bean
     public TopicExchange emailExchange() {
-        return new TopicExchange("emailExchange");
+        return new TopicExchange(emailExchange);
     }
 
     @Bean
-    public Binding binding(Queue emailQueue, TopicExchange emailExchange) {
-        return BindingBuilder.bind(emailQueue).to(emailExchange).with("email.#");
+    public Binding emailBinding(Queue emailQueue, TopicExchange emailExchange) {
+        return BindingBuilder.
+                bind(emailQueue).
+                to(emailExchange).
+                with(emailRoutingKey);
     }
 
     @Bean

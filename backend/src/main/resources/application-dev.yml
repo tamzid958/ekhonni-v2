@@ -63,10 +63,10 @@ spring:
     ansi:
       enabled: ALWAYS
 
-sql:
-  init:
-    mode: ${SQL_INIT_MODE:always}
-    platform: ${SQL_INIT_PLATFORM:postgresql}
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE:always}
+      platform: ${SQL_INIT_PLATFORM:postgresql}
 
 logging:
   pattern:
@@ -171,8 +171,13 @@ info:
   environment: ${spring.profiles.active}
 
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
+  email-configuration:
+    queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
+    exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
+    routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}
+
