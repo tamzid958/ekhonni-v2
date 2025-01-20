@@ -86,29 +86,29 @@ const ShopPage = () => {
   // Handle category selection
   const handleCategorySelect = (categoryName: string) => {
     setSelectedCategory(categoryName);
-    setIsSidebarOpen(false); // Close the sidebar after selecting a category
+    setIsSidebarOpen(true); // Close the sidebar after selecting a category
   };
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       {isSidebarOpen && (
-        <div className="w-64 bg-gray-800 text-white p-4 mr-6 min-h-screen">
+        <div className="flex flex-col top-120 left-15 mt-12 w-60  text-black p-4 rounded-lg">
           <h2 className="text-xl font-bold mb-4">Categories</h2>
           <ul>
             <li>
               <button
-                className="text-blue-500 hover:underline"
                 onClick={() => handleCategorySelect('All')}
+                className={`cursor-pointer ${selectedCategory === 'All' ? 'font-bold underline' : 'text-black hover:underline'}`}
               >
                 All
               </button>
             </li>
             {categories.map((category) => (
-              <li key={category.name}>
+              <li key={category.name }>
                 <button
-                  className="text-blue-500 hover:underline"
                   onClick={() => handleCategorySelect(category.name)}
+                  className={`cursor-pointer ${selectedCategory === category.name ? 'font-bold underline' : 'text-black hover:underline'}`}
                 >
                   {category.name}
                 </button>
@@ -120,34 +120,40 @@ const ShopPage = () => {
       )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 flex-1">
-        <div className="flex justify-between items-center mb-4">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="flex items-center space-x-2 bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-400 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-            <span>Categories</span>
-          </button>
-        </div>
 
+      <div className="absolute top-100 left-17 mb-4">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="flex items-center space-x-2 bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+          <span>Categories</span>
+        </button>
+      </div>
+      <main className="container mx-auto px-4 py-8 flex-1 mt-16">
         {/* Product Grid */}
         <div>
           {selectedCategory !== 'All' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+            <div
+              className={`grid gap-6 mb-6 ${
+                isSidebarOpen
+                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
+                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+              }`}
+            >
               {products
                 .filter((product) => product.category.name === selectedCategory)
                 .map((product) => (
@@ -169,7 +175,13 @@ const ShopPage = () => {
                 ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+            <div
+              className={`grid gap-6 mb-6 ${
+                isSidebarOpen
+                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
+                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+              }`}
+            >
               {products.map((product) => (
                 <CardDemo
                   key={product.id}
