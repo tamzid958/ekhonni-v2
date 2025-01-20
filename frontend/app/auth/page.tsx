@@ -1,59 +1,250 @@
-// 'use client';
+// "use client";
 //
 // import React, { useState } from "react";
-// // import { divisionsData } from '@/data/location';
+// import { signIn } from "next-auth/react";
+// import { useForm, SubmitHandler } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { z } from "zod";
+// import { Card, CardContent, CardFooter } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { FcGoogle } from "react-icons/fc";
+// import { axiosInstance } from '@/data/services/fetcher';
+// import {useRouter}  from 'next/navigation';
 //
 //
+// const signupSchema = z.object({
+//   name: z.string().min(1, "Your Name is required"),
+//   email: z.string().email("Invalid email address"),
+//   password: z.string().min(6, "Password must be at least 6 characters"),
+//   confirmPassword: z
+//     .string()
+//     .min(6, "Confirmation Password must be at least 6 characters"),
+//   phone: z
+//     .string()
+//     .min(10, "Phone number must be at least 10 digits")
+//     .regex(/^\d+$/, "Phone number must contain only digits"),
+//   address: z.string().min(1, "Address is required"),
+// }).refine((data) => data.password === data.confirmPassword, {
+//   message: "Passwords do not match",
+//   path: ["confirmPassword"],
+// });
+//
+// const loginSchema = z.object({
+//   email: z.string().email("Invalid email address"),
+//   password: z.string().min(6, "Password must be at least 6 characters"),
+// });
+//
+// type SignupFormValues = z.infer<typeof signupSchema>;
+// type LoginFormValues = z.infer<typeof loginSchema>;
+//
+// export default function AuthForm() {
+//   const [isSignup, setIsSignup] = useState<boolean>(false);
+//   const router = useRouter();
 //
 //
-// const SignupForm = () => {
-//   const [selectedDivision, setSelectedDivision] = useState("");
-//   const [districts, setDistricts] = useState<string[]>([]);
+//   const {
+//     register,
+//     handleSubmit,
+//     formState: { errors },
+//   } = useForm<SignupFormValues | LoginFormValues>({
+//     resolver: zodResolver(isSignup ? signupSchema : loginSchema),
+//   });
 //
-//   const handleDivisionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-//     const selected = event.target.value;
-//     setSelectedDivision(selected);
+//   const onSubmit: SubmitHandler<SignupFormValues | LoginFormValues> = async (data) => {
+//     if (isSignup) {
+//       try {
+//         const result = await axiosInstance.post("/api/v2/auth/sign-up", {
+//           name: (data as SignupFormValues).name,
+//           email: (data as SignupFormValues).email,
+//           password: (data as SignupFormValues).password,
+//           phone: (data as SignupFormValues).phone,
+//           address: (data as SignupFormValues).address,
+//         });
+//         if(result.status === 200){
+//           alert("SignUp Successfull!! Please Verify Your Email.")
 //
-//     // Find the districts for the selected division
-//     const division = divisionsData.find((div) => div.name === selected);
-//     setDistricts(division ? division.districts : []);
+//           router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
+//         }
+//         else if(result.status === 404){
+//           alert("Email already exist, please sign up with different email ");
+//         }
+//         else if(result.status === 301)
+//         {
+//           alert("You have Signed Up Already.But Your Email is Not Verified, Please Verify.");
+//           router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(true)}`)
+//         }
+//         else if(result.status != 200) {
+//           const errorData = await result.data;
+//           console.error("Signup failed:", errorData['error']);
+//           throw  new Error("hello I am error from react error boundary");
+//           alert(errorData.message);
+//           return;
+//         }
+//         else {
+//           alert("Signup Failed!! Something went wrong!!");
+//         }
+//
+//         setIsSignup(false);
+//       }
+//       catch (err: any) {
+//         console.log(err);
+//         alert(err.message || "Signup failed.");
+//         if (err.response && err.response.data?.error) {
+//           alert(err.response.data.error);
+//         } else {
+//           alert(err.message);
+//         }
+//       }
+//     }else {
+//       try {
+//         const result = await signIn("credentials", {
+//           redirect: false,
+//           email: (data as LoginFormValues).email,
+//           password: (data as LoginFormValues).password,
+//         });
+//
+//         if (result?.ok) {
+//           alert("Login successful!");
+//           window.location.href = "/";
+//         } else {
+//           alert(result?.error || "Invalid email or password");
+//         }
+//       } catch (err) {
+//         console.error("Login error:", err);
+//         alert("Something went wrong. Please try again.");
+//       }
+//     }
 //   };
 //
 //   return (
-//     <form>
-//       {/* Division Dropdown */}
-//       <div>
-//         <label htmlFor="division">Division</label>
-//         <select id="division" value={selectedDivision} onChange={handleDivisionChange}>
-//           <option value="" disabled>
-//             Select Division
-//           </option>
-//           {divisionsData.map((division) => (
-//             <option key={division.name} value={division.name}>
-//               {division.name}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
+//     <div className="flex items-center justify-center h-screen bg-white">
+//       <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-2xl">
+//         <CardContent className="overflow-auto ">
+//           <h2 className="text-lg font-bold mb-4 mt-4 text-center">
+//             {isSignup ? "Sign Up" : "Log In"}
+//           </h2>
+//           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+//             {isSignup && (
+//               <>
+//                 {/*// Signup form fields*/}
+//                 <div>
+//                   <label className="block mb-1 text-sm font-medium">Your Name</label>
+//                   <Input
+//                     type="text"
+//                     {...register("name")}
+//                     placeholder="Enter your  name"
+//                     className="w-full border-black bg-gray-100"
+//                   />
+//                   {errors['name'] && (
+//                     <p className="text-sm text-red-600">{errors['name'].message}</p>
+//                   )}
+//                 </div>
+//                 <div>
+//                   <label className="block mb-1 text-sm font-medium">Phone</label>
+//                   <Input
+//                     type="text"
+//                     {...register("phone")}
+//                     placeholder="Enter your phone number"
+//                     className="w-full border-black bg-gray-100"
+//                   />
+//                   {errors['phone'] && (
+//                     <p className="text-sm text-red-600">{errors['phone'].message}</p>
+//                   )}
+//                 </div>
+//                 <div>
+//                   <label className="block mb-1 text-sm font-medium">Address</label>
+//                   <Input
+//                     type="text"
+//                     {...register("address")}
+//                     placeholder="Enter your address"
+//                     className="w-full border-black bg-gray-100"
+//                   />
+//                   {errors['address'] && (
+//                     <p className="text-sm text-red-600">{errors['address'].message}</p>
+//                   )}
+//                 </div>
+//               </>
+//             )}
+//             <div>
+//               <label className="block mb-1 text-sm font-medium">Email</label>
+//               <Input
+//                 type="email"
+//                 {...register("email")}
+//                 placeholder="Enter your email"
+//                 className="w-full border-black bg-gray-100"
+//               />
+//               {errors.email && (
+//                 <p className="text-sm text-red-600">{errors.email.message}</p>
+//               )}
+//             </div>
+//             <div>
+//               <label className="block mb-1 text-sm font-medium">Password</label>
+//               <Input
+//                 type="password"
+//                 {...register("password")}
+//                 placeholder="Enter your password"
+//                 className="w-full border-black bg-gray-100"
+//               />
 //
-//       {/* District Dropdown */}
-//       <div>
-//         <label htmlFor="district">District</label>
-//         <select id="district" disabled={districts.length === 0}>
-//           <option value="" disabled>
-//             Select District
-//           </option>
-//           {districts.map((district) => (
-//             <option key={district} value={district}>
-//               {district}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
+//               {!isSignup &&
+//                 (<CardContent className="flex font-medium text-sm justify-end text-blue-500 mt-1 cursor-pointer">
+//                     <p> Forget Password? </p>
+//                   </CardContent>
+//                 )}
 //
-//       <button type="submit">Submit</button>
-//     </form>
+//               {errors.password && (
+//                 <p className="text-sm text-red-600">{errors.password.message}</p>
+//               )}
+//             </div>
+//             {isSignup && (
+//               <div>
+//                 <label className="block mb-1 text-sm font-medium">Confirm Password</label>
+//                 <Input
+//                   type="password"
+//                   {...register('confirmPassword')}
+//                   placeholder="Confirm your password"
+//                   className="w-full border-black bg-gray-100"
+//                 />
+//
+//                 {errors['confirmPassword'] && (
+//                   <p className="text-sm text-red-600">{errors['confirmPassword'].message}</p>
+//                 )}
+//               </div>
+//             )}
+//             <Button type="submit" className="w-full">
+//               {isSignup ? "Sign Up" : "Log In"}
+//             </Button>
+//           </form>
+//           <div className="relative my-4">
+//             <div className="absolute inset-0 flex items-center">
+//               <div className="w-full border-t border-gray-300"></div>
+//             </div>
+//             <div className="relative flex justify-center">
+//               <span className="bg-white px-2 text-gray-500 text-sm">or</span>
+//             </div>
+//           </div>
+//           <Button
+//             variant="outline"
+//             className="mt-4 w-full flex items-center justify-center gap-2"
+//             onClick={() => signIn("google")}
+//           >
+//             <FcGoogle className="text-xl" />
+//             Sign in with Google
+//           </Button>
+//         </CardContent>
+//         <CardFooter className="text-sm text-center">
+//           <p>
+//             {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
+//             <span
+//               className="text-blue-500 cursor-pointer"
+//               onClick={() => setIsSignup(!isSignup)}
+//             >
+//               {isSignup ? "Log In" : "Sign Up"}
+//             </span>
+//           </p>
+//         </CardFooter>
+//       </Card>
+//     </div>
 //   );
-// };
-//
-// export default SignupForm;
+// }

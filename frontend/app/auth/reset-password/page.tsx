@@ -25,6 +25,7 @@ const VerifyEmail = () => {
     if (flag) setIsExpired(flag === 'true');
   }, [searchParams]);
 
+
   const imageSrc = status === 'Email Verified Successfully! Please login.' ? '/check.png' : '/email-verify.png';
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const VerifyEmail = () => {
         try {
           const response = await axiosInstance.get(`/api/v2/auth/verify-email?token=${token}`)
           if (response.status === 200) {
-            setstatus('Email Verified Successfully! Please login.');
+            setstatus('Email Verified Successfully! You Can Change Your Password Now.');
           } else {
             setstatus('Verification Failed. The Token Maybe Invalid or expired !');
           }
@@ -47,29 +48,28 @@ const VerifyEmail = () => {
           setstatus('An Error Occurred During Email verification');
 
         }
-
       };
       verifyToken();
     }
   }, [email, token]);
 
-    useEffect(() => {
-      if (status === 'Please Verify Your Email Address...' && !isExpired) {
-        const timer = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              setIsExpired(true);
-              return 0;
-            }
+  useEffect(() => {
+    if (status === 'Please Verify Your Email Address...' && !isExpired) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setIsExpired(true);
+            return 0;
+          }
 
-            return prev - 1;
-          });
-        }, 1000);
+          return prev - 1;
+        });
+      }, 1000);
 
-        return () => clearInterval(timer);
-      }
-    }, [status, isExpired]);
+      return () => clearInterval(timer);
+    }
+  }, [status, isExpired]);
 
 
   const handleResendEmail = async () =>{
@@ -87,13 +87,13 @@ const VerifyEmail = () => {
         setstatus('Failed to Resend Verification Email. Please Try Again Later');
       }
     }
-      catch(error){
-        setstatus('An Error Occured While Resending the Email.');
-      }
-      finally {
+    catch(error){
+      setstatus('An Error Occured While Resending the Email.');
+    }
+    finally {
       setIsResending(false);
     }
-    }
+  }
 
 
   const navaigateToLogin = () => {
@@ -130,15 +130,15 @@ const VerifyEmail = () => {
           )}
         </div>
         {status === 'Please Verify Your Email Address...' && ( !isExpired ?
-          (
-            <p className="text-lg mt-2 text-amber-900"> Link Expires in:  {formatTime(timeLeft)}</p>
-          ) : (
-            <div className="flex flex-col items-center mt-4">
-              <p className="text-red-600 text-xl mb-3"> The Verification Link Has Been Expired :( </p>
-              <Button onClick={handleResendEmail} disabled={isResending} className="font-sans">
-                {isResending ? 'Resending' : 'Resend Email'}
-              </Button>
-            </div>)
+            (
+              <p className="text-lg mt-2 text-amber-900"> Link Expires in:  {formatTime(timeLeft)}</p>
+            ) : (
+              <div className="flex flex-col items-center mt-4">
+                <p className="text-red-600 text-xl mb-3"> The Verification Link Has Been Expired :( </p>
+                <Button onClick={handleResendEmail} disabled={isResending} className="font-sans">
+                  {isResending ? 'Resending' : 'Resend Email'}
+                </Button>
+              </div>)
         )}
 
         {status === 'Email Verified Successfully! Please login.' && (
