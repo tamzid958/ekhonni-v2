@@ -17,12 +17,14 @@ import java.util.UUID;
 @Component
 public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
 
+    private static Long requestId = 0L;
+
     @Override
     @NonNull
     public ClientHttpResponse intercept(@NonNull HttpRequest request,
                                         @NonNull byte[] body,
                                         @NonNull ClientHttpRequestExecution execution) throws IOException {
-        String requestId = UUID.randomUUID().toString();
+        requestId++;
 
         try {
             logRequest(requestId, request, body);
@@ -38,34 +40,43 @@ public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
         }
     }
 
-    private void logRequest(String requestId, HttpRequest request, byte[] body) {
+    private void logRequest(Long requestId, HttpRequest request, byte[] body) {
         try {
-            log.info("=========================== Request Begin ===========================");
+            log.info("============================ Request Begin ===========================");
             log.info("Request ID: {}", requestId);
             log.info("URI: {}", request.getURI());
             log.info("Method: {}", request.getMethod());
             log.info("Headers: {}", request.getHeaders());
-            log.info("Request Body: {}", new String(body, StandardCharsets.UTF_8));
-            log.info("=========================== Request End ===========================");
+            log.info("Request Body: {}", redactSensitiveData(new String(body, StandardCharsets.UTF_8)));
+            log.info("============================ Request End =============================");
         } catch (Exception e) {
             log.warn("Failed to log request {}: {}", requestId, e.getMessage());
         }
     }
 
-    private void logResponse(String requestId, ClientHttpResponse response, byte[] bodyBytes) {
+    private void logResponse(Long requestId, ClientHttpResponse response, byte[] bodyBytes) {
         try {
             log.info("=========================== Response Begin ===========================");
             log.info("Request ID: {}", requestId);
             log.info("Status Code: {}", response.getStatusCode());
             log.info("Status Text: {}", response.getStatusText());
             log.info("Headers: {}", response.getHeaders());
-            log.info("Response Body: {}", new String(bodyBytes, StandardCharsets.UTF_8));
-            log.info("=========================== Response End ===========================");
+            log.info("Response Body: {}", redactSensitiveData(new String(bodyBytes, StandardCharsets.UTF_8)));
+            log.info("=========================== Response End =============================");
         } catch (Exception e) {
             log.warn("Failed to log response {}: {}", requestId, e.getMessage());
         }
     }
+
+    private String redactSensitiveData(String data) {
+        return data.replaceAll("(\"password\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
+                .replaceAll("(\"apiKey\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
+                .replaceAll("(\"store_id\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
+                .replaceAll("(\"store_passwd\"\\s*:\\s*\")[^\"]+\"", "$1****\"");
+    }
 }
+
+
 
 class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     private final ClientHttpResponse response;

@@ -44,6 +44,9 @@ public class SecurityConfig {
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
 
+    @Value("${spring.constant.user.urls}")
+    private String[] USER_URLS;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -56,6 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers(USER_URLS).hasAuthority("USER")
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)

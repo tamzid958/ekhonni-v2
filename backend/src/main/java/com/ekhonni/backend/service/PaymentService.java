@@ -25,9 +25,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,6 +49,8 @@ public class PaymentService {
     private final SslcommerzUtil sslcommerzUtil;
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
+    private static final double CURRENCY_CONVERSION_TOLERANCE = 0.01;
+
 
     @CircuitBreaker(name = "initiatePayment", fallbackMethod = "initiatePaymentFallback")
     @Retry(name = "retryPayment")
@@ -95,7 +100,6 @@ public class PaymentService {
         throw new InitiatePaymentException("Payment processing failed");
     }
 
-
     private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
         return sslcommerzUtil.getParamsString(transaction, true);
     }
@@ -121,60 +125,61 @@ public class PaymentService {
     }
 
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
-        if (ipnResponse == null) {
-            log.warn("Null ipn response in payment");
-            return;
-        }
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-        String host = request.getHeader("Host");
-        String server = request.getServerName();
-        log.info("Request from Server: {}, Origin: {}, Referer: {}, Host: {}", server, origin, referer, host);
 
-        String gatewayIpAddress = getGatewayIpAddress(request);
+        String protocol = request.getHeader("x-forwarded-proto");
+        String hostName = getHostName(getIpAddress(request));
+        log.info("Protocol: {}, domain name: {}", protocol, hostName);
+
+        if (!"https".equals(protocol)) {
+            log.warn("Connection not secure for transaction in request: {}", request.getRemoteHost());
+//            throw new InvalidTransactionException();
+        }
+
+        if (!sslCommerzConfig.getDomain().equals(hostName)) {
+            log.warn("Transaction request from unknown domain in request: {}", request.getRemoteHost());
+//            throw new InvalidTransactionException();
+        }
+
+        String gatewayIpAddress = getIpAddress(request);
         log.info("Payment gateway ip address: {}", gatewayIpAddress);
 
         if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
-            log.warn("Unknown payment gateway ip address: {}", gatewayIpAddress);
+            log.warn("Payment request from unknown ip: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
         }
 
         IpnResponse response = sslcommerzUtil.extractIpnResponse(ipnResponse);
         log.info("Ipn response: {}", response);
 
-        Transaction transaction = getTransactionFromResponse(response.getTranId());
+        Transaction transaction = getDBTransactionFromResponse(response.getTranId());
 
         if (!ipnHashVerify(ipnResponse)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
-            log.warn("IPN signature verification failed for transaction : {}", ipnResponse.get("tran_id"));
+            transactionService.updateStatus(transaction, TransactionStatus.SIGNATURE_MISMATCH);
+            log.warn("IPN signature verification failed for transaction : {}", response.getTranId());
             throw new InvalidTransactionException();
         }
 
         String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
         if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
             transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
-            log.warn("Transaction; {} status: {}", response.getTranId(), status);
+            log.warn("Unsuccessful transaction: {}, status: {}", transaction.getId(), status);
             return;
         }
 
-        // handle risk_level = SUCCESS_WITH_RISK
-
         if (!verifyTransactionParameters(transaction, response)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
-            log.warn("Ipn response parameters don't match for transaction: {}", response.getTranId());
+            log.warn("Parameters don't match for transaction: {}", transaction.getId());
+            validateTransaction(response.getValId());
             throw new InvalidTransactionException();
         }
 
         if (!validateTransaction(response.getValId())) {
-            log.warn("Validation failed for transaction: {}", response.getTranId());
+            log.warn("Validation failed for transaction: {}", transaction.getId());
             throw new InvalidTransactionException();
         }
     }
 
-    @Modifying
-    @Transactional
     private ValidationResponse getValidationResponse(String validationId) {
-        String validationUrl = sslCommerzConfig.getValidatorApiUrl()
+        String validationUrl = sslCommerzConfig.getValidationApiUrl()
                 + "?val_id=" + validationId
                 + "&store_id=" + sslCommerzConfig.getStoreId()
                 + "&store_passwd=" + sslCommerzConfig.getStorePassword()
@@ -186,23 +191,25 @@ public class PaymentService {
                 .body(ValidationResponse.class);
     }
 
+    @Modifying
+    @Transactional
     private boolean validateTransaction(String validationId) {
         ValidationResponse response = getValidationResponse(validationId);
         if (response == null) {
             return false;
         }
-
-        Transaction transaction = getTransactionFromResponse(response.getTranId());
+        Transaction transaction = getDBTransactionFromResponse(response.getTranId());
         if (!verifyTransactionParameters(transaction, response)) {
-            transactionService.updateStatus(transaction, TransactionStatus.INVALID);
+            transactionService.updateStatus(transaction, TransactionStatus.PARAMETERS_MISMATCH);
+            transactionService.updateTransaction(transaction, response);
             log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
             return false;
         }
-        transactionService.updateSuccessfulTransaction(transaction, response);
+        transactionService.updateValidatedTransaction(transaction, response);
         return true;
     }
 
-    private Transaction getTransactionFromResponse(String trxId) {
+    private Transaction getDBTransactionFromResponse(String trxId) {
         long transactionId;
         try {
             transactionId = Long.parseLong(trxId);
@@ -237,31 +244,31 @@ public class PaymentService {
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());
             double responseBdtAmount = Double.parseDouble(response.getAmount());
             double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            double marginOfError = 0.01;
             return response.getCurrencyType().equals(transaction.getCurrency())
                     && responseAmount == transaction.getAmount()
-                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= marginOfError);
+                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= CURRENCY_CONVERSION_TOLERANCE);
         } catch (NumberFormatException e) {
             log.warn("Invalid number format in transaction: {}", e.getMessage());
             return false;
         }
     }
 
-    @Modifying
-    @Transactional
-    private void updateFailedTransactionStatus(Transaction transaction, String status) {
-        if (status == null || status.equals("VALID")) {
-            status = "INVALID";
-        }
-        transaction.setStatus(TransactionStatus.valueOf(status));
-    }
-
-    private String getGatewayIpAddress(HttpServletRequest request) {
+    private String getIpAddress(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
         if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
             return xForwardedFor.split(",")[0].trim();
         }
         return request.getRemoteAddr();
+    }
+
+    private String getHostName(String ipAddress) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            return inetAddress.getHostName();
+        } catch (UnknownHostException e) {
+            System.out.println("Hostname could not be resolved for IP: " + ipAddress);
+        }
+        return null;
     }
 
     private boolean ipnHashVerify(final Map<String, String> response) {

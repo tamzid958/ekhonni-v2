@@ -6,6 +6,7 @@ import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -53,7 +54,8 @@ public class PaymentController {
     }
 
     @PostMapping("/ipn")
-    public ApiResponse<?> handleIpn(@RequestParam Map<String, String> ipnResponse, HttpServletRequest request) {
+    public ApiResponse<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
+                                    @NotNull HttpServletRequest request) {
         paymentService.verifyTransaction(ipnResponse, request);
         return new ApiResponse<>(HTTPStatus.OK, null);
     }

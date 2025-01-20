@@ -1,7 +1,6 @@
 package com.ekhonni.backend.config;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,7 +23,9 @@ public class SSLCommerzConfig {
     private String failUrl;
     private String cancelUrl;
     private String ipnUrl;
-    private String validatorApiUrl;
+    private String validationApiUrl;
+    private String merchantTransIdValidationApiUrl;
+    private String domain;
     private int connectionTimeout = 5000;
     private int readTimeout = 3000;
     private Set<String> allowedIps = new HashSet<>();

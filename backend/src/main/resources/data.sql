@@ -1,71 +1,47 @@
--- Insert Categories first (parent category)
---INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
---(1, 'Electronics', true, null, NOW(), NOW()),
---(2, 'Fashion', true, null, NOW(), NOW()),
---(3, 'Home & Garden', true, null, NOW(), NOW()),
---(4, 'Health & Beauty', true, null, NOW(), NOW()),
---(5, 'Sports & Outdoors', true, null, NOW(), NOW()),
---(6, 'Toys & Games', true, null, NOW(), NOW()),
---(7, 'Automotive', true, null, NOW(), NOW()),
---(8, 'Books & Stationery', true, null, NOW(), NOW()),
---(9, 'Groceries', true, null, NOW(), NOW()),
---(10, 'Office Supplies', true, null, NOW(), NOW()),
---(11, 'Baby & Kids', true, null, NOW(), NOW()),
---(12, 'Pets & Pet Supplies', true, null, NOW(), NOW()),
---(13, 'Jewelry & Watches', true, null, NOW(), NOW());
+-- First, insert Accounts
+INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
+(101, 1000.00, 'ACTIVE', NOW(), NOW()),
+(102, 750.50, 'ACTIVE', NOW(), NOW()),
+(103, 5000.00, 'ACTIVE', NOW(), NOW()),
+(104, 2500.00, 'ACTIVE', NOW(), NOW()),
+(105, 1800.00, 'ACTIVE', NOW(), NOW()),
+(106, 1800.00, 'ACTIVE', NOW(), NOW());
 
---
----- Insert sub-category
---INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
---(4, 'Smartphones', true, 1, NOW(), NOW()),
---(5, 'Laptops', true, 1, NOW(), NOW()),
---(6, 'Men''s Clothing', true, 2, NOW(), NOW()),
---(7, 'Women''s Clothing', true, 2, NOW(), NOW()),
---(8, 'Furniture', true, 3, NOW(), NOW());
---
----- Insert Users
---INSERT INTO users (id, name, email, password, role, phone, address, created_at, updated_at) VALUES
---(gen_random_uuid(), 'John Doe', 'john@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567890', '123 Main St', NOW(), NOW()),
---(gen_random_uuid(), 'Jane Smith', 'jane@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567891', '456 Oak Ave', NOW(), NOW()),
---(gen_random_uuid(), 'Admin User', 'admin@example.com', '$2a$10$xxxxxxxxxxx', 'ADMIN', '+1234567892', '789 Admin St', NOW(), NOW()),
---(gen_random_uuid(), 'Sarah Wilson', 'sarah@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567893', '321 Pine Rd', NOW(), NOW()),
---(gen_random_uuid(), 'Mike Johnson', 'mike@example.com', '$2a$10$xxxxxxxxxxx', 'USER', '+1234567894', '654 Elm St', NOW(), NOW()),
---(gen_random_uuid(), 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', 'USER', '+1234567894', '654 Elm St', NOW(), NOW());
---
----- Insert Accounts (assuming user IDs from above)
---INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
---(101, 1000.00, 'ACTIVE', NOW(), NOW()),
---(102, 1500.00, 'ACTIVE', NOW(), NOW()),
---(103, 2000.00, 'ACTIVE', NOW(), NOW()),
---(104, 750.00, 'ACTIVE', NOW(), NOW()),
---(105, 1250.00, 'ACTIVE', NOW(), NOW()),
---(106, 1250.00, 'ACTIVE', NOW(), NOW());
---
---
----- Update users with account IDs
---UPDATE users SET account_id = 101 WHERE email = 'john@example.com';
---UPDATE users SET account_id = 102 WHERE email = 'jane@example.com';
---UPDATE users SET account_id = 103 WHERE email = 'admin@example.com';
---UPDATE users SET account_id = 104 WHERE email = 'sarah@example.com';
---UPDATE users SET account_id = 105 WHERE email = 'mike@example.com';
---UPDATE users SET account_id = 106 WHERE email = 'asif783810@gmail.com';
---
---
----- Insert Products
---INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, image_path, created_at, updated_at) VALUES
---(1, 'iPhone 13', 699.99, 'Latest iPhone model', true, false, 'NEW', 4, (SELECT id FROM users WHERE email = 'john@example.com'), '/images/iphone13.jpg', NOW(), NOW()),
---(2, 'MacBook Pro', 1299.99, 'M1 Chip MacBook', true, false, 'NEW', 5, (SELECT id FROM users WHERE email = 'jane@example.com'), '/images/macbook.jpg', NOW(), NOW()),
---(3, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 6, (SELECT id FROM users WHERE email = 'sarah@example.com'), '/images/jacket.jpg', NOW(), NOW()),
---(4, 'Designer Dress', 299.99, 'Evening gown', true, false, 'NEW', 7, (SELECT id FROM users WHERE email = 'mike@example.com'), '/images/dress.jpg', NOW(), NOW()),
---(5, 'Sofa Set', 899.99, 'Modern 3-piece sofa', true, false, 'NEW', 8, (SELECT id FROM users WHERE email = 'john@example.com'), '/images/sofa.jpg', NOW(), NOW()),
---(6, 'iPhone 13', 699.99, 'Latest iPhone model', true, false, 'NEW', 4, (SELECT id FROM users WHERE email = 'asif783810@gmail.com'), '/images/iphone13.jpg', NOW(), NOW());
---
----- Insert Bids
---INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
---(1, 1, (SELECT id FROM users WHERE email = 'jane@example.com'), 680.00, 'BDT', 'ACCEPTED', NOW(), NOW()),
---(2, 1, (SELECT id FROM users WHERE email = 'sarah@example.com'), 685.00, 'USD', 'PENDING', NOW(), NOW()),
---(3, 2, (SELECT id FROM users WHERE email = 'mike@example.com'), 1250.00, 'USD', 'PENDING', NOW(), NOW()),
---(4, 3, (SELECT id FROM users WHERE email = 'john@example.com'), 180.00, 'USD', 'PENDING', NOW(), NOW()),
---(5, 4, (SELECT id FROM users WHERE email = 'sarah@example.com'), 280.00, 'USD', 'PENDING', NOW(), NOW()),
---(6, 6, (SELECT id FROM users WHERE email = 'sarah@example.com'), 280.00, 'USD', 'PENDING', NOW(), NOW()),
---(7, 6, (SELECT id FROM users WHERE email = 'john@example.com'), 280.00, 'USD', 'PENDING', NOW(), NOW());
+-- Insert Roles (only ADMIN and USER now)
+INSERT INTO role (id, name) VALUES
+(101, 'ADMIN'),
+(102, 'USER');
+
+-- Insert Users (now all regular users except one admin)
+INSERT INTO users (id, name, email, password, phone, address, role_id, account_id, verified, created_at, updated_at) VALUES
+('550e8400-e29b-41d4-a716-446655440000'::uuid, 'John Doe', 'john@example.com', '$2a$10$encrypted1', '+1234567890', '123 Main St', 102, 101, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Jane Smith', 'jane@example.com', '$2a$10$encrypted2', '+1234567891', '456 Oak Ave', 102, 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Admin User', 'admin@example.com', '$2a$10$encrypted3', '+1234567892', '789 Admin St', 101, 103, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mark Wilson', 'mark@example.com', '$2a$10$encrypted4', '+1234567893', '321 Oak Ave', 102, 104, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Sarah Brown', 'sarah@example.com', '$2a$10$encrypted5', '+1234567894', '654 Pine St', 102, 105, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', '654 Pine St', 102, 106, true, NOW(), NOW());
+
+
+-- Insert Categories
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(1, 'Electronics', true, null, NOW(), NOW()),
+(2, 'Smartphones', true, 1, NOW(), NOW()),
+(3, 'Laptops', true, 1, NOW(), NOW()),
+(4, 'Fashion', true, null, NOW(), NOW()),
+(5, 'Men''s Clothing', true, 4, NOW(), NOW());
+
+-- Insert Products (now all users can list products)
+INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, created_at, updated_at) VALUES
+(1, 'iPhone 13 Pro', 899.99, 'Slightly used iPhone 13 Pro, 256GB', true, false, 'USED', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+(2, 'MacBook Pro 2022', 1499.99, 'New MacBook Pro M1', true, false, 'NEW', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
+(3, 'Samsung Galaxy S21', 699.99, 'Brand new Samsung Galaxy S21', true, false, 'NEW', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+(4, 'Dell XPS 13', 1299.99, 'Dell XPS 13 laptop, slightly used', true, false, 'USED', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
+(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW());
+
+-- Insert Bids
+INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
+(1, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 850.00, 'BDT', 'ACCEPTED', NOW(), NOW()),
+(2, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'USD', 'PENDING', NOW(), NOW()),
+(3, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'USD', 'PENDING', NOW(), NOW()),
+(4, 3, '550e8400-e29b-41d4-a716-446655440000'::uuid, 680.00, 'USD', 'ACCEPTED', NOW(), NOW()),
+(5, 4, '550e8400-e29b-41d4-a716-446655440001'::uuid, 1250.00, 'USD', 'REJECTED', NOW(), NOW());

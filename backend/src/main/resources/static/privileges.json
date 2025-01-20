@@ -36,18 +36,6 @@
     "endpoint": "/api/v2/account"
   },
   {
-    "name": "Create Bid ",
-    "description": "Allows creating bid  entries",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/bid/create"
-  },
-  {
-    "name": "Get Bid",
-    "description": "Allows viewing all bid",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid"
-  },
-  {
     "name": "Get Products",
     "description": "Allows viewing all products",
     "httpMethod": "GET",
@@ -216,12 +204,6 @@
     "endpoint": "/api/v2/payment/success"
   },
   {
-    "name": "Initiate Payment",
-    "description": "Initiates a payment process for a product",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/initiate/{id}/{id}"
-  },
-  {
     "name": "Sign-Up",
     "description": "Handles user sign-up",
     "httpMethod": "POST",
@@ -275,74 +257,136 @@
     "httpMethod": "GET",
     "endpoint": "/api/v2/user/{id}/notifications"
   },
-
-    {
-      "name": "Create category",
-      "description": "Create a new category",
-      "httpMethod": "POST",
-      "endpoint": "/api/v2/category"
-    },
-    {
-      "name": "Get all categories",
-      "description": "Retrieve all categories and their subcategories",
-      "httpMethod": "GET",
-      "endpoint": "/api/v2/category/all"
-    },
-    {
-      "name": "Get subcategories",
-      "description": "Retrieve all subcategories for a specific category",
-      "httpMethod": "GET",
-      "endpoint": "/api/v2/category/{name}/subCategories"
-    },
-    {
-      "name": "Delete category",
-      "description": "Delete a specific category by name",
-      "httpMethod": "DELETE",
-      "endpoint": "/api/v2/category/{name}"
-    },
-    {
-      "name": "Update category",
-      "description": "Update a specific category by name",
-      "httpMethod": "PATCH",
-      "endpoint": "/api/v2/category/{name}"
-    },
-
-    {
-      "name": "Create product",
-      "description": "Create a new product",
-      "httpMethod": "POST",
-      "endpoint": "/api/v2/product"
-    },
-    {
-      "name": "Get product details",
-      "description": "Retrieve details of a specific product by its ID",
-      "httpMethod": "GET",
-      "endpoint": "/api/v2/product/{id}"
-    },
-    {
-      "name": "Update product",
-      "description": "Update details of a specific product by its ID",
-      "httpMethod": "PATCH",
-      "endpoint": "/api/v2/product/{id}"
-    },
-    {
-      "name": "Delete product",
-      "description": "Soft delete a specific product by its ID",
-      "httpMethod": "DELETE",
-      "endpoint": "/api/v2/product/{id}"
-    },
-    {
-      "name": "Filter products",
-      "description": "Retrieve a list of products based on filter criteria",
-      "httpMethod": "GET",
-      "endpoint": "/api/v2/product/filter"
-    },
-    {
-      "name": "Get bids for product",
-      "description": "Retrieve all bids for a specific product with pagination support",
-      "httpMethod": "GET",
-      "endpoint": "/api/v2/product/{id}/bid"
-    }
-
-
+  {
+    "name": "Get Bid Details",
+    "description": "Allows bidder to view their own bid details",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}"
+  },
+  {
+    "name": "Get Product Buyer Bids",
+    "description": "Allows viewing all bids for a product (buyer view)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/buyer/{id}"
+  },
+  {
+    "name": "Get Product Bid Count",
+    "description": "Allows viewing bid count for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}/count"
+  },
+  {
+    "name": "Create Bid",
+    "description": "Allows creating a new bid",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/bid"
+  },
+  {
+    "name": "Update Bid",
+    "description": "Allows bidder to update their own bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/update"
+  },
+  {
+    "name": "Get Seller Product Bids",
+    "description": "Allows seller to view bids for their product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller/{id}"
+  },
+  {
+    "name": "Accept Bid",
+    "description": "Allows seller to accept a bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/accept"
+  },
+  {
+    "name": "Get All Bids Admin",
+    "description": "Allows admin to view all bids",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid"
+  },
+  {
+    "name": "Get Product Bids Admin",
+    "description": "Allows admin to view all bids for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}"
+  },
+  {
+    "name": "Get Product Bid Audit",
+    "description": "Allows viewing bid audit for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}/audit"
+  },
+  {
+    "name": "Get Product Bid Audit Count",
+    "description": "Allows viewing bid audit count for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/{id}/audit-count"
+  },
+  {
+    "name": "Update Bid Status",
+    "description": "Allows admin to update bid status",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/update-status"
+  },
+  {
+    "name": "Restore Single Bid",
+    "description": "Allows restoring a single deleted bid",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/{id}/restore"
+  },
+  {
+    "name": "Restore Multiple Bids",
+    "description": "Allows restoring multiple deleted bids",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/restore"
+  },
+  {
+    "name": "Restore All Bids",
+    "description": "Allows restoring all deleted bids",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/restore-all"
+  },
+  {
+    "name": "Soft Delete Bid",
+    "description": "Allows soft deleting a bid",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid/{id}"
+  },
+  {
+    "name": "Permanent Delete Bid",
+    "description": "Allows permanently deleting a bid",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid/{id}/delete-permanently"
+  },
+  {
+    "name": "Initiate Payment",
+    "description": "Allows a user to initiate a payment for a bid",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/initiate/{id}"
+  },
+  {
+    "name": "Payment Success",
+    "description": "Handles the successful completion of a payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/success"
+  },
+  {
+    "name": "Payment Failure",
+    "description": "Handles a failed payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/fail"
+  },
+  {
+    "name": "Payment Cancel",
+    "description": "Handles payment cancellation",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cancel"
+  },
+  {
+    "name": "Instant Payment Notification",
+    "description": "Handles IPN requests from the payment gateway",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/ipn"
+  }
 ]

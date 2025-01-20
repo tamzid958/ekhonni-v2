@@ -54,11 +54,11 @@ public class OpenApiConfig {
                                 .url("https://api.ekhonni.com")
                                 .description("Production server")))
                 .components(new Components()
-                        .addSecuritySchemes("bearer-key",
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+                .addSecuritySchemes("bearer-key",
+                        new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
     }
 
 //    @Bean

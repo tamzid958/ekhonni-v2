@@ -7,7 +7,7 @@ package com.ekhonni.backend.enums;
 public enum TransactionStatus {
     PENDING,
     VALID,
-    INVALID,
+    INVALID_TRANSACTION,
     SUCCESS,
     FAILED,
     CANCELLED,
@@ -15,5 +15,10 @@ public enum TransactionStatus {
     EXPIRED,
     VALIDATED,
     INITIATION_FAILED,
-    NO_RESPONSE
+    NO_RESPONSE,
+    SUCCESS_WITH_RISK,
+    SIGNATURE_MISMATCH,
+    PARAMETERS_MISMATCH,
+    PENDING_REFUND,
+    REFUNDED
 }

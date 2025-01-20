@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,9 +28,11 @@ public class Transaction extends BaseEntity<Long> {
     @Column(nullable = false)
     private TransactionStatus status;
 
+    private Double bdtAmount;
     private String sessionKey;
     private String validationId;
     private String bankTransactionId;
+    private LocalDateTime processedAt;
 
     public double getAmount() {
         return bid.getAmount();

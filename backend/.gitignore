@@ -6,6 +6,7 @@ HELP.md.gradle
 #Docker
 Dockerfile
 docker-compose.yml
+.dockerignore
 .tar
 /backend-app-image/
 
@@ -19,8 +20,7 @@ gradle/
 # Ignore specific files
 build.gradle
 compose.yaml
-gradlew
-gradlew.bat
+EnvChecker.java
 
 # Build tool-specific files
 /.idea/
