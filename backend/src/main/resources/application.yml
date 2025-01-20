@@ -86,9 +86,9 @@ sslcommerz:
   domain: ${SSLCOMMERZ_DOMAIN}
   store-id: ${SSLCOMMERZ_STORE_ID}
   store-password: ${SSLCOMMERZ_STORE_PASSWORD}
-  success-url: ${BASE_URL}/success
-  fail-url: ${BASE_URL}/fail
-  cancel-url: ${BASE_URL}/cancel
+  success-url: ${BASE_PAYMENT_URL}/success
+  fail-url: ${BASE_PAYMENT_URL}/fail
+  cancel-url: ${BASE_PAYMENT_URL}/cancel
   ipn-url: ${SSLCOMMERZ_IPN_URL}
   api-url: ${SSLCOMMERZ_API_URL}
   validation-api-url: ${SSLCOMMERZ_VALIDATION_API_URL}

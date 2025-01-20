@@ -69,7 +69,6 @@ public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private String redactSensitiveData(String data) {
-        // Example: Redact sensitive fields like "password" or "apiKey"
         return data.replaceAll("(\"password\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
                 .replaceAll("(\"apiKey\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
                 .replaceAll("(\"store_id\"\\s*:\\s*\")[^\"]+\"", "$1****\"")

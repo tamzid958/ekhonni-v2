@@ -204,12 +204,6 @@
     "endpoint": "/api/v2/payment/success"
   },
   {
-    "name": "Initiate Payment",
-    "description": "Initiates a payment process for a product",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/initiate/{id}/{id}"
-  },
-  {
     "name": "Sign-Up",
     "description": "Handles user sign-up",
     "httpMethod": "POST",
@@ -273,13 +267,13 @@
     "name": "Get Product Buyer Bids",
     "description": "Allows viewing all bids for a product (buyer view)",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/buyer/{product_id}"
+    "endpoint": "/api/v2/bid/buyer/{id}"
   },
   {
     "name": "Get Product Bid Count",
     "description": "Allows viewing bid count for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{product_id}/count"
+    "endpoint": "/api/v2/bid/{id}/count"
   },
   {
     "name": "Create Bid",
@@ -297,7 +291,7 @@
     "name": "Get Seller Product Bids",
     "description": "Allows seller to view bids for their product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/seller/{product_id}"
+    "endpoint": "/api/v2/bid/seller/{id}"
   },
   {
     "name": "Accept Bid",
@@ -315,19 +309,19 @@
     "name": "Get Product Bids Admin",
     "description": "Allows admin to view all bids for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{product_id}"
+    "endpoint": "/api/v2/bid/{id}"
   },
   {
     "name": "Get Product Bid Audit",
     "description": "Allows viewing bid audit for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{product_id}/audit"
+    "endpoint": "/api/v2/bid/{id}/audit"
   },
   {
     "name": "Get Product Bid Audit Count",
     "description": "Allows viewing bid audit count for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{product_id}/audit-count"
+    "endpoint": "/api/v2/bid/{id}/audit-count"
   },
   {
     "name": "Update Bid Status",
@@ -369,7 +363,7 @@
     "name": "Initiate Payment",
     "description": "Allows a user to initiate a payment for a bid",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/initiate/{bid_id}"
+    "endpoint": "/api/v2/payment/initiate/{id}"
   },
   {
     "name": "Payment Success",
