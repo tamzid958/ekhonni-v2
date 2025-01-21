@@ -11,10 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2 } from 'lucide-react';
 
 // TO-DO
-// 1. Add confirmation page
+// 1. Categiry-sub category
 // 2. decompose the file
 // 3. add instructions in images
 // 4. Add dimensions under one field(maybe it's a 3 size array)
+// 5. Current state for better UI
 
 const categories = [
   'Automotive',
@@ -111,13 +112,7 @@ export default function Home() {
     defaultValues: {
       productName: '',
       productDescription: '',
-      // productCondition: '',
-      // productLocation: '',
-      // basePrice: 0,
       delievery: false,
-      // shippingMethod: '',
-      // packageWeight: 0,
-      // weightUnit: 'Gram',
     },
     shouldUnregister: false,
   });
@@ -144,6 +139,8 @@ export default function Home() {
     // console.log(form.formState.errors); // Logs validation errors
   };
 
+  const [formValues, setFormValues] = useState({});
+
   const nextStep = async () => {
     const fieldsToValidate = stepFields[step];
     const isValid = await form.trigger(fieldsToValidate);
@@ -152,6 +149,7 @@ export default function Home() {
     console.log('Current values:', form.getValues());
     if (isValid) {
       setStep((prev) => prev + 1);
+      setFormValues(form.getValues());
       console.log('Moving to next step:', step + 1);
     }
   };
@@ -161,11 +159,11 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-brand-bright">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="max-w-md w-full flex flex-col gap-4"
+          className="max-w-xl w-full flex flex-col gap-4 bg-white p-8"
         >
           {step === 1 && (
             <>
@@ -495,19 +493,55 @@ export default function Home() {
                 <Button onClick={prevStep} type="button" className="w-full">
                   Back
                 </Button>
-                {/*<Button*/}
-                {/*  onClick={nextStep}*/}
-                {/*  type="button"*/}
-                {/*  className="w-full"*/}
-                {/*>*/}
-                {/*  Next*/}
+                <Button
+                  onClick={nextStep}
+                  type="button"
+                  className="w-full"
+                >
+                  Next
+                </Button>
+                {/*<Button type="submit" className="w-full" onClick={handleSubmit}>*/}
+                {/*  Submit*/}
                 {/*</Button>*/}
+              </div>
+            </>
+          )}
+
+          {step === 4 && (
+            <div className="w-full max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+              <h1 className="font-bold text-center text-3xl mb-6 text-gray-800">
+                Confirmation Page
+              </h1>
+              <div className="space-y-4">
+                {Object.entries(formValues).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between items-center bg-gray-100 p-4 rounded-md shadow-sm"
+                  >
+          <span className="font-medium text-gray-700 capitalize">
+            {key.replace(/([A-Z])/g, ' $1')}:
+          </span>
+                    <span className="text-gray-900">
+            {Array.isArray(value)
+              ? value.length > 0
+                ? `${value.length} item(s) uploaded`
+                : 'No items'
+              : value?.toString() || 'N/A'}
+          </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-4 pt-4">
+                <Button onClick={prevStep} type="button" className="w-full">
+                  Back
+                </Button>
                 <Button type="submit" className="w-full" onClick={handleSubmit}>
                   Submit
                 </Button>
               </div>
-            </>
+            </div>
           )}
+
         </form>
       </Form>
     </main>
