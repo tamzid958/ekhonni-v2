@@ -14,8 +14,8 @@ interface Category {
 export default async function Sidebar({ selectedCategory }: SidebarProps) {
   const url =
     selectedCategory === 'All'
-      ? `http://192.168.68.164:8080/api/v2/category/all`
-      : `http://192.168.68.164:8080/api/v2/category/${encodeURIComponent(selectedCategory)}/subcategories`;
+      ? `http://localhost:8080/api/v2/category/all`
+      : `http://localhost:8080/api/v2/category/${encodeURIComponent(selectedCategory)}/subcategories`;
 
   let categories: Category[] = [];
 

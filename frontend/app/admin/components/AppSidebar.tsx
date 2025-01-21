@@ -16,17 +16,17 @@ import React from 'react';
 const items = [
   {
     title: 'Home',
-    url: '#',
+    url: '/admin',
     icon: Home,
   },
   {
-    title: 'CategoryCreation',
+    title: 'Categories',
     url: '/admin/categoryCreation',
     icon: Inbox,
   },
   {
-    title: 'Calendar',
-    url: '#',
+    title: 'Products',
+    url: '/admin/products',
     icon: Calendar,
   },
   {
@@ -43,7 +43,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="sticky top-0 h-screen">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>

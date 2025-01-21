@@ -1,72 +1,89 @@
+'use client';
+
 import React from 'react';
-import { CardDemo } from '@/components/Card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
-interface Data {
-  id: string;
-  price: number;
-  name: string;
-  description: string;
-  status: string;
-  condition: string;
-  category: {
-    id: number;
-    name: string;
-  };
-  images: {
-    imagePath: string;
-  }[];
-  label: string;
-}
-
-export default async function AdminPage() {
-
-  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
-  //
-  // const url = `${baseUrl}/api/mock-data`;
-  const url = `http://192.168.68.164:8080/api/v2/product/filter?categoryName=Antiques`;
-
-  let products: Data[] = [];
-
-  try {
-    const response = await fetch(url, { cache: 'no-store' });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
-    const json = await response.json();
-    products = json.data.content;
-  } catch (error) {
-    console.error('Error fetching products:', error);
-  }
-
-  console.log(products);
-
+const AdminIntroPage = () => {
+  const router = useRouter();
 
   return (
-    <div className="space-y-6 min-h-screen container mx-12 px-4 w-full">
-      <h1 className="text-5xl font-bold my-8">
-        Admin Page
-      </h1>
+    <div className="container mx-auto px-4 py-8 space-y-6">
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {products.length === 0 ? (
-          <div className="col-span-full flex items-center justify-center">
-            <p className="text-center text-gray-600 text-3xl">No products found</p>
-          </div>
-        ) : (
-          products.map((product) => (
-            <div key={product.id} className="bg-white flex items-center justify-center pt-8">
-              <CardDemo
-                id={product.id}
-                title={product.name}
-                description={product.description}
-                img={product.images[0].imagePath}
-                price={product.price}
-              />
-            </div>
-          )))}
-      </div>
+      {/* Welcome Message */}
+      <header className="space-y-4 text-center">
+        <h1 className="text-4xl font-bold">Welcome to the Admin Dashboard</h1>
+        <p className="text-gray-600 text-lg">
+          Manage categories, products, users, and much more from one centralized location.
+        </p>
+      </header>
+
+      <Separator />
+
+      {/* Quick Links Section */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* Categories Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">View and manage product categories and subcategories.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/categories')}
+            >
+              Go to Categories
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Products Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Products</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Add, update, and manage products in the store.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/products')}
+            >
+              Go to Products
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Users Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage user accounts, roles, and permissions.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/users')}
+            >
+              Go to Users
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Additional Info Section */}
+      <section className="bg-gray-100 p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4">Tips & Announcements</h2>
+        <ul className="list-disc list-inside space-y-2 text-gray-700">
+          <li>Keep your categories and products up-to-date to enhance user experience.</li>
+          <li>Check user feedback regularly to improve your platform.</li>
+          <li>Use the analytics dashboard to track performance metrics.</li>
+        </ul>
+      </section>
     </div>
   );
-}
+};
 
+export default AdminIntroPage;
