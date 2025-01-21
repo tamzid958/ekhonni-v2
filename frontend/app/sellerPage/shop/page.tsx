@@ -26,26 +26,38 @@ interface ProductData {
   bids: any;
 }
 
-interface Category {
-  name: string;
-}
+
 
 const ShopPage = () => {
   const [products, setProducts] = useState<ProductData[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  // Fetch products
+  const userId = "550e8400-e29b-41d4-a716-446655440006";
+
   useEffect(() => {
+    console.log(selectedCategory);
     const fetchProducts = async () => {
+      let apiUrl;
+      if(selectedCategory==='All'){
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter`;
+
+      }
+      else{
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
+
+      }
       try {
-        const apiUrl = 'http://192.168.68.164:8080/api/v2/product/filter';
+
         const response = await fetch(apiUrl);
         if (!response.ok) {
-          throw new Error('Failed to fetch products');
+          throw new Error('Failed to fetch categories');
         }
+
         const data = await response.json();
+        console.log("API Response Data:", data.data.content);
+
         const productsData = data?.data?.content || [];
         setProducts(productsData);
       } catch (error) {
@@ -54,26 +66,25 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [selectedCategory]);
 
-  // Fetch categories
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const userId = "d05a34b5-640e-4b2a-9f6b-4f168768d7cd";
-        const apiUrl = `http://192.168.68.164:8080/api/v2/category/all/${userId}`;
+        const userId = "550e8400-e29b-41d4-a716-446655440006";
+        const apiUrl = `http://localhost:8080/api/v2/category/all/${userId}`;
 
         const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error('Failed to fetch categories');
         }
         const data = await response.json();
-        const categoriesData = data?.data?.map((categoryName: string, index: number) => ({
-          id: index + 1,  // Assigning a placeholder ID, you can adjust this logic if necessary
-          name: categoryName
-        })) || [];
 
-        setCategories(categoriesData);
+         console.log(data.data);
+
+        setCategories(data?.data || []);
+        console.log(categories);
       } catch (error) {
         console.error(error);
       }
@@ -83,10 +94,10 @@ const ShopPage = () => {
   }, []);
 
 
-  // Handle category selection
+
   const handleCategorySelect = (categoryName: string) => {
-    setSelectedCategory(categoryName);
-    setIsSidebarOpen(true); // Close the sidebar after selecting a category
+      setSelectedCategory(categoryName);
+    setIsSidebarOpen(true);
   };
 
   return (
@@ -105,12 +116,12 @@ const ShopPage = () => {
               </button>
             </li>
             {categories.map((category) => (
-              <li key={category.name }>
+              <li key={category }>
                 <button
-                  onClick={() => handleCategorySelect(category.name)}
-                  className={`cursor-pointer ${selectedCategory === category.name ? 'font-bold underline' : 'text-black hover:underline'}`}
+                  onClick={() => handleCategorySelect(category)}
+                  className={`cursor-pointer ${selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'}`}
                 >
-                  {category.name}
+                  {category}
                 </button>
               </li>
             ))}
@@ -119,7 +130,7 @@ const ShopPage = () => {
         </div>
       )}
 
-      {/* Main Content */}
+
 
       <div className="absolute top-100 left-17 mb-4">
         <button
@@ -143,10 +154,11 @@ const ShopPage = () => {
           <span>Categories</span>
         </button>
       </div>
+
       <main className="container mx-auto px-4 py-8 flex-1 mt-16">
-        {/* Product Grid */}
+
         <div>
-          {selectedCategory !== 'All' ? (
+
             <div
               className={`grid gap-6 mb-6 ${
                 isSidebarOpen
@@ -155,7 +167,6 @@ const ShopPage = () => {
               }`}
             >
               {products
-                .filter((product) => product.category.name === selectedCategory)
                 .map((product) => (
                   <CardDemo
                     key={product.id}
@@ -174,33 +185,6 @@ const ShopPage = () => {
                   />
                 ))}
             </div>
-          ) : (
-            <div
-              className={`grid gap-6 mb-6 ${
-                isSidebarOpen
-                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
-                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
-              }`}
-            >
-              {products.map((product) => (
-                <CardDemo
-                  key={product.id}
-                  id={product.id}
-                  title={product.name}
-                  description={product.description}
-                  img={product.images[0]?.imagePath || '/placeholder.jpg'}
-                  price={product.price}
-                  status={product.status}
-                  condition={product.condition}
-                  createdAt={product.createdAt}
-                  updatedAt={product.updatedAt}
-                  seller={product.seller}
-                  category={product.category}
-                  bids={product.bids}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </main>
     </div>

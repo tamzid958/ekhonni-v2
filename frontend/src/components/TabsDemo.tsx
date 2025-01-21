@@ -45,7 +45,10 @@ export function TabsDemo() {
     setPreview(null);
   };
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
+    // const userId=
+    // const apiUrl = `/api/v2/user/${userId}/change-password`;
+
     alert("Password updated successfully! You'll be logged out.");
     setCurrentPassword("");
     setNewPassword("");
