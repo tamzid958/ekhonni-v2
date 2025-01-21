@@ -97,6 +97,10 @@ sslcommerz:
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
 
+refund:
+  processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}
+  batch-size: ${REFUND_BATCH_SIZE}
+
 upload:
   dir: ${UPLOAD_DIR}
 

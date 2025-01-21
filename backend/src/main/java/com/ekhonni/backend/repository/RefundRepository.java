@@ -1,6 +1,12 @@
 package com.ekhonni.backend.repository;
 
+import com.ekhonni.backend.enums.RefundStatus;
 import com.ekhonni.backend.model.Refund;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * Author: Asif Iqbal
@@ -9,4 +15,7 @@ import com.ekhonni.backend.model.Refund;
 
 public interface RefundRepository extends BaseRepository<Refund, Long> {
 
+    boolean existsByTransactionId(Long transactionId);
+
+    Page<Refund> findByStatusIn(List<RefundStatus> statuses, Pageable pageable);
 }

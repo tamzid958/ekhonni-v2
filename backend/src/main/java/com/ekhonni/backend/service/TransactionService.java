@@ -40,6 +40,12 @@ public class TransactionService extends BaseService<Transaction, Long> {
         return transaction.getSeller().getId();
     }
 
+    public UUID getBuyerId(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+        return transaction.getBuyer().getId();
+    }
+
     @Transactional
     public Transaction create(Bid bid) {
         Transaction transaction = new Transaction();

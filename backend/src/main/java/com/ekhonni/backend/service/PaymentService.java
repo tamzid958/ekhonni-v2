@@ -30,7 +30,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -178,7 +177,7 @@ public class PaymentService {
         }
     }
 
-    private ValidationResponse getValidationResponse(String validationId) {
+    private ValidationResponse sendValidationRequest(String validationId) {
         String validationUrl = sslCommerzConfig.getValidationApiUrl()
                 + "?val_id=" + validationId
                 + "&store_id=" + sslCommerzConfig.getStoreId()
@@ -194,7 +193,7 @@ public class PaymentService {
     @Modifying
     @Transactional
     private boolean validateTransaction(String validationId) {
-        ValidationResponse response = getValidationResponse(validationId);
+        ValidationResponse response = sendValidationRequest(validationId);
         if (response == null) {
             return false;
         }

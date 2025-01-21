@@ -1,6 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.RefundStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,12 +29,13 @@ public class Refund extends BaseEntity<Long> {
     @JoinColumn(name = "admin_id")
     private User approvedBy;
 
-    @NotNull
-    private Double amount;
+    @Enumerated(EnumType.STRING)
+    private RefundStatus status = RefundStatus.PENDING;
+
     @NotNull
     private String remarks;
-
-
+    private Double amount = 0.0;
+    private String refundReferenceId;
     private String bankTransactionId;
 
 }
