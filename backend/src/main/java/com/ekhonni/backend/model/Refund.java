@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * Author: Asif Iqbal
  * Date: 1/20/25
@@ -35,7 +37,11 @@ public class Refund extends BaseEntity<Long> {
     @NotNull
     private String remarks;
     private Double amount = 0.0;
+    private String refundTransactionId;
     private String refundReferenceId;
     private String bankTransactionId;
+
+    private LocalDateTime initiatedOn;
+    private LocalDateTime refundedOn;
 
 }

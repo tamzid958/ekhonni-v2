@@ -70,15 +70,6 @@ spring:
     ansi:
       enabled: ALWAYS
 
-logging:
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-  level:
-    root: INFO
-    org.springframework: INFO
-    org.hibernate: INFO
-    com.ekhonni: DEBUG
-
 server:
   address: ${SERVER_ADDRESS}
 
@@ -99,10 +90,20 @@ sslcommerz:
 
 refund:
   processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}
+  query-interval: ${REFUND_QUERY_INTERVAL:1800000}
   batch-size: ${REFUND_BATCH_SIZE}
 
 upload:
   dir: ${UPLOAD_DIR}
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.ekhonni: DEBUG
 
 management:
   endpoints:

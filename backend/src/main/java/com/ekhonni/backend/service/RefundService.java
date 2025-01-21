@@ -10,11 +10,12 @@ import com.ekhonni.backend.exception.refund.InvalidRefundRequestException;
 import com.ekhonni.backend.exception.refund.RefundNotFoundException;
 import com.ekhonni.backend.model.Refund;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.payment.sslcommerz.refund.RefundQueryResponse;
 import com.ekhonni.backend.payment.sslcommerz.refund.RefundResponse;
 import com.ekhonni.backend.repository.RefundRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -35,21 +37,16 @@ import java.util.List;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RefundService extends BaseService<Refund, Long> {
 
     private final RefundRepository refundRepository;
     private final TransactionService transactionService;
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
-    private final List<RefundStatus> toBeProcessedStatuses = List.of(
-            RefundStatus.PENDING,
-            RefundStatus.NO_RESPONSE,
-            RefundStatus.API_CONNECTION_FAILED,
-            RefundStatus.FAILED
-    );
     @Value("${refund.batch-size}")
     private int batchSize;
+
 
     @Transactional
     public void create(Long transactionId, RefundRequestDTO refundRequestDTO) {
@@ -78,18 +75,25 @@ public class RefundService extends BaseService<Refund, Long> {
     }
 
     @Scheduled(fixedDelayString = "${refund.processing-interval}")
-    private void processRefund() {
+    public void processRefund() {
         log.info("Starting refund processing");
-        int pageNumber = 0;
-        boolean hasMore = true;
+        List<RefundStatus> toBeProcessedStatuses = List.of(
+                RefundStatus.PENDING,
+                RefundStatus.NO_RESPONSE,
+                RefundStatus.API_CONNECTION_FAILED,
+                RefundStatus.FAILED
+        );
 
-        while (hasMore) {
-            Sort sort = Sort.by("createdAt").ascending()
-                    .and(Sort.by("id").ascending());
+        int pageNumber = 0;
+        boolean hasMorePages = true;
+        Sort sort = Sort.by("createdAt").ascending()
+                .and(Sort.by("id").ascending());
+
+        while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, batchSize, sort);
             Page<Refund> refundPage = refundRepository.findByStatusIn(toBeProcessedStatuses, pageRequest);
             processBatch(refundPage.getContent());
-            hasMore = refundPage.hasNext();
+            hasMorePages = refundPage.hasNext();
             pageNumber++;
         }
     }
@@ -107,20 +111,23 @@ public class RefundService extends BaseService<Refund, Long> {
         if (response == null) {
             refund.setStatus(RefundStatus.NO_RESPONSE);
             log.warn("No response from gateway for refund: {}", refund.getId());
-            return;
+            throw new RuntimeException("No response");
         }
         if (!"DONE".equals(response.getAPIConnect())) {
             refund.setStatus(RefundStatus.API_CONNECTION_FAILED);
             log.warn("Api connection status: {} for refund: {}", response.getAPIConnect(), refund.getId());
-            return;
+            throw new RuntimeException("Api connection error");
         }
 
         refund.setStatus(RefundStatus.valueOf(response.getStatus().toUpperCase()));
         if (RefundStatus.FAILED.equals(refund.getStatus())) {
-            log.warn("Refund request failed for refund: {}", refund.getId());
+            log.warn("Refund request failed for refund: {}, reason: {}", refund.getId(), response.getErrorReason());
+            throw new RuntimeException("Refund request failed");
         }
 
-        // Refund request to be retried: NO_RESPONSE, API_CONNECTION_FAILED, FAILED, PENDING
+        refund.setRefundTransactionId(response.getTransId());
+        refund.setBankTransactionId(response.getBankTranId());
+        refund.setRefundReferenceId(response.getRefundRefId());
     }
 
     private RefundResponse sendRefundRequest(Refund refund) {
@@ -137,6 +144,69 @@ public class RefundService extends BaseService<Refund, Long> {
                 .uri(refundUrl)
                 .retrieve()
                 .body(RefundResponse.class);
+    }
+
+    @Scheduled(fixedDelayString = "${refund.query-interval}")
+    public void queryRefund() {
+        log.info("Starting refund query");
+        List<RefundStatus> toBeQueriedStatuses = List.of(
+                RefundStatus.SUCCESS,
+                RefundStatus.PROCESSING
+        );
+
+        int pageNumber = 0;
+        boolean hasMorePages = true;
+        Sort sort = Sort.by("createdAt").ascending()
+                .and(Sort.by("id").ascending());
+
+        while (hasMorePages) {
+            PageRequest pageRequest = PageRequest.of(pageNumber, batchSize, sort);
+            Page<Refund> refundPage = refundRepository.findByStatusIn(toBeQueriedStatuses, pageRequest);
+            processBatch(refundPage.getContent());
+            hasMorePages = refundPage.hasNext();
+            pageNumber++;
+        }
+    }
+
+    private void queryBatch(List<Refund> refunds) {
+        for (Refund refund : refunds) {
+            initiateQueryRefundRequest(refund);
+        }
+    }
+
+    @Modifying
+    @Transactional
+    private void initiateQueryRefundRequest(Refund refund) {
+        RefundQueryResponse response = sendQueryRefundRequest(refund);
+        if (response == null) {
+            log.warn("No response for query refund request: {}", refund.getId());
+            throw new RuntimeException("No response");
+        }
+        if (!"DONE".equals(response.getAPIConnect())) {
+            log.warn("Api connection status: {} for refund query request: {}", response.getAPIConnect(), refund.getId());
+            throw new RuntimeException("Api connection error");
+        }
+
+        refund.setStatus(RefundStatus.valueOf(response.getStatus().toUpperCase()));
+        log.info("Refund id: {}, status: {}", refund.getId(), refund.getStatus());
+
+        if (RefundStatus.REFUNDED.equals(refund.getStatus())) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            refund.setInitiatedOn(LocalDateTime.parse(response.getInitiatedOn(), formatter));
+            refund.setRefundedOn(LocalDateTime.parse(response.getRefundedOn(), formatter));
+        }
+    }
+
+    private RefundQueryResponse sendQueryRefundRequest(Refund refund) {
+        String refundUrl = sslCommerzConfig.getMerchantTransIdValidationApiUrl()
+                + "?refund_ref_id=" + refund.getRefundReferenceId()
+                + "&store_id=" + sslCommerzConfig.getStoreId()
+                + "&store_passwd=" + sslCommerzConfig.getStorePassword();
+
+        return restClient.get()
+                .uri(refundUrl)
+                .retrieve()
+                .body(RefundQueryResponse.class);
     }
 
 }
