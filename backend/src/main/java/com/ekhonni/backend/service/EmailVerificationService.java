@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailTaskDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.exception.InvalidVerificationTokenException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
@@ -72,10 +73,10 @@ public class EmailVerificationService {
     public ApiResponse<?> verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));
+                .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid Verification Token");
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
         User user = verificationToken.getUser();

@@ -3,6 +3,7 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.*;
@@ -83,7 +84,7 @@ public class AuthService {
             throw new BadCredentialsException("Bad credentials");
 
         if (!user.isVerified()) {
-            throw new RuntimeException("Email not verified. Please verify your email to sign in.");
+            throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
         }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);

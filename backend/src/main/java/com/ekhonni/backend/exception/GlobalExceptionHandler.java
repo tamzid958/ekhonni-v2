@@ -90,4 +90,16 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
+
+    @ExceptionHandler(InvalidVerificationTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidVerificationTokenException(InvalidVerificationTokenException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotVerifiedException(EmailNotVerifiedException ex){
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
 }
