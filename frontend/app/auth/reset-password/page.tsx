@@ -22,6 +22,8 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     const flag = searchParams.get('isExpired');
+    const sucess = searchParams.get('success');
+    if (sucess) setstatus('Password Updated Successfully! Please Login.');
     if (flag) setIsExpired(flag === 'true');
   }, [searchParams]);
 
@@ -33,25 +35,9 @@ const VerifyEmail = () => {
     if (email) {
       setDisplayEmail(email);
       setstatus('Please Verify Your Email Address...')
-    } else if (token) {
-      setstatus('Verifying Email....');
-      const verifyToken = async () => {
-        if (!token) return;
-        try {
-          const response = await axiosInstance.get(`/api/v2/auth/verify-email?token=${token}`)
-          if (response.status === 200) {
-            setstatus('Email Verified Successfully! You Can Change Your Password Now.');
-          } else {
-            setstatus('Verification Failed. The Token Maybe Invalid or expired !');
-          }
-        } catch (error) {
-          setstatus('An Error Occurred During Email verification');
-
-        }
-      };
-      verifyToken();
     }
-  }, [email, token]);
+
+  }, [email]);
 
   useEffect(() => {
     if (status === 'Please Verify Your Email Address...' && !isExpired) {

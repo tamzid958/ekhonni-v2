@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -39,7 +40,7 @@ export default function Login() {
 
       if (result?.ok) {
         alert("Login successful!");
-        window.location.href = "/";
+        router.push("/");
       } else {
         alert(result?.error || "Invalid email or password");
       }
@@ -51,7 +52,7 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
-      <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-2xl">
+      <Card className="w-96 max-h-[96vh] flex flex-col sm:max-w-md border-black shadow-2xl">
         <CardContent>
           <h2 className="text-lg font-bold mb-4 mt-4 text-center">Log In</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -98,6 +99,7 @@ export default function Login() {
             variant="outline"
             className="mt-4 w-full flex items-center justify-center gap-2"
             onClick={() => signIn("google")}
+            aria-label="Sign in with Google"
           >
             <FcGoogle className="text-xl" />
             Sign in with Google

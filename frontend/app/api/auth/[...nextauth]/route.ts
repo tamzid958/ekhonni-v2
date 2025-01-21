@@ -55,26 +55,22 @@ const options: NextAuthOptions = {
               email,
               password,
             });
-          if (response.status === 200 && typeof response.data === "string") {
+          console.log("Response from sign-in:", response);
+          if (response.status === 200 && response.data.accessToken) {
             const token = response.data;
-            const decoded = jwtDecode(token);
-
-            console.log("User signed in:", decoded);
-            const { id, email, name } = decoded ;
-
-            console.log("New user signed up:", id,  email, name);
 
             return {
-              id: id,
-              email: email,
-              name: name,
-              accesstoken: token,
+              // id: id,
+              // email: email,
+              // name: name,
+              accessToken: token.accessToken,
+              refreshToken: token.refreshToken,
             }
           }
           else{
             const errorData = response.data;
-            console.error("Signup failed:", errorData);
-            throw new Error(errorData['message'] || "Signup failed.");
+            console.error("Login failed:", errorData);
+            throw new Error(errorData['message'] || "Login failed.");
           }
         }
 
@@ -98,6 +94,9 @@ const options: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       return baseUrl;
+    },
+    async signIn({ user, account, profile, email, credentials }) {
+      return true
     },
     async jwt({ token, user, account }) {
       if (user && account) {

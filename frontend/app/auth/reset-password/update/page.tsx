@@ -1,11 +1,11 @@
 "use client";
 
-import React from  'react';
+import React, { useEffect } from 'react';
 
 import {z} from "zod";
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { axiosInstance } from '@/data/services/fetcher';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,14 +35,17 @@ export default function ResetPasswordPage (){
   });
 
   const router = useRouter();
+  const token = useSearchParams().get("token");
+
+
   const onSubmit: SubmitHandler<ResetPasswordFormValues> = async(data) => {
     try{
-      const response = await axiosInstance.post("api/v2/auth/reset-password",{
+      const response = await axiosInstance.post(`api/v2/auth/reset-password?token=${token}`,{
         password: data.password
       });
       if(response.status === 200){
         alert("Password Has Been Successfully Updated, You Can Login Now.");
-        router.push('/auth/login')
+        router.push(`/auth/reset-password?success=${encodeURIComponent(true)}`);
       }
       else {
         alert("Password Update Failed. Please Try Again Later.")
