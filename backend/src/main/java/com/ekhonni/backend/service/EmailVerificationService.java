@@ -1,10 +1,12 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailTaskDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.repository.VerificationTokenRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -67,7 +69,7 @@ public class EmailVerificationService {
     }
 
 
-    public String verify(String token) {
+    public ApiResponse<?> verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));
@@ -82,6 +84,7 @@ public class EmailVerificationService {
 
         verificationTokenRepository.delete(verificationToken);
 
-        return "Email verified successfully!";
+        String responseMessage = "Email verified successfully!";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 }

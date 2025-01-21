@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.*;
@@ -9,6 +10,7 @@ import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
@@ -40,7 +42,7 @@ public class AuthService {
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public String create(UserDTO userDTO) {
+    public ApiResponse<?> create(UserDTO userDTO) {
         if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
 
         Account account = new Account(0.0, "Active");
@@ -65,7 +67,8 @@ public class AuthService {
 
         emailVerificationService.send(user);
 
-        return "Sign up successful! Please verify your email to sign in";
+        String responseMessage = "Sign up successful! Please verify your email to sign in";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
 
@@ -76,7 +79,8 @@ public class AuthService {
         String password = authDTO.password();
         User user = userRepository.findByEmail(email);
 
-        if (user == null) throw new BadCredentialsException("Bad credentials");
+        if (user == null)
+            throw new BadCredentialsException("Bad credentials");
 
         if (!user.isVerified()) {
             throw new RuntimeException("Email not verified. Please verify your email to sign in.");

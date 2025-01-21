@@ -1,11 +1,13 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailTaskDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.repository.VerificationTokenRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +37,7 @@ public class PasswordResetService {
     @Value("${spring.constant.password-reset-url}")
     private String passwordResetUrl;
 
-    public String requestReset(String email) {
+    public ApiResponse<?> requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
 
@@ -72,12 +74,12 @@ public class PasswordResetService {
         );
         emailProducerService.send(emailTaskDTO);
 
-        return "A password reset link has been sent to your email. Please use the following link to reset your password";
-
+        String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
 
-    public String reset(String token, String newPassword) {
+    public ApiResponse<?> reset(String token, String newPassword) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid Token"));
@@ -89,6 +91,7 @@ public class PasswordResetService {
 
         verificationTokenRepository.delete(verificationToken);
 
-        return "Password Reset Successfully";
+        String responseMessage = "Password Reset Successful";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 }

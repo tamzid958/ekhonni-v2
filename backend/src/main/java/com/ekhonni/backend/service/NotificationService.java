@@ -58,7 +58,7 @@ public class NotificationService {
                     if (!newNotifications.isEmpty()) {
                         hasNewNotifications = true;
                         deferredResult.setResult(
-                                new ApiResponse<>(HTTPStatus.ACCEPTED, newNotifications)
+                                new ApiResponse<>(HTTPStatus.OK, newNotifications)
                         );
                     } else {
                         Thread.sleep(1000);
@@ -112,7 +112,7 @@ public class NotificationService {
 
         notification.setReadAt(LocalDateTime.now());
         notificationRepository.save(notification);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, notification.getRedirectUrl());
+        return new ApiResponse<>(HTTPStatus.OK, notification.getRedirectUrl());
     }
 
 
@@ -135,7 +135,7 @@ public class NotificationService {
                 notificationCreateRequestDTO.redirectUrl()
         );
 
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, "Notification created successfully");
+        return new ApiResponse<>(HTTPStatus.OK, "Notification created successfully");
     }
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {

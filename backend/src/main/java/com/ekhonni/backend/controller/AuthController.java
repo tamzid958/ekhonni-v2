@@ -1,6 +1,7 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.*;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
@@ -39,30 +40,30 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+    public ApiResponse<?> createUser(@RequestBody UserDTO userDTO) {
 
-        return ResponseEntity.ok(authService.create(userDTO));
+        return authService.create(userDTO);
 
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
-        return ResponseEntity.ok(emailVerificationService.verify(token));
+    public ApiResponse<?> verifyEmail(@RequestParam("token") String token) {
+        return emailVerificationService.verify(token);
     }
 
     @PostMapping("/resend-verification-email")
-    public String resendVerificationEmail(@Valid @RequestBody EmailDTO emailDTO) {
+    public ApiResponse<?> resendVerificationEmail(@Valid @RequestBody EmailDTO emailDTO) {
         return resendEmailService.reSend(emailDTO);
     }
 
     @PostMapping("/password-reset-request")
-    public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
-        return ResponseEntity.ok(passwordResetService.requestReset(passwordResetDTO.email()));
+    public ApiResponse<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
+        return passwordResetService.requestReset(passwordResetDTO.email());
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
+    public ApiResponse<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return passwordResetService.reset(token, resetPasswordDTO.newPassword());
     }
 
 }
