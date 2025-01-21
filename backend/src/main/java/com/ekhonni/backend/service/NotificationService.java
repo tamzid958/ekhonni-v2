@@ -67,7 +67,7 @@ public class NotificationService {
 
             } catch (InterruptedException e) {
                 deferredResult.setErrorResult(
-                        new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, "Polling interrupted")
+                        new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, "Internal Server Error")
                 );
             }
         });
