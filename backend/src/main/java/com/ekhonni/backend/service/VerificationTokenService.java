@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.VerificationTokenType;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
@@ -29,14 +30,15 @@ public class VerificationTokenService {
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
 
-    public VerificationToken create(User user) {
+    public VerificationToken create(User user, VerificationTokenType type) {
 
         String token = tokenUtil.generateVerificationToken();
 
         VerificationToken verificationToken = new VerificationToken(
                 token,
                 LocalDateTime.now().plusMinutes(5),
-                user
+                user,
+                type
         );
 
         return verificationTokenRepository.save(verificationToken);

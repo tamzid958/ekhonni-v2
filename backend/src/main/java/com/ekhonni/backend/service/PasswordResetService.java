@@ -2,6 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailTaskDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.enums.VerificationTokenType;
 import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.InvalidVerificationTokenException;
 import com.ekhonni.backend.exception.UserNotFoundException;
@@ -55,9 +56,17 @@ public class PasswordResetService {
         if (verificationTokenRepository.findByUser(user) != null) {
             verificationToken = verificationTokenService.replace(user);
         } else {
-            verificationToken = verificationTokenService.create(user);
+            verificationToken = verificationTokenService.create(user, VerificationTokenType.RESET_PASSWORD);
         }
 
+        EmailTaskDTO emailTaskDTO = getEmailTaskDTO(email, verificationToken);
+        emailProducerService.send(emailTaskDTO);
+
+        String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+    }
+
+    private EmailTaskDTO getEmailTaskDTO(String email, VerificationToken verificationToken) {
         String subject = "Password Reset Request";
         String url = passwordResetUrl + verificationToken.getToken();
         String message = String.format(
@@ -74,10 +83,7 @@ public class PasswordResetService {
                 subject,
                 message
         );
-        emailProducerService.send(emailTaskDTO);
-
-        String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return emailTaskDTO;
     }
 
 
@@ -85,6 +91,10 @@ public class PasswordResetService {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
+
+        if (verificationToken.getType() != VerificationTokenType.RESET_PASSWORD) {
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
+        }
 
         User user = verificationToken.getUser();
 
