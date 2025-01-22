@@ -17,22 +17,22 @@ import lombok.Getter;
 public enum HTTPStatus {
 
     OK(200, true),
-    FOUND(200, true),
-    CREATED(201, true),
     DELETED(200, true),
+    CREATED(201, true),
     ACCEPTED(202, true),
     NO_CONTENT(204, true),
+    FOUND(302, true),
     NOT_MODIFIED(304, false),
     BAD_REQUEST(400, false),
     UNAUTHORIZED(401, false),
     FORBIDDEN(403, false),
     NOT_FOUND(404, false),
-    INTERNAL_SERVER_ERROR(500, false),
-    NOT_IMPLEMENTED(501, false);
 
+    INTERNAL_SERVER_ERROR(500, false),
+    NOT_IMPLEMENTED(501, false),
+    BAD_GATEWAY(502, false);
 
     private final int code;
     private final boolean isSuccess;
-
 
 }
