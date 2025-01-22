@@ -14,6 +14,7 @@ const VerifyEmail = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const email = searchParams.get('email');
+  const [success, setSuccess] = useState(false);
   const [status, setstatus] = useState('')
   const [displayEmail, setDisplayEmail] = useState('');
   const [timeLeft, setTimeLeft] = useState(LINK_EXPIRY_TIME); // 5 minutes in seconds
@@ -22,13 +23,16 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     const flag = searchParams.get('isExpired');
-    const sucess = searchParams.get('success');
-    if (sucess) setstatus('Password Updated Successfully! Please Login.');
+    const success = searchParams.get('success');
+    if (success) {
+      setSuccess(success === 'true');
+      setstatus("Your Password Has Been Reset Successfully. Please Login.");
+    }
     if (flag) setIsExpired(flag === 'true');
   }, [searchParams]);
 
 
-  const imageSrc = status === 'Email Verified Successfully! Please login.' ? '/check.png' : '/email-verify.png';
+  const imageSrc = 'email-verify.png';
 
   useEffect(() => {
 
@@ -93,7 +97,7 @@ const VerifyEmail = () => {
   }
 
   return (
-    (email || token) ? (
+    (email || token || success) ? (
       <div className="flex flex-col items-center bg-gray-100  min-h-screen ">
 
         <div className="w-[280px] h-[200px] mt-6 ">
@@ -127,7 +131,7 @@ const VerifyEmail = () => {
               </div>)
         )}
 
-        {status === 'Email Verified Successfully! Please login.' && (
+        {status === 'Your Password Has Been Reset Successfully. Please Login.' && (
           <Button onClick={navaigateToLogin} className="mt-5 font-sans">
             Go to Login
           </Button>

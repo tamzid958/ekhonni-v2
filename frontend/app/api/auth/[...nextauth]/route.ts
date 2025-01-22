@@ -55,7 +55,7 @@ const options: NextAuthOptions = {
               email,
               password,
             });
-          console.log("Response from sign-in:", response);
+          console.log("Response from sign-in:", response.data);
           if (response.status === 200 && response.data.accessToken) {
             const token = response.data;
 
@@ -95,9 +95,7 @@ const options: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       return baseUrl;
     },
-    async signIn({ user, account, profile, email, credentials }) {
-      return true
-    },
+
     async jwt({ token, user, account }) {
       if (user && account) {
         const jwtToken = {

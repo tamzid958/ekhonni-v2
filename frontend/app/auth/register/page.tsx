@@ -65,7 +65,7 @@ export default function Register() {
 
 
   return (
-    <div className="flex items-center justify-center  bg-gray-100">
+    <div className="flex items-center bg-diagonal-split justify-center  ">
       <Card className="w-96 h-full flex flex-col mt-10 mb-10 border-black shadow-2xl">
         <CardContent>
           <h2 className="text-lg font-bold mb-4 mt-4 text-center">Sign Up</h2>

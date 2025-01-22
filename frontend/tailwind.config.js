@@ -9,7 +9,12 @@ module.exports = {
     './node_modules/shadcn-ui/**/*.{js,ts,jsx,tsx}', // ShadCN UI components
   ],
   theme: {
-    extend: {
+    extend:{
+        backgroundImage: {
+              'diagonal-split': 'linear-gradient(to bottom right , #1e293b  50%,   #000505 50%)',
+              'diagonal-split-dark': 'linear-gradient(to top right, #1e293b #ff7eb3 50%, #7ed8ff 50%)',},
+
+
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
