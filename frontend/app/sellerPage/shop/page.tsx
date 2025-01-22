@@ -23,7 +23,7 @@ interface ProductData {
   images: {
     imagePath: string;
   }[];
-  bids: any;
+  bids: never;
 }
 
 
@@ -171,7 +171,7 @@ const ShopPage = () => {
                   <CardDemo
                     key={product.id}
                     id={product.id}
-                    title={product.name}
+                    name={product.name}
                     description={product.description}
                     img={product.images[0]?.imagePath || '/placeholder.jpg'}
                     price={product.price}
