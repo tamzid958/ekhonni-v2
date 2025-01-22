@@ -1,6 +1,6 @@
 import React from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from './components/AppSidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminLayout = ({ children }) => {
   return (
@@ -9,6 +9,7 @@ const AdminLayout = ({ children }) => {
         <AppSidebar />
 
         <main>
+          {/*<SidebarTrigger />*/}
           {children}
         </main>
       </SidebarProvider>

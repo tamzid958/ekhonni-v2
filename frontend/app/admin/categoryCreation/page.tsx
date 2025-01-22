@@ -2,53 +2,44 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 interface CategoryNode {
-  id: number;
   name: string;
-  subcategories: CategoryNode[];
+  subcategories: string[];
+  chainCategories: string[];
 }
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState<CategoryNode[]>([]);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [parentCategoryId, setParentCategoryId] = useState<number | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState<string>('');
+  const [parentCategoryId, setParentCategoryId] = useState<string | null>(null);
 
   // Fetch categories
   useEffect(() => {
     fetch('http://localhost:8080/api/v2/category/all')
       .then((res) => res.json())
-      .then((data) => setCategories(data))
+      .then((data) => {
+        console.log(data.data);
+        setCategories(data.data);
+      })
       .catch((err) => console.error('Error fetching categories:', err));
   }, []);
 
   // Add new category
-  const handleAddCategory = () => {
-    const newCategory: CategoryNode = {
-      id: Date.now(),
-      name: newCategoryName,
-      subcategories: [],
-    };
-
-    const updatedCategories = parentCategoryId
-      ? categories.map((category) =>
-        category.id === parentCategoryId
-          ? { ...category, subcategories: [...category.subcategories, newCategory] }
-          : category,
-      )
-      : [...categories, newCategory];
-
-    setCategories(updatedCategories);
-
+  function handleAddCategory() {
+    
     // Post to API
-    fetch('http://192.168.68.164:8080/api/v2/category/all', {
+    fetch('http://localhost:8080/api/v2/category', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newCategory }),
+      body: JSON.stringify({
+        name: newCategoryName,
+        parentCategory: parentCategoryId,
+      }),
     })
       .then((res) => res.json())
       .then((data) => console.log('Category added:', data))
@@ -56,27 +47,29 @@ export default function CategoryPage() {
 
     setNewCategoryName('');
     setParentCategoryId(null);
-  };
+  }
 
   const renderCategories = (nodes: CategoryNode[]) =>
     nodes.map((category) => (
-      <React.Fragment key={category.id}>
+      <React.Fragment key={category.name}>
         <TableRow>
           <TableCell className="font-medium">{category.name}</TableCell>
-          <TableCell>
-            {category.subcategories.length > 0 ? (
-              <ul className="list-disc pl-4">
-                {category.subcategories.map((sub) => (
-                  <li key={sub.id}>{sub.name}</li>
-                ))}
-              </ul>
-            ) : (
-              'No subcategories'
-            )}
-          </TableCell>
+
+          {/*</TableCell>*/}
+          {/*<TableCell>*/}
+          {/*  {category.subcategories.length > 0 ? (*/}
+          {/*    <ul className="list-disc pl-4">*/}
+          {/*      {category.subcategories.map((sub) => (*/}
+          {/*        <li key={sub}> {sub} </li>*/}
+          {/*      ))}*/}
+          {/*    </ul>*/}
+          {/*  ) : (*/}
+          {/*    'No subcategories'*/}
+          {/*  )}*/}
+          {/*</TableCell>*/}
         </TableRow>
-        {category.subcategories.length > 0 &&
-          renderCategories(category.subcategories)}
+        {/*{category.subcategories.length > 0 &&*/}
+        {/*  renderCategories(category.subcategories)}*/}
       </React.Fragment>
     ));
 
@@ -94,8 +87,6 @@ export default function CategoryPage() {
         </TableHeader>
         <TableBody>{renderCategories(categories)}</TableBody>
       </Table>
-
-      {/* Add New Category */}
       <Dialog>
         <DialogTrigger asChild>
           <Button>Add New Category</Button>
@@ -122,13 +113,13 @@ export default function CategoryPage() {
                 value={parentCategoryId || ''}
                 onChange={(e) =>
                   setParentCategoryId(
-                    e.target.value === '' ? null : parseInt(e.target.value),
+                    e.target.value === '' ? null : e.target.value,
                   )
                 }
               >
                 <option value="">None (Main Category)</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.name} value={cat.name}>
                     {cat.name}
                   </option>
                 ))}

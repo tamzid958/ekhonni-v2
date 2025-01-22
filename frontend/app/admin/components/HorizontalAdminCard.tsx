@@ -7,6 +7,17 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 
 interface WatchlistItem {
@@ -120,12 +131,15 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
   console.log(status);
 
   const handleApprove = async () => {
-    const confirmed = window.confirm('Are you sure you want to approve this product?');
+    // const confirmed = window.confirm('Are you sure you want to approve this product?');
+    const confirmed = true;
     if (confirmed) {
       const result = await approveProduct(id);
       if (result) {
-        alert(`Product with ID ${id} successfully approved.`);
+        // alert(`Product with ID ${id} successfully approved.`);
         window.location.reload();
+        alert(`Product with ID ${id} successfully approved.`);
+
       } else {
         alert('Failed to approve the product.');
       }
@@ -148,7 +162,8 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
   };
 
   const handleDecline = async () => {
-    const confirmed = window.confirm('Are you sure you want to decline this product?');
+    // const confirmed = window.confirm('Are you sure you want to decline this product?');
+    const confirmed = true;
     if (confirmed) {
       const result = await declineProduct(id);
       if (result) {
@@ -161,7 +176,8 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('Are you sure you want to delete this product?');
+    // const confirmed = window.confirm('Are you sure you want to delete this product?');
+    const confirmed = true;
     if (confirmed) {
       const result = await deleteProduct(id);
       if (result) {
@@ -232,22 +248,76 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       </CardContent>
       <CardFooter>
         <div className="flex flex-col mt-10 space-y-2">
-          <Button variant="link" onClick={() => {
-            handleApprove();
-          }
-          }>Approve</Button>
-          <Button variant="destructive" onClick={() => {
-            handleDecline();
-          }}>Decline</Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="default">Approve</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to approve this product? </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Once approved, it will be visible on the website for customers to view and
+                  purchase. </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  handleApprove();
+                }}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Decline</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to decline this product?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Declining it will remove it from the approval queue and prevent it from being displayed to customers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  handleDecline();
+                }}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          {/*<Button variant="link" onClick={() => {*/}
+          {/*  handleApprove();*/}
+          {/*}}>Approve</Button>*/}
+          {/*<Button variant="destructive" onClick={() => {*/}
+          {/*  handleDecline();*/}
+          {/*}}>Decline</Button>*/}
           <div className="relative group">
             <Button variant="link">More Action</Button>
 
             {/* Dropdown Menu */}
             <div
-              className="absolute mt-2 bg-white border shadow-lg rounded-md w-48 z-10 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-200">
-              <Button variant="link" className="w-full text-left" onClick={() => handleDelete()}>
-                Delete
-              </Button>
+              className="absolute mt-2 bg-white border justify-items-center shadow-lg rounded-md w-32 z-10 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-200">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="link" className="w-full">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to delete this product?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Declining it will remove it from the approval queue and put it on archive.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => {
+                      handleDelete();
+                    }}>Continue</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
             </div>
           </div>
