@@ -6,7 +6,6 @@ import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.payment.sslcommerz.PaymentResponse;
 import com.ekhonni.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
@@ -14,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -28,10 +27,12 @@ import java.util.UUID;
 public class TransactionService extends BaseService<Transaction, Long> {
 
     private final TransactionRepository transactionRepository;
+    private final AccountService accountService;
 
-    public TransactionService(TransactionRepository transactionRepository, BidService bidService) {
+    public TransactionService(TransactionRepository transactionRepository, BidService bidService, AccountService accountService) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
+        this.accountService = accountService;
     }
 
     public UUID getSellerId(Long id) {
@@ -88,9 +89,11 @@ public class TransactionService extends BaseService<Transaction, Long> {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         transaction.getBid().setStatus(BidStatus.PAID);
 
-        Account sellerAccount = transaction.getBid().getProduct().getSeller().getAccount();
+        Account sellerAccount = transaction.getSellerAccount();
         sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getBdtAmount());
-        // add money to super admins account
+
+        Account superAdminAccount = accountService.getSuperAdminAccount();
+        superAdminAccount.setBalance(superAdminAccount.getBalance() + transaction.getBdtAmount());
     }
 
     @Modifying

@@ -4,6 +4,7 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ApiResponse<?> handleEntityNotFoundException(EntityNotFoundException ex) {
         return new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        ErrorResponse response = new ErrorResponse("Body cannot be empty", LocalDateTime.now().toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

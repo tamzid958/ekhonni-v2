@@ -8,12 +8,9 @@ import com.ekhonni.backend.exception.AccountNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -30,8 +27,13 @@ public class AccountService extends BaseService<Account, Long> {
         this.userRepository = userRepository;
     }
 
-    public UserProjection getUser(Long id) {
-        return accountRepository.findUser(id);
+    public User getUser(Long id) {
+        return accountRepository.findUserById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    public Account getSuperAdminAccount() {
+        return accountRepository.findByRoleName("SUPER_ADMIN")
+                .orElseThrow(() -> new AccountNotFoundException("Super admins account not found"));
     }
 
     @Transactional
@@ -46,18 +48,8 @@ public class AccountService extends BaseService<Account, Long> {
 
     public double getBalance(Long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(AccountNotFoundException::new);
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         return account.getBalance();
-    }
-
-    @Modifying
-    @Transactional
-    @Override
-    public void softDelete(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(AccountNotFoundException::new);
-        account.setStatus("Deleted");
-        accountRepository.softDelete(id);
     }
 
 }

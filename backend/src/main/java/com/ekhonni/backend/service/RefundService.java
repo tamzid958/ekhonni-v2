@@ -6,8 +6,8 @@ import com.ekhonni.backend.dto.refund.RefundRequestDTO;
 import com.ekhonni.backend.enums.RefundStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
-import com.ekhonni.backend.exception.refund.InvalidRefundRequestException;
-import com.ekhonni.backend.exception.refund.RefundNotFoundException;
+import com.ekhonni.backend.exception.refund.*;
+import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Refund;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.refund.RefundQueryResponse;
@@ -15,7 +15,6 @@ import com.ekhonni.backend.payment.sslcommerz.refund.RefundResponse;
 import com.ekhonni.backend.repository.RefundRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -37,16 +36,29 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RefundService extends BaseService<Refund, Long> {
 
     private final RefundRepository refundRepository;
     private final TransactionService transactionService;
+    private final AccountService accountService;
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
+
     @Value("${refund.batch-size}")
     private int batchSize;
 
+    public RefundService(RefundRepository refundRepository,
+                         TransactionService transactionService,
+                         AccountService accountService,
+                         SSLCommerzConfig sslCommerzConfig,
+                         RestClient restClient) {
+        super(refundRepository);
+        this.refundRepository = refundRepository;
+        this.transactionService = transactionService;
+        this.accountService = accountService;
+        this.sslCommerzConfig = sslCommerzConfig;
+        this.restClient = restClient;
+    }
 
     @Transactional
     public void create(Long transactionId, RefundRequestDTO refundRequestDTO) {
@@ -72,6 +84,20 @@ public class RefundService extends BaseService<Refund, Long> {
                 .orElseThrow(() -> new RefundNotFoundException("Refund not found"));
         refund.setAmount(refundApproveDTO.amount());
         refund.setApprovedBy(AuthUtil.getAuthenticatedUser());
+    }
+
+    @Modifying
+    @Transactional
+    private void updateSuccessfulRefund(Refund refund, RefundQueryResponse response) {
+        Account sellerAccount = refund.getTransaction().getSellerAccount();
+        Account superAdminAccount = accountService.getSuperAdminAccount();
+
+        sellerAccount.setBalance(sellerAccount.getBalance() - refund.getAmount());
+        superAdminAccount.setBalance(superAdminAccount.getBalance() - refund.getAmount());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        refund.setInitiatedOn(LocalDateTime.parse(response.getInitiatedOn(), formatter));
+        refund.setRefundedOn(LocalDateTime.parse(response.getRefundedOn(), formatter));
     }
 
     @Scheduled(fixedDelayString = "${refund.processing-interval}")
@@ -111,20 +137,19 @@ public class RefundService extends BaseService<Refund, Long> {
         if (response == null) {
             refund.setStatus(RefundStatus.NO_RESPONSE);
             log.warn("No response from gateway for refund: {}", refund.getId());
-            throw new RuntimeException("No response");
+            throw new NoResponseException("No response");
         }
-        if (!"DONE".equals(response.getAPIConnect())) {
+        if (!"DONE".equals(response.getApiConnect())) {
             refund.setStatus(RefundStatus.API_CONNECTION_FAILED);
-            log.warn("Api connection status: {} for refund: {}", response.getAPIConnect(), refund.getId());
-            throw new RuntimeException("Api connection error");
+            log.warn("Api connection status: {} for refund: {}", response.getApiConnect(), refund.getId());
+            throw new ApiConnectionException("Api connection error");
         }
 
         refund.setStatus(RefundStatus.valueOf(response.getStatus().toUpperCase()));
         if (RefundStatus.FAILED.equals(refund.getStatus())) {
             log.warn("Refund request failed for refund: {}, reason: {}", refund.getId(), response.getErrorReason());
-            throw new RuntimeException("Refund request failed");
+            throw new RefundRequestFailedException("Refund request failed");
         }
-
         refund.setRefundTransactionId(response.getTransId());
         refund.setBankTransactionId(response.getBankTranId());
         refund.setRefundReferenceId(response.getRefundRefId());
@@ -180,20 +205,18 @@ public class RefundService extends BaseService<Refund, Long> {
         RefundQueryResponse response = sendQueryRefundRequest(refund);
         if (response == null) {
             log.warn("No response for query refund request: {}", refund.getId());
-            throw new RuntimeException("No response");
+            throw new NoResponseException("No response");
         }
-        if (!"DONE".equals(response.getAPIConnect())) {
-            log.warn("Api connection status: {} for refund query request: {}", response.getAPIConnect(), refund.getId());
-            throw new RuntimeException("Api connection error");
+        if (!"DONE".equals(response.getApiConnect())) {
+            log.warn("Api connection status: {} for refund query request: {}", response.getApiConnect(), refund.getId());
+            throw new ApiConnectionException("Api connection error");
         }
 
         refund.setStatus(RefundStatus.valueOf(response.getStatus().toUpperCase()));
         log.info("Refund id: {}, status: {}", refund.getId(), refund.getStatus());
 
         if (RefundStatus.REFUNDED.equals(refund.getStatus())) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            refund.setInitiatedOn(LocalDateTime.parse(response.getInitiatedOn(), formatter));
-            refund.setRefundedOn(LocalDateTime.parse(response.getRefundedOn(), formatter));
+            updateSuccessfulRefund(refund, response);
         }
     }
 

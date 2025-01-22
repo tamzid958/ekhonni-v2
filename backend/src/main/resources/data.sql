@@ -40,7 +40,7 @@ INSERT INTO product (id, name, price, description, approved, sold, condition, ca
 
 -- Insert Bids
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 850.00, 'BDT', 'ACCEPTED', NOW(), NOW()),
+(1, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'USD', 'ACCEPTED', NOW(), NOW()),
 (2, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'USD', 'PENDING', NOW(), NOW()),
 (3, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'USD', 'PENDING', NOW(), NOW()),
 (4, 3, '550e8400-e29b-41d4-a716-446655440000'::uuid, 680.00, 'USD', 'ACCEPTED', NOW(), NOW()),

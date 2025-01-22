@@ -2,12 +2,15 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.config.SSLCommerzConfig;
 import com.ekhonni.backend.enums.BidStatus;
+import com.ekhonni.backend.enums.RefundStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.InitiatePaymentException;
 import com.ekhonni.backend.exception.payment.InvalidTransactionException;
+import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
+import com.ekhonni.backend.payment.sslcommerz.refund.RefundQueryResponse;
 import com.ekhonni.backend.util.SslcommerzUtil;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -250,6 +253,34 @@ public class PaymentService {
             log.warn("Invalid number format in transaction: {}", e.getMessage());
             return false;
         }
+    }
+
+    public void initiateTransactionQuery(Long transactionId) {
+        Transaction transaction = transactionService.get(transactionId)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
+
+        TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
+        if (response == null) {
+            log.warn("No response for query refund request: {}", transaction.getId());
+            throw new RuntimeException("No response");
+        }
+        if (!"DONE".equals(response.getApiConnect())) {
+            log.warn("Api connection status: {} for transaction query request: {}", response.getApiConnect(), transaction.getId());
+            throw new RuntimeException("Api connection error");
+        }
+        log.info("Transaction id: {}, status: {}", transaction.getId(), transaction.getStatus());
+    }
+
+    private TransactionQueryResponse sendTransactionQueryRequest(Transaction transaction) {
+        String transactionQueryUrl = sslCommerzConfig.getMerchantTransIdValidationApiUrl()
+                + "?sessionkey=" + transaction.getSessionKey()
+                + "&store_id=" + sslCommerzConfig.getStoreId()
+                + "&store_passwd=" + sslCommerzConfig.getStorePassword();
+
+        return restClient.get()
+                .uri(transactionQueryUrl)
+                .retrieve()
+                .body(TransactionQueryResponse.class);
     }
 
     private String getIpAddress(HttpServletRequest request) {

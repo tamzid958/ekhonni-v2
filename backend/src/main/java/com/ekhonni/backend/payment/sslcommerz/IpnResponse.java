@@ -11,6 +11,7 @@ import lombok.ToString;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IpnResponse extends PaymentResponse {
+
     @JsonProperty("store_id")
     private String storeId;
 
@@ -22,4 +23,5 @@ public class IpnResponse extends PaymentResponse {
 
     @JsonProperty("cus_fax")
     private String cusFax;
+
 }

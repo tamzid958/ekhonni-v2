@@ -3,6 +3,8 @@ package com.ekhonni.backend.payment.sslcommerz.refund;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -11,21 +13,11 @@ import java.time.LocalDateTime;
  * Date: 1/21/25
  */
 
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RefundQueryResponse {
-
-    @JsonProperty("APIConnect")
-    private String APIConnect;
-
-    @JsonProperty("bank_tran_id")
-    private String bankTranId;
-
-    @JsonProperty("trans_id")
-    private String transId;
-
-    @JsonProperty("refund_ref_id")
-    private String refundRefId;
+public class RefundQueryResponse extends RefundResponse {
 
     @JsonProperty("initiated_on")
     private String initiatedOn;
@@ -33,10 +25,6 @@ public class RefundQueryResponse {
     @JsonProperty("refunded_on")
     private String refundedOn;
 
-    @JsonProperty("status")
-    private String status;
-
-    @JsonProperty("errorReason")
-    private String errorReason;
-
 }
+
+

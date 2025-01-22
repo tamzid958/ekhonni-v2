@@ -30,4 +30,22 @@ public class RefundExceptionHandler {
         return ResponseEntity.status(400).body(response);
     }
 
+    @ExceptionHandler(NoResponseException.class)
+    public ResponseEntity<ErrorResponse> handleNoResponseException(NoResponseException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(ApiConnectionException.class)
+    public ResponseEntity<ErrorResponse> handleApiConnectionException(ApiConnectionException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(RefundRequestFailedException.class)
+    public ResponseEntity<ErrorResponse> handleRefundRequestFailedException(RefundRequestFailedException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
 }

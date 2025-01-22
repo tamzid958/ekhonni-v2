@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentResponse {
+
     private String status;
 
     @JsonProperty("tran_id")
@@ -15,11 +16,13 @@ public class PaymentResponse {
     @JsonProperty("val_id")
     private String valId;
 
+    /** SSL Commerz's transaction processing currency amount */
     private String amount;
 
     @JsonProperty("store_amount")
     private String storeAmount;
 
+    /** SSL Commerz's transaction processing currency */
     private String currency;
 
     @JsonProperty("bank_tran_id")
@@ -46,12 +49,15 @@ public class PaymentResponse {
     @JsonProperty("card_issuer_country_code")
     private String cardIssuerCountryCode;
 
+    /** The original currency sent in the payment request before any conversion */
     @JsonProperty("currency_type")
     private String currencyType;
 
+    /** The original amount sent in payment request in payment request currency */
     @JsonProperty("currency_amount")
     private String currencyAmount;
 
+    /** Conversion rate of original currency sent in payment request to SSL Commerz's transaction processing currency */
     @JsonProperty("currency_rate")
     private String currencyRate;
 
@@ -75,4 +81,5 @@ public class PaymentResponse {
 
     @JsonProperty("risk_title")
     private String riskTitle;
+
 }

@@ -14,7 +14,7 @@ import lombok.Data;
 public class RefundResponse {
 
     @JsonProperty("APIConnect")
-    private String APIConnect;
+    private String apiConnect;
 
     @JsonProperty("bank_tran_id")
     private String bankTranId;
@@ -30,4 +30,5 @@ public class RefundResponse {
 
     @JsonProperty("errorReason")
     private String errorReason;
+
 }
