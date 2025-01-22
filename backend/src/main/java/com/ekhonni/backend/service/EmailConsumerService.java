@@ -18,7 +18,7 @@ public class EmailConsumerService {
 
     private final EmailService emailService;
 
-    @RabbitListener(queues = {"${rabbitmq.email-configuration.queue}"})
+    @RabbitListener(queues = {"${rabbitmq-custom.email-configuration.queue}"})
     public void listen(EmailTaskDTO emailTaskDTO) {
         emailService.send(emailTaskDTO);
     }

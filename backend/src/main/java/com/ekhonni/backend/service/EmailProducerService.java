@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class EmailProducerService {
 
-    @Value("${rabbitmq.email-configuration.exchange}")
+    @Value("${rabbitmq-custom.email-configuration.exchange}")
     private String emailExchange;
 
-    @Value("${rabbitmq.email-configuration.routing-key}")
+    @Value("${rabbitmq-custom.email-configuration.routing-key}")
     private String emailRoutingKey;
 
     private final RabbitTemplate rabbitTemplate;
