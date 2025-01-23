@@ -134,7 +134,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
     // const confirmed = window.confirm('Are you sure you want to approve this product?');
     const confirmed = true;
     if (confirmed) {
-      const result = await approveProduct(id);
+      const result = await approveProduct(id); // revalidate path
       if (result) {
         // alert(`Product with ID ${id} successfully approved.`);
         window.location.reload();
@@ -189,6 +189,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
     }
   };
 
+  /*<Button variant="link" onClick={() => {*/
   return (
     <Card className="flex items-center gap-4 mb-4 w-full">
       {/* Checkbox */}
@@ -230,7 +231,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
 
 
           <li>
-            <div className="px-4">
+            <div className="">
               <p className="text-gray-600">TIME ENDS:</p>
               <p className="text-lg font-bold text-red-500">{timeLeft}</p>
             </div>
@@ -239,7 +240,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
             <Separator orientation="vertical" className="h-full bg-gray-300" />
           </li>
           <li>
-            <div className="px-4">
+            <div className="">
               <p>Seller:</p>
               <p className="text-lg font-bold text-gray-800 py-1">{sellerProfile}</p>
             </div>
@@ -248,7 +249,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       </CardContent>
       <CardFooter>
         <div className="flex flex-col mt-10 space-y-2">
-          <AlertDialog>
+          {status === 'PENDING_APPROVAL' && <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="default">Approve</Button>
             </AlertDialogTrigger>
@@ -266,9 +267,9 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
                 }}>Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </AlertDialog>
+          </AlertDialog>}
 
-          <AlertDialog>
+          {status === 'PENDING_APPROVAL' && <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive">Decline</Button>
             </AlertDialogTrigger>
@@ -286,38 +287,41 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
                 }}>Continue</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </AlertDialog>
-          {/*<Button variant="link" onClick={() => {*/}
+          </AlertDialog>}
+          {/*<Button variant="default" onClick={() => {*/}
           {/*  handleApprove();*/}
           {/*}}>Approve</Button>*/}
           {/*<Button variant="destructive" onClick={() => {*/}
           {/*  handleDecline();*/}
           {/*}}>Decline</Button>*/}
+
+          {status === 'APPROVED' && <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="secondary" className="w-full bg-yellow-400 hover:bg-yellow-300">Delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to delete this product?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Declining it will remove it from the approval queue and put it on archive.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  handleDelete();
+                }}>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>}
+
           <div className="relative group">
             <Button variant="link">More Action</Button>
 
             {/* Dropdown Menu */}
             <div
               className="absolute mt-2 bg-white border justify-items-center shadow-lg rounded-md w-32 z-10 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-200">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="link" className="w-full">Delete</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to delete this product?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Declining it will remove it from the approval queue and put it on archive.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => {
-                      handleDelete();
-                    }}>Continue</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <Button variant="link">Product Details</Button>
 
             </div>
           </div>

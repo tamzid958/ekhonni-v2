@@ -1,12 +1,14 @@
 import React from 'react';
 import { AppSidebar } from './components/AppSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 const AdminLayout = ({ children }) => {
   return (
     <div>
       <SidebarProvider>
         <AppSidebar />
+        <SidebarTrigger />
+
 
         <main>
           {/*<SidebarTrigger />*/}
@@ -19,3 +21,12 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
+
+// const Category = () => {
+//   const subCategories = []
+//   return (
+//     {
+//       subCategories.map((sub) => <Category></Category>)
+//     }
+//   )
+// }

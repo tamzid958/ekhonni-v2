@@ -66,12 +66,12 @@ export default function ProductView() {
     filter === 'ALL' ? products : products.filter((product) => product.status === filter);
 
   return (
-    <div className="space-y-6 min-h-screen container mx-12 px-4 w-screen">
+    <div className="space-y-6 container mx-12 px-4">
       <div className="flex items-center justify-between">
         <h1 className="text-5xl font-bold my-8">Products</h1>
 
         {/* Button Group */}
-        <div className="flex items-center justify-end space-x-4 w-full">
+        <div className="flex items-center justify-end space-x-4">
           {['ALL', 'APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
             <Button
               key={status}
