@@ -36,36 +36,7 @@ public class NotificationController {
      * ---------User API---------
      */
 
-    @Operation(
-            description = "Fetches notifications for a specific user with optional pagination and filtering by last fetch time.",
-            parameters = {
-                    @Parameter(name = "userId", description = "The unique ID of the user", required = true),
-                    @Parameter(name = "lastFetchTime", description = "Optional timestamp to fetch new notifications after last time"),
-                    @Parameter(name = "pageable", description = "Pagination parameters for notifications")
-            },
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "200",
-                            description = "Notifications fetched successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class))
-                    ),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "204",
-                            description = "No new notifications available",
-                            content = @Content(mediaType = "application/json")
-                    ),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "403",
-                            description = "Unauthorized access",
-                            content = @Content(mediaType = "application/json")
-                    ),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "500",
-                            description = "Internal server error",
-                            content = @Content(mediaType = "application/json")
-                    )
-            }
-    )
+
     @GetMapping
     @PreAuthorize("#userId == authentication.principal.id")
     public DeferredResult<ApiResponse<?>> get(
