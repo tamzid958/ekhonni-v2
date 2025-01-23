@@ -81,8 +81,9 @@ export function CardDemo({
         </CardTitle>
         <CardTitle className="text-2xl">${price}</CardTitle>
         <Button
-          className="absolute mb-48 ml-40 mt-2 px-4 py-2 rounded shadow"
-          variant="default" onClick={handleClick}
+          className="absolute mb-48 ml-44 mt-2 px-4 py-2 rounded shadow"
+          variant="default"
+          onClick={handleClick}
         >
           <ShoppingCart />
         </Button>

@@ -2,11 +2,20 @@
 import { CakeSlice, Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { QuickBid } from "@/components/QuickBid";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {  Toaster, toast } from "sonner"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 
@@ -30,11 +39,43 @@ interface ProductDetailsData {
   bids: never;
 }
 
+
+
+
+
 export default function ProductDetails() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [productDetails, setProductDetails] = useState<ProductDetailsData | null>(null);
+  const [biddingCount, setBiddingCount] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
+
+
+
+  useEffect(() => {
+    const fetchBiddingCount = async () => {
+      if (!productId) return;
+      try {
+        const apiUrl = `http://localhost:8080/api/v2/bid/${productId}/count`;
+
+        const response = await fetch(apiUrl);
+
+        const data = await response.json();
+        console.log(data);
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch bidding count');
+        }
+
+        setBiddingCount(data.data);
+        console.log('Bidding count:', data.data);
+      } catch (error) {
+      console.error(error);
+      }
+    };
+
+    fetchBiddingCount().then(r => console.log(r));
+  }, [productId]);
 
 
 
@@ -54,7 +95,7 @@ export default function ProductDetails() {
         console.error(error);
       }
     };
-    fetchProductDetails();
+    fetchProductDetails().then(r => console.log(r));
   }, [productId]);
 
   if (!productDetails) {
@@ -119,24 +160,40 @@ export default function ProductDetails() {
                 {`৳ ${productDetails.price}`}
               </p>
             </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="custom" className="w-full font-bold">
-                  START BIDDING
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>Popover Content</PopoverContent>
-            </Popover>
+            <div className="pt-2">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="custom" className="w-full font-bold">
+                    START BIDDING
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-semibold">Place Your Bid</AlertDialogTitle>
+                  </AlertDialogHeader>
+
+
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => toast.success("Bidding started!")}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+
+
 
             <div className="pt-2">
               <Button variant="custom" className="w-full font-bold" onClick={handleClick}>
-                ADD TO CART
+                ADD TO  WISHLISTS
               </Button>
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER ID:</div>
-              <Link href={`/sellerPage?id=${productDetails.seller.id}`} className=" hover:underline">
-                {productDetails.seller.id}
+              <Link href={`/sellerPage?id=${productDetails.seller.name}`} className=" pl-2 italic hover:underline">
+                {productDetails.seller.name}
               </Link>
 
             </div>
@@ -181,7 +238,7 @@ export default function ProductDetails() {
 
           <div className="flex flex-col w-1/4">
             <div className="text-xl font-bold pt-4">BIDS</div>
-            <div className="pt-4">{productDetails.bids}</div>
+            <div className="pt-4">{biddingCount !== null ? biddingCount : "Loading..."}</div>
 
             <div className="text-xl font-bold pt-4 pb-4">Dimensions</div>
             <div className="">Height: 6.1 inches / 15.5 cm</div>
