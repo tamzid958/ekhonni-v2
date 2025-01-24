@@ -22,13 +22,13 @@ import org.springframework.context.annotation.PropertySource;
 @EnableRabbit
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.email-configuration.queue}")
+    @Value("${rabbitmq-custom.email-configuration.queue}")
     private String emailQueue;
 
-    @Value("${rabbitmq.email-configuration.exchange}")
+    @Value("${rabbitmq-custom.email-configuration.exchange}")
     private String emailExchange;
 
-    @Value("${rabbitmq.email-configuration.routing-key}")
+    @Value("${rabbitmq-custom.email-configuration.routing-key}")
     private String emailRoutingKey;
 
     @Bean
