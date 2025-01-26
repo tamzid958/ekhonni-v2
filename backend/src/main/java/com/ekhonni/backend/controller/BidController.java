@@ -2,18 +2,24 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
+import com.ekhonni.backend.dto.bid.BidResponseDTO;
+import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.projection.bid.AdminBidProjection;
 import com.ekhonni.backend.projection.bid.BidderBidProjection;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
+import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,134 +35,132 @@ public class BidController {
     ProductService productService;
 
     /**
-     * ===============================================
-     *            Bidder, Buyer, Public Api
-     * ===============================================
+     *================================================================
+     *                   Public, Buyer, Seller API
+     *================================================================
      */
-
     @GetMapping("/{id}")
     @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
-    public ApiResponse<?> get(@PathVariable Long id) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.get(id, BidderBidProjection.class)) ;
+    public ResponseEntity<ApiResponse<BidderBidProjection>> get(@PathVariable Long id) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.get(id, BidderBidProjection.class));
     }
 
-    @GetMapping("/bidder/{bidder_id}")
-    @PreAuthorize("bidderId == authentication.principal.id")
-    public ApiResponse<?> getAllForUser(@PathVariable("bidder_id") Long bidderId, Pageable pageable) {
-        return new ApiResponse<>( HTTPStatus.ACCEPTED,
-                bidService.getAllForUser(bidderId, BidderBidProjection.class, pageable));
+    @GetMapping("/bidder")
+    public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForUser(Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForUser(BidderBidProjection.class, pageable));
     }
 
     @GetMapping("/buyer/{product_id}")
-    public ApiResponse<?> getAllForProductBuyer(@PathVariable("product_id") Long productId, Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED,
+    public ResponseEntity<ApiResponse<Page<BuyerBidProjection>>> getAllForProductBuyer(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
                 bidService.getAllForProduct(productId, BuyerBidProjection.class, pageable));
     }
 
     @GetMapping("/{product_id}/count")
-    public ApiResponse<?> getCountForProduct(@PathVariable("product_id") Long productId) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getCountForProduct(productId));
+    public ResponseEntity<ApiResponse<Long>> getCountForProduct(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getCountForProduct(productId));
     }
 
     @PostMapping()
-    public ApiResponse<?> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
-        return new ApiResponse<>(HTTPStatus.CREATED, bidService.create(bidCreateDTO));
+    public ResponseEntity<ApiResponse<BidResponseDTO>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
+        bidService.handlePreviousBid(bidCreateDTO);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED, bidService.create(bidCreateDTO));
     }
 
     @PatchMapping("/{id}/update")
     @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
-    public ApiResponse<?> update(@PathVariable Long id, @Valid @RequestBody BidCreateDTO bidCreateDTO) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.updateBid(id, bidCreateDTO));
+    public ResponseEntity<ApiResponse<BidResponseDTO>> update(
+            @PathVariable Long id, @Valid @RequestBody BidUpdateDTO bidUpdateDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.CREATED, bidService.updateBid(id, bidUpdateDTO));
     }
-
-    /**
-     * ===============================================
-     *                  Seller Api
-     * ===============================================
-     */
 
     @GetMapping("/seller/{product_id}")
     @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
-    public ApiResponse<?> getAllForProductSeller(@PathVariable("product_id") Long productId, Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED,
+    public ResponseEntity<ApiResponse<Page<SellerBidProjection>>> getAllForProductSeller(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
                 bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
     @PatchMapping("/{id}/accept")
     @PreAuthorize("@bidService.isProductOwner(authentication.principal.id, #id)")
-    public ApiResponse<?> accept(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> accept(@PathVariable Long id) {
         bidService.accept(id);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     /**
-     * ===============================================
-     *                   Admin Api
-     * ===============================================
+     *================================================================
+     *                          Admin API
+     *================================================================
      */
-
     @GetMapping
-    public ApiResponse<?> getAll(Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getAll(SellerBidProjection.class, pageable));
+    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAll(Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAll(AdminBidProjection.class, pageable));
     }
 
-    @GetMapping("/{product_id}")
-    public ApiResponse<?> getAllForProduct(@PathVariable("product_id") Long productId, Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
+    @GetMapping("/admin/{product_id}")
+//    @PreAuthorize("hasAuthority('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAllForProduct(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForProduct(productId, AdminBidProjection.class, pageable));
     }
+
+
 
     @GetMapping("/{product_id}/audit")
-    public ApiResponse<?> getAuditForProduct(@PathVariable("product_id") Long productId, Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED,
-                bidService.getAuditForProduct(productId, SellerBidProjection.class, pageable));
+    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAuditForProduct(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAuditForProduct(productId, AdminBidProjection.class, pageable));
     }
 
     @GetMapping("/{product_id}/audit-count")
-    public ApiResponse<?> getAuditCountForProduct(@PathVariable("product_id") Long productId) {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, bidService.getAuditCountForProduct(productId));
+    public ResponseEntity<ApiResponse<Long>> getAuditCountForProduct(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAuditCountForProduct(productId));
     }
 
     @PatchMapping("/{id}/update-status")
-    public ApiResponse<?> updateStatus(@PathVariable Long id, @Valid @RequestBody BidStatus status) {
+    public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable Long id, @Valid @RequestBody BidStatus status) {
         bidService.updateStatus(id, status);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{id}/restore")
-    public ApiResponse<?> restore(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> restore(@PathVariable Long id) {
         bidService.restore(id);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     @PatchMapping("/restore")
-    public ApiResponse<?> restore(@RequestBody List<Long> ids) {
+    public ResponseEntity<ApiResponse<Void>> restore(@RequestBody List<Long> ids) {
         bidService.restore(ids);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     @PatchMapping("/restore-all")
-    public ApiResponse<?> restoreAll() {
+    public ResponseEntity<ApiResponse<Void>> restoreAll() {
         bidService.restoreAll();
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<?> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         bidService.softDelete(id);
-        return new ApiResponse<>(HTTPStatus.DELETED, null);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
     }
 
     @DeleteMapping()
-    public ApiResponse<?> delete(@RequestBody List<Long> ids) {
+    public ResponseEntity<ApiResponse<Void>> delete(@RequestBody List<Long> ids) {
         bidService.softDelete(ids);
-        return new ApiResponse<>(HTTPStatus.DELETED, null);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
     }
 
     @DeleteMapping("/{id}/delete-permanently")
-    public ApiResponse<?> deletePermanently(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deletePermanently(@PathVariable Long id) {
         bidService.deletePermanently(id);
-        return new ApiResponse<>(HTTPStatus.DELETED, null);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
     }
-
 }

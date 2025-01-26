@@ -9,18 +9,14 @@ public record BidResponseDTO(
         Long productId,
         Double amount,
         String currency,
-        BidStatus status,
-        LocalDateTime createdAt
-) {
+        BidStatus status) {
     // Factory method to create a response DTO from the original DTO and additional fields
-    public static BidResponseDTO from(BidCreateDTO createDTO, Long id, BidStatus status, LocalDateTime createdAt) {
+    public static BidResponseDTO from(BidCreateDTO createDTO, Long id, BidStatus status) {
         return new BidResponseDTO(
                 id,
                 createDTO.productId(),
                 createDTO.amount(),
                 createDTO.currency(),
-                status,
-                createdAt
-        );
+                status);
     }
 }

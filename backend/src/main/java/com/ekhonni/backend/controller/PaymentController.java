@@ -4,11 +4,13 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.PaymentService;
+import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,33 +33,33 @@ public class PaymentController {
 
     @PostMapping("/initiate/{bid_id}")
     @PreAuthorize("@bidService.getBidderId(#bidId) == authentication.principal.id")
-    public ApiResponse<?> initiatePayment(@PathVariable("bid_id") Long bidId) throws Exception {
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, paymentService.initiatePayment(bidId));
+    public ResponseEntity<?> initiatePayment(@PathVariable("bid_id") Long bidId) throws Exception {
+        return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.initiatePayment(bidId));
     }
 
     @PostMapping("/success")
-    public ApiResponse<?> success(@RequestParam Map<String, String> validatorResponse) {
+    public ResponseEntity<?> success(@RequestParam Map<String, String> validatorResponse) {
         log.info("Success Response: {}", validatorResponse);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.OK, validatorResponse);
     }
 
     @PostMapping("/fail")
-    public ApiResponse<?> fail(@RequestParam Map<String, String> validatorResponse) {
+    public ResponseEntity<?> fail(@RequestParam Map<String, String> validatorResponse) {
         log.info("Fail Response: {}", validatorResponse);
-        return new ApiResponse<>(HTTPStatus.BAD_REQUEST, validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.BAD_REQUEST, validatorResponse);
     }
 
     @PostMapping("/cancel")
-    public ApiResponse<?> cancel(@RequestParam Map<String, String> validatorResponse) {
+    public ResponseEntity<?> cancel(@RequestParam Map<String, String> validatorResponse) {
         log.info("Cancel Response: {}", validatorResponse);
-        return new ApiResponse<>(HTTPStatus.BAD_REQUEST, validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, validatorResponse);
     }
 
     @PostMapping("/ipn")
-    public ApiResponse<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
-                                    @NotNull HttpServletRequest request) {
+    public ResponseEntity<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
+                                       @NotNull HttpServletRequest request) {
         paymentService.verifyTransaction(ipnResponse, request);
-        return new ApiResponse<>(HTTPStatus.OK, null);
+        return ResponseUtil.createResponse(HTTPStatus.OK);
     }
 
 }

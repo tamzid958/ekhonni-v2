@@ -1,6 +1,8 @@
 package com.ekhonni.backend.exception;
 
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.exception.bid.*;
+import com.ekhonni.backend.exception.payment.*;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,8 +83,80 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(response);
     }
 
+
     @ExceptionHandler(UnsupportedEncodingException.class)
     public ResponseEntity<ErrorResponse> handleUnsupportedEncodingException(UnsupportedEncodingException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    /**
+     * =================================================================
+     *                      Bid Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(BidNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBidNotFoundException(BidNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(InvalidBidAmountException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidBidAmountException(InvalidBidAmountException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(BidCurrencyMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleBidCurrencyMismatchException(BidCurrencyMismatchException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(BidCreationException.class)
+    public ResponseEntity<ErrorResponse> handleBidCreationException(BidCreationException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(BidAlreadyAcceptedException.class)
+    public ResponseEntity<ErrorResponse> handleBidAlreadyAcceptedException(BidAlreadyAcceptedException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    /**
+     * =================================================================
+     *                      Payment Exceptions
+     * =================================================================
+     */
+
+    @ExceptionHandler(InvalidTransactionException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTransactionException(InvalidTransactionException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(InitiatePaymentException.class)
+    public ResponseEntity<ErrorResponse> handleInitiatePaymentException(InitiatePaymentException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(NoResponseException.class)
+    public ResponseEntity<ErrorResponse> handleNoResponseException(NoResponseException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(ApiConnectionException.class)
+    public ResponseEntity<ErrorResponse> handleApiConnectionException(ApiConnectionException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }

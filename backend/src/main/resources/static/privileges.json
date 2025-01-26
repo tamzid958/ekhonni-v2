@@ -264,6 +264,12 @@
     "endpoint": "/api/v2/bid/{id}"
   },
   {
+    "name": "Get All Bids For User",
+    "description": "Allows bidder to view all their bids",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/bidder"
+  },
+  {
     "name": "Get Product Buyer Bids",
     "description": "Allows viewing all bids for a product (buyer view)",
     "httpMethod": "GET",
@@ -309,7 +315,7 @@
     "name": "Get Product Bids Admin",
     "description": "Allows admin to view all bids for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{id}"
+    "endpoint": "/api/v2/bid/admin/{id}"
   },
   {
     "name": "Get Product Bid Audit",

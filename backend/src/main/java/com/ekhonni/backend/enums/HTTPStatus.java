@@ -25,6 +25,7 @@ public enum HTTPStatus {
     NOT_MODIFIED(304, false),
     BAD_REQUEST(400, false),
     UNAUTHORIZED(401, false),
+    PAYMENT_REQUIRED(402, false),
     FORBIDDEN(403, false),
     NOT_FOUND(404, false),
 

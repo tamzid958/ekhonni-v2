@@ -11,23 +11,29 @@ import java.time.LocalDateTime;
  * Author: Asif Iqbal
  * Date: 1/9/25
  */
-@ControllerAdvice
+
 public class BidExceptionHandler {
 
     @ExceptionHandler(BidNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleBidNotFoundException(BidNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(InvalidBidAmountException.class)
-    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(InvalidBidAmountException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidBidAmountException(InvalidBidAmountException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(400).body(response);
     }
 
     @ExceptionHandler(BidCurrencyMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleBidLogNotFoundException(BidCurrencyMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handleBidCurrencyMismatchException(BidCurrencyMismatchException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
+    @ExceptionHandler(BidCreationException.class)
+    public ResponseEntity<ErrorResponse> handleBidCreationException(BidCreationException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(400).body(response);
     }

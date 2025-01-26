@@ -10,12 +10,13 @@ import java.util.UUID;
 
 public interface BidderBidProjection {
     Long getId();
-    Long getProductId();
-    String getProductName();
-    UUID getSellerId();
-    String getSellerName();
     Double getAmount();
     String getStatus();
     String getCurrency();
+    Long getProductId();
+    UUID getProductSellerId();
+    String getProductName();
+    String getProductSellerName();
+    String getProductSellerAddress();
     LocalDateTime getCreatedAt();
 }

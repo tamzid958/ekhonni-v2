@@ -1,5 +1,9 @@
 package com.ekhonni.backend.interceptor;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -11,11 +15,13 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Component
-public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
+public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
     private static Long requestId = 0L;
 
@@ -69,10 +75,50 @@ public class PaymentLoggingInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private String redactSensitiveData(String data) {
-        return data.replaceAll("(\"password\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
-                .replaceAll("(\"apiKey\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
-                .replaceAll("(\"store_id\"\\s*:\\s*\")[^\"]+\"", "$1****\"")
-                .replaceAll("(\"store_passwd\"\\s*:\\s*\")[^\"]+\"", "$1****\"");
+        if (data == null || data.isEmpty()) {
+            return data;
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(data);
+            redactJsonNode(jsonNode);
+            return mapper.writeValueAsString(jsonNode);
+        } catch (Exception e) {
+            log.warn("Failed to redact sensitive data: {}", e.getMessage());
+            return data;
+        }
+    }
+
+    private void redactJsonNode(JsonNode node) {
+        if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                String fieldName = field.getKey().toLowerCase();
+                if (isSensitiveField(fieldName)) {
+                    objectNode.put(field.getKey(), "****");
+                } else if (field.getValue().isObject() || field.getValue().isArray()) {
+                    redactJsonNode(field.getValue());
+                }
+            }
+        } else if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            for (JsonNode element : arrayNode) {
+                redactJsonNode(element);
+            }
+        }
+    }
+
+    private boolean isSensitiveField(String fieldName) {
+        Set<String> sensitiveFields = Set.of(
+                "password",
+                "apikey",
+                "store_id",
+                "store_passwd"
+        );
+        return sensitiveFields.contains(fieldName.toLowerCase());
     }
 }
 

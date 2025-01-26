@@ -20,12 +20,16 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     <P> Page<P> findByProductId(Long productId, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findAllByBidderId(Long bidderId, Class<P> projection, Pageable pageable);
+    <P> Page<P> findAllByBidderId(UUID bidderId, Class<P> projection, Pageable pageable);
+
+    Optional<Bid> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
     @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
     Optional<UUID> findBidderIdById(Long id);
 
-    boolean existsByProductIdAndStatus(Long productId, BidStatus status);
+    boolean existsByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
+
+    boolean existsByProductIdAndStatusAndDeletedAtIsNull(Long productId, BidStatus status);
 
     long countByProductIdAndDeletedAtIsNull(Long productId);
 

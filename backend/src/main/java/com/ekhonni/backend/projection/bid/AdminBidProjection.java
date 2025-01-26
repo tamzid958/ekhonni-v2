@@ -8,9 +8,10 @@ import java.util.UUID;
  * Date: 1/10/25
  */
 
-public interface SellerBidProjection {
+public interface AdminBidProjection {
     Long getId();
     UUID getBidderId();
+    UUID getProductSellerId();
     Long getProductId();
     String getBidderName();
     String getBidderAddress();
@@ -18,4 +19,7 @@ public interface SellerBidProjection {
     String getStatus();
     String getCurrency();
     LocalDateTime getCreatedAt();
+    String getProductName();
+    String getProductSellerName();
+    String getProductSellerAddress();
 }

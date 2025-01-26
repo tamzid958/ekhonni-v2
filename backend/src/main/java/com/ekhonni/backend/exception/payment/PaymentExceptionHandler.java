@@ -21,13 +21,25 @@ public class PaymentExceptionHandler {
     }
 
     @ExceptionHandler(InitiatePaymentException.class)
-    public ResponseEntity<ErrorResponse> handleSSLCommerzPaymentException(InitiatePaymentException ex) {
+    public ResponseEntity<ErrorResponse> handleInitiatePaymentException(InitiatePaymentException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(TransactionNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleSSLCommerzPaymentException(TransactionNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(NoResponseException.class)
+    public ResponseEntity<ErrorResponse> handleNoResponseException(NoResponseException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(ApiConnectionException.class)
+    public ResponseEntity<ErrorResponse> handleApiConnectionException(ApiConnectionException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }

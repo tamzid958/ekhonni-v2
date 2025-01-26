@@ -1,6 +1,6 @@
 package com.ekhonni.backend.config;
 
-import com.ekhonni.backend.interceptor.PaymentLoggingInterceptor;
+import com.ekhonni.backend.interceptor.LoggingInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +16,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient paymentRestClient(PaymentLoggingInterceptor interceptor) {
+    public RestClient paymentRestClient(LoggingInterceptor interceptor) {
 
         return RestClient.builder()
                 .requestInterceptor(interceptor)

@@ -19,7 +19,7 @@ INSERT INTO users (id, name, email, password, phone, address, role_id, account_i
 ('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Admin User', 'admin@example.com', '$2a$10$encrypted3', '+1234567892', '789 Admin St', 101, 103, true, NOW(), NOW()),
 ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mark Wilson', 'mark@example.com', '$2a$10$encrypted4', '+1234567893', '321 Oak Ave', 102, 104, true, NOW(), NOW()),
 ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Sarah Brown', 'sarah@example.com', '$2a$10$encrypted5', '+1234567894', '654 Pine St', 102, 105, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', '654 Pine St', 102, 106, true, NOW(), NOW());
+('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', 'Dhamrai, Dhaka', 102, 106, true, NOW(), NOW());
 
 
 -- Insert Categories
@@ -36,12 +36,23 @@ INSERT INTO product (id, name, price, description, approved, sold, condition, ca
 (2, 'MacBook Pro 2022', 1499.99, 'New MacBook Pro M1', true, false, 'NEW', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
 (3, 'Samsung Galaxy S21', 699.99, 'Brand new Samsung Galaxy S21', true, false, 'NEW', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
 (4, 'Dell XPS 13', 1299.99, 'Dell XPS 13 laptop, slightly used', true, false, 'USED', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
-(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW());
+(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+(6, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(7, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW());
 
 -- Insert Bids
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'USD', 'ACCEPTED', NOW(), NOW()),
-(2, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'USD', 'PENDING', NOW(), NOW()),
-(3, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'USD', 'PENDING', NOW(), NOW()),
-(4, 3, '550e8400-e29b-41d4-a716-446655440000'::uuid, 680.00, 'USD', 'ACCEPTED', NOW(), NOW()),
-(5, 4, '550e8400-e29b-41d4-a716-446655440001'::uuid, 1250.00, 'USD', 'REJECTED', NOW(), NOW());
+(1001, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'USD', 'ACCEPTED', NOW(), NOW()),
+(1002, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'USD', 'PENDING', NOW(), NOW()),
+(1003, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'USD', 'PENDING', NOW(), NOW()),
+(1004, 3, '550e8400-e29b-41d4-a716-446655440000'::uuid, 680.00, 'USD', 'ACCEPTED', NOW(), NOW()),
+(1005, 4, '550e8400-e29b-41d4-a716-446655440001'::uuid, 1250.00, 'USD', 'REJECTED', NOW(), NOW()),
+
+(1006, 2, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'PENDING', NOW() - INTERVAL '10 HOUR', NOW() - INTERVAL '10 HOUR'),
+(1007, 3, '550e8400-e29b-41d4-a716-446655440005'::uuid, 200.00, 'BDT', 'PENDING', NOW() - INTERVAL '9 HOUR', NOW() - INTERVAL '9 HOUR'),
+(1008, 4, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'BDT', 'PENDING', NOW() - INTERVAL '8 HOUR', NOW() - INTERVAL '8 HOUR'),
+(1009, 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'PENDING', NOW() - INTERVAL '7 HOUR', NOW() - INTERVAL '7 HOUR'),
+
+(1010, 6, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'PENDING', NOW(), NOW()),
+(1011, 6, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
+(1012, 6, '550e8400-e29b-41d4-a716-446655440002'::uuid, 1200.00, 'BDT', 'PENDING', NOW(), NOW());
