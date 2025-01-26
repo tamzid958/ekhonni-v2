@@ -76,14 +76,6 @@ spring:
       mode: ${SQL_INIT_MODE:always}
       platform: ${SQL_INIT_PLATFORM:postgresql}
 
-logging:
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-  level:
-    root: INFO
-    org.springframework: INFO
-    org.hibernate: INFO
-    com.ekhonni: DEBUG
 
 server:
   address: ${SERVER_ADDRESS}
@@ -103,6 +95,10 @@ sslcommerz:
 
 upload:
   dir: ${UPLOAD_DIR}
+
+product:
+  upload:
+    dir: ${UPLOAD_DIR}
 
 management:
   endpoints:
@@ -155,6 +151,21 @@ management:
       enabled: true
     mail:
       enabled: true
+profile:
+  image:
+    upload:
+      dir: ${PROFILE_UPLOAD_DIR}
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.ekhonni: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 # Optional: Info endpoint custom data
 info:
@@ -167,8 +178,16 @@ info:
     team: Backend Team
   environment: ${spring.profiles.active}
 
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
+
+
 rabbitmq-custom:
   email-configuration:
     queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
     exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
     routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}
+

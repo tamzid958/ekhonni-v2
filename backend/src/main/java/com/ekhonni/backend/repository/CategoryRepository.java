@@ -56,7 +56,7 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
             )
             SELECT id FROM category_tree
             """, nativeQuery = true)
-    List<Long> findSubCategoryIds(Long parentId);
+    List<Long> findRelatedActiveIds(Long parentId);
 
 
 }

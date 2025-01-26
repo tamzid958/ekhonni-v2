@@ -132,6 +132,12 @@
     "endpoint": "/api/v2/user/{id}"
   },
   {
+    "name": "Upload User Image",
+    "description": "Allows uploading profile image of user",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}/image"
+  },
+  {
     "name": "Delete User",
     "description": "Allows deleting a user",
     "httpMethod": "DELETE",
