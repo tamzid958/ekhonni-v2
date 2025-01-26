@@ -1,16 +1,19 @@
 import React from 'react';
-import CategoryActions from './CategoryActions';
-import CategoryFilters from './CategoryFilters';
-import AllCategories from './categories-table';
+import { fetchCategories } from './fetchCategories';
+import CategoryRender from './CategoryRender';
 
-export default function Categories() {
+interface Props {
+  searchParams: { category?: string };
+}
+
+export default async function Page({ searchParams }: Props) {
+  const category = searchParams?.category || 'All';
+  const categories = await fetchCategories(category);
+
   return (
-    <section>
-      <h1>Categories</h1>
-
-      <CategoryActions />
-      <CategoryFilters />
-      <AllCategories />
-    </section>
+    <div>
+      {/* Pass the fetched categories as props to the client component */}
+      <CategoryRender category={category} categories={categories} />
+    </div>
   );
 }

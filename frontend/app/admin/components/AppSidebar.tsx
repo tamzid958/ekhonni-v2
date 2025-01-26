@@ -21,7 +21,7 @@ const items = [
   },
   {
     title: 'Categories',
-    url: '/admin/categoryCreation',
+    url: '/admin/categories',
     icon: Inbox,
   },
   {
@@ -43,7 +43,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="sticky top-0 h-screen">
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
