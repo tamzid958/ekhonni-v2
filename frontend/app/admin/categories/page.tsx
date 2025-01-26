@@ -1,5 +1,3 @@
-// 'use client';
-
 import React from 'react';
 import { fetchCategories } from './fetchCategories';
 import CategoryRender from './CategoryRender';
