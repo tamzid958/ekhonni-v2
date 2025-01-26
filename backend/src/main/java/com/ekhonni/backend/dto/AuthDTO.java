@@ -15,6 +15,5 @@ public record AuthDTO(@NotNull(message = "email cannot be null")
                       String email,
                       @NotNull(message = "password cannot be null")
                       @NotBlank(message = "password cannot be blank")
-                      @Email(message = "Not a valid email")
                       String password) {
 }

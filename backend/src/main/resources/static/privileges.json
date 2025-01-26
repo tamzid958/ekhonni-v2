@@ -96,6 +96,12 @@
     "endpoint": "/api/v2/admin/users/"
   },
   {
+    "name": "Get All User By name/email",
+    "description": "Allows retrieving all user by name",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/users"
+  },
+  {
     "name": "Get All Deleted User ",
     "description": "Allows retrieving all deleted user",
     "httpMethod": "GET",
