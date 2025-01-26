@@ -8,28 +8,24 @@ import { axiosInstance } from '@/data/services/fetcher';
 import  jwtDecode  from 'jwt-decode';
 
 
-const refreshAccessToken = async (token: any) => {
+const refreshAccessToken = async ({accessToken, refreshToken, id}) => {
   try {
     console.log("Refreshing token...");
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    }
+    const res = await axiosInstance.post(`/api/v2/user/${id}/refresh-token/`,
+      { refreshToken: refreshToken},
+      { headers: headers });
 
-    const refreshedToken = {
-      ...token,
-      accessToken: `refreshed-${token.accessToken}`,
-      accessTokenExpires: Date.now() + 30 * 1000,
-    };
+     const  newRefreshedToken = res.data;
 
-    await redis.set(
-      `jwt:${token.id}`,
-      JSON.stringify(refreshedToken),
-      "EX",
-      30
-    );
+     console.log("New Refreshed Token:", newRefreshedToken);
 
-    return refreshedToken;
+    return newRefreshedToken;
   } catch (error) {
     console.error("Error refreshing access token:", error);
     return {
-      ...token,
       error: "RefreshAccessTokenError",
     };
   }
@@ -55,17 +51,21 @@ const options: NextAuthOptions = {
               email,
               password,
             });
-          console.log("Response from sign-in:", response.data);
-          if (response.status === 200 && response.data.accessToken) {
-            const token = response.data;
+          if ( response.status === 200) {
+            const res = response.data;
 
-            return {
-              // id: id,
-              // email: email,
-              // name: name,
-              accessToken: token.accessToken,
-              refreshToken: token.refreshToken,
+            console.log("Login successful:", res);
+
+            const user = {
+              id: res.id,
+              email: res.email,
+              name: res.name,
+              image: res.image,
+              accessToken: res.authToken.accessToken,
+              refreshToken: res.authToken.refreshToken,
             }
+
+            return user;
           }
           else{
             const errorData = response.data;
@@ -98,49 +98,71 @@ const options: NextAuthOptions = {
 
     async jwt({ token, user, account }) {
       if (user && account) {
-        const jwtToken = {
-          ...token,
+        const token = {
           id: user.id,
           email: user.email,
           name: user.name,
-          accessToken: account.access_token || "default-access-token",
-          refreshToken: account.refreshToken || "default-refresh-token",
+          refreshToken: user?.refreshToken,
+          accessToken: user?.accessToken,
+          picture: user.image,
+          accessTokenExpires: Date.now() + 30 * 1000,
+        };
+        await redis.set(
+          `jwt:${token.id}`,
+          JSON.stringify(token),
+          "EX",
+          30
+        );
+
+        return token;
+      }
+
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+        const redisToken = await redis.get(`jwt:${token.id}`);
+
+        const currentToken = JSON.parse(redisToken);
+        const refreshedToken = await refreshAccessToken({
+          accessToken: currentToken?.accessToken,
+          refreshToken: currentToken?.refreshToken,
+          id:  token.id,
+        });
+
+
+        if (refreshedToken) {
+
+        const retrievedToken = JSON.parse(refreshedToken);
+
+        const newToken = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          refreshToken: retrievedToken.refreshToken,
+          accessToken: retrievedToken.accessToken,
+          picture: user.image,
           accessTokenExpires: Date.now() + 30 * 1000,
         };
 
         await redis.set(
-          `jwt:${user.id}`,
-          JSON.stringify(jwtToken),
-          "EX",
-          30
-        );
-        await redis.set(
-          `refresh:${user.id}`,
-          jwtToken.refreshToken,
-          "EX",
-          7 * 24 * 60 * 60 // 7 days in seconds
-        );
-        return jwtToken;
+            `jwt:${newToken.id}`,
+            JSON.stringify(newToken),
+            "EX",
+            30
+          );
+        return newToken;
       }
-
-      const storedToken = await redis.get(`jwt:${token.id}`);
-      if (storedToken) {
-        return JSON.parse(storedToken);
-      }
-      if (Date.now() < (token.accessTokenExpires as number)) {
-        return token;
-      }
-      return await refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.user = {
-        id: token.id as number,
-        email: token.email as string,
-        name: token.name as string,
+        token: token.accessToken,
+        id: token.id,
+        email: token.email,
+        name: token.name,
         image: token.picture || null,
       };
-      session.accessToken = token.accessToken;
-      session.error = token.error;
+      console.log("Session:", session);
       return session;
     },
   },
