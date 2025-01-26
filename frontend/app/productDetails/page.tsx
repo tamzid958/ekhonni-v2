@@ -7,16 +7,20 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {  Toaster, toast } from "sonner"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 
 interface ProductDetailsData {
@@ -39,7 +43,14 @@ interface ProductDetailsData {
   bids: never;
 }
 
-
+interface BiddingDetailsData {
+  id: number;
+  productId: number;
+  amount: number;
+  currency: string;
+  status: string;
+  createdAt: string | null;
+}
 
 
 
@@ -49,7 +60,39 @@ export default function ProductDetails() {
   const [biddingCount, setBiddingCount] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
+  const [bidAmount, setBidAmount] = useState("");
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [biddingDetails, setBiddingDetails] = useState<BiddingDetailsData[]>([]);
 
+
+  const Checkbox = ({ checked, onChange }) => (
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+    />
+  );
+
+  useEffect(() => {
+    const fetchBiddingDetails = async () => {
+      if(!productId) return;
+      try{
+        const apiUrl= `http://localhost:8080/api/v2/bid/buyer/${productId}`;
+        const response = await fetch (apiUrl);
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch bidding count');
+        }
+        setBiddingDetails(data.data.content || []);
+        console.log("Bidding amount",data.data.content);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchBiddingDetails();
+  }, [productId]);
 
 
   useEffect(() => {
@@ -107,10 +150,29 @@ export default function ProductDetails() {
   };
 
 
+  const handleBidChange = (event) => {
+    const value = event.target.value;
+    setBidAmount(value);
+
+    setIsButtonEnabled(Number(value) > 0);
+  };
+
+  const handleBidSubmit = () => {
+    alert("The bid has been submitted");
+    setBidAmount("");
+    setIsButtonEnabled(false);
+  };
+
+  const handleCheckboxChange = (event) => {
+    setIsCheckboxChecked(event.target.checked);
+  };
+
+
   return (
     <div className="flex flex-col bg-brand-bright">
       <Toaster position="top-right" />
-      <div className="flex flex-row ml-40 mr-40 pb-12 pt-12">
+      <div className="flex flex-row ml-40 mr-40 pb-12 pt-1    setIsButtonVisible(false);
+2">
         <div className="flex flex-row">
           <div className="flex flex-col">
             {productDetails.images.map((image, index) => (
@@ -161,26 +223,87 @@ export default function ProductDetails() {
               </p>
             </div>
             <div className="pt-2">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
+              <Dialog>
+                <DialogTrigger asChild>
                   <Button variant="custom" className="w-full font-bold">
                     START BIDDING
                   </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-semibold">Place Your Bid</AlertDialogTitle>
-                  </AlertDialogHeader>
+                </DialogTrigger>
+                <DialogContent className="w-[460px] bg-white border border-gray-300 rounded-lg p-6">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold mb-2">Place Your Bid</DialogTitle>
+                    <DialogDescription className="text-gray-700">
+                      <div className="text-lg font-semibold mb-1">
+                        ৳ {productDetails.price}
+                      </div>
+                      <div className="text-sm text-gray-500 mb-4">{biddingCount} bids</div>
+                      <div>
+                        <Carousel className="max-w-sm">
+                          <CarouselPrevious className="-left-4" />
+                          <CarouselContent className="-ml-0">
+                            {biddingDetails &&
+                              [...biddingDetails]
+                                .sort((a, b) => b.amount - a.amount)
+                                .slice(0, 5)
+                                .map((bid, index) => (
+                                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                                    <div className="p-1">
+                                      <div className="flex aspect-[2/1] items-center justify-center p-6 border rounded-3xl border-black">
+                                        <span className="text-l font-bold">৳ {bid.amount}</span>
+                                      </div>
+                                    </div>
+                                  </CarouselItem>
+                                ))}
+                          </CarouselContent>
+                          <CarouselNext className="-right-8" />
+                        </Carousel>
 
+                      </div>
 
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => toast.success("Bidding started!")}>
-                      Confirm
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                      <div className="flex flex-col gap-4 mb-4 pt-4">
+                        {/* Input and Bid button */}
+                        <div className="flex items-center gap-2 mb-4 pt-4">
+                          <input
+                            type="text"
+                            placeholder="Enter Bid(৳)"
+                            value={bidAmount}
+                            onChange={handleBidChange}
+                            disabled={!isCheckboxChecked}
+                            className={`flex-grow border border-black rounded-md p-2 text-gray-700 ${
+                              isCheckboxChecked ? "bg-white" : "bg-gray-200 cursor-not-allowed"
+                            }`}
+                          />
+                          <button
+                            className={`px-4 py-2 rounded-md ${
+                              isButtonEnabled
+                                ? "bg-blue-400 text-white font-bold" 
+                                : "bg-gray-300 text-gray-500" 
+                            }`}
+                            onClick={handleBidSubmit}
+                            disabled={!isButtonEnabled || !isCheckboxChecked}
+                          >
+                            Bid
+                          </button>
+                        </div>
+
+                        <div className="text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <Checkbox
+                              checked={isCheckboxChecked}
+                              onChange={handleCheckboxChange}
+                            />
+                            <span className="ml-2">
+            By selecting Bid, you are committing to buy this item if you are the winning bidder.
+          </span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+
             </div>
 
 
