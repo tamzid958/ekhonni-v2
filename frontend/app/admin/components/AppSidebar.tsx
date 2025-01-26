@@ -21,7 +21,7 @@ const items = [
   },
   {
     title: 'Categories',
-    url: '/admin/categoryCreation',
+    url: '/admin/categories',
     icon: Inbox,
   },
   {
