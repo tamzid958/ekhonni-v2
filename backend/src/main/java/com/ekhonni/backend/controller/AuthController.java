@@ -7,6 +7,7 @@ import com.ekhonni.backend.dto.UserDTO;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     @PreAuthorize("@userService.isActive(#authDTO.email())")
-    public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
+    public ResponseEntity<?> signInUser(@Valid @RequestBody AuthDTO authDTO) {
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 
@@ -38,7 +39,7 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
 
         return ResponseEntity.ok(authService.create(userDTO));
 
@@ -50,12 +51,12 @@ public class AuthController {
     }
 
     @PostMapping("/password-reset-request")
-    public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
+    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody PasswordResetRequestDTO passwordResetDTO) {
         return ResponseEntity.ok(passwordResetService.requestReset(passwordResetDTO.email()));
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
         return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
     }
 
