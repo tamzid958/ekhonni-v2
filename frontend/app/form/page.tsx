@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Trash2 } from 'lucide-react';
 
 // TO-DO
-// 1. Categiry-sub category
+// 1. Tree page
 // 2. decompose the file
 // 3. add instructions in images
 // 4. Add dimensions under one field(maybe it's a 3 size array)
@@ -133,7 +133,7 @@ export default function Home() {
   const weightUnit = form.watch('weightUnit');
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('brrrrrrrr');
+    console.log('form submitted');
     console.log(values);
     // console.log(form.getValues()); // Logs current form values
     // console.log(form.formState.errors); // Logs validation errors
