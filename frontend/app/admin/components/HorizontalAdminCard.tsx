@@ -52,7 +52,7 @@ async function approveProduct(id: number) {
     }
 
     const data = await response.json();
-    console.log(response);
+    // console.log(response);
     console.log(`Product with id ${id} successfully approved`, data);
     return data; // Return data if needed
   } catch (error) {
@@ -73,7 +73,7 @@ async function declineProduct(id: number) {
       body: JSON.stringify({ reason: 'Declined by admin' }), // Add body if required by the API
     });
 
-    console.log('Request URL:', url);
+    // console.log('Request URL:', url);
     console.log('Request Body:', JSON.stringify({ reason: 'Approved by admin' }));
 
     if (!response.ok) {
@@ -81,7 +81,7 @@ async function declineProduct(id: number) {
     }
 
     const data = await response.json();
-    console.log(response);
+    // console.log(response);
     console.log(`Product with id ${id} successfully declined`, data);
     return data; // Return data if needed
   } catch (error) {
@@ -105,7 +105,7 @@ async function deleteProduct(id: number) {
       throw new Error(`Failed to delete the product with id ${id}. Status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(response);
+    // console.log(response);
     console.log(`Product with id ${id} successfully deleted`, data);
     return data;
   } catch (error) {
@@ -128,7 +128,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
                                                                status,
                                                              }) => {
 
-  console.log(status);
+  // console.log(status);
 
   const handleApprove = async () => {
     // const confirmed = window.confirm('Are you sure you want to approve this product?');
@@ -143,21 +143,6 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       } else {
         alert('Failed to approve the product.');
       }
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'APPROVED':
-        return <Badge variant="default">Approved</Badge>;
-      case 'DECLINED':
-        return <Badge variant="destructive">Declined</Badge>;
-      case 'PENDING_APPROVAL':
-        return <Badge variant="secondary">Pending Approval</Badge>;
-      case 'ARCHIVED':
-        return <Badge variant="warning">Archived</Badge>;
-      default:
-        return <Badge variant="default">Default</Badge>;
     }
   };
 
@@ -186,6 +171,21 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       } else {
         alert('Failed to delete the product.');
       }
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return <Badge variant="default">Approved</Badge>;
+      case 'DECLINED':
+        return <Badge variant="destructive">Declined</Badge>;
+      case 'PENDING_APPROVAL':
+        return <Badge variant="secondary">Pending Approval</Badge>;
+      case 'ARCHIVED':
+        return <Badge variant="warning">Archived</Badge>;
+      default:
+        return <Badge variant="default">Default</Badge>;
     }
   };
 
