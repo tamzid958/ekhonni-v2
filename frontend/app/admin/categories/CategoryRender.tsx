@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Link from 'next/link';
-import { toast } from '@/hooks/use-toast'; // Import ShadCN toast
+import { toast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react'; // Import ShadCN toast
 
 interface CategoryNode {
   name: string;
@@ -31,7 +32,7 @@ interface Props {
 
 export default function CategoryRender({ category, categories }: Props) {
   const [newCategory, setNewCategory] = useState('');
-
+  const [alertVisible, setAlertVisible] = useState(false);
   const handleSubmit = async () => {
     if (newCategory.trim() === '') {
       toast({
@@ -75,6 +76,37 @@ export default function CategoryRender({ category, categories }: Props) {
     }
   };
 
+  function handleEdit(category: string) {
+  }
+
+  const handleDelete = async (name: string) => {
+    const url = `http://localhost:8080/api/v2/category/${encodeURIComponent(name)}`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+      if (!response.ok) {
+        alert('Failed to delete category, check if it has subcategories inside');
+        throw new Error('Failed to delete category');
+      }
+      console.log(response);
+      setAlertVisible(true);
+
+      setTimeout(() => {
+        window.location.reload(); // Reload after 3 seconds
+      }, 3000);
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
+
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center space-y-6 mx-auto px-4 w-full overflow-hidden">
       {/* Title Left-Aligned */}
@@ -82,41 +114,76 @@ export default function CategoryRender({ category, categories }: Props) {
 
       {/* Centered Table */}
       <div className="flex justify-center w-full">
-        <div className="w-full max-w-4xl"> {/* Ensure table doesn't stretch too wide */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-left">Category Name</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {category === 'All' ? (
-                // Render all categories when 'All' is selected
-                categories.map((cat, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Link
-                        href={`/admin/categories?category=${encodeURIComponent(cat.name)}`}
-                      >
-                        {cat.name}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                // Render subcategories when a specific category is selected
-                categories[0]?.subCategories.map((subCat, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Link href={`/admin/categories?category=${encodeURIComponent(subCat)}`}>
-                        {subCat}
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <div className="w-full max-w-4xl">
+          <div className="space-y-4"> {/* Parent container for spacing */}
+            {category === 'All' ? (
+              // Render all categories when 'All' is selected
+              categories.map((cat, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between p-4 rounded-lg shadow ${
+                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  } hover:bg-yellow-50`}
+                >
+                  {/* Category Name with Link */}
+                  <Link
+                    href={`/admin/categories?category=${encodeURIComponent(cat.name)}`}
+                    className="text-xl font-medium text-gray-700 hover:underline"
+                  >
+                    {cat.name}
+                  </Link>
+                  {/* Action Buttons */}
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={() => handleEdit(cat.name)}
+                      className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cat.name)}
+                      className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Render subcategories when a specific category is selected
+              categories[0]?.subCategories.map((subCat, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center justify-between p-4 rounded-lg shadow ${
+                    index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  } hover:bg-yellow-50`}
+                >
+                  {/* Subcategory Name with Link */}
+                  <Link
+                    href={`/admin/categories?category=${encodeURIComponent(subCat)}`}
+                    className="text-xl font-medium text-gray-700 hover:underline"
+                  >
+                    {subCat}
+                  </Link>
+                  {/* Action Buttons */}
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={() => handleEdit(subCat)}
+                      className="px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(subCat)}
+                      className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
@@ -129,17 +196,18 @@ export default function CategoryRender({ category, categories }: Props) {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Add New Category</DialogTitle>
-              <DialogDescription>
-                Add new category
-              </DialogDescription>
+              <DialogDescription>Add new category</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Input id="newCategory"
-                       value={newCategory}
-                       onChange={(e) => {
-                         setNewCategory(e.target.value);
-                       }} className="col-span-3" />
+                <Input
+                  id="newCategory"
+                  value={newCategory}
+                  onChange={(e) => {
+                    setNewCategory(e.target.value);
+                  }}
+                  className="col-span-3"
+                />
               </div>
               <Label>
                 <span>Category Name</span>
@@ -147,12 +215,19 @@ export default function CategoryRender({ category, categories }: Props) {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="submit" onClick={handleSubmit}>Save changes</Button>
+                <Button type="submit" onClick={handleSubmit}>
+                  Save changes
+                </Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
+      {alertVisible && <Alert className="fixed w-96 bottom-4 right-4 z-50">
+        <Terminal className="h-4 w-4" />
+        <AlertTitle>Deletion done!</AlertTitle>
+        <AlertDescription>Category deleted successfully</AlertDescription>
+      </Alert>}
     </div>
   );
 }
