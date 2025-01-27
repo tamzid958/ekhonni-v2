@@ -183,7 +183,7 @@
     "name": "Get All Privileges",
     "description": "Allows retrieving all privileges",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/privilege/"
+    "endpoint": "/api/v2/privilege"
   },
   {
     "name": "Delete Privilege",
