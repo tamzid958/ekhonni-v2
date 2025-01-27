@@ -125,6 +125,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(response);
     }
 
+    @ExceptionHandler(BidNotAcceptedException.class)
+    public ResponseEntity<ErrorResponse> handleBidNotAcceptedException(BidNotAcceptedException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
     /**
      * =================================================================
      *                      Payment Exceptions
