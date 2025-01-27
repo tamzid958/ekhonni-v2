@@ -28,6 +28,7 @@ public class Transaction extends BaseEntity<Long> {
     @Column(nullable = false)
     private TransactionStatus status;
 
+    private Double storeAmount;
     private Double bdtAmount;
     private String sessionKey;
     private String validationId;

@@ -82,6 +82,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
     @Modifying
     @Transactional
     public void updateTransaction(Transaction transaction, PaymentResponse response) {
+        transaction.setStoreAmount(Double.parseDouble(response.getAmount()));
         transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());

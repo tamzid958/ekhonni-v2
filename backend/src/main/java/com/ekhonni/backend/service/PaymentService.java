@@ -243,6 +243,7 @@ public class PaymentService {
             return false;
         }
         try {
+            double storeAmount = Double.parseDouble(response.getStoreAmount());
             double currencyRate = Double.parseDouble(response.getCurrencyRate());
             double responseAmount = Double.parseDouble(response.getCurrencyAmount());
             double responseBdtAmount = Double.parseDouble(response.getAmount());
