@@ -32,6 +32,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (NoResourceFoundException e) {
+            System.out.println("cheking privilege 3");
             handleException(response, e, HttpStatus.NOT_FOUND);
         } catch (InvalidJwtTokenException e) {
             handleException(response, e, HttpStatus.UNAUTHORIZED);

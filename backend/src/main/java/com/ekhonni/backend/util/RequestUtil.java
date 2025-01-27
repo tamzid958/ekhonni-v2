@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class RequestUtil {
     public String extractAndNormalizeUri(HttpServletRequest request) {
         String uri = request.getRequestURI();
+        System.out.println(uri);
 
         return uri.replaceAll("(\\b[a-fA-F0-9\\-]{36}\\b)", "{id}")
                 .replaceAll("/\\d+", "/{id}");

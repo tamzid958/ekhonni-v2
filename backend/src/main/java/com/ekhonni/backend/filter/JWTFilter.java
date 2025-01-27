@@ -32,6 +32,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("In Jwt Filter: " + request.getRequestURI());
         String authHeader = request.getHeader("Authorization");
 
         if (!isBearerToken(authHeader)) {
@@ -51,6 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
             throw new InvalidJwtTokenException();
         }
 
+        System.out.println("In Jwt Filter 2: " + request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 

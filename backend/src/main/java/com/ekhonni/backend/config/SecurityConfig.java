@@ -59,10 +59,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(request ->
-                        request
-                                .requestMatchers(PUBLIC_URLS).permitAll()
-                                .requestMatchers(USER_URLS).hasAuthority("USER")
-                                .anyRequest().access(dynamicAuthorizationManager)
+                                request
+                                        .requestMatchers(PUBLIC_URLS).permitAll()
+//                                .requestMatchers(USER_URLS).hasAuthority("USER")
+                                        .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
