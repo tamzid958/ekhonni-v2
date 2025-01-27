@@ -4,6 +4,7 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,8 +18,9 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ApiResponse<?> handleEntityNotFoundException(EntityNotFoundException ex) {
-        return new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,6 +33,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> AuthorizationDeniedException(AuthorizationDeniedException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(403).body(response);
+    }
+
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenNotFoundException(RefreshTokenNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
@@ -88,7 +102,6 @@ public class GlobalExceptionHandler {
     }
 
 
-
     @ExceptionHandler(NotificationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -102,10 +115,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<ErrorResponse> handleEmailNotVerifiedException(EmailNotVerifiedException ex){
+    public ResponseEntity<ErrorResponse> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
+
     // product
     @ExceptionHandler(ProductNotCreatedException.class)
     public ResponseEntity<ApiResponse<?>> handleProductNotSavedException(ProductNotCreatedException ex) {

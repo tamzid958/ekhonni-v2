@@ -3,8 +3,8 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.*;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
-import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
@@ -73,8 +73,8 @@ public class UserController {
     }
 
     @PostMapping("/{id}/refresh-token")
-//    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public AuthToken getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public AuthToken getNewAccessToken(@PathVariable UUID id, @RequestBody RefreshTokenDTO refreshTokenDTO) {
         return userService.getNewAccessToken(refreshTokenDTO);
     }
 
