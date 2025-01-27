@@ -80,7 +80,6 @@ const formSchema = z
       .number()
       .min(0, { message: 'Price must be a positive number' })
       .max(1000000, { message: 'Price must not exceed 1000000' }),
-
     delievery: z
       .boolean()
       .default(false)
@@ -176,7 +175,7 @@ export default function Home() {
                     <FormLabel>Product's Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g : Samsung Galaxy A4"
+                        placeholder="Add Product Name"
                         type="text"
                         {...field}
                       />
