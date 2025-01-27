@@ -61,7 +61,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(PUBLIC_URLS).permitAll()
-                                .requestMatchers(USER_URLS).hasAuthority("USER")
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)

@@ -42,6 +42,12 @@ public class AdminController {
         return adminService.getAllUser(UserProjection.class, pageable);
     }
 
+    @GetMapping("/users")
+    public Page<UserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
+        return adminService.getAllUserByNameOrEmail(UserProjection.class, pageable, name, email);
+    }
+
+
     @PostMapping("user/{userId}/assign/role/{roleId}")
     @PreAuthorize("@userService.isActive(#userId)")
     public String assignRole(@PathVariable("userId") UUID userId, @PathVariable("roleId") long roleId) {

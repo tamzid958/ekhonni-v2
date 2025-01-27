@@ -25,7 +25,7 @@ public class PrivilegeController {
     PrivilegeService privilegeService;
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public Page<Privilege> getAllPrivilege(Pageable pageable) {
         return privilegeService.getAll(pageable);
     }

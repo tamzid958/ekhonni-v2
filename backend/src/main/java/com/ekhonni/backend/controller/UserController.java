@@ -72,8 +72,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/refresh-token/")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PostMapping("/{id}/refresh-token")
+//    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public AuthToken getNewAccessToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
         return userService.getNewAccessToken(refreshTokenDTO);
     }

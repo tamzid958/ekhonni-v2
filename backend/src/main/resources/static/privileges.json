@@ -96,6 +96,12 @@
     "endpoint": "/api/v2/admin/users/"
   },
   {
+    "name": "Get All User By name/email",
+    "description": "Allows retrieving all user by name/email",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/users"
+  },
+  {
     "name": "Get All Deleted User ",
     "description": "Allows retrieving all deleted user",
     "httpMethod": "GET",
@@ -147,7 +153,7 @@
     "name": "Refresh Token",
     "description": "Allows retrieving new user token",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/user/{id}/refresh-token/"
+    "endpoint": "/api/v2/user/{id}/refresh-token"
   },
   {
     "name": "Update Privilege",
@@ -177,7 +183,7 @@
     "name": "Get All Privileges",
     "description": "Allows retrieving all privileges",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/privilege/"
+    "endpoint": "/api/v2/privilege"
   },
   {
     "name": "Delete Privilege",

@@ -101,6 +101,9 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     }
 
     public Privilege getByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
+        System.out.println("checking privilege 2");
+        System.out.println(httpMethod);
+        System.out.println(endpoint);
         return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(NoResourceFoundException::new);
     }
 

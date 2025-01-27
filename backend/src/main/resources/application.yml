@@ -24,6 +24,11 @@ spring:
         highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
 
   security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://idp.example.com/issuer
+
     jwt:
       secret: ${JWT_SECRET}
       access:
