@@ -45,10 +45,6 @@ spring:
   constant:
     public:
       urls: ${PUBLIC_URLS}
-    user:
-      urls: ${USER_URLS}
-    admin:
-      urls: ${ADMIN_URLS}
     email-verification-url: ${EMAIL_VERIFICATION_URL}
     password-reset-url: ${PASSWORD_RESET_URL}
 

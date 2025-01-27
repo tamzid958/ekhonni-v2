@@ -46,9 +46,6 @@ public class SecurityConfig {
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
 
-    @Value("${spring.constant.user.urls}")
-    private String[] USER_URLS;
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

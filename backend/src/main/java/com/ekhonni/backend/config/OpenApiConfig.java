@@ -1,19 +1,16 @@
 package com.ekhonni.backend.config;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.tags.Tag;
-import org.springdoc.core.models.GroupedOpenApi;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,10 +23,6 @@ public class OpenApiConfig {
 
     @Value("${spring.constant.public.urls}")
     private String[] publicUrls;
-    @Value("${spring.constant.user.urls}")
-    private String[] userUrls;
-    @Value("${spring.constant.admin.urls}")
-    private String[] adminUrls;
 
 
     @Bean
@@ -54,11 +47,11 @@ public class OpenApiConfig {
                                 .url("https://api.ekhonni.com")
                                 .description("Production server")))
                 .components(new Components()
-                .addSecuritySchemes("bearer-key",
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
+                        .addSecuritySchemes("bearer-key",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 
 //    @Bean
