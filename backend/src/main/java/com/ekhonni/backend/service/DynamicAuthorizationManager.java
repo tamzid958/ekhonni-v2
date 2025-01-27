@@ -35,7 +35,6 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
 
-        System.out.println("Request: " + context.getRequest().getRequestURI());
         Authentication authenticatedUser = authentication.get();
         Role role = null;
 
@@ -52,14 +51,9 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
 
         String endpoint = requestUtil.extractAndNormalizeUri(context.getRequest());
 
-
         Privilege privilege = privilegeService.getByHttpMethodAndEndpoint(httpMethod, endpoint);
 
-        System.out.println("checking privilege");
-
         boolean granted = roleService.hasPrivilegeAccess(role, privilege);
-
-        System.out.println("granted: " + granted);
 
         return new AuthorizationDecision(granted);
 
