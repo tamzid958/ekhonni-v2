@@ -2,10 +2,10 @@ import { useFormContext } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { conditions, locations } from '@/schemas/formSchema';
+import { locations } from '@/schemas/formSchema';
 import { Button } from '@/components/ui/button';
 
-export default function FormPage1({ nextStep }: { nextStep: () => void }) {
+export default function FormPage1({ nextStep, prevStep }: { nextStep: () => void; prevStep: () => void }) {
   const { control } = useFormContext();
 
   return (
@@ -19,7 +19,24 @@ export default function FormPage1({ nextStep }: { nextStep: () => void }) {
             <FormLabel>Product's Name</FormLabel>
             <FormControl>
               <Input
-                placeholder="Add Product Name"
+                placeholder="Add Your Product Name"
+                type="text"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name="productSubTitle"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Sub-title of the Product</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="Add Product Sub-title Here"
                 type="text"
                 {...field}
               />
@@ -36,7 +53,7 @@ export default function FormPage1({ nextStep }: { nextStep: () => void }) {
             <FormLabel>Product's Description</FormLabel>
             <FormControl>
               <Input
-                placeholder="Add your product's description here"
+                placeholder="Add Your Product's Description Here"
                 type="text"
                 {...field}
               />
@@ -46,42 +63,42 @@ export default function FormPage1({ nextStep }: { nextStep: () => void }) {
         )}
       />
 
-      <FormField
-        ccontrol={control}
-        name="productCondition"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Current Condition of your Product</FormLabel>
-            <Select onValueChange={field.onChange}
-                    value={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select the condition" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {conditions.map((condition) => (
-                  <SelectItem key={condition} value={condition}>
-                    {condition}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/*<FormField*/}
+      {/*  ccontrol={control}*/}
+      {/*  name="productCondition"*/}
+      {/*  render={({ field }) => (*/}
+      {/*    <FormItem>*/}
+      {/*      <FormLabel>Current Condition of your Product</FormLabel>*/}
+      {/*      <Select onValueChange={field.onChange}*/}
+      {/*              value={field.value}>*/}
+      {/*        <FormControl>*/}
+      {/*          <SelectTrigger>*/}
+      {/*            <SelectValue placeholder="Select the condition" />*/}
+      {/*          </SelectTrigger>*/}
+      {/*        </FormControl>*/}
+      {/*        <SelectContent>*/}
+      {/*          {conditions.map((condition) => (*/}
+      {/*            <SelectItem key={condition} value={condition}>*/}
+      {/*              {condition}*/}
+      {/*            </SelectItem>*/}
+      {/*          ))}*/}
+      {/*        </SelectContent>*/}
+      {/*      </Select>*/}
+      {/*      <FormMessage />*/}
+      {/*    </FormItem>*/}
+      {/*  )}*/}
+      {/*/>*/}
 
       <FormField
         control={control}
         name="productLocation"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Location of your Product</FormLabel>
+            <FormLabel>Current Division of your Product</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select the product's Location" />
+                  <SelectValue placeholder="Select the Sender's Location Division" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -96,13 +113,37 @@ export default function FormPage1({ nextStep }: { nextStep: () => void }) {
           </FormItem>
         )}
       />
-      <Button
-        onClick={nextStep}
-        type="button"
-        className="w-full"
-      >
-        Next
-      </Button>
+      <FormField
+        control={control}
+        name="productLocationDescription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Product's Current Address</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="Add Your Product's Current Address Here"
+                type="text"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="flex gap-4">
+        <Button onClick={prevStep} type="button" className="w-full">
+          Back
+        </Button>
+        <Button
+          onClick={nextStep}
+          type="button"
+          className="w-full"
+        >
+          Next
+        </Button>
+
+      </div>
     </div>
   );
 }

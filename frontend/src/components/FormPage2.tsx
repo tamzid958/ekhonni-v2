@@ -36,6 +36,31 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
           </FormItem>
         )}
       />
+      {/*<FormField*/}
+      {/*  ccontrol={control}*/}
+      {/*  name="productCondition"*/}
+      {/*  render={({ field }) => (*/}
+      {/*    <FormItem>*/}
+      {/*      <FormLabel>Current Condition of your Product</FormLabel>*/}
+      {/*      <Select onValueChange={field.onChange}*/}
+      {/*              value={field.value}>*/}
+      {/*        <FormControl>*/}
+      {/*          <SelectTrigger>*/}
+      {/*            <SelectValue placeholder="Select the condition" />*/}
+      {/*          </SelectTrigger>*/}
+      {/*        </FormControl>*/}
+      {/*        <SelectContent>*/}
+      {/*          {conditions.map((condition) => (*/}
+      {/*            <SelectItem key={condition} value={condition}>*/}
+      {/*              {condition}*/}
+      {/*            </SelectItem>*/}
+      {/*          ))}*/}
+      {/*        </SelectContent>*/}
+      {/*      </Select>*/}
+      {/*      <FormMessage />*/}
+      {/*    </FormItem>*/}
+      {/*  )}*/}
+      {/*/>*/}
       <div className="flex gap-4">
         <Button onClick={prevStep} type="button" className="w-full">
           Back

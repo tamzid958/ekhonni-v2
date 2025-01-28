@@ -7,27 +7,29 @@ import FormPage1 from '@/components/FormPage1';
 import FormPage2 from '@/components/FormPage2';
 import FormPage3 from '@/components/FormPage3';
 import ConfirmationPage from '@/components/ConfirmationPage';
+import CategorySelector from '@/components/CategorySelector';
 
 export default function Home() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // Start with step 0 for category selection
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: '',
       productDescription: '',
+      category: '',
+      subCategory: '',
     },
   });
-  const formValues = form.getValues();
 
   const nextStep = async () => {
     const stepFields: Record<number, string[]> = {
-      1: ['productName',
-        'productDescription',
-        'productCondition',
-        'productLocation'],
+      0: ['category', 'subCategory'], // Validate category and subcategory for step 0
+      1: ['productName', 'productSubTitle', 'productDescription', 'productLocation', 'productLocationDescription'],
       2: ['basePrice'],
       3: ['images'],
-      // Add more steps and their corresponding fields as needed
     };
     const currentStepFields = stepFields[step];
     const isValid = await form.trigger(currentStepFields);
@@ -37,20 +39,31 @@ export default function Home() {
     }
   };
 
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
-  const handleSubmit = form.handleSubmit((values) => console.log('Form Submitted:', values));
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
+
+  const handleSubmit = form.handleSubmit((values) => {
+    console.log('Form Submitted:', values);
+  });
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-brand-bright">
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={handleSubmit}
           className="max-w-xl w-full flex flex-col gap-4 bg-white p-8"
         >
-          {step === 1 && <FormPage1 nextStep={nextStep} />}
+          {step === 0 && (
+            <CategorySelector
+              onCategorySelect={(value) => form.setValue('category', value)}
+              onSubCategorySelect={(value) => form.setValue('subCategory', value)}
+              nextStep={nextStep}
+            />
+          )}
+          {step === 1 && <FormPage1 nextStep={nextStep} prevStep={prevStep} />}
           {step === 2 && <FormPage2 nextStep={nextStep} prevStep={prevStep} />}
           {step === 3 && <FormPage3 nextStep={nextStep} prevStep={prevStep} />}
-          {step === 4 && <ConfirmationPage formValues={formValues} prevStep={prevStep} handleSubmit={handleSubmit} />}
+          {step === 4 &&
+            <ConfirmationPage formValues={form.getValues()} prevStep={prevStep} handleSubmit={handleSubmit} />}
         </form>
       </FormProvider>
     </main>
