@@ -20,46 +20,63 @@ import {
 } from "@/components/ui/tabs";
 
 export function TabsDemo() {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
-
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const isAccountFormValid =
+    name.trim() !== "" && email.trim() !== "" && location.trim() !== "";
 
-  const isAccountFormValid = name.trim() !== "" && email.trim() !== "" && location.trim() !== "";
-
-
-  const isPasswordFormValid = currentPassword.trim() !== "" && newPassword.trim() !== "";
+  const isPasswordFormValid =
+    currentPassword.trim() !== "" && newPassword.trim() !== "";
 
   const handleSaveChanges = () => {
     alert("Account information saved successfully!");
-
-    setName('');
-    setEmail('');
-    setLocation('');
+    setName("");
+    setEmail("");
+    setLocation("");
+    setProfilePicture(null);
+    setPreview(null);
   };
 
-  const handleSavePassword = () => {
-    alert("Password updated successfully! You'll be logged out.");
+  const handleSavePassword = async () => {
+    // const userId=
+    // const apiUrl = `/api/v2/user/${userId}/change-password`;
 
-    setCurrentPassword('');
-    setNewPassword('');
+    alert("Password updated successfully! You'll be logged out.");
+    setCurrentPassword("");
+    setNewPassword("");
     setShowPassword(false);
+  };
+
+  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setProfilePicture(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
     <Tabs defaultValue="account" className="w-[400px] bg-white rounded-lg shadow-md">
-
       <TabsList className="grid w-full grid-cols-2 mb-4">
-        <TabsTrigger value="account" className="px-4 py-2 font-medium">Account</TabsTrigger>
-        <TabsTrigger value="password" className="px-4 py-2 font-medium">Password</TabsTrigger>
+        <TabsTrigger value="account" className="px-4 py-2 font-medium">
+          Account
+        </TabsTrigger>
+        <TabsTrigger value="password" className="px-4 py-2 font-medium">
+          Password
+        </TabsTrigger>
       </TabsList>
-
 
       <TabsContent value="account">
         <Card>
@@ -70,6 +87,35 @@ export function TabsDemo() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="profile-picture">Profile Picture</Label>
+              <div className="flex items-center space-x-4">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Profile Preview"
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    N/A
+                  </div>
+                )}
+                <input
+                  id="profile-picture"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePictureChange}
+                  className="hidden"
+                />
+                <Label
+                  htmlFor="profile-picture"
+                  className="cursor-pointer bg-blue-500 text-white px-3 py-1 rounded-lg"
+                >
+                  Upload
+                </Label>
+              </div>
+            </div>
             <div>
               <Label htmlFor="name">
                 Name <span className="text-red-500">*</span>
@@ -116,7 +162,6 @@ export function TabsDemo() {
           </CardFooter>
         </Card>
       </TabsContent>
-
 
       <TabsContent value="password">
         <Card>
