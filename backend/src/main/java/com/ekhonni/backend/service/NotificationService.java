@@ -82,7 +82,7 @@ public class NotificationService {
         NotificationType type = NotificationType.NEW_BID;
         String message = String.format(
                 "Your product %s has received a new bid of %s %s",
-                product.getName(),
+                product.getTitle(),
                 bidCreateDTO.amount(),
                 bidCreateDTO.currency()
         );
@@ -95,7 +95,7 @@ public class NotificationService {
         NotificationType type = NotificationType.PRODUCT_ACCEPTED;
         String message = String.format(
                 "Your product %s has been accepted by the admin.",
-                product.getName()
+                product.getTitle()
         );
         String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
         create(seller, type, message, redirectUrl);
@@ -106,7 +106,7 @@ public class NotificationService {
         NotificationType type = NotificationType.PRODUCT_REJECTED;
         String message = String.format(
                 "Sorry, your product %s has been rejected by the admin.",
-                product.getName()
+                product.getTitle()
         );
         create(seller, type, message, null);
     }
@@ -116,7 +116,7 @@ public class NotificationService {
         NotificationType type = NotificationType.PRODUCT_DELETED;
         String message = String.format(
                 "Sorry, your product %s has been deleted by the admin",
-                prouduct.getName()
+                prouduct.getTitle()
         );
         create(seller, type, message, null);
     }
@@ -127,7 +127,7 @@ public class NotificationService {
         NotificationType type = NotificationType.BID_ACCEPTED;
         String message = String.format(
                 "Congratulations! Your bid for the product %s has been accepted.",
-                product.getName()
+                product.getTitle()
         );
         String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
         create(bidder, type, message, redirectUrl);

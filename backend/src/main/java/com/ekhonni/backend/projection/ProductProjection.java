@@ -10,6 +10,7 @@ package com.ekhonni.backend.projection;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
 import com.ekhonni.backend.dto.ProductImageDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.ProductImage;
@@ -20,11 +21,22 @@ import java.util.List;
 public interface ProductProjection {
     Long getId();
 
-    Double getPrice();
+    String getTitle();
 
-    String getName();
+    String getSubTitle();
 
     String getDescription();
+
+    Double getPrice();
+
+    Division getDivision();
+
+    String getLocation();
+
+    ProductCondition getCondition();
+
+    String getConditionDetails();
+
 
     ProductStatus getStatus();
 
@@ -32,7 +44,6 @@ public interface ProductProjection {
 
     LocalDateTime getUpdatedAt();
 
-    ProductCondition getCondition();
 
     ProductCategoryDTO getCategoryDTO();
 

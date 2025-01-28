@@ -7,6 +7,7 @@
 
 package com.ekhonni.backend.dto;
 
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.validation.annotation.ImageOnly;
 import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
@@ -18,19 +19,33 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public record ProductUpdateDTO(
-        @NotBlank(message = "Product name cannot be null")
-        String name,
+        @NotBlank(message = "Product title cannot be null")
+        String title,
+        @NotBlank(message = "Product subTitle cannot be null")
+        String subTitle,
+        @NotBlank(message = "Description cannot be null")
+        String description,
+
         @NotNull(message = "Price cannot be null")
         @Digits(integer = 10, fraction = 2, message = "Amount must have up to 10 integer digits and 2 decimal places")
         @Positive
         Double price,
-        @NotBlank(message = "Description cannot be null")
-        String description,
+
+        @NotNull(message = "Product Location Division can not be empty")
+        @Enumerated(EnumType.STRING)
+        Division division,
+
+
         @NotBlank(message = "Location cannot be null")
         String location,
+
         @NotNull(message = "Condition cannot be null")
         @Enumerated(EnumType.STRING)
         ProductCondition condition,
+
+        @NotBlank
+        String conditionDetails,
+
         @NotBlank(message = "Category cannot be null")
         String category,
         @NonEmptyMultipartFile

@@ -50,7 +50,7 @@ public class SslcommerzUtil {
         paymentRequest.setCus_country("Bangladesh");
 
         paymentRequest.setShipping_method("NO");
-        paymentRequest.setProduct_name(transaction.getProduct().getName());
+        paymentRequest.setProduct_name(transaction.getProduct().getTitle());
         paymentRequest.setProduct_category("General");
         paymentRequest.setProduct_profile("General");
     }

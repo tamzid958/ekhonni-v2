@@ -8,6 +8,7 @@
 package com.ekhonni.backend.dto;
 
 import com.ekhonni.backend.dto.bid.BidResponseDTO;
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.ProductImage;
@@ -27,13 +28,17 @@ import java.util.List;
 @AllArgsConstructor
 @JsonPropertyOrder({
         "id",
-        "price",
-        "name",
+        "title",
+        "subTitle",
         "description",
+        "price",
+        "division",
+        "location",
+        "condition",
+        "conditionDetails",
         "status",
         "createdAt",
         "updatedAt",
-        "condition",
         "seller",
         "category",
         "images",
@@ -41,13 +46,17 @@ import java.util.List;
 })
 public class ProductResponseDTO {
     private Long id;
-    private Double price;
-    private String name;
+    private String title;
+    private String subTitle;
     private String description;
+    private Double price;
+    private Division division;
+    private String location;
+    private ProductCondition condition;
+    private String conditionDetails;
     private ProductStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private ProductCondition condition;
     private ProductSellerDTO seller;
     private ProductCategoryDTO category;
     private List<ProductImageDTO> images = new ArrayList<>();

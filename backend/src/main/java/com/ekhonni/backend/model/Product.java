@@ -11,6 +11,7 @@ import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.dto.ProductCategoryDTO;
 import com.ekhonni.backend.dto.ProductImageDTO;
 import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.validation.annotation.ImageOnly;
@@ -35,17 +36,26 @@ import java.util.Optional;
 public class Product extends BaseEntity<Long> {
 
     @NotBlank
-    private String name;
+    private String title;
+
+    @NotBlank
+    private String subTitle;
+
+    @NotBlank
+    private String description;
+
 
     @Positive
     @Column(nullable = false)
     private Double price;
 
-    @NotBlank
-    private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Division division;
 
     @NotBlank
     private String location;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -54,6 +64,10 @@ public class Product extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductCondition condition;
+
+    @NotBlank
+    private String conditionDetails;
+
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)

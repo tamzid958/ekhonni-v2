@@ -14,16 +14,25 @@ public class ProductProjectionConverter {
     public static ProductResponseDTO convert(ProductProjection projection) {
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(projection.getId());
-        dto.setPrice(projection.getPrice());
-        dto.setName(projection.getName());
+        dto.setTitle(projection.getTitle());
+        dto.setSubTitle(projection.getSubTitle());
         dto.setDescription(projection.getDescription());
+        dto.setPrice(projection.getPrice());
+
+        dto.setDivision(projection.getDivision());
+        dto.setLocation(projection.getLocation());
+
+        dto.setCondition(dto.getCondition());
+        dto.setConditionDetails(dto.getConditionDetails());
+
+        dto.setStatus(projection.getStatus());
+
         dto.setCreatedAt(projection.getCreatedAt());
         dto.setUpdatedAt(projection.getUpdatedAt());
-        dto.setCondition(projection.getCondition());
         dto.setCategory(projection.getCategoryDTO());
         dto.setSeller(projection.getSellerDTO());
         dto.setImages(projection.getImagesDTO());
-        dto.setStatus(projection.getStatus());
+
         return dto;
     }
 }

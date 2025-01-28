@@ -70,7 +70,7 @@ public class ProductService extends BaseService<Product, Long> {
     public void create(ProductCreateDTO dto) {
 
         try {
-            User user = AuthUtil.getAuthenticatedUser();
+            User seller = AuthUtil.getAuthenticatedUser();
             Category category = categoryRepository.findByNameAndActive(dto.category(), true);
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
@@ -92,14 +92,17 @@ public class ProductService extends BaseService<Product, Long> {
 //            User admin = optionalAdmin.orElseThrow(() -> new UserNotFoundException("Admin user not found"));
 
             Product product = new Product(
-                    dto.name(),
-                    dto.price(),
+                    dto.title(),
+                    dto.subTitle(),
                     dto.description(),
+                    dto.price(),
+                    dto.division(),
                     dto.location(),
                     status,
                     dto.condition(),
+                    dto.conditionDetails(),
                     category,
-                    user,
+                    seller,
                     images
             );
 
@@ -177,11 +180,14 @@ public class ProductService extends BaseService<Product, Long> {
 
             product.getImages().clear();
             product.getImages().addAll(newImages);
-            product.setName(dto.name());
+            product.setTitle(dto.title());
+            product.setSubTitle(dto.subTitle());
             product.setDescription(dto.description());
             product.setPrice(dto.price());
+            product.setDivision(dto.division());
             product.setLocation(dto.location());
             product.setCondition(dto.condition());
+            product.setConditionDetails(dto.conditionDetails());
             product.setCategory(category);
 
 
