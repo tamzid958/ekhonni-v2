@@ -1,36 +1,32 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import {redis, redlock} from '@/lib/redis';
-import { User, users } from '@/data/users';
+import { axiosInstance } from "@/data/services/fetcher";
 
-
-let userIdCounter = 2;
-
-const refreshAccessToken = async (token: any) => {
+const refreshAccessToken = async ({ accessToken, refreshToken, id }) => {
   try {
     console.log("Refreshing token...");
-
-    const refreshedToken = {
-      ...token,
-      accessToken: `refreshed-${token.accessToken}`,
-      accessTokenExpires: Date.now() + 30 * 1000,
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
     };
 
-    await redis.set(
-      `jwt:${token.id}`,
-      JSON.stringify(refreshedToken),
-      "EX",
-      30
+    const res = await axiosInstance.post(
+      `/api/v2/user/${id}/refresh-token`,
+      { refreshToken },
+      { headers }
     );
 
-    return refreshedToken;
+    if (!res.data || !res.data.accessToken || !res.data.refreshToken) {
+      throw new Error("Invalid response from token refresh endpoint");
+    }
+
+    console.log("New Refreshed Token:", res.data);
+
+    return res.data;
   } catch (error) {
     console.error("Error refreshing access token:", error);
-    return {
-      ...token,
-      error: "RefreshAccessTokenError",
-    };
+    return { error: "RefreshAccessTokenError" };
   }
 };
 
@@ -41,57 +37,34 @@ const options: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        name: { label: "name", type: "text", optional: true },
-        phone: { label: "Phone", type: "text", optional: true },
-        address: { label: "Address", type: "text", optional: true },
       },
       async authorize(credentials) {
-        const { email, password, name, phone, address } =
-          credentials as {
-            email: string;
-            password: string;
-            name?: string;
-            phone?: string;
-            address?: string;
-          };
+        const { email, password } = credentials;
 
-        if (name) {
-          const existingUser = users.find((u) => u.email === email);
-          if (existingUser) {
-            throw new Error("User already exists.");
+        if (email && password) {
+          try {
+            const response = await axiosInstance.post("/api/v2/auth/sign-in", {
+              email,
+              password,
+            });
+
+            if (response.status === 200) {
+              const res = response.data;
+              console.log("Login successful:", res);
+
+              return {
+                id: res.id,
+                accessToken: res.authToken.accessToken,
+                refreshToken: res.authToken.refreshToken,
+              };
+            }
+          } catch (error) {
+            console.error("Error logging in:", error);
+            throw new Error("Invalid email or password");
           }
-          const newUser: User = {
-            id: userIdCounter++,
-            email,
-            password,
-            name,
-            phone: phone || "",
-            address: address || "",
-          };
-
-          users.push(newUser);
-          console.log("New user signed up:", newUser);
-          return {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-          };
-        } else {
-          const user = users.find(
-            (u) => u.email === email && u.password === password
-          );
-          if (!user) {
-            throw new Error("Invalid email or password.");
-          }
-
-          console.log("User logged in:", user);
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: name,
-          };
         }
+
+        return null;
       },
     }),
     GoogleProvider({
@@ -99,65 +72,60 @@ const options: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+
   session: {
     strategy: "jwt",
   },
+
   jwt: {
     secret: process.env.JWT_SECRET || "supersecret",
-
   },
+
   pages: {
     signIn: "/auth/login",
   },
+
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
     async jwt({ token, user, account }) {
       if (user && account) {
-        const jwtToken = {
-          ...token,
+        return {
           id: user.id,
-          email: user.email,
-          name: user.name,
-          accessToken: account.access_token || "default-access-token",
-          refreshToken: account.refreshToken || "default-refresh-token",
-          accessTokenExpires: Date.now() + 30 * 1000,
+          refreshToken: user.refreshToken,
+          accessToken: user.accessToken,
+          accessTokenExpires: Date.now() + 30 * 1000, // 30 seconds
         };
-
-        await redis.set(
-          `jwt:${user.id}`,
-          JSON.stringify(jwtToken),
-          "EX",
-          30
-        );
-        await redis.set(
-          `refresh:${user.id}`,
-          jwtToken.refreshToken,
-          "EX",
-          7 * 24 * 60 * 60 // 7 days in seconds
-        );
-        return jwtToken;
       }
 
-      const storedToken = await redis.get(`jwt:${token.id}`);
-      if (storedToken) {
-        return JSON.parse(storedToken);
-      }
-      if (Date.now() < (token.accessTokenExpires as number)) {
+      if (Date.now() < token.accessTokenExpires - 5 * 1000) {
+        console.log("Access token is still valid.");
         return token;
       }
-      return await refreshAccessToken(token);
+
+      console.log("Access token is about to expire, refreshing...");
+      const refreshedToken = await refreshAccessToken({
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        id: token.id,
+      });
+
+      if (refreshedToken?.error) {
+        console.error("Failed to refresh token:", refreshedToken.error);
+        return { ...token, error: refreshedToken.error };
+      }
+
+      return {
+        id: token.id,
+        refreshToken: refreshedToken.refreshToken,
+        accessToken: refreshedToken.accessToken,
+        accessTokenExpires: Date.now() + 30 * 1000, // 30 seconds
+      };
     },
+
     async session({ session, token }) {
       session.user = {
-        id: token.id as number,
-        email: token.email as string,
-        name: token.name as string,
-        image: token.picture || null,
+        token: token.accessToken,
+        id: token.id,
       };
-      session.accessToken = token.accessToken;
-      session.error = token.error;
       return session;
     },
   },
