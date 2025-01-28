@@ -18,7 +18,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"bid_id", "review_type"}))
 public class Review extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +26,7 @@ public class Review extends BaseEntity<Long> {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ReviewType reviewType;
+    private ReviewType type;
 
     @NotNull
     @Min(1)
@@ -37,14 +36,15 @@ public class Review extends BaseEntity<Long> {
     @Column(length = 1000)
     private String description;
 
+
     public User getReviewedUser() {
-        return reviewType == ReviewType.SELLER
+        return type == ReviewType.SELLER
                 ? bid.getProduct().getSeller()
                 : bid.getBidder();
     }
 
     public User getReviewer() {
-        return reviewType == ReviewType.SELLER
+        return type == ReviewType.SELLER
                 ? bid.getBidder()
                 : bid.getProduct().getSeller();
     }

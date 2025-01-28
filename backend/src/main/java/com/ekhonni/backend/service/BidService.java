@@ -129,6 +129,7 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findBidderIdById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
     }
 
+
     public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);

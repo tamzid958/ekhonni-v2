@@ -394,5 +394,53 @@
     "description": "Handles IPN requests from the payment gateway",
     "httpMethod": "POST",
     "endpoint": "/api/v2/payment/ipn"
+  },
+  {
+    "name": "Create Seller Review",
+    "description": "Allows creating a review for a seller",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/review/seller"
+  },
+  {
+    "name": "Create Buyer Review",
+    "description": "Allows creating a review for a buyer",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/review/buyer"
+  },
+  {
+    "name": "Update Seller Review",
+    "description": "Allows updating an existing review for a seller",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/review/{id}/seller"
+  },
+  {
+    "name": "Update Buyer Review",
+    "description": "Allows updating an existing review for a buyer",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/review/{id}/buyer"
+  },
+  {
+    "name": "Get Seller Reviews",
+    "description": "Fetches reviews of a seller by their ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/{id}"
+  },
+  {
+    "name": "Get Buyer Reviews",
+    "description": "Fetches reviews of a buyer by their ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/{id}"
+  },
+  {
+    "name": "Restore All Bids",
+    "description": "Allows restoring all deleted bids",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid/restore-all"
+  },
+  {
+    "name": "Soft Delete Bid",
+    "description": "Allows soft deleting a bid",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid/{id}"
   }
 ]

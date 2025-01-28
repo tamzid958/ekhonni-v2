@@ -3,6 +3,9 @@ package com.ekhonni.backend.exception;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.exception.payment.*;
+import com.ekhonni.backend.exception.review.InvalidReviewTypeException;
+import com.ekhonni.backend.exception.review.ReviewAlreadyExistsException;
+import com.ekhonni.backend.exception.review.ReviewNotFoundException;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -166,6 +169,36 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
+
+    /**
+     * =================================================================
+     *                      Review Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleReviewNotFoundException(ReviewNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(InvalidReviewTypeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidReviewTypeException(InvalidReviewTypeException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(ReviewAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleReviewAlreadyExistsException(ReviewAlreadyExistsException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+
+    /**
+     * =================================================================
+     *                             Common
+     * =================================================================
+     */
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
