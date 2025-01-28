@@ -31,8 +31,7 @@ const VerifyEmail = () => {
     if (flag) setIsExpired(flag === 'true');
   }, [searchParams]);
 
-
-  const imageSrc = 'email-verify.png';
+  const imageSrc = '/email-verify.png';
 
   useEffect(() => {
 

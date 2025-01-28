@@ -1,4 +1,3 @@
-// Register.js
 "use client";
 
 import React from "react";
@@ -8,15 +7,18 @@ import { z } from "zod";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { axiosInstance } from '@/data/services/fetcher';
-import { useRouter } from 'next/navigation';
+import { axiosInstance } from "@/data/services/fetcher";
+import { useRouter } from "next/navigation";
 
 const signupSchema = z.object({
   name: z.string().min(1, "Your Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Confirmation Password must be at least 6 characters"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits").regex(/^\d+$/, "Phone number must contain only digits"),
+  phone: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^\d+$/, "Phone number must contain only digits"),
   address: z.string().min(1, "Address is required"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
@@ -53,92 +55,112 @@ export default function Register() {
         alert("Email already exists, please sign up with a different email.");
       } else if (result.status === 301) {
         alert("You have Signed Up Already. Please Verify Your Email.");
-        router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(false)}`);
+        router.push(
+          `/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(false)}`
+        );
       } else {
         alert("Signup Failed!! Something went wrong!!");
       }
     } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Signup failed.");
+      if (err.status === 404) {
+        alert("Email already exists, please sign up with a different email.");
+      } else if (err.status === 301) {
+        alert("You have Signed Up Already. Please Verify Your Email.");
+      } else {
+        alert(err.message);
+      }
     }
   };
 
-
   return (
-    <div className="flex items-center bg-diagonal-split justify-center  ">
-      <Card className="w-96 h-full flex flex-col mt-10 mb-10 border-black shadow-2xl">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-brand-dark via-brand-mid to-brand-light">
+      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-3xl border border-gray-200">
         <CardContent>
-          <h2 className="text-lg font-bold mb-4 mt-4 text-center">Sign Up</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+            Create an Account
+          </h2>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label className="block mb-1 text-sm font-medium">Your Name</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Your Name</label>
               <Input
                 type="text"
                 {...register("name")}
                 placeholder="Enter your name"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
+              {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium">Phone</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Phone</label>
               <Input
                 type="text"
                 {...register("phone")}
                 placeholder="Enter your phone number"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.phone && <p className="text-sm text-red-600">{errors.phone.message}</p>}
+              {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium">Address</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Address</label>
               <Input
                 type="text"
                 {...register("address")}
                 placeholder="Enter your address"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.address && <p className="text-sm text-red-600">{errors.address.message}</p>}
+              {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium">Email</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Email</label>
               <Input
                 type="email"
                 {...register("email")}
                 placeholder="Enter your email"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+              {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium">Password</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Password</label>
               <Input
                 type="password"
                 {...register("password")}
                 placeholder="Enter your password"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+              {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium">Confirm Password</label>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">Confirm Password</label>
               <Input
                 type="password"
                 {...register("confirmPassword")}
                 placeholder="Confirm your password"
-                className="w-full border-black bg-gray-100"
+                className="w-full border border-gray-300 bg-gray-50 rounded-md focus:ring-2 focus:ring-brand-mid"
               />
-              {errors.confirmPassword && <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-600 mt-1">{errors.confirmPassword.message}</p>
+              )}
             </div>
-            <Button type="submit" className="w-full">Sign Up</Button>
-
+            <Button
+              type="submit"
+              className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 rounded-lg shadow-md transition"
+            >
+              Sign Up
+            </Button>
           </form>
-
         </CardContent>
-          <p className="text-sm font-mono text-center mb-4">
-            Already have an account? <span className="text-blue-500 cursor-pointer" onClick={() => router.push('/auth/login')}>Login</span>
+        <CardFooter>
+          <p className="text-center text-sm text-gray-700 mt-6">
+            Already have an account?{" "}
+            <span
+              className="text-brand-dark font-semibold cursor-pointer hover:underline"
+              onClick={() => router.push("/auth/login")}
+            >
+              Login
+            </span>
           </p>
-
+        </CardFooter>
       </Card>
     </div>
   );
