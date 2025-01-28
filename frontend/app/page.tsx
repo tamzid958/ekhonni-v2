@@ -8,6 +8,7 @@ import { Category } from '@/components/Category';
 
 export default function Home() {
   return (
+
     <div className="flex-col items-center justify-center min-h-screen poppins.classname bg-white">
       <CustomErrorBoundary>
         <Ads />
@@ -16,5 +17,6 @@ export default function Home() {
 
       </CustomErrorBoundary>
     </div>
+
   );
 }
