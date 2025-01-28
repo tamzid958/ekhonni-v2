@@ -1,48 +1,194 @@
-import React from 'react';
-import { CardDemo } from '@/components/Card';
+'use client';
 
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  img: string;
+import React, { useEffect, useState } from 'react';
+import { CardDemo } from '@/components/SellerCard';
+
+interface ProductData {
+  id: string;
   price: number;
+  name: string;
+  description: string;
+  status: string;
+  condition: string;
+  createdAt: string;
+  updatedAt: string;
+  seller: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: number;
+    name: string;
+  };
+  images: {
+    imagePath: string;
+  }[];
+  bids: never;
 }
 
-export default async function SellerShopPage({ searchParams }: { searchParams: { category?: string } }) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
-  const url = `${baseUrl}/api/allProduct`;
 
-  let products: Product[] = [];
 
-  try {
-    const response = await fetch(url, { cache: 'no-store' });
+const ShopPage = () => {
+  const [products, setProducts] = useState<ProductData[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
+  const userId = "550e8400-e29b-41d4-a716-446655440006";
 
-    products = await response.json();
-  } catch (error) {
-    console.error('Error fetching products:', error);
-  }
+  useEffect(() => {
+    console.log(selectedCategory);
+    const fetchProducts = async () => {
+      let apiUrl;
+      if(selectedCategory==='All'){
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter`;
 
-  // Filter products by category if provided
-  const filteredProducts = searchParams.category
-    ? products.filter((product) => product.title.includes(searchParams.category))
-    : products;
+      }
+      else{
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
+
+      }
+      try {
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+
+        const data = await response.json();
+        console.log("API Response Data:", data.data.content);
+
+        const productsData = data?.data?.content || [];
+        setProducts(productsData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCategory]);
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const userId = "550e8400-e29b-41d4-a716-446655440006";
+        const apiUrl = `http://localhost:8080/api/v2/category/all/${userId}`;
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+
+         console.log(data.data);
+
+        setCategories(data?.data || []);
+        console.log(categories);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+
+
+  const handleCategorySelect = (categoryName: string) => {
+      setSelectedCategory(categoryName);
+    setIsSidebarOpen(true);
+  };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-      {filteredProducts.map((product) => (
-        <CardDemo
-          key={product.id}
-          title={product.title}
-          description={product.description}
-          img={product.img}
-          price={product.price}
-        />
-      ))}
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      {isSidebarOpen && (
+        <div className="flex flex-col top-120 left-15 mt-12 w-60  text-black p-4 rounded-lg">
+          <h2 className="text-xl font-bold mb-4">Categories</h2>
+          <ul>
+            <li>
+              <button
+                onClick={() => handleCategorySelect('All')}
+                className={`cursor-pointer ${selectedCategory === 'All' ? 'font-bold underline' : 'text-black hover:underline'}`}
+              >
+                All
+              </button>
+            </li>
+            {categories.map((category) => (
+              <li key={category }>
+                <button
+                  onClick={() => handleCategorySelect(category)}
+                  className={`cursor-pointer ${selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'}`}
+                >
+                  {category}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+        </div>
+      )}
+
+
+
+      <div className="absolute top-100 left-17 mb-4">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="flex items-center space-x-2 bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+          <span>Categories</span>
+        </button>
+      </div>
+
+      <main className="container mx-auto px-4 py-8 flex-1 mt-16">
+
+        <div>
+
+            <div
+              className={`grid gap-6 mb-6 ${
+                isSidebarOpen
+                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
+                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+              }`}
+            >
+              {products
+                .map((product) => (
+                  <CardDemo
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    description={product.description}
+                    img={product.images[0]?.imagePath || '/placeholder.jpg'}
+                    price={product.price}
+                    status={product.status}
+                    condition={product.condition}
+                    createdAt={product.createdAt}
+                    updatedAt={product.updatedAt}
+                    seller={product.seller}
+                    category={product.category}
+                    bids={product.bids}
+                  />
+                ))}
+            </div>
+        </div>
+      </main>
     </div>
   );
-}
+};
+
+export default ShopPage;
