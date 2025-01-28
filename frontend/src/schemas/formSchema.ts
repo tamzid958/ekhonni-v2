@@ -45,6 +45,6 @@ export const formSchema = z.object({
   productConditionDescription: z.string().min(1).max(255),
   images: z
     .array(z.any())
-    .min(1, { message: 'Please upload at least one image' })
+    .min(3, { message: 'Please upload at least three image' })
     .max(7, { message: 'You can upload up to 7 images' }),
 });

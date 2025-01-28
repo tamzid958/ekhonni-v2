@@ -45,10 +45,9 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
       const data = await response.json();
       setSubCategories(data.data.subCategories || null);
       setChainCategories(data.data?.chainCategories || []);
-      //console.log('egulacat ar subcat');
-      console.log(categories);
-      console.log(subCategories);
-      console.log(chainCategories);
+      // console.log(categories);
+      // console.log(subCategories);
+      // console.log(chainCategories);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -111,9 +110,7 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
       {/* Chain Categories */}
       {chainCategories.length > 0 && (
         <div className="mt-6">
-          <h2 className="font-bold text-lg mb-2">Selected Categories Chain:</h2>
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Home (Reset all) */}
             <span
               className="px-2 py-1 bg-blue-100 text-blue-600 font-semibold text-sm rounded-md cursor-pointer hover:bg-blue-200"
               title="Reset to start"
@@ -130,7 +127,7 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
             {chainCategories.slice().reverse().map((chainCategory, index) => (
               <React.Fragment key={index}>
           <span
-            className="px-2 py-1 bg-gray-100 text-gray-800 font-semibold text-sm rounded-md cursor-pointer hover:bg-gray-200"
+            className="px-2 py-1 bg-gray-100 text-gray-800 font-semibold text-sm rounded-md cursor-pointer hover:border-brand-dark"
             title={`Go to ${chainCategory}`}
             onClick={() => handleSubCategoryChange(chainCategory)}
           >
@@ -148,8 +145,8 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
       {/* Subcategories Dropdown */}
       {subCategories.length > 0 && (
         <div className="mt-6">
-          <h2 className="font-bold text-lg">
-            {selectedSubCategory ? `Subcategories of ${selectedSubCategory}` : `Subcategories of ${selectedCategory}`}
+          <h2 className="font-bold text-lg pb-2 pt-2">
+            {selectedSubCategory ? `SELECT THE OF ${selectedSubCategory}` : `SELECT THE OF ${selectedCategory}`}
           </h2>
           <div className="space-y-2">
             {subCategories.map((subCategory) => (
@@ -158,7 +155,7 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
                 onClick={() => handleSubCategoryChange(subCategory)}
                 className={`p-2 rounded-md cursor-pointer ${
                   selectedSubCategory === subCategory
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-brand-dark text-white'
                     : 'bg-gray-200 hover:bg-gray-300'
                 }`}
               >
@@ -170,13 +167,16 @@ const CategorySelector = ({ onCategorySelect, onSubCategorySelect, nextStep }) =
       )}
 
       {subCategories.length === 0 && selectedSubCategory !== null && (
-        <Button
-          onClick={nextStep}
-          type="button"
-          className="w-full mt-8"
-        >
-          Next
-        </Button>
+        <div>
+          {/*<p className="text-xs">YOU HAVE SELECTED THE LEAF CATEGORY, CLICK NEXT TO CONTINUE</p>*/}
+          <Button
+            onClick={nextStep}
+            type="button"
+            className="w-full mt-8"
+          >
+            Next
+          </Button>
+        </div>
       )}
     </div>
   );
