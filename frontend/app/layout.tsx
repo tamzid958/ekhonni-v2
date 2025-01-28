@@ -10,7 +10,6 @@ import CustomErrorBoundary from '@/components/ErrorBoundary';
 import SessionWrapper from './wrapper/client/SessionWrapper';
 
 
-
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
@@ -45,12 +44,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <SessionWrapper>
           <main>{children}</main>
+
         </SessionWrapper>
         <div className="bg-gray-800 text-white">
           <Footer />
         </div>
       </CustomErrorBoundary>
     </RootLayoutWrapper>
+
     </body>
     </html>
   );

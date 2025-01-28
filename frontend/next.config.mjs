@@ -13,6 +13,7 @@ const nextConfig = {
       'static.nike.com',
       'picsum.photos',
       'lh3.googleusercontent.com',
+      'res.cloudinary.com',
     ],
   },
 
