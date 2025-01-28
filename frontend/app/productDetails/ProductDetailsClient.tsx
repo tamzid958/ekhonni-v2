@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from "react";
-import { CakeSlice, Link, Star } from "lucide-react";
+import { CakeSlice, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { QuickBid } from '@/components/QuickBid';
 import { z } from "zod";
@@ -92,7 +92,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       currency: "BDT",
     };
 
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YWplcmluOUBnbWFpbC5jb20iLCJpYXQiOjE3Mzc5NzMzNjIsImV4cCI6MTczNzk3OTM2Mn0.v_H_PMTuKNz3bzYQBl8Lm6iRM_dyczUdT6SmJgqGcyQ"; // Your Bearer token
+    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YWplcmluOUBnbWFpbC5jb20iLCJpYXQiOjE3MzgwNDcxNDIsImV4cCI6MTczODA1MzE0Mn0.KAYrxyjbYCi6bmslgb7jtDtBv348rZJ6QEdF043iSvc"; // Your Bearer token
 
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
@@ -114,6 +114,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
           toast.success("Bid placed successfully!");
           setBidAmount("");
           setIsButtonEnabled(false);
+          window.location.reload();
+
         } else {
           toast.error(responseData.message || "Failed to place bid.");
         }

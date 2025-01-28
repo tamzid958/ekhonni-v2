@@ -79,7 +79,7 @@ export function CardDemo({
         <CardTitle className="mb-2 text-lg font-sans font-medium hover:underline">
           {name}
         </CardTitle>
-        <CardTitle className="text-2xl">${price}</CardTitle>
+        <CardTitle className="text-2xl">{`৳ ${price}`}</CardTitle>
         <Button
           className="absolute mb-48 ml-44 mt-2 px-4 py-2 rounded shadow"
           variant="default"
