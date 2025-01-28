@@ -17,7 +17,14 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { toast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react'; // Import ShadCN toast
+import { Terminal } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'; // Import ShadCN toast
 
 interface CategoryNode {
   name: string;
@@ -109,8 +116,32 @@ export default function CategoryRender({ category, categories }: Props) {
 
   return (
     <div className="min-h-screen flex flex-col items-center space-y-6 mx-auto px-4 w-full overflow-hidden">
+
       {/* Title Left-Aligned */}
-      <h1 className="text-5xl font-bold my-12 text-left w-full pl-4">Category Management</h1>
+      <h1 className="text-5xl font-bold m-8 text-left w-full pl-4">Category Management</h1>
+
+      {/* Breadcrumbs */}
+      <div className="w-full max-w-4xl">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="text-xl">
+              <BreadcrumbLink asChild>
+                <Link href="/admin/categories">..</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {categories[0]?.chainCategories.slice().reverse().map((cat, index) => (
+              <React.Fragment key={index}>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem className="text-xl">
+                  <BreadcrumbLink asChild>
+                    <Link href={`/admin/categories?category=${encodeURIComponent(cat)}`}>{cat}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
       {/* Centered Table */}
       <div className="flex justify-center w-full">
