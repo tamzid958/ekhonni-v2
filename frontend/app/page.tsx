@@ -6,19 +6,15 @@ import { Ads } from '@/components/Ads';
 import { Category } from '@/components/Category';
 
 
-
-
-
 export default function Home() {
   return (
     <div className="flex-col items-center justify-center min-h-screen poppins.classname bg-white">
-        <CustomErrorBoundary>
+      <CustomErrorBoundary>
+        <Ads />
+        <QuickBid title={'START YOUR BIDDING HERE'} />
+        <Category />
 
-            <Ads />
-            <QuickBid title={"START YOUR BIDDING HERE"}/>
-            <Category />
-
-        </CustomErrorBoundary>
+      </CustomErrorBoundary>
     </div>
   );
 }
