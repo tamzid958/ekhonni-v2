@@ -179,11 +179,6 @@ info:
     team: Backend Team
   environment: ${spring.profiles.active}
 
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      max-history: 7
-      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
 
 
 rabbitmq-custom:
