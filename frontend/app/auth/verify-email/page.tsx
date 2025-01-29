@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import Image from "next/image"
 
-const LINK_EXPIRY_TIME = 60;
+const LINK_EXPIRY_TIME = 300; // 5 minutes in seconds
 
 const VerifyEmail = () => {
   const router = useRouter();
@@ -75,7 +75,7 @@ const VerifyEmail = () => {
   const handleResendEmail = async () =>{
     setIsResending(true);
     try{
-      const response = await axiosInstance.post('/api/v2/auth/resend-email',{email})
+      const response = await axiosInstance.post('/api/v2/auth/resend-verification-email',{email})
       if(response.status === 200)
       {
         setstatus('Verification Email Resent. Please Check Your Inbox.');
@@ -108,7 +108,7 @@ const VerifyEmail = () => {
 
   return (
     (email || token) ? (
-      <div className="flex flex-col items-center bg-gray-100  min-h-screen ">
+      <div className="flex flex-col items-center bg-brand-bright  min-h-screen ">
 
         <div className="w-[280px] h-[200px] mt-6 ">
           <AspectRatio ratio={16 / 9}>

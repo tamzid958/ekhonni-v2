@@ -47,7 +47,7 @@ export default function ForgetPasswordPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-brand-mid via-brand-dark to-brand-mid">
+    <div className="flex items-center justify-center min-h-screen bg-brand-bright">
       <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-2xl">
         <CardContent>
           <h2 className="text-lg font-bold mb-4 mt-6 text-center">Reset your password</h2>

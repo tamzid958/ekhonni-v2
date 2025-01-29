@@ -34,6 +34,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
@@ -43,24 +44,41 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         password: data.password,
       });
 
-      if (result?.ok) {
-        alert("Login successful!");
-
-        router.push("/");
-      } else {
-        alert(result?.error || "Invalid email or password");
+      if (!result || result.error) {
+        if(result.error === "Email Not Verified, Please verify."){
+          alert("Email Not Verified, Please verify.");
+          router.push(
+            `/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(true)}`
+          );
+          return;
+        }
+        alert(result.error || "Invalid email or password");
+        return;
       }
-    } catch (err) {
+
+      alert("Login successful!");
+      router.push("/");
+
+    } catch (err: any) {
       console.error("Login error:", err);
+
+      if (err?.status === 404) {
+        alert("Email Not Verified, Please verify.");
+        router.push(
+          `/auth/verify-email?email=${encodeURIComponent(data.email)}&isExpired=${encodeURIComponent(false)}`
+        );
+        return;
+      }
+
       alert("Something went wrong. Please try again.");
     }
   };
 
-  const router = useRouter();
+
   return (
 
     <div className={cn("flex flex-col gap-6 ",  className)} {...props}>
-      <Card className="overflow-hidden shadow-3xl border-gray-500">
+      <Card className="overflow-hidden  shadow-2xl border-gray-300">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">

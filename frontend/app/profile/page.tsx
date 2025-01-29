@@ -1,62 +1,38 @@
+
+// This code is for testing  purposes only for the understanding of dev team. It will  not be used in the final project.
+
 "use client";
-import  React from 'react';
+
+import React from 'react';
+import useSWR from "swr";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { axiosInstance } from "@/data/services/fetcher";
+import fetcher from "@/data/services/fetcher";
+import Loading from '@/components/Loading';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
+  const userId = session?.user?.id;
+  const userToken = session?.user?.token;
+  const role = session?.user?.role;
 
+  const { data: userData, error, isLoading } = useSWR(
+    userId ? `/api/v2/user/${userId}` : null,
+    (url) => fetcher(url, userToken)
+  );
 
-
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [throwError, setThrowError] = useState(false);
-  if (throwError) {
-    throw new Error("This is a test error to trigger ErrorFallback!");
+  if (status === "loading" || isLoading) {
+    return ( <div className="flex justify-center items-center h-screen"><Loading /></div>);
   }
 
-  useEffect(() => {
-    if (session?.user?.id && session?.user?.token) {
-      const fetchUserProfile = async () => {
-        try {
-          const response = await axiosInstance.get(`/api/v2/user/${session.user.id}`, {
-            headers: {
-              Authorization: `Bearer ${session.user.token}`,
-            },
-          });
-          setUserData(response.data);
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUserProfile();
-    } else {
-      setLoading(false);
-    }
-  }, [session]);
-
-  if (status === "loading" || loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (!session || !userData) {
+  if (!session || error) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>You need to be signed in to view this page.</p>
-        <button
-          className="bg-red-600 text-white py-2 px-6 rounded-xl shadow-lg hover:bg-red-700 hover:scale-105 transition-all"
-          onClick={() => setThrowError(true)}
-        >
-          Trigger Error
-        </button>
+
       </div>
     );
   }
-
   const { email, profileImage, name, id, address } = userData;
 
   return (
@@ -87,9 +63,12 @@ export default function ProfilePage() {
           </div>
           <div>
             <p className="text-sm text-gray-600">Address:</p>
-            <p className="text-lg font-semibold text-gray-800">{address}</p>
+            <p className="text-lg fill font-semibold text-gray-800">{address}</p>
           </div>
-
+          <div>
+            <p className="text-sm text-gray-600">Role:</p>
+            <p className="text-lg fill font-semibold text-gray-800">{role}</p>
+          </div>
         </div>
       </div>
     </div>

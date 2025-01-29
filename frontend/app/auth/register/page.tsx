@@ -53,6 +53,7 @@ export default function Register() {
         router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
       } else if (result.status === 404) {
         alert("Email already exists, please sign up with a different email.");
+
       } else if (result.status === 301) {
         alert("You have Signed Up Already. Please Verify Your Email.");
         router.push(
@@ -73,8 +74,8 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-brand-mid via-brand-dark to-brand-mid">
-      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-3xl border border-gray-400">
+    <div className="flex items-center justify-center min-h-screen bg-brand-bright">
+      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-xl border-gray-300 ">
         <CardContent>
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
             Create an Account

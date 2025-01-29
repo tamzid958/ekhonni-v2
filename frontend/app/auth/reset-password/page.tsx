@@ -99,7 +99,7 @@ const VerifyEmail = () => {
 
     (email || token || success) ? (
 
-      <div className="flex flex-col items-center bg-gray-100  min-h-screen ">
+      <div className="flex flex-col items-center bg-brand-bright min-h-screen ">
 
         <div className="w-[280px] h-[200px] mt-6 ">
           <AspectRatio ratio={16 / 9}>
@@ -140,10 +140,9 @@ const VerifyEmail = () => {
       </div>
 
     ) : (
-      <div className="flex flex-col items-center min-h-screen mt-20 p-10 text-5xl font-sans">
+      <div className="flex flex-col bg-brand-bright items-center min-h-screen mt-20 p-10 text-5xl font-sans">
         <p> Please Sign Up with an email first :( </p>
 
-        <p> Oi Miya!! Sign Up Na koira kiser Verify korben? Age Signup kore ashen, Jan! :3)</p>
       </div>
 
     )
