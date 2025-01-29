@@ -19,7 +19,7 @@ public interface AdminBidProjection {
     String getStatus();
     String getCurrency();
     LocalDateTime getCreatedAt();
-    String getProductName();
+    String getProductTitle();
     String getProductSellerName();
     String getProductSellerAddress();
 }

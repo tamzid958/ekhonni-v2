@@ -145,7 +145,6 @@ public class ProductService extends BaseService<Product, Long> {
         List<ProductProjection> projections = productRepository.findByIdIn(productIds);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
-                .peek(dto -> dto.setBids(null))
                 .toList();
         long totalElements = 0;
         return new PageImpl<>(products, pageable, totalElements);
@@ -155,7 +154,6 @@ public class ProductService extends BaseService<Product, Long> {
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
         ProductResponseDTO product = ProductProjectionConverter.convert(projection);
-        product.setBids(null);
         return product;
     }
 
@@ -218,7 +216,6 @@ public class ProductService extends BaseService<Product, Long> {
         List<ProductProjection> projections = productRepository.findByIdIn(productIds);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
-                .peek(dto -> dto.setBids(null))
                 .toList();
         long totalElements = 0;
         return new PageImpl<>(products, pageable, totalElements);

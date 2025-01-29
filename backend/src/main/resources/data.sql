@@ -5,7 +5,8 @@ INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
 (103, 5000.00, 'ACTIVE', NOW(), NOW()),
 (104, 2500.00, 'ACTIVE', NOW(), NOW()),
 (105, 1800.00, 'ACTIVE', NOW(), NOW()),
-(106, 1800.00, 'ACTIVE', NOW(), NOW());
+(106, 1800.00, 'ACTIVE', NOW(), NOW()),
+(107, 1800.00, 'ACTIVE', NOW(), NOW());
 
 -- Insert Roles (only ADMIN and USER now)
 INSERT INTO role (id, name) VALUES
@@ -19,7 +20,8 @@ INSERT INTO users (id, name, email, password, phone, address, role_id, account_i
 ('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Admin User', 'admin@example.com', '$2a$10$encrypted3', '+1234567892', '789 Admin St', 101, 103, true, NOW(), NOW()),
 ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mark Wilson', 'mark@example.com', '$2a$10$encrypted4', '+1234567893', '321 Oak Ave', 102, 104, true, NOW(), NOW()),
 ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Sarah Brown', 'sarah@example.com', '$2a$10$encrypted5', '+1234567894', '654 Pine St', 102, 105, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', 'Dhamrai, Dhaka', 102, 106, true, NOW(), NOW());
+('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', 'Dhamrai, Dhaka', 102, 106, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Rifat Shariar Sakil', 'shariarsakil101@gmail.com', '$2a$12$Sdg6oZNAi0XulmEeJluSfu6HGG43mIoH0kCXlli6CJinjnSToY3km', '+1234567894', '654 Pine St', 102, 107, true, NOW(), NOW());
 
 -- Insert Categories
 INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
@@ -29,19 +31,170 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 (4, 'Fashion', true, null, NOW(), NOW()),
 (5, 'Men''s Clothing', true, 4, NOW(), NOW());
 
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10000, 'Travel & Nature', true, null, NOW(), NOW()),
+(10001, 'Antiques', true, null, NOW(), NOW()),
+(10002, 'Health & Beauty', true, null, NOW(), NOW()),
+(10003, 'Sports & Outdoors', true, null, NOW(), NOW()),
+(10004, 'Toys & Games', true, null, NOW(), NOW()),
+(10005, 'Automotive', true, null, NOW(), NOW()),
+(10006, 'Books & Stationery', true, null, NOW(), NOW()),
+(10007, 'Groceries', true, null, NOW(), NOW()),
+(10008, 'Office Supplies', true, null, NOW(), NOW());
+
+-- Insert into Travel and Nature
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10009, 'Adventure Travel', true, 10000, NOW(), NOW()),
+(10010, 'Camping & Hiking', true, 10000, NOW(), NOW()),
+(10011, 'Wildlife & Safari', true, 10000, NOW(), NOW()),
+(10012, 'Eco-Tourism', true, 10000, NOW(), NOW()),
+(10013, 'Beach Holidays', true, 10000, NOW(), NOW()),
+(10014, 'Cultural Tours', true, 10000, NOW(), NOW());
+
+-- Insert into Adventure Travel
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10015, 'Mountain Climbing', true, 10009, NOW(), NOW()),
+(10016, 'Rock Climbing', true, 10009, NOW(), NOW()),
+(10017, 'Trekking', true, 10009, NOW(), NOW()),
+(10018, 'Canoeing & Kayaking', true, 10009, NOW(), NOW()),
+(10019, 'Desert Expeditions', true, 10009, NOW(), NOW()),
+(10020, 'Polar Expeditions', true, 10009, NOW(), NOW());
+
+-- Insert subcategories into Antiques
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10021, 'Furniture', true, 10001, NOW(), NOW()),
+(10022, 'Jewelry', true, 10001, NOW(), NOW()),
+(10023, 'Coins & Currency', true, 10001, NOW(), NOW()),
+(10024, 'Instruments & Tools', true, 10001, NOW(), NOW()),
+(10025, 'Watches & Clocks', true, 10001, NOW(), NOW()),
+(10026, 'Clothing', true, 10001, NOW(), NOW());
+
+-- Insert into Health & Beauty
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10027, 'Skincare', true, 10002, NOW(), NOW()),
+(10028, 'Hair Care', true, 10002, NOW(), NOW()),
+(10029, 'Makeup', true, 10002, NOW(), NOW()),
+(10030, 'Fragrances', true, 10002, NOW(), NOW()),
+(10031, 'Personal Hygiene', true, 10002, NOW(), NOW()),
+(10032, 'Health Supplements', true, 10002, NOW(), NOW());
+
+-- Insert into Sports & Outdoors
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10033, 'Fitness Equipment', true, 10003, NOW(), NOW()),
+(10034, 'Water Sports', true, 10003, NOW(), NOW()),
+(10035, 'Team Sports', true, 10003, NOW(), NOW()),
+(10036, 'Winter Sports', true, 10003, NOW(), NOW()),
+(10037, 'Fishing', true, 10003, NOW(), NOW()),
+(10038, 'Cycling', true, 10003, NOW(), NOW());
+
+-- Insert into Toys & Games
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10039, 'Board Games', true, 10004, NOW(), NOW()),
+(10040, 'Action Figures', true, 10004, NOW(), NOW()),
+(10041, 'Dolls & Plush Toys', true, 10004, NOW(), NOW()),
+(10042, 'Building Toys', true, 10004, NOW(), NOW()),
+(10043, 'Educational Toys', true, 10004, NOW(), NOW()),
+(10044, 'Outdoor Toys', true, 10004, NOW(), NOW());
+
+-- Insert into Automotive
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10045, 'Car Accessories', true, 10005, NOW(), NOW()),
+(10046, 'Motorcycle Accessories', true, 10005, NOW(), NOW()),
+(10047, 'Car Care', true, 10005, NOW(), NOW()),
+(10048, 'Auto Electronics', true, 10005, NOW(), NOW()),
+(10049, 'Replacement Parts', true, 10005, NOW(), NOW()),
+(10050, 'Tires & Wheels', true, 10005, NOW(), NOW());
+
+-- Insert into Books & Stationery
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10051, 'Fiction', true, 10006, NOW(), NOW()),
+(10052, 'Non-Fiction', true, 10006, NOW(), NOW()),
+(10053, 'Academic Books', true, 10006, NOW(), NOW()),
+(10054, 'Notebooks & Diaries', true, 10006, NOW(), NOW()),
+(10055, 'Art Supplies', true, 10006, NOW(), NOW()),
+(10056, 'Office Stationery', true, 10006, NOW(), NOW());
+
+-- Insert into Groceries
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10057, 'Fruits & Vegetables', true, 10007, NOW(), NOW()),
+(10058, 'Meat & Seafood', true, 10007, NOW(), NOW()),
+(10059, 'Dairy Products', true, 10007, NOW(), NOW()),
+(10060, 'Beverages', true, 10007, NOW(), NOW()),
+(10061, 'Snacks', true, 10007, NOW(), NOW()),
+(10062, 'Pantry Staples', true, 10007, NOW(), NOW());
+
+-- Insert into Office Supplies
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10063, 'Desk Accessories', true, 10008, NOW(), NOW()),
+(10064, 'Office Furniture', true, 10008, NOW(), NOW()),
+(10065, 'Writing Instruments', true, 10008, NOW(), NOW()),
+(10066, 'Paper Products', true, 10008, NOW(), NOW()),
+(10067, 'Printing Supplies', true, 10008, NOW(), NOW()),
+(10068, 'Organizers', true, 10008, NOW(), NOW());
+
 -- Insert Products
-INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, created_at, updated_at) VALUES
-(1, 'iPhone 13 Pro', 899.99, 'Slightly used iPhone 13 Pro, 256GB', true, false, 'USED', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
-(2, 'MacBook Pro 2022', 1499.99, 'New MacBook Pro M1', true, false, 'NEW', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
-(3, 'Samsung Galaxy S21', 699.99, 'Brand new Samsung Galaxy S21', true, false, 'NEW', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
-(4, 'Dell XPS 13', 1299.99, 'Dell XPS 13 laptop, slightly used', true, false, 'USED', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
-(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
-(6, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(7, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(8, 'Sony WH-1000XM4 Headphones', 350.00, 'Noise-canceling headphones', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
-(9, 'Nike Air Max', 120.00, 'Brand new running shoes', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(10, 'Apple Watch Series 6', 399.00, 'Used but in great condition', true, false, 'USED', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(11, 'Canon EOS Rebel T7', 450.00, 'Digital SLR Camera', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW());
+--INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, created_at, updated_at) VALUES
+--(1, 'iPhone 13 Pro', 899.99, 'Slightly used iPhone 13 Pro, 256GB', true, false, 'USED', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+--(2, 'MacBook Pro 2022', 1499.99, 'New MacBook Pro M1', true, false, 'NEW', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
+--(3, 'Samsung Galaxy S21', 699.99, 'Brand new Samsung Galaxy S21', true, false, 'NEW', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+--(4, 'Dell XPS 13', 1299.99, 'Dell XPS 13 laptop, slightly used', true, false, 'USED', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
+--(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+--(6, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(7, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(8, 'Sony WH-1000XM4 Headphones', 350.00, 'Noise-canceling headphones', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+--(9, 'Nike Air Max', 120.00, 'Brand new running shoes', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(10, 'Apple Watch Series 6', 399.00, 'Used but in great condition', true, false, 'USED', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(11, 'Canon EOS Rebel T7', 450.00, 'Digital SLR Camera', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW());
+
+-- Insert new products from the updated data
+-- Insert Products with updated conditions and fields
+INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at) VALUES
+(1, 'iPhone 13 Pro', 'Slightly used iPhone 13 Pro', '256GB storage, excellent condition', 899.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Minimal signs of use', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+(2, 'MacBook Pro 2022', 'New MacBook Pro M1', 'Latest model with M1 chip', 1499.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Brand new', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
+(3, 'Samsung Galaxy S21', 'Brand new Samsung Galaxy S21', 'Latest model, never used', 699.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Factory sealed', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+(4, 'Dell XPS 13', 'Slightly used Dell XPS 13', 'Compact and powerful laptop', 1299.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor wear on keyboard', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
+(5, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+(6, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(7, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(8, 'Sony WH-1000XM4 Headphones', 'Noise-canceling headphones', 'Top-notch sound quality', 350.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+(9, 'Nike Air Max', 'Brand new running shoes', 'Comfortable and stylish', 120.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'In original box', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(10, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(11, 'Canon EOS Rebel T7', 'Digital SLR Camera', 'Perfect for photography enthusiasts', 450.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+
+    (202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+    (303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+    (304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+    (305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+    (306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+    (352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
+
+-- Add product images for the original products
+INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) VALUES
+(1, 202, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/uqoduxx5ewvnchgsuols.jpg', NOW(), NOW()),
+(2, 202, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031664/mfmihqj34q8p0zuuiekg.jpg', NOW(), NOW()),
+(3, 303, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269109/hqrufykrmzwv9wq5xwyv.jpg', NOW(), NOW()),
+(4, 303, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269112/x7htnhtwlw7uhvzuvhmi.jpg', NOW(), NOW()),
+(5, 304, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269197/vldssebhqijs41pjanio.jpg', NOW(), NOW()),
+(6, 304, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269198/wvld1ck8cwdmldbfhage.jpg', NOW(), NOW()),
+(7, 305, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269363/dr2slp65tsk9z2n9rcs9.jpg', NOW(), NOW()),
+(8, 305, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269364/sy87ffhehxuffkrczp8w.jpg', NOW(), NOW()),
+(9, 306, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269460/plwi5lonfnwb4mvarfpy.jpg', NOW(), NOW()),
+(10, 306, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269462/xpwozjsexnldymbyal1c.jpg', NOW(), NOW()),
+(11, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
+(12, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW()),
+
+(13, 1, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/iphone13pro.jpg', NOW(), NOW()),
+(14, 2, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/macbookpro.jpg', NOW(), NOW()),
+(15, 3, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/galaxys21.jpg', NOW(), NOW()),
+(16, 4, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/dellxps13.jpg', NOW(), NOW()),
+(17, 5, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket1.jpg', NOW(), NOW()),
+(18, 6, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket2.jpg', NOW(), NOW()),
+(19, 7, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket3.jpg', NOW(), NOW()),
+(20, 8, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/sonyheadphones.jpg', NOW(), NOW()),
+(21, 9, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/nikeairmax.jpg', NOW(), NOW()),
+(22, 10, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/applewatch.jpg', NOW(), NOW()),
+(23, 11, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/canoneos.jpg', NOW(), NOW());
+
 
 -- Insert Bids
 -- Bids where Asif is the Bidder (Buyer)
@@ -64,7 +217,6 @@ INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at
 (1018, 10, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
 (1020, 11, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'USD', 'ACCEPTED', NOW(), NOW());  -- Accepted
 
--- Insert Reviews
 -- Reviews where Asif Iqbal is reviewed as a Buyer (Total 5)
 INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
 (10000, 1001, 'BUYER', 5, 'Great buyer! Prompt payment and excellent communication.', NOW(), NOW()),

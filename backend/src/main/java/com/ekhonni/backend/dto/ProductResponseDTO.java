@@ -7,11 +7,9 @@
 
 package com.ekhonni.backend.dto;
 
-import com.ekhonni.backend.dto.bid.BidResponseDTO;
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.model.ProductImage;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,5 +58,4 @@ public class ProductResponseDTO {
     private ProductSellerDTO seller;
     private ProductCategoryDTO category;
     private List<ProductImageDTO> images = new ArrayList<>();
-    private List<BidResponseDTO> bids = new ArrayList<>();
 }

@@ -11,7 +11,6 @@ import java.util.UUID;
 public interface SellerBidProjection {
     Long getId();
     UUID getBidderId();
-    Long getProductId();
     String getBidderName();
     String getBidderAddress();
     Double getAmount();

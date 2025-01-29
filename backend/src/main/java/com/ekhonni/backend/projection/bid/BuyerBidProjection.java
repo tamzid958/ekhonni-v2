@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  */
 
 public interface BuyerBidProjection {
-    Long getProductId();
+    Long getId();
     Double getAmount();
     String getStatus();
     String getCurrency();

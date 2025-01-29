@@ -15,7 +15,7 @@ public interface BidderBidProjection {
     String getCurrency();
     Long getProductId();
     UUID getProductSellerId();
-    String getProductName();
+    String getProductTitle();
     String getProductSellerName();
     String getProductSellerAddress();
     LocalDateTime getCreatedAt();
