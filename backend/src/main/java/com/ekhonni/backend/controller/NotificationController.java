@@ -6,6 +6,7 @@ import com.ekhonni.backend.service.NotificationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class NotificationController {
     @PreAuthorize("#userId == authentication.principal.id")
     public DeferredResult<ApiResponse<?>> get(
             @PathVariable UUID userId,
-            @RequestParam(required = false) LocalDateTime lastFetchTime,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchTime,
             Pageable pageable
     ) {
         return notificationService.handleLongPolling(userId, lastFetchTime, pageable);
