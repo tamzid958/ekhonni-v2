@@ -24,7 +24,7 @@ public class Category extends BaseEntity<Long> {
     private String name;
     private boolean active;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
 

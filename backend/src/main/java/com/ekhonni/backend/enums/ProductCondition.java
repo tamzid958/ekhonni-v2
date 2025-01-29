@@ -7,7 +7,16 @@
 
 package com.ekhonni.backend.enums;
 
+//public enum ProductCondition {
+//    NEW,
+//    USED
+//}
+
 public enum ProductCondition {
-    NEW,
-    USED
+    Revive,
+    Fair,
+    Good,
+    Very_Good,
+    Like_New
 }
+

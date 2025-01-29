@@ -12,6 +12,7 @@ import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -56,7 +57,10 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
             )
             SELECT id FROM category_tree
             """, nativeQuery = true)
-    List<Long> findSubCategoryIds(Long parentId);
+    List<Long> findRelatedActiveIds(Long parentId);
+
+
+
 
 
 }

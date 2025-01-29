@@ -15,14 +15,13 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductFilter {
+public class ProductFilter{
     private String categoryName;
     private Double minPrice;
     private Double maxPrice;
     private ProductCondition condition;
     private String searchTerm;
     private ProductSort sortBy;
-    private String abc;
-    private int page;
-    private int size;
+    private int page=1;
+    private int size=10;
 }

@@ -14,6 +14,7 @@ import com.ekhonni.backend.model.Product;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class ProductSpecification {
@@ -34,6 +35,13 @@ public class ProductSpecification {
     public static Specification<Product> hasCondition(ProductCondition condition) {
         return (product, cq, cb) -> cb.equal(product.get("condition"), condition);
     }
+
+    public static Specification<Product> belongsToUser(UUID userId) {
+        return (product, cq, cb) -> cb.equal(product.get("sellernoteno").get("id"), userId);
+    }
+
+
+
 
 
     // sorting
@@ -63,5 +71,11 @@ public class ProductSpecification {
                     cb.like(cb.lower(product.get("description")), searchTermLower)
             );
         };
+    }
+
+
+    // default specification (returns all products without any filters)
+    public static Specification<Product> defaultSpec() {
+        return (product, cq, cb) -> cb.conjunction();  // Returns all products (no filter applied)
     }
 }

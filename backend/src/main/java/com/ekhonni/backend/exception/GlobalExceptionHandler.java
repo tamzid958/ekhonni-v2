@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -203,6 +204,40 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
         return ResponseEntity.status(400).body("Error: " + ex.getMessage());
+    }
+
+
+    // product
+    @ExceptionHandler(ProductNotCreatedException.class)
+    public ResponseEntity<ApiResponse<?>> handleProductNotSavedException(ProductNotCreatedException ex) {
+        var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleProductNotFoundException(ProductNotFoundException ex) {
+        var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProductNotUpdatedException.class)
+    public ResponseEntity<ApiResponse<?>> handleProductNotUpdatedException(ProductNotUpdatedException ex) {
+        var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //category
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    //Image
+    @ExceptionHandler(ImageUploadException.class)
+    public ResponseEntity<ApiResponse<?>> handleImageUploadException(ImageUploadException ex) {
+        var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

@@ -8,14 +8,23 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductImageDTO;
+import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.enums.ProductStatus;
+import com.ekhonni.backend.validation.annotation.ImageOnly;
+import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -27,31 +36,74 @@ import java.util.List;
 public class Product extends BaseEntity<Long> {
 
     @NotBlank
-    private String name;
+    private String title;
+
+    @NotBlank
+    private String subTitle;
+
+    @NotBlank
+    private String description;
+
 
     @Positive
     @Column(nullable = false)
     private Double price;
 
-    @NotBlank
-    private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Division division;
 
-    private boolean approved;
-    private boolean sold;
+    @NotBlank
+    private String address;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductCondition condition;
 
-    @ManyToOne(optional = false)
+    @NotBlank
+    private String conditionDetails;
+
+
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
-    
-    private List<String> imagePaths = new ArrayList<>();
+
+    // add reviewedBy ( need to change)
+//    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "admin_id")
+//    private User approvedBy;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private List<ProductImage> images;
+
+
+    public ProductSellerDTO getSellerDTO() {
+        return new ProductSellerDTO(this.getSeller().getId(), this.getSeller().getName());
+    }
+
+    public ProductCategoryDTO getCategoryDTO() {
+        return new ProductCategoryDTO(this.getCategory().getId(), this.getCategory().getName());
+    }
+
+    public List<ProductImageDTO> getImagesDTO() {
+        return this.getImages()
+                .stream()
+                .map(image -> new ProductImageDTO(image.getImagePath()))
+                .toList();
+    }
+
+
+
 
 
 }

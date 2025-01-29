@@ -1,50 +1,36 @@
 spring:
-
-  application:
-    name: ${APPLICATION_NAME}
-
-  main:
-    allow-bean-definition-overriding: true
-
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: ${JPA_GENERATE_DDL:true}
-    hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:create-drop}
-    properties:
-      hibernate:
-        format_sql: ${JPA_FORMAT_SQL}
-        highlight_sql: ${JPA_HIGHLIGHT_SQL}
+    url: jdbc:postgresql://localhost:5432/ekhonni_db
+    username: myuser
+    password: password
 
   security:
     jwt:
-      secret: ${JWT_SECRET}
-      access:
-        token:
-          expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
-    refresh:
-      token:
-        expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
-
-    admin:
-      email: ${ADMIN_EMAIL}
-      password: ${ADMIN_PASSWORD}
+      secret: +bvMrs/ybTJLZNszKj0lmus9UnwL4JydIhQbxOv+V5M=
+      expiration: 7200000
 
   constant:
     public:
-      urls: ${PUBLIC_URLS}
+      urls: >
+        /api/v2/auth/**,
+        /swagger-ui/**,
+        /swagger-ui.html,
+        /v3/api-docs/**,
+        /swagger-resources/**,
+        /webjars/**,
+        /swagger-ui/index.html,
+        /api-docs/**,
+        /api/v2/payment/ipn
     user:
-      urls: ${USER_URLS}
+      urls: >
+        api/v2/user/**,
+        /api/v2/product/**,
+        /api/v2/bid/**,
+        /api/v2/payment/**
     admin:
-      urls: ${ADMIN_URLS}
-    email-verification-url: ${EMAIL_VERIFICATION_URL}
-    password-reset-url: ${PASSWORD_RESET_URL}
+      urls: /**
+    email-verification-url: http://localhost:8080/api/v2/auth/verify-email?token=
+    password-reset-url: http://localhost:8080/api/v2/auth/reset-password?token=
 
   mail:
     host: ${MAIL_HOST}
@@ -59,113 +45,6 @@ spring:
             enable: true
     default-encoding: UTF-8
 
-  output:
-    ansi:
-      enabled: ALWAYS
-
-sql:
-  init:
-    mode: ${SQL_INIT_MODE:always}
-    platform: ${SQL_INIT_PLATFORM:postgresql}
-
-logging:
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-  level:
-    root: INFO
-    org.springframework: INFO
-    org.hibernate: INFO
-    com.ekhonni: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-  file:
-    name: logs/application.log
-    max-size: 10MB
-    max-history: 7
-
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log
-      max-history: 7
-
-server:
-  address: ${SERVER_ADDRESS}
-
 sslcommerz:
-  store-id: ${SSLCOMMERZ_STORE_ID}
-  store-password: ${SSLCOMMERZ_STORE_PASSWORD}
-  success-url: ${BASE_URL}/success
-  fail-url: ${BASE_URL}/fail
-  cancel-url: ${BASE_URL}/cancel
-  ipn-url: ${SSLCOMMERZ_IPN_URL}
-  api-url: ${SSLCOMMERZ_API_URL}
-  validator-api-url: ${SSLCOMMERZ_VALIDATOR_API_URL}
-  connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
-  read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
-  allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
-
-upload:
-  dir: ${UPLOAD_DIR}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"  # Expose all endpoints
-        exclude: "env,beans"  # Optional: exclude sensitive endpoints
-      base-path: /actuator  # Base path for actuator endpoints
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET,POST
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-      probes:
-        enabled: true
-    info:
-      enabled: true
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  info:
-    env:
-      enabled: true
-    git:
-      enabled: true
-    build:
-      enabled: true
-  metrics:
-    tags:
-      application: ${spring.application.name}
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      sla:
-        http.server.requests: 10ms, 100ms
-    enable:
-      jvm: true
-      process: true
-      system: true
-      http: true
-  health:
-    diskspace:
-      enabled: true
-    db:
-      enabled: true
-    mail:
-      enabled: true
-
-# Optional: Info endpoint custom data
-info:
-  app:
-    name: ${spring.application.name}
-    description: Ekhonni Backend Service
-    version: 1.0.0
-  contact:
-    email: asif783810@gmail.com
-    team: Backend Team
-  environment: ${spring.profiles.active}
+  store-id: dynam675920884ad3b
+  store-password: dynam675920884ad3b@ssl

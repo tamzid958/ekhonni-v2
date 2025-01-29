@@ -1,21 +1,23 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 3:18 PM
- * Date: 1/4/2025
- * Project Name: backend
+ * Time: 8:55 PM
+ * Date: 1/20/25
+ * Project Name: ekhonni-v2
  */
 
 package com.ekhonni.backend.specificationbuilder;
 
+
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.specification.ProductSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public class ProductSpecificationBuilder {
-    public static Specification<Product> build(ProductFilter filter, List<Long> categoryIds) {
+public class UserProductSpecificationBuilder {
+    public static Specification<Product> build(UserProductFilter filter, List<Long> categoryIds) {
 
         Specification<Product> spec = Specification.where(null);
         boolean hasConditions = false;
@@ -43,6 +45,13 @@ public class ProductSpecificationBuilder {
             spec = spec.and(ProductSpecification.applySorting(filter.getSortBy()));
             hasConditions = true;
         }
+
+        if(filter.getUserId() != null){
+            spec = spec.and(ProductSpecification.belongsToUser(filter.getUserId()));
+            hasConditions = true;
+        }
+
+
 
         if(!hasConditions)
         {

@@ -1,34 +1,54 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 8:18 PM
- * Date: 12/9/2024
+ * Time: 8:47 PM
+ * Date: 1/8/25
  * Project Name: ekhonni-v2
  */
 
 package com.ekhonni.backend.projection;
 
+import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductImageDTO;
+import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.ekhonni.backend.enums.ProductStatus;
+import com.ekhonni.backend.model.ProductImage;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@ToString
-public class ProductProjection {
-    private Long id;
-    private Double price;
-    private String name;
-    private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private ProductCondition condition;
-    private Long categoryId;
-    private String categoryName;
-    private List<String> imagePaths;
+public interface ProductProjection {
+    Long getId();
+
+    String getTitle();
+
+    String getSubTitle();
+
+    String getDescription();
+
+    Double getPrice();
+
+    Division getDivision();
+
+    String getLocation();
+
+    ProductCondition getCondition();
+
+    String getConditionDetails();
+
+
+    ProductStatus getStatus();
+
+    LocalDateTime getCreatedAt();
+
+    LocalDateTime getUpdatedAt();
+
+
+    ProductCategoryDTO getCategoryDTO();
+
+    ProductSellerDTO getSellerDTO();
+
+    List<ProductImageDTO> getImagesDTO();
+
 }
