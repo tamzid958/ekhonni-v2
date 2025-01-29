@@ -54,7 +54,7 @@ public class Product extends BaseEntity<Long> {
     private Division division;
 
     @NotBlank
-    private String location;
+    private String address;
 
 
     @Enumerated(EnumType.STRING)

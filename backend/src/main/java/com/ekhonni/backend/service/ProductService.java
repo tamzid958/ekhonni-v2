@@ -97,7 +97,7 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.description(),
                     dto.price(),
                     dto.division(),
-                    dto.location(),
+                    dto.address(),
                     status,
                     dto.condition(),
                     dto.conditionDetails(),
@@ -185,7 +185,7 @@ public class ProductService extends BaseService<Product, Long> {
             product.setDescription(dto.description());
             product.setPrice(dto.price());
             product.setDivision(dto.division());
-            product.setLocation(dto.location());
+            product.setAddress(dto.address());
             product.setCondition(dto.condition());
             product.setConditionDetails(dto.conditionDetails());
             product.setCategory(category);

@@ -250,7 +250,7 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 
 
 INSERT INTO product
-    (id, title, sub_title, description, price, division, location, status, condition, condition_details, category_id, seller_id, created_at, updated_at)
+    (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at)
 VALUES
     (202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
     (303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),

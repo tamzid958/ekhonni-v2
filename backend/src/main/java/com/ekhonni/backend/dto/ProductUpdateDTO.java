@@ -37,7 +37,7 @@ public record ProductUpdateDTO(
 
 
         @NotBlank(message = "Location cannot be null")
-        String location,
+        String address,
 
         @NotNull(message = "Condition cannot be null")
         @Enumerated(EnumType.STRING)
