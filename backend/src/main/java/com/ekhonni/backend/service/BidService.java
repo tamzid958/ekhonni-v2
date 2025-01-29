@@ -1,7 +1,6 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
-import com.ekhonni.backend.dto.bid.BidResponseDTO;
 import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
@@ -58,10 +57,7 @@ public class BidService extends BaseService<Bid, Long> {
 
     @Modifying
     @Transactional
-    public BidResponseDTO create(BidCreateDTO bidCreateDTO) {
-        if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bidCreateDTO.productId(), BidStatus.ACCEPTED)) {
-            throw new BidAlreadyAcceptedException();
-        }
+    public void create(BidCreateDTO bidCreateDTO) {
         Product product = productService.get(bidCreateDTO.productId())
                 .orElseThrow(() -> new ProductNotFoundException("Product not found for bid"));
 
@@ -76,12 +72,14 @@ public class BidService extends BaseService<Bid, Long> {
                 .orElseThrow(() -> new UserNotFoundException("Bidder not found for bid"));
         Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), bidCreateDTO.currency(), BidStatus.PENDING);
         bidRepository.save(bid);
-        return BidResponseDTO.from(bidCreateDTO, bid.getId(), bid.getStatus());
     }
 
     @Modifying
     @Transactional
     public void handlePreviousBid(BidCreateDTO bidCreateDTO) {
+        if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bidCreateDTO.productId(), BidStatus.ACCEPTED)) {
+            throw new BidAlreadyAcceptedException();
+        }
         Optional<Bid> previousBidContainer = bidRepository.findByProductIdAndBidderIdAndDeletedAtIsNull(
                 bidCreateDTO.productId(),
                 AuthUtil.getAuthenticatedUser().getId()
@@ -96,14 +94,17 @@ public class BidService extends BaseService<Bid, Long> {
 
     @Modifying
     @Transactional
-    public BidResponseDTO updateBid(Long id, BidUpdateDTO bidUpdateDTO) {
+    public void updateBid(Long id, BidUpdateDTO bidUpdateDTO) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
+        if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bid.getProduct().getId(), BidStatus.ACCEPTED)) {
+            throw new BidAlreadyAcceptedException();
+        }
         log.info("Previous amount: {}, current amount: {}", bid.getAmount(), bidUpdateDTO.amount());
         if (bidUpdateDTO.amount() <= bid.getAmount()) {
             throw new InvalidBidAmountException("Amount must be greater than previous bid");
         }
         softDelete(id);
-        return create(new BidCreateDTO(bid.getProduct().getId(), bidUpdateDTO.amount(), bid.getCurrency()));
+        create(new BidCreateDTO(bid.getProduct().getId(), bidUpdateDTO.amount(), bid.getCurrency()));
     }
 
     private void validateFromPreviousBid(Bid previousBid, BidCreateDTO bidCreateDTO) {

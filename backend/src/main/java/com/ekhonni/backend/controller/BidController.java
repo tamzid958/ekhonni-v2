@@ -2,7 +2,6 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
-import com.ekhonni.backend.dto.bid.BidResponseDTO;
 import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.HTTPStatus;
@@ -63,16 +62,18 @@ public class BidController {
     }
 
     @PostMapping()
-    public ResponseEntity<ApiResponse<BidResponseDTO>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
+    public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
         bidService.handlePreviousBid(bidCreateDTO);
-        return ResponseUtil.createResponse(HTTPStatus.CREATED, bidService.create(bidCreateDTO));
+        bidService.create(bidCreateDTO);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 
     @PatchMapping("/{id}/update")
     @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
-    public ResponseEntity<ApiResponse<BidResponseDTO>> update(
+    public ResponseEntity<ApiResponse<Void>> update(
             @PathVariable Long id, @Valid @RequestBody BidUpdateDTO bidUpdateDTO) {
-        return ResponseUtil.createResponse(HTTPStatus.CREATED, bidService.updateBid(id, bidUpdateDTO));
+        bidService.updateBid(id, bidUpdateDTO);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
     }
 
     @GetMapping("/seller/{product_id}")

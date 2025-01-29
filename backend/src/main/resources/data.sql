@@ -57,9 +57,9 @@ INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at
 -- Bids where Asif is the Seller
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
 (1010, 6, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1011, 6, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'REJECTED', NOW(), NOW()),
+(1011, 6, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'PENDING', NOW(), NOW()),
 (1013, 7, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1014, 7, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'REJECTED', NOW(), NOW()),
+(1014, 7, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'PENDING', NOW(), NOW()),
 (1017, 9, '550e8400-e29b-41d4-a716-446655440001'::uuid, 115.00, 'USD', 'ACCEPTED', NOW(), NOW()),   -- Accepted
 (1018, 10, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
 (1020, 11, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'USD', 'ACCEPTED', NOW(), NOW());  -- Accepted
