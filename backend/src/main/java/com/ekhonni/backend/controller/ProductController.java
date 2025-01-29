@@ -18,8 +18,13 @@ import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -27,10 +32,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/product")
 public record ProductController(ProductService productService, BidService bidService) {
 
+    @Operation(
+            summary = "Create a new product",
+            description = "Creates a new product using the provided details, including images",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Product creation form with images and details"
+            )
+    )
     @PostMapping
-    public ApiResponse<?> create(@Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
+    public ResponseEntity<ApiResponse<?>> create(
+            @Parameter(description = "Product details for creation")
+            @Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
+
         productService.create(productCreateDTO);
-        return new ApiResponse<>(HTTPStatus.CREATED, null);
+        return ResponseEntity.status(201).body(new ApiResponse<>(HTTPStatus.CREATED, null));
     }
 
 
