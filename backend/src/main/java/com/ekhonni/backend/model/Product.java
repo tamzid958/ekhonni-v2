@@ -1,0 +1,110 @@
+/**
+ * Author: Rifat Shariar Sakil
+ * Time: 2:46 PM
+ * Date: 12/3/2024
+ * Project Name: ekhonni-v2
+ */
+
+package com.ekhonni.backend.model;
+
+import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.dto.ProductCategoryDTO;
+import com.ekhonni.backend.dto.ProductImageDTO;
+import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.enums.Division;
+import com.ekhonni.backend.enums.ProductCondition;
+import com.ekhonni.backend.enums.ProductStatus;
+import com.ekhonni.backend.validation.annotation.ImageOnly;
+import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "product")
+@ToString
+public class Product extends BaseEntity<Long> {
+
+    @NotBlank
+    private String title;
+
+    @NotBlank
+    private String subTitle;
+
+    @NotBlank
+    private String description;
+
+
+    @Positive
+    @Column(nullable = false)
+    private Double price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Division division;
+
+    @NotBlank
+    private String address;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductCondition condition;
+
+    @NotBlank
+    private String conditionDetails;
+
+
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
+
+    // add reviewedBy ( need to change)
+//    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "admin_id")
+//    private User approvedBy;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
+    private List<ProductImage> images;
+
+
+    public ProductSellerDTO getSellerDTO() {
+        return new ProductSellerDTO(this.getSeller().getId(), this.getSeller().getName());
+    }
+
+    public ProductCategoryDTO getCategoryDTO() {
+        return new ProductCategoryDTO(this.getCategory().getId(), this.getCategory().getName());
+    }
+
+    public List<ProductImageDTO> getImagesDTO() {
+        return this.getImages()
+                .stream()
+                .map(image -> new ProductImageDTO(image.getImagePath()))
+                .toList();
+    }
+
+
+
+
+
+}
+
