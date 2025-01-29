@@ -25,9 +25,12 @@ spring:
 
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://idp.example.com/issuer
+      client:
+        registration:
+          google:
+            client-id: 536103923076-ugjmaph8jvgqu6g18unl4cba4kj0v41q.apps.googleusercontent.com
+            client-secret: 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
+            scope: email
 
     jwt:
       secret: ${JWT_SECRET}

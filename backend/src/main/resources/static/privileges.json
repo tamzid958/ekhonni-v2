@@ -91,13 +91,7 @@
   },
   {
     "name": "Get All User ",
-    "description": "Allows retrieving all user at a glance",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/users/"
-  },
-  {
-    "name": "Get All User By name/email",
-    "description": "Allows retrieving all user by name/email",
+    "description": "Allows retrieving all user (possibly by name/email)",
     "httpMethod": "GET",
     "endpoint": "/api/v2/admin/users"
   },

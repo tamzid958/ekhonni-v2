@@ -37,11 +37,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-    private JWTFilter jwtFilter;
-    private ExceptionHandlerFilter exceptionHandlerFilter;
-    private AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
-    private RoleRepository roleRepository;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JWTFilter jwtFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
+    private final AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
+    private final RoleRepository roleRepository;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
