@@ -1,7 +1,6 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
-import com.ekhonni.backend.dto.NotificationPreviewDTO;
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.NotificationType;
@@ -10,9 +9,9 @@ import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Notification;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.NotificationPreviewProjection;
 import com.ekhonni.backend.repository.NotificationRepository;
 import com.ekhonni.backend.response.ApiResponse;
-import com.ekhonni.backend.util.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,12 +38,11 @@ import java.util.concurrent.Executors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final TimeUtils timeUtils;
     private final ExecutorService executorService = Executors.newFixedThreadPool(32);
 
 
     public DeferredResult<ApiResponse<?>> handleLongPolling(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
-        long timeout = 30000;
+        long timeout = 3000;
 
         DeferredResult<ApiResponse<?>> deferredResult = new DeferredResult<>(timeout);
 
@@ -54,7 +52,7 @@ public class NotificationService {
                 LocalDateTime pollingEndTime = LocalDateTime.now().plus(timeout, ChronoUnit.MILLIS);
 
                 while (!hasNewNotifications && LocalDateTime.now().isBefore(pollingEndTime)) {
-                    List<NotificationPreviewDTO> newNotifications = getAllNew(recipientId, lastFetchTime, pageable);
+                    List<NotificationPreviewProjection> newNotifications = getAllNew(recipientId, lastFetchTime, pageable);
                     if (!newNotifications.isEmpty()) {
                         hasNewNotifications = true;
                         deferredResult.setResult(
@@ -80,29 +78,13 @@ public class NotificationService {
     }
 
 
-    public List<NotificationPreviewDTO> getAll(UUID recipientId, Pageable pageable) {
-        return notificationRepository.findByRecipientIdOrRecipientIdIsNull(recipientId, pageable)
-                .stream()
-                .map(notifications -> new NotificationPreviewDTO(
-                                notifications.getId(),
-                                notifications.getMessage(),
-                                timeUtils.timeAgo(notifications.getCreatedAt())
-                        )
-                )
-                .toList();
+    public List<NotificationPreviewProjection> getAll(UUID recipientId, Pageable pageable) {
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNull(recipientId, pageable);
     }
 
-    public List<NotificationPreviewDTO> getAllNew(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
+    public List<NotificationPreviewProjection> getAllNew(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
         if (lastFetchTime == null) return getAll(recipientId, pageable);
-        return notificationRepository.findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
-                .stream()
-                .map(notifications -> new NotificationPreviewDTO(
-                                notifications.getId(),
-                                notifications.getMessage(),
-                                timeUtils.timeAgo(notifications.getCreatedAt())
-                        )
-                )
-                .toList();
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(recipientId, lastFetchTime, pageable);
     }
 
 
