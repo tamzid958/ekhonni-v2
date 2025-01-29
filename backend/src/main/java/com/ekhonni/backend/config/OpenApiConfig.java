@@ -21,10 +21,6 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${spring.constant.public.urls}")
-    private String[] publicUrls;
-
-
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -54,36 +50,4 @@ public class OpenApiConfig {
                                         .bearerFormat("JWT")));
     }
 
-//    @Bean
-//    public GroupedOpenApi publicApi() {
-//        return GroupedOpenApi.builder()
-//                .group("1. Public APIs")
-//                .pathsToMatch(Arrays.toString(publicUrls))
-//                .addOpenApiCustomizer(openApi -> openApi.info(new Info()
-//                        .title("Public APIs")
-//                        .description("Authentication and public endpoints")))
-//                .build();
-//    }
-//
-//    @Bean
-//    public GroupedOpenApi userApi() {
-//        return GroupedOpenApi.builder()
-//                .group("2. User APIs")
-//                .pathsToMatch(Arrays.toString(userUrls))
-//                .addOpenApiCustomizer(openApi -> openApi.info(new Info()
-//                        .title("User APIs")
-//                        .description("User-specific operations")))
-//                .build();
-//    }
-//
-//    @Bean
-//    public GroupedOpenApi adminApi() {
-//        return GroupedOpenApi.builder()
-//                .group("3. Admin APIs")
-//                .pathsToMatch(Arrays.toString(adminUrls))
-//                .addOpenApiCustomizer(openApi -> openApi.info(new Info()
-//                        .title("Admin APIs")
-//                        .description("Administrative operations")))
-//                .build();
-//    }
 }

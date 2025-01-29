@@ -24,6 +24,12 @@ spring:
         format_sql: ${JPA_FORMAT_SQL:false}
         highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
   sql:
     init:
       platform: ${SQL_INIT_PLATFORM:postgresql}
@@ -34,8 +40,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 536103923076-ugjmaph8jvgqu6g18unl4cba4kj0v41q.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email
 
     jwt:
@@ -73,12 +79,6 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
-
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
 
 server:
   address: ${SERVER_ADDRESS}
@@ -129,7 +129,6 @@ logging:
     org.springframework: INFO
     org.hibernate: INFO
     com.ekhonni: DEBUG
-
 
 management:
   endpoints:

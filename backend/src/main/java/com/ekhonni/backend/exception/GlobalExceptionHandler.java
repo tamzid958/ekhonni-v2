@@ -118,6 +118,7 @@ public class GlobalExceptionHandler {
      *                      Bid Exceptions
      * =================================================================
      */
+
     @ExceptionHandler(BidNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleBidNotFoundException(BidNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -159,7 +160,6 @@ public class GlobalExceptionHandler {
      *                      Payment Exceptions
      * =================================================================
      */
-
     @ExceptionHandler(InvalidTransactionException.class)
     public ResponseEntity<ErrorResponse> handleInvalidTransactionException(InvalidTransactionException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -214,16 +214,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    /**
-     * =================================================================
-     *                             Common
-     * =================================================================
-     */
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        return ResponseEntity.status(400).body("Error: " + ex.getMessage());
-
     @ExceptionHandler(NotificationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -243,12 +233,12 @@ public class GlobalExceptionHandler {
     }
 
     // product
+
     @ExceptionHandler(ProductNotCreatedException.class)
     public ResponseEntity<ApiResponse<?>> handleProductNotSavedException(ProductNotCreatedException ex) {
         var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleProductNotFoundException(ProductNotFoundException ex) {
         var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
@@ -262,18 +252,31 @@ public class GlobalExceptionHandler {
     }
 
     //category
+
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
     //Image
+
     @ExceptionHandler(ImageUploadException.class)
     public ResponseEntity<ApiResponse<?>> handleImageUploadException(ImageUploadException ex) {
         var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
+    /**
+     * =================================================================
+     *                             Common
+     * =================================================================
+     */
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
 
 }
