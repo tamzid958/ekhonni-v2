@@ -34,4 +34,7 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
     long countByProductIdAndDeletedAtIsNull(Long productId);
 
     long countByProductId(Long productId);
+
+    Optional<Bid> findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(Long productId);
+
 }

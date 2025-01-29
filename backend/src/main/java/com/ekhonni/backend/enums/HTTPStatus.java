@@ -29,6 +29,7 @@ public enum HTTPStatus {
     FORBIDDEN(403, false),
     NOT_FOUND(404, false),
 
+
     INTERNAL_SERVER_ERROR(500, false),
     NOT_IMPLEMENTED(501, false),
     BAD_GATEWAY(502, false);

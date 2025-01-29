@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -15,6 +16,9 @@ import java.util.UUID;
 
 @Repository
 public interface ReviewRepository extends BaseRepository<Review, Long> {
+
+    Optional<Review> findFirstByBidIdAndTypeAndDeletedAtIsNull(Long bidId, ReviewType type);
+
     boolean existsByBidIdAndTypeAndDeletedAtIsNull(Long bidId, ReviewType type);
 
     <P> Page<P> findByTypeAndBidProductSellerIdAndDeletedAtIsNull(
@@ -26,5 +30,5 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
             Class<P> projection, Pageable pageable);
 
 
-
+    <P> Page<P> findByBidProductIdAndType(Long productId, ReviewType type, Class<P> projection, Pageable pageable);
 }

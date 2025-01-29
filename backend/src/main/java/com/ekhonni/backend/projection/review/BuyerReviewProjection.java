@@ -33,7 +33,6 @@ public interface BuyerReviewProjection {
     @JsonProperty("revieweeName")
     String getBidBidderName();
 
-    @JsonProperty("lastModified")
     LocalDateTime getCreatedAt();
 
 }

@@ -42,9 +42,7 @@ public class ReviewService extends BaseService<Review, Long> {
 
     @Transactional
     public void createSellerReview(ReviewCreateDTO dto) {
-        if (reviewRepository.existsByBidIdAndTypeAndDeletedAtIsNull(dto.bidId(), ReviewType.SELLER)) {
-            throw new ReviewAlreadyExistsException("Review already exists");
-        }
+        handlePreviousReview(dto.bidId(), ReviewType.SELLER);
         Bid bid = bidService.get(dto.bidId()).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         if (!EnumSet.of(BidStatus.ACCEPTED, BidStatus.PAID).contains(bid.getStatus())) {
             throw new BidNotAcceptedException("Bid not accepted");
@@ -55,15 +53,18 @@ public class ReviewService extends BaseService<Review, Long> {
 
     @Transactional
     public void createBuyerReview(ReviewCreateDTO dto) {
-        if (reviewRepository.existsByBidIdAndTypeAndDeletedAtIsNull(dto.bidId(), ReviewType.BUYER)) {
-            throw new ReviewAlreadyExistsException("Review already exists");
-        }
+        handlePreviousReview(dto.bidId(), ReviewType.BUYER);
         Bid bid = bidService.get(dto.bidId()).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         if (!EnumSet.of(BidStatus.ACCEPTED, BidStatus.PAID).contains(bid.getStatus())) {
             throw new BidNotAcceptedException("Bid not accepted");
         }
         Review review = new Review(bid, ReviewType.BUYER, dto.rating(), dto.description());
         reviewRepository.save(review);
+    }
+
+    private void handlePreviousReview(Long bidId, ReviewType type) {
+        reviewRepository.findFirstByBidIdAndTypeAndDeletedAtIsNull(bidId, type)
+                .ifPresent(previousReview -> softDelete(previousReview.getId()));
     }
 
 
@@ -115,6 +116,14 @@ public class ReviewService extends BaseService<Review, Long> {
         } else {
             return get(id, BuyerReviewProjection.class);
         }
+    }
+
+    public Page<SellerReviewProjection> getEditHistoryForSellerReviews(Long productId, Pageable pageable) {
+        return reviewRepository.findByBidProductIdAndType(productId, ReviewType.SELLER, SellerReviewProjection.class, pageable);
+    }
+
+    public Page<BuyerReviewProjection> getEditHistoryForBuyerReviews(Long productId, Pageable pageable) {
+        return reviewRepository.findByBidProductIdAndType(productId, ReviewType.BUYER, BuyerReviewProjection.class, pageable);
     }
 
     public boolean isSellerReview(Long id) {

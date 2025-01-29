@@ -49,6 +49,11 @@ public class BidController {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForUser(BidderBidProjection.class, pageable));
     }
 
+    @GetMapping("/product/{product_id}/highest")
+    public ResponseEntity<ApiResponse<Double>> getHighestForProduct(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getHighestBidAmount(productId));
+    }
+
     @GetMapping("/buyer/{product_id}")
     public ResponseEntity<ApiResponse<Page<BuyerBidProjection>>> getAllForProductBuyer(
             @PathVariable("product_id") Long productId, Pageable pageable) {
@@ -60,6 +65,16 @@ public class BidController {
     public ResponseEntity<ApiResponse<Long>> getCountForProduct(@PathVariable("product_id") Long productId) {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getCountForProduct(productId));
     }
+
+    @GetMapping("/seller/{product_id}")
+    @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
+    public ResponseEntity<ApiResponse<Page<SellerBidProjection>>> getAllForProductSeller(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
+    }
+
+
 
     @PostMapping()
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
@@ -74,14 +89,6 @@ public class BidController {
             @PathVariable Long id, @Valid @RequestBody BidUpdateDTO bidUpdateDTO) {
         bidService.updateBid(id, bidUpdateDTO);
         return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
-    }
-
-    @GetMapping("/seller/{product_id}")
-    @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
-    public ResponseEntity<ApiResponse<Page<SellerBidProjection>>> getAllForProductSeller(
-            @PathVariable("product_id") Long productId, Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK,
-                bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
     @PatchMapping("/{id}/accept")
@@ -159,7 +166,7 @@ public class BidController {
         return ResponseUtil.createResponse(HTTPStatus.DELETED);
     }
 
-    @DeleteMapping("/{id}/delete-permanently")
+    @DeleteMapping("/{id}/permanent")
     public ResponseEntity<ApiResponse<Void>> deletePermanently(@PathVariable Long id) {
         bidService.deletePermanently(id);
         return ResponseUtil.createResponse(HTTPStatus.DELETED);

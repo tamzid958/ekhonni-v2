@@ -126,10 +126,15 @@ public class BidService extends BaseService<Bid, Long> {
         bid.setStatus(BidStatus.ACCEPTED);
     }
 
+    public Double getHighestBidAmount(Long productId) {
+        return bidRepository.findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(productId)
+                .map(Bid::getAmount)
+                .orElse(0.0);
+    }
+
     public UUID getBidderId(Long id) {
         return bidRepository.findBidderIdById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
     }
-
 
     public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));

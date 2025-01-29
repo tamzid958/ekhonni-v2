@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -92,36 +93,57 @@ public class ReviewController {
     }
 
 
+    /**
+     * =================================================================
+     *                           Admin API
+     * =================================================================
+     */
 
+    @GetMapping("/product/{product_id}/seller/edit-history")
+    public ResponseEntity<ApiResponse<Page<SellerReviewProjection>>> getEditHistoryForSellerReviews(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getEditHistoryForSellerReviews(productId, pageable));
+    }
 
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ReviewResponse> getReviewById(
-//            @PathVariable("id") Long id) {
-//        return ResponseEntity.ok(reviewService.getReviewById(id));
-//    }
-//
-//    @DeleteMapping("/{reviewId}")
-//    public void deleteReview(@PathVariable Long reviewId) {
-//        reviewService.deleteReview(reviewId);
-//    }
-//
-//    @GetMapping("/about/{userId}")
-//    @Operation(summary = "Get all reviews about a user (as buyer or seller)")
-//    public ResponseEntity<List<ReviewResponse>> getReviewsAboutUser(
-//            @PathVariable Long userId) {
-//        return ResponseEntity.ok(reviewService.getReviewsAboutUser(userId));
-//    }
-//
-//    @GetMapping("/by/{userId}")
-//    public ResponseEntity<List<ReviewResponse>> getReviewsByUser(
-//            @PathVariable Long userId) {
-//        return ResponseEntity.ok(reviewService.getReviewsByUser(userId));
-//    }
-//
-//    @GetMapping("/bid/{bidId}")
-//    public ResponseEntity<List<ReviewResponse>> getReviewsForBid(
-//            @PathVariable Long bidId) {
-//        return ResponseEntity.ok(reviewService.getReviewsForBid(bidId));
-//    }
+    @GetMapping("/product/{product_id}/buyer/edit-history")
+    public ResponseEntity<ApiResponse<Page<BuyerReviewProjection>>> getEditHistoryForBuyerReviews(
+            @PathVariable("product_id") Long productId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getEditHistoryForBuyerReviews(productId, pageable));
+    }
+
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<ApiResponse<Void>> restore(@PathVariable Long id) {
+        reviewService.restore(id);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/restore")
+    public ResponseEntity<ApiResponse<Void>> restore(@RequestBody List<Long> ids) {
+        reviewService.restore(ids);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/restore-all")
+    public ResponseEntity<ApiResponse<Void>> restoreAll() {
+        reviewService.restoreAll();
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        reviewService.softDelete(id);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<ApiResponse<Void>> delete(@RequestBody List<Long> ids) {
+        reviewService.softDelete(ids);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
+    }
+
+    @DeleteMapping("/{id}/permanent")
+    public ResponseEntity<ApiResponse<Void>> deletePermanently(@PathVariable Long id) {
+        reviewService.deletePermanently(id);
+        return ResponseUtil.createResponse(HTTPStatus.DELETED);
+    }
 }
