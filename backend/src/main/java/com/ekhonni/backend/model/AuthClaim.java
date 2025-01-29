@@ -16,5 +16,6 @@ import java.util.UUID;
 @Builder
 public class AuthClaim {
     private UUID id;
+    private String role;
     private AuthToken authToken;
 }

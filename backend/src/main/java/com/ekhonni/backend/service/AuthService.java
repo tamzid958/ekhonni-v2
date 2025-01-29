@@ -103,6 +103,7 @@ public class AuthService {
         return AuthClaim
                 .builder()
                 .id(user.getId())
+                .role(user.getRole().getName())
                 .authToken(new AuthToken(accessToken, refreshToken.getValue()))
                 .build();
     }
