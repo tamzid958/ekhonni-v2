@@ -438,15 +438,69 @@
     "endpoint": "/api/v2/review/buyer/{id}"
   },
   {
-    "name": "Restore All Bids",
-    "description": "Allows restoring all deleted bids",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/restore-all"
+    "name": "Get Product Highest Bid",
+    "description": "Allows viewing highest bid amount for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/product/{id}/highest"
   },
   {
-    "name": "Soft Delete Bid",
-    "description": "Allows soft deleting a bid",
+    "name": "Get User Seller Reviews",
+    "description": "Allows viewing seller reviews for current user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/user/seller"
+  },
+  {
+    "name": "Get User Buyer Reviews",
+    "description": "Allows viewing buyer reviews for current user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/user/buyer"
+  },
+  {
+    "name": "Get Review",
+    "description": "Allows viewing a specific review",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/{id}"
+  },
+  {
+    "name": "Get Product Seller Review History",
+    "description": "Allows viewing edit history of seller reviews for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/product/{id}/seller/edit-history"
+  },
+  {
+    "name": "Get Product Buyer Review History",
+    "description": "Allows viewing edit history of buyer reviews for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/product/{id}/buyer/edit-history"
+  },
+  {
+    "name": "Delete Multiple Reviews",
+    "description": "Allows deleting multiple reviews",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/bid/{id}"
+    "endpoint": "/api/v2/review"
+  },
+  {
+    "name": "Delete Review Permanently",
+    "description": "Allows permanently deleting a review",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/review/{id}/permanent"
+  },
+  {
+    "name": "Delete Multiple Bids",
+    "description": "Allows deleting multiple bids",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid"
+  },
+  {
+    "name": "Create Refund Request",
+    "description": "Allows creating a refund request",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/refund/{id}"
+  },
+  {
+    "name": "Approve Refund",
+    "description": "Allows admin to approve a refund request",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/refund/approve/{id}"
   }
 ]
