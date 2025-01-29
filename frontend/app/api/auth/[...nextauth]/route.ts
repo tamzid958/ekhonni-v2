@@ -54,14 +54,20 @@ const options: NextAuthOptions = {
 
               return {
                 id: res.id,
+                role: res.role,
                 accessToken: res.authToken.accessToken,
                 refreshToken: res.authToken.refreshToken,
               };
             }
           } catch (error) {
+          if (error?.status === 404) {
+            console.error("Email Not Verified, Please verify.");
+            throw new Error("Email Not Verified, Please verify.");
+            }
+          else{
             console.error("Error logging in:", error);
             throw new Error("Invalid email or password");
-          }
+          }}
         }
 
         return null;
@@ -90,12 +96,12 @@ const options: NextAuthOptions = {
       if (user && account) {
         return {
           id: user.id,
+          role: user.role,
           refreshToken: user.refreshToken,
           accessToken: user.accessToken,
           accessTokenExpires: Date.now() + 30 * 1000, // 30 seconds
         };
       }
-
       if (Date.now() < token.accessTokenExpires - 5 * 1000) {
         console.log("Access token is still valid.");
         return token;
@@ -115,6 +121,7 @@ const options: NextAuthOptions = {
 
       return {
         id: token.id,
+        role: token.role,
         refreshToken: refreshedToken.refreshToken,
         accessToken: refreshedToken.accessToken,
         accessTokenExpires: Date.now() + 30 * 1000, // 30 seconds
@@ -125,6 +132,7 @@ const options: NextAuthOptions = {
       session.user = {
         token: token.accessToken,
         id: token.id,
+        role: token.role,
       };
       return session;
     },
