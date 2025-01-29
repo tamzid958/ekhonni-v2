@@ -1,9 +1,14 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.EmailTaskDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.enums.VerificationTokenType;
+import com.ekhonni.backend.exception.InvalidVerificationTokenException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.repository.VerificationTokenRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,21 +29,36 @@ import java.time.LocalDateTime;
 @Service
 public class EmailVerificationService {
 
-
+    private final VerificationTokenService verificationTokenService;
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
     private final EmailService emailService;
+    private final EmailProducerService emailProducerService;
 
 
     @Value("${spring.constant.email-verification-url}")
     private String emailVerificationUrl;
 
 
-    public void send(String recipientEmail, String token) {
+    public void send(User user) {
 
+        VerificationToken verificationToken;
+        if (verificationTokenRepository.findByUser(user) != null) {
+            verificationToken = verificationTokenService.replace(user);
+        } else {
+            verificationToken = verificationTokenService.create(user, VerificationTokenType.EMAIL);
+        }
+
+        String recipientEmail = user.getEmail();
         String subject = "Email Verification";
-        String url = emailVerificationUrl + token;
+        EmailTaskDTO emailTaskDTO = getEmailTaskDTO(verificationToken, recipientEmail, subject);
+
+        emailProducerService.send(emailTaskDTO);
+    }
+
+    private EmailTaskDTO getEmailTaskDTO(VerificationToken verificationToken, String recipientEmail, String subject) {
+        String url = emailVerificationUrl + verificationToken.getToken();
         String message = String.format(
                 "Dear User,\n\n" +
                         "Thank you for registering with Ekhonni. To complete your registration, please verify your email address by clicking the link below:\n\n" +
@@ -47,17 +67,26 @@ public class EmailVerificationService {
                 url
         );
 
-        emailService.send(recipientEmail, subject, message);
+        EmailTaskDTO emailTaskDTO = new EmailTaskDTO(
+                recipientEmail,
+                subject,
+                message
+        );
+        return emailTaskDTO;
     }
 
 
-    public String verify(String token) {
+    public ApiResponse<?> verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Verification Token"));
+                .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Invalid Verification Token");
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
+        }
+
+        if (verificationToken.getType() != VerificationTokenType.EMAIL) {
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
         User user = verificationToken.getUser();
@@ -66,6 +95,7 @@ public class EmailVerificationService {
 
         verificationTokenRepository.delete(verificationToken);
 
-        return "Email verified successfully!";
+        String responseMessage = "Email verified successfully!";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 }

@@ -2,6 +2,7 @@ package com.ekhonni.backend.config;
 
 import com.ekhonni.backend.filter.ExceptionHandlerFilter;
 import com.ekhonni.backend.filter.JWTFilter;
+import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,10 +37,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-    private JWTFilter jwtFilter;
-    private ExceptionHandlerFilter exceptionHandlerFilter;
-    private AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JWTFilter jwtFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
+    private final AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
+    private final RoleRepository roleRepository;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;

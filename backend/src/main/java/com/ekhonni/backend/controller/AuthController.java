@@ -1,12 +1,12 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.AuthDTO;
-import com.ekhonni.backend.dto.PasswordResetRequestDTO;
-import com.ekhonni.backend.dto.ResetPasswordDTO;
-import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.dto.*;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
+import com.ekhonni.backend.service.ResendEmailService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/auth")
 @Validated
 @AllArgsConstructor
+@Tag(name = "Authentication")
 public class AuthController {
 
 
     AuthService authService;
     EmailVerificationService emailVerificationService;
     PasswordResetService passwordResetService;
+    ResendEmailService resendEmailService;
 
     @PostMapping("/sign-in")
     @PreAuthorize("@userService.isActive(#authDTO.email())")
@@ -40,25 +42,34 @@ public class AuthController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
+    public ApiResponse<?> createUser(@RequestBody UserDTO userDTO) {
 
-        return ResponseEntity.ok(authService.create(userDTO));
+        return authService.create(userDTO);
 
     }
+
+
+    @PostMapping("/resend-verification-email")
+    public ApiResponse<?> resendVerificationEmail(@Valid @RequestBody EmailDTO emailDTO) {
+        return resendEmailService.reSend(emailDTO);
+    }
+
 
     @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
-        return ResponseEntity.ok(emailVerificationService.verify(token));
+    public ApiResponse<?> verifyEmail(@RequestParam("token") String token) {
+        return emailVerificationService.verify(token);
     }
+
 
     @PostMapping("/password-reset-request")
-    public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
-        return ResponseEntity.ok(passwordResetService.requestReset(passwordResetDTO.email()));
+    public ApiResponse<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetDTO) {
+        return passwordResetService.requestReset(passwordResetDTO.email());
     }
 
+
     @PatchMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(passwordResetService.reset(token, resetPasswordDTO.newPassword()));
+    public ApiResponse<?> resetPassword(@RequestParam String token, @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return passwordResetService.reset(token, resetPasswordDTO.newPassword());
     }
 
 }

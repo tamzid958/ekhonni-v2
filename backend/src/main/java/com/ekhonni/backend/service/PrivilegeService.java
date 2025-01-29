@@ -7,15 +7,16 @@ import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.RolePrivilegeAssignment;
-import com.ekhonni.backend.repository.PrivilegeRepository;
 import com.ekhonni.backend.repository.RolePrivilegeAssignmentRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 
@@ -24,36 +25,18 @@ import java.util.stream.Collectors;
  * Date: 12/29/24
  */
 @Service
-public class PrivilegeService extends BaseService<Privilege, Long> {
+public class PrivilegeService {
 
-    PrivilegeRepository privilegeRepository;
+    private final Set<Privilege> privileges = new HashSet<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
     RoleRepository roleRepository;
     RolePrivilegeAssignmentRepository rolePrivilegeAssignmentRepository;
 
-    public PrivilegeService(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, RolePrivilegeAssignmentRepository rolePrivilegeAssignmentRepository) {
-        super(privilegeRepository);
-        this.privilegeRepository = privilegeRepository;
+    public PrivilegeService(RoleRepository roleRepository, RolePrivilegeAssignmentRepository rolePrivilegeAssignmentRepository) {
         this.roleRepository = roleRepository;
         this.rolePrivilegeAssignmentRepository = rolePrivilegeAssignmentRepository;
     }
 
-    @Transactional
-    public void add(PrivilegeDTO privilegeDTO) {
-
-        if (!privilegeRepository.existsByHttpMethodAndEndpoint(privilegeDTO.httpMethod(), privilegeDTO.endpoint())) {
-            Privilege privilege = new Privilege(
-                    privilegeDTO.name(),
-                    privilegeDTO.description(),
-                    privilegeDTO.httpMethod(),
-                    privilegeDTO.endpoint()
-            );
-
-            privilegeRepository.save(privilege);
-
-            assignPrivilegeToSuperAdmin(privilege);
-        }
-
-    }
 
     @Transactional
     public void addMultiple(List<PrivilegeDTO> privilegeDTOList) {
@@ -64,10 +47,34 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
 
     }
 
+
+    @Transactional
+    public void add(PrivilegeDTO privilegeDTO) {
+
+        if (!this.existsByHttpMethodAndEndpoint(privilegeDTO.httpMethod(), privilegeDTO.endpoint())) {
+            Privilege privilege = new Privilege(
+                    generateUniqueId(),
+                    privilegeDTO.name(),
+                    privilegeDTO.description(),
+                    privilegeDTO.httpMethod(),
+                    privilegeDTO.endpoint()
+            );
+
+            privileges.add(privilege);
+            assignPrivilegeToSuperAdmin(privilege);
+        }
+
+    }
+
+    private Long generateUniqueId() {
+        return idGenerator.getAndIncrement();
+    }
+
+
     private void assignPrivilegeToSuperAdmin(Privilege privilege) {
         Role roleAdmin = roleRepository.findByName("SUPER_ADMIN").orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
 
-        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(roleAdmin, privilege);
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(roleAdmin, privilege.getId());
 
         rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
     }
@@ -75,9 +82,9 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
 
     public String assign(long roleId, long privilegeId) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
-        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found when assigning"));
+        Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found"));
 
-        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege.getId());
 
         rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
 
@@ -87,7 +94,12 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
     public Page<Privilege> getAllOfRole(long roleId, Pageable pageable) {
         Page<RolePrivilegeAssignment> rolePrivilegeAssignments = rolePrivilegeAssignmentRepository.findAllByRoleId(roleId, pageable);
 
-        return rolePrivilegeAssignments.map(RolePrivilegeAssignment::getPrivilege);
+        List<Privilege> privilegesOfRole = rolePrivilegeAssignments.stream()
+                .map(assignment -> this.findById(assignment.getPrivilegeId())
+                        .orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found ")))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(privilegesOfRole, pageable, rolePrivilegeAssignments.getTotalElements());
     }
 
     public List<Privilege> getAllOfRole(Role role) {
@@ -96,22 +108,62 @@ public class PrivilegeService extends BaseService<Privilege, Long> {
         List<RolePrivilegeAssignment> rolePrivilegeAssignments = rolePrivilegeAssignmentRepository.findAllByRoleId(roleId);
 
         return rolePrivilegeAssignments.stream()
-                .map(RolePrivilegeAssignment::getPrivilege)
+                .map(assignment -> this.findById(assignment.getPrivilegeId())
+                        .orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found with id: " + assignment.getPrivilegeId())))
                 .collect(Collectors.toList());
     }
 
     public Privilege getByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
-        return privilegeRepository.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(NoResourceFoundException::new);
+
+        return this.findByHttpMethodAndEndpoint(httpMethod, endpoint).orElseThrow(NoResourceFoundException::new);
     }
 
     public String remove(long roleId, long privilegeId) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when removing"));
-        Privilege privilege = privilegeRepository.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
+        Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
 
-        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege);
+        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilegeId);
 
         rolePrivilegeAssignmentRepository.delete(rolePrivilegeAssignment);
 
         return "Privilege removed from role";
     }
+
+    public Optional<Privilege> findById(long privilegeID) {
+        return privileges.stream()
+                .filter(privilege -> privilege.getId().equals(privilegeID))
+                .findFirst();
+    }
+
+    public Optional<Privilege> findByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
+        return privileges.stream()
+                .filter(privilege -> privilege.getHttpMethod().equalsIgnoreCase(httpMethod)
+                        && privilege.getEndpoint().equals(endpoint))
+                .findFirst();
+    }
+
+    public boolean existsByHttpMethodAndEndpoint(String httpMethod, String endpoint) {
+        return privileges.stream()
+                .anyMatch(privilege -> privilege.getHttpMethod().equalsIgnoreCase(httpMethod)
+                        && privilege.getEndpoint().equals(endpoint));
+    }
+
+    public Page<Privilege> getAll(Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+
+        List<Privilege> pagedPrivileges;
+
+        if (startItem >= privileges.size()) {
+            pagedPrivileges = List.of();
+        } else {
+            List<Privilege> privilegeList = new ArrayList<>(privileges);
+            int toIndex = Math.min(startItem + pageSize, privilegeList.size());
+            pagedPrivileges = privilegeList.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(pagedPrivileges, pageable, privileges.size());
+    }
+
 }

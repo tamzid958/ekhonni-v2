@@ -36,11 +36,17 @@ public class AdminController {
 //        adminService.remove(emailDTO.email());
 //        return ResponseEntity.ok("admin removed");
 //    }
+    
 
-    @GetMapping("/users/")
-    public Page<UserProjection> getAllUser(Pageable pageable) {
-        return adminService.getAllUser(UserProjection.class, pageable);
+    @GetMapping("/users")
+    public Page<UserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
+        if (name != null || email != null) {
+            return adminService.getAllUserByNameOrEmail(UserProjection.class, pageable, name, email);
+        } else {
+            return adminService.getAllUser(UserProjection.class, pageable);
+        }
     }
+
 
     @PostMapping("user/{userId}/assign/role/{roleId}")
     @PreAuthorize("@userService.isActive(#userId)")

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -21,6 +20,10 @@ public class JsonUtil {
 
     public JsonUtil(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 
     public <T> List<T> readListFromJsonFile(String filePath, TypeReference<List<T>> typeReference) throws IOException {

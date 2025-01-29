@@ -1,6 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.VerificationTokenType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -34,5 +35,8 @@ public class VerificationToken extends BaseEntity<UUID> {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(nullable = false)
+    private VerificationTokenType type;
 
 }

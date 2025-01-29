@@ -1,24 +1,31 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.dto.bid.BidCreateDTO;
+import com.ekhonni.backend.dto.NotificationCreateRequestDTO;
 import com.ekhonni.backend.dto.NotificationPreviewDTO;
+import com.ekhonni.backend.dto.bid.BidCreateDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.NotificationType;
+import com.ekhonni.backend.exception.NotificationNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Notification;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.NotificationRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Author: Safayet Rafi
@@ -33,11 +40,51 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final TimeUtils timeUtils;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(32);
+
+
+    public DeferredResult<ApiResponse<?>> handleLongPolling(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
+        long timeout = 30000;
+
+        DeferredResult<ApiResponse<?>> deferredResult = new DeferredResult<>(timeout);
+
+        executorService.submit(() -> {
+            try {
+                boolean hasNewNotifications = false;
+                LocalDateTime pollingEndTime = LocalDateTime.now().plus(timeout, ChronoUnit.MILLIS);
+
+                while (!hasNewNotifications && LocalDateTime.now().isBefore(pollingEndTime)) {
+                    List<NotificationPreviewDTO> newNotifications = getAllNew(recipientId, lastFetchTime, pageable);
+                    if (!newNotifications.isEmpty()) {
+                        hasNewNotifications = true;
+                        deferredResult.setResult(
+                                new ApiResponse<>(HTTPStatus.OK, newNotifications)
+                        );
+                    } else {
+                        Thread.sleep(1000);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                deferredResult.setErrorResult(
+                        new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, "Internal Server Error")
+                );
+            }
+        });
+
+        deferredResult.onTimeout(() -> deferredResult.setResult(
+                new ApiResponse<>(HTTPStatus.NO_CONTENT, "No new notifications available")
+        ));
+
+        return deferredResult;
+    }
+
 
     public List<NotificationPreviewDTO> getAll(UUID recipientId, Pageable pageable) {
-        return notificationRepository.findByRecipientId(recipientId, pageable)
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNull(recipientId, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getId(),
                                 notifications.getMessage(),
                                 timeUtils.timeAgo(notifications.getCreatedAt())
                         )
@@ -47,9 +94,10 @@ public class NotificationService {
 
     public List<NotificationPreviewDTO> getAllNew(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
         if (lastFetchTime == null) return getAll(recipientId, pageable);
-        return notificationRepository.findByRecipientIdAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
+        return notificationRepository.findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(recipientId, lastFetchTime, pageable)
                 .stream()
                 .map(notifications -> new NotificationPreviewDTO(
+                                notifications.getId(),
                                 notifications.getMessage(),
                                 timeUtils.timeAgo(notifications.getCreatedAt())
                         )
@@ -57,12 +105,14 @@ public class NotificationService {
                 .toList();
     }
 
-    @Transactional
-    public void delete(UUID userId, Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
 
-        notificationRepository.delete(notification);
+    public ApiResponse<?> redirect(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
+
+        notification.setReadAt(LocalDateTime.now());
+        notificationRepository.save(notification);
+        return new ApiResponse<>(HTTPStatus.OK, notification.getRedirectUrl());
     }
 
 
@@ -75,6 +125,17 @@ public class NotificationService {
                 redirectUrl
         );
         notificationRepository.save(notification);
+    }
+
+    public ApiResponse<?> createForAllUser(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        create(
+                null,
+                notificationCreateRequestDTO.type(),
+                notificationCreateRequestDTO.message(),
+                notificationCreateRequestDTO.redirectUrl()
+        );
+
+        return new ApiResponse<>(HTTPStatus.OK, "Notification created successfully");
     }
 
     public void createForNewBid(Product product, BidCreateDTO bidCreateDTO) {

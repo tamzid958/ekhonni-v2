@@ -47,4 +47,10 @@ public class AdminService extends BaseService<User, UUID> {
     public Page<UserProjection> getAllUser(Class<UserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
     }
+
+    public Page<UserProjection> getAllUserByNameOrEmail(Class<UserProjection> projection, Pageable pageable, String name, String email) {
+        return adminRepository.findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(projection, pageable, name, email);
+    }
+
+
 }

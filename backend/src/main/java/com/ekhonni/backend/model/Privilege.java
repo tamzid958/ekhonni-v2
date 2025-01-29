@@ -1,7 +1,5 @@
 package com.ekhonni.backend.model;
 
-import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +13,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Privilege extends BaseEntity<Long> {
+public class Privilege {
+    private Long id;
     private String name;
     private String description;
     private String httpMethod;

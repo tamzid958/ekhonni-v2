@@ -6,7 +6,6 @@ import com.ekhonni.backend.projection.UserProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +32,6 @@ public interface UserRepository extends BaseRepository<User, UUID> {
 
     @Modifying
     @Transactional
-    @Query("""
-                DELETE FROM User u
-                WHERE u.id IN :userIds
-            """)
-    void deleteUsersByIds(List<UUID> userIds);
+    void deleteByIdIn(List<UUID> userIds);
 
 }

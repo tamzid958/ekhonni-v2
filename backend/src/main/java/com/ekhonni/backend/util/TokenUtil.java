@@ -1,5 +1,6 @@
 package com.ekhonni.backend.util;
 
+import com.ekhonni.backend.exception.RefreshTokenNotFoundException;
 import com.ekhonni.backend.model.RefreshToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
@@ -100,7 +101,7 @@ public class TokenUtil {
     private boolean isRefreshTokenBelongsToUser(User user, RefreshToken providedRefreshToken) {
         RefreshToken userRefreshToken = user.getRefreshToken();
 
-        if (userRefreshToken == null) throw new RuntimeException("Exception to be handled");
+        if (userRefreshToken == null) throw new RefreshTokenNotFoundException();
 
         return userRefreshToken.getValue().equals(providedRefreshToken.getValue());
     }
@@ -109,7 +110,7 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String generate() {
+    public String generateVerificationToken() {
         String token = UUID.randomUUID().toString();
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

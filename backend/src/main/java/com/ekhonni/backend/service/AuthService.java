@@ -2,6 +2,8 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.AuthDTO;
 import com.ekhonni.backend.dto.UserDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.*;
@@ -9,6 +11,7 @@ import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
@@ -37,11 +40,10 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final TokenUtil tokenUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final VerificationTokenService verificationTokenService;
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public String create(UserDTO userDTO) {
+    public ApiResponse<?> create(UserDTO userDTO) {
         if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
 
         Account account = new Account(0.0, "Active");
@@ -58,30 +60,32 @@ public class AuthService {
                 account,
                 null,
                 null,
+                null,
                 false
         );
 
         accountRepository.save(account);
         userRepository.save(user);
 
-        VerificationToken verificationToken = verificationTokenService.create(user);
-        emailVerificationService.send(user.getEmail(), verificationToken.getToken());
+        emailVerificationService.send(user);
 
-        return "Sign up successful! Please verify your email to sign in";
+        String responseMessage = "Sign up successful! Please verify your email to sign in";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
 
     @Transactional
     @Modifying
-    public AuthToken signIn(AuthDTO authDTO) {
+    public AuthClaim signIn(AuthDTO authDTO) {
         String email = authDTO.email();
         String password = authDTO.password();
         User user = userRepository.findByEmail(email);
 
-        if (user == null) throw new BadCredentialsException("Bad credentials");
+        if (user == null)
+            throw new BadCredentialsException("Bad credentials");
 
         if (!user.isVerified()) {
-            throw new RuntimeException("Email not verified. Please verify your email to sign in.");
+            throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
         }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
@@ -96,7 +100,12 @@ public class AuthService {
 
         user.setRefreshToken(refreshToken);
 
-        return new AuthToken(accessToken, refreshToken.getValue());
+        return AuthClaim
+                .builder()
+                .id(user.getId())
+                .role(user.getRole().getName())
+                .authToken(new AuthToken(accessToken, refreshToken.getValue()))
+                .build();
     }
 
 

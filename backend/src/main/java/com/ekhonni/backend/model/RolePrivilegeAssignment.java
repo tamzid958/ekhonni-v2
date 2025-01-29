@@ -23,7 +23,5 @@ public class RolePrivilegeAssignment extends BaseEntity<Long> {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "privilege_id")
-    private Privilege privilege;
+    private Long privilegeId;
 }

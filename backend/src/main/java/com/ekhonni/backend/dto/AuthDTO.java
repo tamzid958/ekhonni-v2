@@ -9,8 +9,11 @@ import jakarta.validation.constraints.NotNull;
  * Date: 12/10/24
  */
 
-public record AuthDTO(@NotNull @NotBlank @Email
+public record AuthDTO(@NotNull(message = "email cannot be null")
+                      @NotBlank(message = "email cannot be blank")
+                      @Email(message = "Not a valid email")
                       String email,
-                      @NotNull @NotBlank
+                      @NotNull(message = "password cannot be null")
+                      @NotBlank(message = "password cannot be blank")
                       String password) {
 }

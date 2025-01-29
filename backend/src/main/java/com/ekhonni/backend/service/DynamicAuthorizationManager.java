@@ -34,6 +34,7 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
 
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
+
         Authentication authenticatedUser = authentication.get();
         Role role = null;
 
@@ -49,7 +50,6 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
         String httpMethod = context.getRequest().getMethod();
 
         String endpoint = requestUtil.extractAndNormalizeUri(context.getRequest());
-
 
         Privilege privilege = privilegeService.getByHttpMethodAndEndpoint(httpMethod, endpoint);
 

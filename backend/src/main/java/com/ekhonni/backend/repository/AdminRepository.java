@@ -20,9 +20,12 @@ public interface AdminRepository extends UserRepository {
 
     Page<UserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNull(Class<UserProjection> projection, Pageable pageable);
 
+    Page<UserProjection> findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(Class<UserProjection> projection, Pageable pageable, String name, String email);
+
 
     @Modifying
     @Transactional
     @Query("UPDATE User e SET e.blockedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
     void block(UUID id);
+
 }

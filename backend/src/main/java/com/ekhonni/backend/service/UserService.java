@@ -2,12 +2,15 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
+import com.ekhonni.backend.dto.ProfileImageDTO;
 import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.util.ImageUtil;
 import com.ekhonni.backend.util.TokenUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +19,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.UUID;
 
 /**
@@ -31,14 +37,18 @@ public class UserService extends BaseService<User, UUID> {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final TokenUtil tokenUtil;
+    private final ImageUtil imageUtil;
 
+    @Value("${profile.image.upload.dir}")
+    String PROFILE_IMAGE_UPLOAD_DIR;
 
-    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil) {
+    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil, ImageUtil imageUtil) {
         super(userRepository);
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.tokenUtil = tokenUtil;
+        this.imageUtil = imageUtil;
     }
 
 
@@ -86,5 +96,21 @@ public class UserService extends BaseService<User, UUID> {
         String accessToken = tokenUtil.generateJwtAccessToken(user.getEmail());
 
         return new AuthToken(accessToken, refreshToken);
+    }
+
+    @Transactional
+    @Modifying
+    public String upload(UUID id, ProfileImageDTO profileImageDTO) throws IOException {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found while uploading"));
+
+        MultipartFile profileImage = profileImageDTO.image();
+
+        Path profileImagePath = imageUtil.generateFilePath(PROFILE_IMAGE_UPLOAD_DIR, profileImage);
+
+        imageUtil.saveToPath(profileImagePath, profileImage);
+
+        user.setProfileImage(profileImagePath.toString());
+
+        return "Profile image uploaded successfully";
     }
 }

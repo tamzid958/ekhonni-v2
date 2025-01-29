@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.EmailTaskDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +28,13 @@ public class EmailService {
     private String hostEmail;
 
 
-    public void send(String recipientEmail, String subject, String message) {
+    public void send(EmailTaskDTO emailTaskDTO) {
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setFrom(hostEmail);
-        email.setTo(recipientEmail);
-        email.setSubject(subject);
-        email.setText(message);
+        email.setTo(emailTaskDTO.email());
+        email.setSubject(emailTaskDTO.subject());
+        email.setText(emailTaskDTO.message());
 
         mailSender.send(email);
     }

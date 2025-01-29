@@ -30,6 +30,14 @@ spring:
       mode: ${SQL_INIT_MODE:never}
 
   security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 536103923076-ugjmaph8jvgqu6g18unl4cba4kj0v41q.apps.googleusercontent.com
+            client-secret: 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
+            scope: email
+
     jwt:
       secret: ${JWT_SECRET}
       access:
@@ -46,10 +54,6 @@ spring:
   constant:
     public:
       urls: ${PUBLIC_URLS}
-    user:
-      urls: ${USER_URLS}
-    admin:
-      urls: ${ADMIN_URLS}
     email-verification-url: ${EMAIL_VERIFICATION_URL}
     password-reset-url: ${PASSWORD_RESET_URL}
 
@@ -69,6 +73,12 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 server:
   address: ${SERVER_ADDRESS}
@@ -96,6 +106,21 @@ refund:
 upload:
   dir: ${UPLOAD_DIR}
 
+product:
+  upload:
+    dir: ${UPLOAD_DIR}
+
+rabbitmq-custom:
+  email-configuration:
+    queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
+    exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
+    routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}
+
+profile:
+  image:
+    upload:
+      dir: ${PROFILE_UPLOAD_DIR}
+
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
@@ -104,6 +129,7 @@ logging:
     org.springframework: INFO
     org.hibernate: INFO
     com.ekhonni: DEBUG
+
 
 management:
   endpoints:
@@ -166,3 +192,4 @@ info:
     email: ekhonni72@gmail.com
     team: Backend Team
   environment: ${spring.profiles.active}
+
