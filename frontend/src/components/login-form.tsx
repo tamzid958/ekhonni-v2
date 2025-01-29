@@ -59,8 +59,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const router = useRouter();
   return (
 
-    <div className={cn("flex flex-col gap-6",  className)} {...props}>
-      <Card className="overflow-hidden">
+    <div className={cn("flex flex-col gap-6 ",  className)} {...props}>
+      <Card className="overflow-hidden shadow-3xl border-gray-500">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
@@ -84,7 +84,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   <Label htmlFor="password">Password</Label>
                   <div onClick={() => {
                     router.push('/auth/forget-password')
-                  }} className="ml-auto text-sm underline-offset-2 hover:underline">
+                  }} className="ml-auto text-sm underline underline-offset-2 cursor-pointer hover:text-blue-600 transition">
                     <p> Forget Password? </p>
                   </div>
                 </div>
@@ -116,7 +116,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <span onClick={() => router.push('/auth/register')} className="underline underline-offset-4">
+                <span onClick={() => router.push('/auth/register')} className="ml-auto text-sm underline underline-offset-2 cursor-pointer hover:text-blue-600 transition">
                   Sign up
                 </span>
               </div>
@@ -131,7 +131,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
         </CardContent>
       </Card>
-      <div className="text-balance text-gray-950 text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
+      <div className="text-balance text-blue-950 text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
         By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
       </div>
     </div>

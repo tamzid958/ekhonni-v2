@@ -47,10 +47,10 @@ export default function ForgetPasswordPage() {
   };
 
   return (
-    <div className="flex bg-diagonal-split items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-brand-mid via-brand-dark to-brand-mid">
       <Card className="w-96 max-h-[96vh] flex flex-col border-black shadow-2xl">
         <CardContent>
-          <h2 className="text-lg font-bold mb-4 mt-4 text-center">Reset your password</h2>
+          <h2 className="text-lg font-bold mb-4 mt-6 text-center">Reset your password</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block mb-1 text-sm font-medium">Email Address</label>
@@ -64,11 +64,11 @@ export default function ForgetPasswordPage() {
                 <p className="text-sm text-red-600">{errors.email.message}</p>
               )}
             </div>
-            <Button type="submit" className="w-full mb-4">Send Reset Link</Button>
+            <Button type="submit" className="w-full mb-10">Send Reset Link</Button>
           </form>
           {message && (
             <p
-              className={`text-center mt-4 ${
+              className={`text-center mt-4  ${
                 message.includes("sent") ? "text-green-600" : "text-red-600"
               }`}
             >
