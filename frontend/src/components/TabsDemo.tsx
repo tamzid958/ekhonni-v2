@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,61 +10,121 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs";
+} from '@/components/ui/tabs';
+import { router } from 'next/client';
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function TabsDemo() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const token = session?.user?.token;
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [location, setLocation] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const router = useRouter();
 
-  const isAccountFormValid =
-    name.trim() !== "" && email.trim() !== "" && location.trim() !== "";
 
-  const isPasswordFormValid =
-    currentPassword.trim() !== "" && newPassword.trim() !== "";
+  const isAccountFormValid = name.trim() !== '' && phone.trim() !== '' && email.trim() !== '' && location.trim() !== '';
+  const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
+
 
   const handleSaveChanges = () => {
-    alert("Account information saved successfully!");
-    setName("");
-    setEmail("");
-    setLocation("");
-    setProfilePicture(null);
-    setPreview(null);
+    if (!userId || !token) {
+      alert("User not authenticated.");
+      return;
+    }
+
+    const updateProfileAndEmail = async () => {
+      const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
+      const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
+
+      const updatedProfile = { name, phone, address: location };
+      const emailData = { email };
+
+      try {
+        const profileResponse = await fetch(profileUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedProfile),
+        });
+
+        if (!profileResponse.ok) throw new Error("Failed to update profile");
+
+        const emailResponse = await fetch(emailUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(emailData),
+        });
+
+        if (!emailResponse.ok) throw new Error("Failed to update email");
+
+        alert("Email updated successfully! You'll be logged out.");
+
+        // Log out and redirect to login page
+        await signOut({ redirect: false }); // Logout without redirecting
+        router.push("/auth/login"); // Redirect to login page
+
+      } catch (error) {
+        //console.error("Error updating profile and email:", error);
+        alert("Failed to update profile and email. Please try again.");
+      }
+    };
+
+    updateProfileAndEmail();
   };
+
 
   const handleSavePassword = async () => {
-    // const userId=
-    // const apiUrl = `/api/v2/user/${userId}/change-password`;
+    if (!userId || !token) {
+      alert("User not authenticated.");
+      return;
+    }
 
-    alert("Password updated successfully! You'll be logged out.");
-    setCurrentPassword("");
-    setNewPassword("");
-    setShowPassword(false);
-  };
+    const passwordUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-password`;
+    const passwordData = { currentPassword, newPassword };
 
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setProfilePicture(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const response = await fetch(passwordUpdateUrl, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(passwordData),
+      });
+      console.log("response is", response);
+      if (!response.ok) throw new Error("Failed to update password");
+
+      alert("Password updated successfully! You'll be logged out.");
+
+      // Log out and redirect to login page
+      await signOut({ redirect: false });
+      router.push("/auth/login");
+
+    } catch (error) {
+      console.error("Error updating password:", error);
+      alert("Failed to update password. Please try again.");
     }
   };
 
@@ -78,143 +139,58 @@ export function TabsDemo() {
         </TabsTrigger>
       </TabsList>
 
+      {/* Account Tab */}
       <TabsContent value="account">
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
-            <CardDescription>
-              Update your account details. All fields are required.
-            </CardDescription>
+            <CardDescription>Update your account details. All fields are required.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="profile-picture">Profile Picture</Label>
-              <div className="flex items-center space-x-4">
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="Profile Preview"
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                    N/A
-                  </div>
-                )}
-                <input
-                  id="profile-picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                  className="hidden"
-                />
-                <Label
-                  htmlFor="profile-picture"
-                  className="cursor-pointer bg-blue-500 text-white px-3 py-1 rounded-lg"
-                >
-                  Upload
-                </Label>
-              </div>
+              <Label htmlFor="name">Name *</Label>
+              <Input id="name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <Label htmlFor="email">Email *</Label>
+              <Input id="email" placeholder="Your email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="email">
-                Email <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <Label htmlFor="phone">Phone *</Label>
+              <Input id="phone" placeholder="Your phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="location">
-                Location <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="location"
-                placeholder="Your location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
+              <Label htmlFor="location">Location *</Label>
+              <Input id="location" placeholder="Your location" value={location} onChange={(e) => setLocation(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              className="w-full"
-              onClick={handleSaveChanges}
-              disabled={!isAccountFormValid}
-            >
+            <Button className="w-full" onClick={handleSaveChanges} disabled={!isAccountFormValid}>
               Save changes
             </Button>
           </CardFooter>
         </Card>
       </TabsContent>
 
+      {/* Password Tab */}
       <TabsContent value="password">
         <Card>
           <CardHeader>
             <CardTitle>Password</CardTitle>
-            <CardDescription>
-              Change your password here. All fields are required.
-            </CardDescription>
+            <CardDescription>Change your password here. All fields are required.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="current-password">
-                Current Password <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="current-password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Your current password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
+              <Label htmlFor="current-password">Current Password *</Label>
+              <Input id="current-password" type="password" placeholder="Your current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="new-password">
-                New Password <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="new-password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Your new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center">
-              <input
-                id="show-password"
-                type="checkbox"
-                className="mr-2"
-                checked={showPassword}
-                onChange={() => setShowPassword(!showPassword)}
-              />
-              <Label htmlFor="show-password" className="cursor-pointer">
-                Show password
-              </Label>
+              <Label htmlFor="new-password">New Password *</Label>
+              <Input id="new-password" type="password" placeholder="Your new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              className="w-full"
-              onClick={handleSavePassword}
-              disabled={!isPasswordFormValid}
-            >
+            <Button className="w-full" onClick={handleSavePassword} disabled={!isPasswordFormValid}>
               Save password
             </Button>
           </CardFooter>

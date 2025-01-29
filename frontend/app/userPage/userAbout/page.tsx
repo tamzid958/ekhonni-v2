@@ -10,7 +10,7 @@ const UserAbout: React.FC = () => {
     <div className="bg-[#FAF7F0]">
       <AboutPage
         fetchUrl={fetchUrl}
-        title="About Buyer"
+        title=""
       />
     </div>
 
