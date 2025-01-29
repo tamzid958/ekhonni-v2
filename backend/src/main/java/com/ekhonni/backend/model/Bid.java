@@ -20,7 +20,7 @@ public class Bid extends BaseEntity<Long> {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bidder_id", nullable = false)
     private User bidder;
 
@@ -34,10 +34,6 @@ public class Bid extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BidStatus status;
-
-    public String getBidderName() {
-        return bidder.getName();
-    }
 
 }
 

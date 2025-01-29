@@ -161,12 +161,12 @@ INSERT INTO product (id, title, sub_title, description, price, division, address
 (10, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 (11, 'Canon EOS Rebel T7', 'Digital SLR Camera', 'Perfect for photography enthusiasts', 450.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 
-    (202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-    (303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-    (304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-    (305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-    (306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-    (352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
+(202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
 
 -- Add product images for the original products
 INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) VALUES
