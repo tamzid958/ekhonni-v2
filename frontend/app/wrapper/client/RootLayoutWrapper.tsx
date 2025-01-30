@@ -1,57 +1,21 @@
-"use client";
+'use client';
+import { SWRConfig } from 'swr';
+import React, { ReactNode } from 'react';
+import fetcher from '@/data/services/fetcher';
 
-import { SWRConfig } from "swr";
-import React from 'react';
-
-interface FetchOptions {
-  url: string;
-  params?: Record<string, string | number>;
-  authentication?: {
-    token: string;
-  };
-}
-
-
-
-const fetcher = async ({ url, params, authentication }: FetchOptions) => {
-  const queryString = params
-    ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
-    : "";
-  const fullUrl = `${url}${queryString}`;
-
-  const response = await fetch(fullUrl, {
-    headers: {
-      ...(authentication?.token
-        ? { Authorization: `Bearer ${authentication.token}` }
-        : {}),
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch: ${response.statusText}`);
-  }
-
-  return response.json();
-};
-
-interface RootLayoutWrapperProps {
-  children: React.ReactNode;
-  authentication?: { token: string };
-}
-
-const RootLayoutWrapper = ({ children, authentication }: RootLayoutWrapperProps) => {
+const RootLayoutWrapper = ({ children}:{ children: ReactNode}) => {
   return (
     <SWRConfig
       value={{
-        fetcher: (args: FetchOptions) =>
-          fetcher({ ...args, authentication }),
+        fetcher,
+        refreshInterval: 3000,
+        // TODO: Uncomment the following lines to disable revalidation on focus and reconnect
+        // revalidateIfStale: false,
+        // revalidateOnFocus: false,
+        // revalidateOnReconnect: false,
         provider: () => new Map(),
         revalidateOnFocus: true,
         dedupingInterval: 2000,
-        onError: (error) => {
-          console.error("SWR Error:", error);
-        },
       }}
     >
       {children}

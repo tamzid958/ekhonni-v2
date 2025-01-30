@@ -1,8 +1,5 @@
-'use client';
-
+// app/product/[id]/page.tsx
 import React from 'react';
-import { useParams } from 'next/navigation';
-import useSWR from 'swr';
 import Image from 'next/image';
 import Loading from '@/components/Loading';
 import Error from '@/components/ErrorBoundary';
@@ -11,48 +8,50 @@ import { Button } from '@/components/ui/button';
 
 const inter = Inter({ subsets: ['latin'] });
 
-interface UnsplashPhoto {
+interface ProductData {
   id: string;
-  urls: {
-    regular: string;
-    thumb: string;
-  };
-  alt_description: string;
+  title: string;
+  description: string;
+  img: string;
+  price: number;
+  category: string;
 }
 
+const ProductPage = async ({ params }: { params: { id: string } }) => {
+  const { id } = params;
 
-const ProductPage: React.FC = () => {
-  const { id } = useParams();
+  // Fetch the product data using the dynamic `id`
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
+  const res = await fetch(`${baseUrl}/api/mock-data?id=${id}`, { cache: 'no-store' });
 
-  const { data, error, isLoading } = useSWR<UnsplashPhoto>({
-    url: `https://api.unsplash.com/photos/${id}`,
-
-  });
-
-  const activeImg = data?.urls.regular || '';
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
+  if (!res.ok) {
     return <Error message="Failed to load product details." />;
   }
 
+  const data: ProductData = await res.json();
+
+  // Ensure that we have valid data before rendering
+  if (!data) {
+    return <Loading />;
+  }
+
   return (
-    <div className="flex-row justify-center items-center bg-gray-100 h-screen">
-      <div className="flex h-auto bg-white">
+    <div
+      className="space-y-6 container mx-auto px-4 w-full overflow-hidden flex flex-row justify-center items-center min-h-screen">
+      <div className="flex h-auto bg-white w-full">
+        {/* Left Section: Image and Thumbnails */}
         <div className="flex flex-col w-1/2 h-96">
           <div className="flex-1 bg-white rounded-xl items-center justify-center relative">
             <Image
-              src={activeImg}
-              alt={data.alt_description || 'Unsplash Photo'}
+              src={data.img} // Corrected from activeImg to data.img
+              alt={data.title || 'Product Image'}
               fill
               className="object-cover rounded-xl p-1 shadow-lg"
             />
           </div>
 
           <div className="flex bg-white rounded w-full gap-1 h-16 overflow-hidden p-1">
+            {/* Example of thumbnail images */}
             {Array(5)
               .fill(null)
               .map((_, idx) => (
@@ -61,7 +60,7 @@ const ProductPage: React.FC = () => {
                   className="flex-1 bg-white flex items-center justify-center border border-gray-400 rounded-xl relative"
                 >
                   <Image
-                    src={data.urls.thumb}
+                    src={data.img} // Corrected this too
                     alt={`Thumbnail ${idx + 1}`}
                     fill
                     className="object-cover rounded-xl p-1"
@@ -71,36 +70,34 @@ const ProductPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col w-1/2">
+        {/* Right Section: Product Information */}
+        <div className="flex flex-col w-1/2 p-4">
           <div className="flex-1 bg-white flex items-center justify-center relative mb-1">
             <div
               className={`flex-1 flex-col w-fit bg-white shadow-lg rounded-lg p-2 pl-3 pr-5 mr-2 ${inter.className}`}
             >
               <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                {data.alt_description || 'Product Details'}
+                {data.title || 'Product Details'} {/* Corrected to data.title */}
               </h1>
-              <p className="text-gray-600 mb-1">
-                Explore this amazing photo from Unsplash.
-              </p>
+              <p className="text-gray-600 mb-1">{data.description}</p>
 
               <div className="flex justify-between items-center">
                 <span className="text-[0.9rem] text-gray-800 font-semibold">
                   Base Price:
                 </span>
                 <span className="text-[0.9rem] text-green-600 font-bold">
-                  100$
+                  ${data.price}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* Bid Information */}
           <div className="flex-1 bg-white flex items-center justify-center relative mb-2">
             <div
               className={`flex-1 flex-col w-fit bg-white shadow-lg rounded-lg p-2 pl-3 pr-5 mr-2 ${inter.className}`}
             >
-              <h2 className="text-xl font-bold text-gray-800 mb-2">
-                Bid Information
-              </h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">Bid Information</h2>
               <div>
                 <div className="flex justify-between">
                   <span className="font-semibold text-gray-700">Bid Type:</span>
@@ -150,7 +147,8 @@ const ProductPage: React.FC = () => {
                 </div>
               </div>
               <div className="flex justify-center">
-                <Button className="flex align-middle shadow-lg mt-2 w-[15rem] bg-black text-white px-4 py-2 rounded hover:bg-green-500 hover:text-black transition">
+                <Button
+                  className="flex align-middle shadow-lg mt-2 w-[15rem] bg-black text-white px-4 py-2 rounded hover:bg-green-500 hover:text-black transition">
                   Place Your Bid
                 </Button>
               </div>
@@ -162,4 +160,4 @@ const ProductPage: React.FC = () => {
   );
 };
 
-export default  ProductPage;
+export default ProductPage;
