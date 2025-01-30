@@ -93,7 +93,7 @@ public class ReviewService extends BaseService<Review, Long> {
 
     public BuyerReviewProjection getBuyerReview(Long productId) {
         return reviewRepository.findFirstByBidProductIdAndTypeAndDeletedAtIsNull(
-                productId, ReviewType.SELLER, BuyerReviewProjection.class);
+                productId, ReviewType.BUYER, BuyerReviewProjection.class);
     }
 
     public Page<SellerReviewProjection> getSellerReviews(UUID sellerId, Pageable pageable) {
