@@ -8,6 +8,7 @@ import FormPage2 from '@/components/FormPage2';
 import FormPage3 from '@/components/FormPage3';
 import ConfirmationPage from '@/components/ConfirmationPage';
 import CategorySelector from '@/components/CategorySelector';
+import { submitProduct } from './submitProduct';
 import { useSession } from 'next-auth/react';
 
 export default function Home() {
@@ -20,21 +21,21 @@ export default function Home() {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
-  fetch(`http://localhost:8080/api/v2/user/${userId}/notifications`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${userToken}`,
-      'Content-Type': 'application/json',
-    },
-  })
-    .then(response => response.json())
-    .then(data => console.log(data)) // Log the fetched notifications
-    .catch(error => console.error('Error fetching notifications:', error));
-  console.log(userId);
-  console.log(userToken);
+//   fetch(`http://localhost:8080/api/v2/user/${userId}/notifications`, {
+//     method: 'GET',
+//     headers: {
+//       'Authorization': `Bearer ${userToken}`,
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//     .then(response => response.json())
+//     .then(data => console.log(data)) // Log the fetched notifications
+//     .catch(error => console.error('Error fetching notifications:', error));
+//   console.log(userId);
+//   console.log(userToken);
 //for notification console
 
-  
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,6 +46,7 @@ export default function Home() {
       productDescription: '',
       category: '',
       subCategory: '',
+      basePrice: '',
     },
   });
 
@@ -65,8 +67,33 @@ export default function Home() {
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
-  const handleSubmit = form.handleSubmit((values) => {
+  const handleSubmit = form.handleSubmit(async (values) => {
+    //'use server';
     console.log('Form Submitted:', values);
+
+    const formData = new FormData();
+    formData.append('title', values.productName);
+    formData.append('subTitle', values.productSubTitle);
+    formData.append('description', values.productDescription);
+    formData.append('price', values.basePrice);
+    formData.append('division', values.productLocation);
+    formData.append('address', values.productLocationDescription);
+    formData.append('condition', values.productCondition);
+    formData.append('conditionDetails', values.productConditionDescription);
+    formData.append('category', values.category);
+
+    // Append images
+    values.images.forEach((file) => {
+      formData.append('images', file);
+    });
+
+    const result = await submitProduct(formData, userToken);
+
+    if (result.success) {
+      console.log(result.message);
+    } else {
+      console.error(result.message);
+    }
   });
 
   return (
