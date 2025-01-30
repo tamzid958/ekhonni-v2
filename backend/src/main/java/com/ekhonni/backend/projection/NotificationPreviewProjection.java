@@ -1,5 +1,7 @@
 package com.ekhonni.backend.projection;
 
+import com.ekhonni.backend.enums.NotificationType;
+
 import java.time.LocalDateTime;
 
 /**
@@ -11,7 +13,12 @@ public interface NotificationPreviewProjection {
 
     Long getId();
 
+    NotificationType getType();
+
     String getMessage();
 
+    String getRedirectUrl();
+
     LocalDateTime getCreatedAt();
+
 }

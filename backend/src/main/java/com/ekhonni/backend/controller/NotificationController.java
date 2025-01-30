@@ -44,13 +44,6 @@ public class NotificationController {
     }
 
 
-    @GetMapping("/{notificationId}/redirect")
-    @PreAuthorize("#userId == authentication.principal.id")
-    public ApiResponse<?> redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        return notificationService.redirect(notificationId);
-    }
-
-
     /**
      * ---------Admin API---------
      */
