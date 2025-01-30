@@ -438,10 +438,22 @@
     "endpoint": "/api/v2/review/seller/{id}"
   },
   {
+    "name": "Get Seller Product Reviews",
+    "description": "Allows viewing seller reviews for a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/product/{id}"
+  },
+  {
     "name": "Get Buyer Reviews",
     "description": "Fetches reviews of a buyer by their ID",
     "httpMethod": "GET",
     "endpoint": "/api/v2/review/buyer/{id}"
+  },
+  {
+    "name": "Get Buyer Product Reviews",
+    "description": "Allows viewing buyer reviews for a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/product/{id}"
   },
   {
     "name": "Get User Seller Reviews",
@@ -465,13 +477,13 @@
     "name": "Get Product Seller Review History",
     "description": "Allows viewing edit history of seller reviews for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/review/product/{id}/seller/edit-history"
+    "endpoint": "/api/v2/review/seller/product/{id}/edit-history"
   },
   {
     "name": "Get Product Buyer Review History",
     "description": "Allows viewing edit history of buyer reviews for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/review/product/{id}/buyer/edit-history"
+    "endpoint": "/api/v2/review/buyer/product/{id}/edit-history"
   },
   {
     "name": "Delete Multiple Reviews",

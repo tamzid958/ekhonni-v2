@@ -19,6 +19,8 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
 
     Optional<Review> findFirstByBidIdAndTypeAndDeletedAtIsNull(Long bidId, ReviewType type);
 
+    <P> P findFirstByBidProductIdAndTypeAndDeletedAtIsNull(Long productId, ReviewType type, Class<P> projection);
+
     boolean existsByBidIdAndTypeAndDeletedAtIsNull(Long bidId, ReviewType type);
 
     <P> Page<P> findByTypeAndBidProductSellerIdAndDeletedAtIsNull(
@@ -31,4 +33,5 @@ public interface ReviewRepository extends BaseRepository<Review, Long> {
 
 
     <P> Page<P> findByBidProductIdAndType(Long productId, ReviewType type, Class<P> projection, Pageable pageable);
+
 }

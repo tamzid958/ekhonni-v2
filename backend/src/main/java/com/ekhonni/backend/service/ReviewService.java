@@ -6,7 +6,6 @@ import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ReviewType;
 import com.ekhonni.backend.exception.bid.BidNotAcceptedException;
 import com.ekhonni.backend.exception.bid.BidNotFoundException;
-import com.ekhonni.backend.exception.review.ReviewAlreadyExistsException;
 import com.ekhonni.backend.exception.review.ReviewNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Review;
@@ -62,11 +61,12 @@ public class ReviewService extends BaseService<Review, Long> {
         reviewRepository.save(review);
     }
 
+    @Modifying
+    @Transactional
     private void handlePreviousReview(Long bidId, ReviewType type) {
         reviewRepository.findFirstByBidIdAndTypeAndDeletedAtIsNull(bidId, type)
                 .ifPresent(previousReview -> softDelete(previousReview.getId()));
     }
-
 
     @Modifying
     @Transactional
@@ -86,6 +86,15 @@ public class ReviewService extends BaseService<Review, Long> {
         reviewRepository.save(review);
     }
 
+    public SellerReviewProjection getSellerReview(Long productId) {
+        return reviewRepository.findFirstByBidProductIdAndTypeAndDeletedAtIsNull(
+                productId, ReviewType.SELLER, SellerReviewProjection.class);
+    }
+
+    public BuyerReviewProjection getBuyerReview(Long productId) {
+        return reviewRepository.findFirstByBidProductIdAndTypeAndDeletedAtIsNull(
+                productId, ReviewType.SELLER, BuyerReviewProjection.class);
+    }
 
     public Page<SellerReviewProjection> getSellerReviews(UUID sellerId, Pageable pageable) {
         return reviewRepository.findByTypeAndBidProductSellerIdAndDeletedAtIsNull(ReviewType.SELLER, sellerId,
