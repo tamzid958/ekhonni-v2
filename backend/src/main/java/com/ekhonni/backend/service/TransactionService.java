@@ -73,7 +73,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
     public void updateValidatedTransaction(Transaction transaction, PaymentResponse response) {
         TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
         if ("1".equals(response.getRiskLevel())) {
-            status = TransactionStatus.SUCCESS_WITH_RISK;
+            status = TransactionStatus.VALID_WITH_RISK;
         }
         transaction.setStatus(status);
         updateTransaction(transaction, response);
@@ -96,9 +96,6 @@ public class TransactionService extends BaseService<Transaction, Long> {
         Account superAdminAccount = accountService.getSuperAdminAccount();
         superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + transaction.getBdtAmount());
     }
-
-    @Modifying
-    @Transactional
 
     public boolean existsByBidId(Long bidId) {
         return transactionRepository.existsByBidIdAndDeletedAtIsNull(bidId);

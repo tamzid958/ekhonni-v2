@@ -166,6 +166,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(response);
     }
 
+    @ExceptionHandler(InvalidTransactionRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTransactionRequestException(InvalidTransactionRequestException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
+    }
+
     @ExceptionHandler(InitiatePaymentException.class)
     public ResponseEntity<ErrorResponse> handleInitiatePaymentException(InitiatePaymentException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
