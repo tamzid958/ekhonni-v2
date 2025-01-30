@@ -7,7 +7,8 @@ import { ProductSection } from '@/components/ProductSection';
 interface Data {
   id: string;
   price: number;
-  name: string;
+  title: string;
+  subTitle: string;
   description: string;
   status: string;
   condition: string;
