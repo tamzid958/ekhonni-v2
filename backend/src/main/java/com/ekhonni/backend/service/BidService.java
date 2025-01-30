@@ -48,13 +48,6 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findByProductId(productId, projection, pageable);
     }
 
-    public void checkDuplicate(@Valid BidCreateDTO bidCreateDTO) {
-        UUID bidderId = AuthUtil.getAuthenticatedUser().getId();
-        if (bidRepository.existsByProductIdAndBidderIdAndDeletedAtIsNull(bidCreateDTO.productId(), bidderId)) {
-            throw new RuntimeException("Bid already submitted, update instead");
-        }
-    }
-
     @Modifying
     @Transactional
     public void create(BidCreateDTO bidCreateDTO) {
@@ -70,7 +63,7 @@ public class BidService extends BaseService<Bid, Long> {
         }
         User bidder = userService.get(authenticatedUser.getId())
                 .orElseThrow(() -> new UserNotFoundException("Bidder not found for bid"));
-        Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), bidCreateDTO.currency(), BidStatus.PENDING);
+        Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), "BDT", BidStatus.PENDING);
         bidRepository.save(bid);
     }
 
@@ -99,18 +92,14 @@ public class BidService extends BaseService<Bid, Long> {
         if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bid.getProduct().getId(), BidStatus.ACCEPTED)) {
             throw new BidAlreadyAcceptedException();
         }
-        log.info("Previous amount: {}, current amount: {}", bid.getAmount(), bidUpdateDTO.amount());
         if (bidUpdateDTO.amount() <= bid.getAmount()) {
             throw new InvalidBidAmountException("Amount must be greater than previous bid");
         }
         softDelete(id);
-        create(new BidCreateDTO(bid.getProduct().getId(), bidUpdateDTO.amount(), bid.getCurrency()));
+        create(new BidCreateDTO(bid.getProduct().getId(), bidUpdateDTO.amount()));
     }
 
     private void validateFromPreviousBid(Bid previousBid, BidCreateDTO bidCreateDTO) {
-        if (!bidCreateDTO.currency().equals(previousBid.getCurrency())) {
-            throw new BidCurrencyMismatchException("Bid currency don't match");
-        }
         if (bidCreateDTO.amount() <= previousBid.getAmount()) {
             throw new InvalidBidAmountException("Amount must be greater than previous bid");
         }
