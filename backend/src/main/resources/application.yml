@@ -83,6 +83,7 @@ spring:
 
 server:
   address: ${SERVER_ADDRESS}
+  port: ${PORT}
 
 sslcommerz:
   store-id: ${SSLCOMMERZ_STORE_ID}
