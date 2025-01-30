@@ -31,7 +31,7 @@ import java.util.List;
         "description",
         "price",
         "division",
-        "location",
+        "address",
         "condition",
         "conditionDetails",
         "status",
@@ -49,7 +49,7 @@ public class ProductResponseDTO {
     private String description;
     private Double price;
     private Division division;
-    private String location;
+    private String address;
     private ProductCondition condition;
     private String conditionDetails;
     private ProductStatus status;

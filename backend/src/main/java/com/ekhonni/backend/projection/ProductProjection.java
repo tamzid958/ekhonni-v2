@@ -31,7 +31,7 @@ public interface ProductProjection {
 
     Division getDivision();
 
-    String getLocation();
+    String getAddress();
 
     ProductCondition getCondition();
 
