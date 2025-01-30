@@ -279,13 +279,19 @@
     "name": "Get Product Buyer Bids",
     "description": "Allows viewing all bids for a product (buyer view)",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/buyer/{id}"
+    "endpoint": "/api/v2/bid/buyer/product/{id}"
   },
   {
     "name": "Get Product Bid Count",
     "description": "Allows viewing bid count for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{id}/count"
+    "endpoint": "/api/v2/bid/product/{id}/count"
+  },
+  {
+    "name": "Get Product Highest Bid",
+    "description": "Allows viewing highest bid amount for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/product/{id}/highest"
   },
   {
     "name": "Create Bid",
@@ -303,7 +309,7 @@
     "name": "Get Seller Product Bids",
     "description": "Allows seller to view bids for their product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/seller/{id}"
+    "endpoint": "/api/v2/bid/seller/product/{id}"
   },
   {
     "name": "Accept Bid",
@@ -321,19 +327,19 @@
     "name": "Get Product Bids Admin",
     "description": "Allows admin to view all bids for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/admin/{id}"
+    "endpoint": "/api/v2/bid/admin/product/{id}"
   },
   {
     "name": "Get Product Bid Audit",
     "description": "Allows viewing bid audit for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{id}/audit"
+    "endpoint": "/api/v2/bid/product/{id}/audit"
   },
   {
     "name": "Get Product Bid Audit Count",
     "description": "Allows viewing bid audit count for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{id}/audit-count"
+    "endpoint": "/api/v2/bid/product/{id}/audit-count"
   },
   {
     "name": "Update Bid Status",
@@ -369,7 +375,7 @@
     "name": "Permanent Delete Bid",
     "description": "Allows permanently deleting a bid",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/bid/{id}/delete-permanently"
+    "endpoint": "/api/v2/bid/{id}/permanent"
   },
   {
     "name": "Initiate Payment",
@@ -436,12 +442,6 @@
     "description": "Fetches reviews of a buyer by their ID",
     "httpMethod": "GET",
     "endpoint": "/api/v2/review/buyer/{id}"
-  },
-  {
-    "name": "Get Product Highest Bid",
-    "description": "Allows viewing highest bid amount for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/highest"
   },
   {
     "name": "Get User Seller Reviews",
