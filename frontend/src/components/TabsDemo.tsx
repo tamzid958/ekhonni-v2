@@ -21,6 +21,10 @@ import {
 } from '@/components/ui/tabs';
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Toaster, toast } from "sonner";
+import { z } from 'zod';
+
+
 
 export function TabsDemo() {
   const { data: session } = useSession();
@@ -31,32 +35,57 @@ export function TabsDemo() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [location, setLocation] = useState('');
+  const [profile, setProfile] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+
   const router = useRouter();
+
+  const nameSchema = z.string().regex(/^[a-zA-Z\s]*$/, 'Name must contain only alphabets');
+  const emailSchema = z.string().email('Invalid email address');
+  const phoneSchema = z.string().regex(/^01[0-9]{9}$/, 'Phone number must start with 01 and contain 11 digits');
+  const addressSchema = z.string().min(5, 'Address must be at least 5 characters long');
+  const passwordSchema = z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+
+  const imageSchema = z.instanceof(File).optional(); // Optional image file validation
 
   // ✅ Check if email or password form is filled for validation
   const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
   const isEmailFormValid = email.trim() !== '';
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setProfileImage(file);
+  };
+
   const handleSaveChanges = async () => {
     if (!userId || !token) {
-      alert("User not authenticated.");
+      toast.error("User not authenticated.");
       return;
     }
 
     const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
     const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
+    const imageUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/image`;
 
-    // ✅ Only send the fields that have values
-    const updatedProfile: any = {};
-    if (name.trim()) updatedProfile.name = name;
-    if (phone.trim()) updatedProfile.phone = phone;
-    if (location.trim()) updatedProfile.address = location;
+    // ✅ Send the entire profile with empty strings for fields that are not updated
+    const updatedProfile = {
+      name: name.trim() || "",
+      phone: phone.trim() || "",
+      address: location.trim() || "",
+    };
 
     try {
       if (Object.keys(updatedProfile).length > 0) {
-        // ✅ Update only name, phone, or location if provided
+        // ✅ Update the profile only if something has changed
         const profileResponse = await fetch(profileUpdateUrl, {
           method: "PATCH",
           headers: {
@@ -68,7 +97,10 @@ export function TabsDemo() {
 
         if (!profileResponse.ok) throw new Error("Failed to update profile");
 
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
+        setName('');
+        setPhone('');
+        setLocation('');
       }
 
       if (email.trim()) {
@@ -84,14 +116,34 @@ export function TabsDemo() {
 
         if (!emailResponse.ok) throw new Error("Failed to update email");
 
-        alert("Email updated successfully! You'll be logged out.");
+          setEmail('');
+
+        toast.success("Email updated successfully! You'll be logged out.");
         await signOut({ redirect: false });
         setTimeout(() => router.push("/auth/login"), 500);
       }
 
+      // Handle profile image update
+      if (profileImage) {
+        const formData = new FormData();
+        formData.append("image", profileImage);
+
+        const imageResponse = await fetch(imageUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!imageResponse.ok) throw new Error("Failed to update profile image");
+        setProfileImage(null);
+        toast.success("Profile image updated successfully!");
+      }
+
     } catch (error) {
-      console.error("Error updating profile or email:", error);
-      alert("Failed to update profile or email. Please try again.");
+      console.error("Error updating profile, email, or image:", error);
+      toast.error("Failed to update profile, email, or image. Please try again.");
     }
   };
 
@@ -115,19 +167,22 @@ export function TabsDemo() {
       });
 
       if (!response.ok) throw new Error("Failed to update password");
+      setCurrentPassword('');
+      setNewPassword('');
 
-      alert("Password updated successfully! You'll be logged out.");
+      toast.success("Password updated successfully! You'll be logged out.");
       await signOut({ redirect: false });
       setTimeout(() => router.push("/auth/login"), 500);
 
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("Failed to update password. Please try again.");
+      toast.error("Failed to update password. Please try again.");
     }
   };
 
   return (
     <Tabs defaultValue="account" className="w-[400px] bg-white rounded-lg shadow-md">
+      <Toaster position="top-right" />
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="account" className="px-4 py-2 font-medium">
           Account
@@ -161,9 +216,18 @@ export function TabsDemo() {
               <Label htmlFor="location">Location</Label>
               <Input id="location" placeholder="Your location" value={location} onChange={(e) => setLocation(e.target.value)} />
             </div>
+            <div>
+              <Label htmlFor="profile-image">Profile Image</Label>
+              <Input
+                id="profile-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleSaveChanges} disabled={!name && !phone && !email && !location}>
+            <Button className="w-full" onClick={handleSaveChanges} disabled={!(name || phone || email || location || profileImage)}>
               Save changes
             </Button>
           </CardFooter>
@@ -180,11 +244,35 @@ export function TabsDemo() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="current-password">Current Password *</Label>
-              <Input id="current-password" type="password" placeholder="Your current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+              <Input
+                id="current-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
             </div>
             <div>
               <Label htmlFor="new-password">New Password *</Label>
-              <Input id="new-password" type="password" placeholder="Your new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+              <Input
+                id="new-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                id="show-password"
+                type="checkbox"
+                className="mr-2"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+              />
+              <Label htmlFor="show-password" className="cursor-pointer">
+                Show password
+              </Label>
             </div>
           </CardContent>
           <CardFooter>
