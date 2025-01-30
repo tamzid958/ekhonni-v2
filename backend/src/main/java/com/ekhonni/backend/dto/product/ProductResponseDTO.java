@@ -5,7 +5,7 @@
  * Project Name: ekhonni-v2
  */
 
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.product;
 
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;

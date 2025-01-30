@@ -8,23 +8,18 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import com.ekhonni.backend.dto.ProductCategoryDTO;
-import com.ekhonni.backend.dto.ProductImageDTO;
-import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.dto.product.ProductCategoryDTO;
+import com.ekhonni.backend.dto.product.ProductImageDTO;
+import com.ekhonni.backend.dto.product.ProductSellerDTO;
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.validation.annotation.ImageOnly;
-import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter

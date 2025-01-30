@@ -7,17 +7,13 @@
 
 package com.ekhonni.backend.repository.Implementation;
 
-import com.ekhonni.backend.dto.ProductResponseDTO;
 import com.ekhonni.backend.model.Product;
 //import com.ekhonni.backend.projection.implementation.ProductProjectionImpl;
-import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.repository.CustomProductRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;

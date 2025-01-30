@@ -8,9 +8,9 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.ProductCreateDTO;
-import com.ekhonni.backend.dto.ProductResponseDTO;
-import com.ekhonni.backend.dto.ProductUpdateDTO;
+import com.ekhonni.backend.dto.product.ProductCreateDTO;
+import com.ekhonni.backend.dto.product.ProductResponseDTO;
+import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;

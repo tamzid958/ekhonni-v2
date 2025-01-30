@@ -8,9 +8,9 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.ProductCreateDTO;
-import com.ekhonni.backend.dto.ProductResponseDTO;
-import com.ekhonni.backend.dto.ProductUpdateDTO;
+import com.ekhonni.backend.dto.product.ProductCreateDTO;
+import com.ekhonni.backend.dto.product.ProductResponseDTO;
+import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.*;
 import com.ekhonni.backend.filter.ProductFilter;
@@ -23,7 +23,7 @@ import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
-import com.ekhonni.backend.specificationbuilder.ProductSpecificationBuilder;
+import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
@@ -41,7 +41,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -139,7 +138,7 @@ public class ProductService extends BaseService<Product, Long> {
         }
 
 
-        Specification<Product> spec = ProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
         List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
         List<ProductProjection> projections = productRepository.findByIdIn(productIds);
