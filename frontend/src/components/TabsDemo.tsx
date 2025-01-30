@@ -19,7 +19,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { router } from 'next/client';
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -34,29 +33,30 @@ export function TabsDemo() {
   const [location, setLocation] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
-
-  const isAccountFormValid = name.trim() !== '' && phone.trim() !== '' && email.trim() !== '' && location.trim() !== '';
+  // ✅ Check if email or password form is filled for validation
   const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
+  const isEmailFormValid = email.trim() !== '';
 
-
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (!userId || !token) {
       alert("User not authenticated.");
       return;
     }
 
-    const updateProfileAndEmail = async () => {
-      const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
-      const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
+    const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
+    const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
 
-      const updatedProfile = { name, phone, address: location };
-      const emailData = { email };
+    // ✅ Only send the fields that have values
+    const updatedProfile: any = {};
+    if (name.trim()) updatedProfile.name = name;
+    if (phone.trim()) updatedProfile.phone = phone;
+    if (location.trim()) updatedProfile.address = location;
 
-      try {
+    try {
+      if (Object.keys(updatedProfile).length > 0) {
+        // ✅ Update only name, phone, or location if provided
         const profileResponse = await fetch(profileUpdateUrl, {
           method: "PATCH",
           headers: {
@@ -68,32 +68,32 @@ export function TabsDemo() {
 
         if (!profileResponse.ok) throw new Error("Failed to update profile");
 
+        alert("Profile updated successfully!");
+      }
+
+      if (email.trim()) {
+        // ✅ Only update email if provided
         const emailResponse = await fetch(emailUpdateUrl, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(emailData),
+          body: JSON.stringify({ email }),
         });
 
         if (!emailResponse.ok) throw new Error("Failed to update email");
 
         alert("Email updated successfully! You'll be logged out.");
-
-        // Log out and redirect to login page
-        await signOut({ redirect: false }); // Logout without redirecting
-        router.push("/auth/login"); // Redirect to login page
-
-      } catch (error) {
-        //console.error("Error updating profile and email:", error);
-        alert("Failed to update profile and email. Please try again.");
+        await signOut({ redirect: false });
+        setTimeout(() => router.push("/auth/login"), 500);
       }
-    };
 
-    updateProfileAndEmail();
+    } catch (error) {
+      console.error("Error updating profile or email:", error);
+      alert("Failed to update profile or email. Please try again.");
+    }
   };
-
 
   const handleSavePassword = async () => {
     if (!userId || !token) {
@@ -113,14 +113,12 @@ export function TabsDemo() {
         },
         body: JSON.stringify(passwordData),
       });
-      console.log("response is", response);
+
       if (!response.ok) throw new Error("Failed to update password");
 
       alert("Password updated successfully! You'll be logged out.");
-
-      // Log out and redirect to login page
       await signOut({ redirect: false });
-      router.push("/auth/login");
+      setTimeout(() => router.push("/auth/login"), 500);
 
     } catch (error) {
       console.error("Error updating password:", error);
@@ -144,28 +142,28 @@ export function TabsDemo() {
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
-            <CardDescription>Update your account details. All fields are required.</CardDescription>
+            <CardDescription>Update any account detail. Fields are optional.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">Name</Label>
               <Input id="name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">Email (Logout required)</Label>
               <Input id="email" placeholder="Your email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="phone">Phone *</Label>
+              <Label htmlFor="phone">Phone</Label>
               <Input id="phone" placeholder="Your phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="location">Location *</Label>
+              <Label htmlFor="location">Location</Label>
               <Input id="location" placeholder="Your location" value={location} onChange={(e) => setLocation(e.target.value)} />
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleSaveChanges} disabled={!isAccountFormValid}>
+            <Button className="w-full" onClick={handleSaveChanges} disabled={!name && !phone && !email && !location}>
               Save changes
             </Button>
           </CardFooter>
@@ -177,7 +175,7 @@ export function TabsDemo() {
         <Card>
           <CardHeader>
             <CardTitle>Password</CardTitle>
-            <CardDescription>Change your password here. All fields are required.</CardDescription>
+            <CardDescription>Change your password (Logout required).</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>

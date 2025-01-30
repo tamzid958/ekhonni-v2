@@ -53,6 +53,7 @@ export default function Register() {
         router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
       } else if (result.status === 404) {
         alert("Email already exists, please sign up with a different email.");
+
       } else if (result.status === 301) {
         alert("You have Signed Up Already. Please Verify Your Email.");
         router.push(
@@ -73,8 +74,8 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-brand-dark via-brand-mid to-brand-light">
-      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-3xl border border-gray-200">
+    <div className="flex items-center justify-center min-h-screen bg-brand-bright">
+      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-xl border-gray-300 ">
         <CardContent>
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
             Create an Account
@@ -154,7 +155,7 @@ export default function Register() {
           <p className="text-center text-sm text-gray-700 mt-6">
             Already have an account?{" "}
             <span
-              className="text-brand-dark font-semibold cursor-pointer hover:underline"
+              className="ml-auto text-sm underline underline-offset-2 cursor-pointer hover:text-blue-600 transition"
               onClick={() => router.push("/auth/login")}
             >
               Login
