@@ -8,7 +8,7 @@ import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
-import com.ekhonni.backend.util.ImageUtil;
+import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.UUID;
 
 /**
@@ -37,18 +36,18 @@ public class UserService extends BaseService<User, UUID> {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final TokenUtil tokenUtil;
-    private final ImageUtil imageUtil;
+    private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
 
     @Value("${profile.image.upload.dir}")
     String PROFILE_IMAGE_UPLOAD_DIR;
 
-    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil, ImageUtil imageUtil) {
+    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil, CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
         super(userRepository);
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.tokenUtil = tokenUtil;
-        this.imageUtil = imageUtil;
+        this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
     }
 
 
@@ -105,11 +104,9 @@ public class UserService extends BaseService<User, UUID> {
 
         MultipartFile profileImage = profileImageDTO.image();
 
-        Path profileImagePath = imageUtil.generateFilePath(PROFILE_IMAGE_UPLOAD_DIR, profileImage);
+        String profileImagePath = cloudinaryImageUploadUtil.uploadImage(profileImageDTO.image());
 
-        imageUtil.saveToPath(profileImagePath, profileImage);
-
-        user.setProfileImage(profileImagePath.toString());
+        user.setProfileImage(profileImagePath);
 
         return "Profile image uploaded successfully";
     }
