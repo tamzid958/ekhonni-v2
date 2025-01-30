@@ -51,16 +51,8 @@ public class Transaction extends BaseEntity<Long> {
         return bid.getBidder();
     }
 
-    public Account getBuyerAccount() {
-        return getBuyer().getAccount();
-    }
-
     public User getSeller() {
         return getProduct().getSeller();
-    }
-
-    public Account getSellerAccount() {
-        return getSeller().getAccount();
     }
 
     @Override

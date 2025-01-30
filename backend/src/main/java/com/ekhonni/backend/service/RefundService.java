@@ -91,11 +91,11 @@ public class RefundService extends BaseService<Refund, Long> {
     @Modifying
     @Transactional
     private void updateSuccessfulRefund(Refund refund, RefundQueryResponse response) {
-        Account sellerAccount = refund.getTransaction().getSellerAccount();
+        Account sellerAccount = accountService.getByUserId(refund.getTransaction().getSeller().getId());
         Account superAdminAccount = accountService.getSuperAdminAccount();
 
-        sellerAccount.setBalance(sellerAccount.getBalance() - refund.getAmount());
-        superAdminAccount.setBalance(superAdminAccount.getBalance() - refund.getAmount());
+        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() - refund.getAmount());
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() - refund.getAmount());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         refund.setInitiatedOn(LocalDateTime.parse(response.getInitiatedOn(), formatter));

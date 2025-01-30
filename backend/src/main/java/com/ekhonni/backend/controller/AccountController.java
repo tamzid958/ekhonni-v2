@@ -50,7 +50,8 @@ public record AccountController(AccountService accountService) {
 
     @PostMapping("/{user_id}")
     public ApiResponse<?> create(@PathVariable("user_id") UUID userId) {
-        return new ApiResponse<>(HTTPStatus.CREATED, accountService.create(userId));
+        accountService.create(userId);
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
     @PatchMapping("/{id}")

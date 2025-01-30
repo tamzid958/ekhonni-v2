@@ -90,11 +90,11 @@ public class TransactionService extends BaseService<Transaction, Long> {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         transaction.getBid().setStatus(BidStatus.PAID);
 
-        Account sellerAccount = transaction.getSellerAccount();
-        sellerAccount.setBalance(sellerAccount.getBalance() + transaction.getBdtAmount());
+        Account sellerAccount = accountService.getByUserId(transaction.getSeller().getId());
+        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() + transaction.getBdtAmount());
 
         Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setBalance(superAdminAccount.getBalance() + transaction.getBdtAmount());
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + transaction.getBdtAmount());
     }
 
     @Modifying

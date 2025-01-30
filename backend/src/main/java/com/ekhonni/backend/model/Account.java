@@ -5,6 +5,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.AccountStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,13 +20,23 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account extends BaseEntity<Long> {
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
-    private double balance = 0.0;
+    private double totalEarnings;
 
-    @NotBlank
-    private String status;
+    @Column(nullable = false)
+    private double totalWithdrawals;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus status;
+
+    public double getBalance() {
+        return totalEarnings - totalWithdrawals;
+    }
+
 }

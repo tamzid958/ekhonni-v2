@@ -1,27 +1,35 @@
--- Insert Accounts
-INSERT INTO account (id, balance, status, created_at, updated_at) VALUES
-(101, 1000.00, 'ACTIVE', NOW(), NOW()),
-(102, 750.50, 'ACTIVE', NOW(), NOW()),
-(103, 5000.00, 'ACTIVE', NOW(), NOW()),
-(104, 2500.00, 'ACTIVE', NOW(), NOW()),
-(105, 1800.00, 'ACTIVE', NOW(), NOW()),
-(106, 1800.00, 'ACTIVE', NOW(), NOW()),
-(107, 1800.00, 'ACTIVE', NOW(), NOW());
-
 -- Insert Roles (only ADMIN and USER now)
 INSERT INTO role (id, name) VALUES
 (101, 'ADMIN'),
 (102, 'USER');
 
--- Insert Users (now all regular users except one admin)
-INSERT INTO users (id, name, email, password, phone, address, role_id, account_id, verified, created_at, updated_at) VALUES
-('550e8400-e29b-41d4-a716-446655440000'::uuid, 'John Doe', 'john@example.com', '$2a$10$encrypted1', '+1234567890', '123 Main St', 102, 101, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Jane Smith', 'jane@example.com', '$2a$10$encrypted2', '+1234567891', '456 Oak Ave', 102, 102, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Admin User', 'admin@example.com', '$2a$10$encrypted3', '+1234567892', '789 Admin St', 101, 103, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mark Wilson', 'mark@example.com', '$2a$10$encrypted4', '+1234567893', '321 Oak Ave', 102, 104, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Sarah Brown', 'sarah@example.com', '$2a$10$encrypted5', '+1234567894', '654 Pine St', 102, 105, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com', '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', 'Dhamrai, Dhaka', 102, 106, true, NOW(), NOW()),
-('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Rifat Shariar Sakil', 'shariarsakil101@gmail.com', '$2a$12$Sdg6oZNAi0XulmEeJluSfu6HGG43mIoH0kCXlli6CJinjnSToY3km', '+1234567894', '654 Pine St', 102, 107, true, NOW(), NOW());
+-- Insert Users (updated to remove account_id)
+INSERT INTO users (id, name, email, password, phone, address, role_id, verified, created_at, updated_at) VALUES
+('550e8400-e29b-41d4-a716-446655440000'::uuid, 'John Doe', 'john@example.com',
+   '$2a$10$encrypted1', '+1234567890', '123 Main St', 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Jane Smith', 'jane@example.com',
+   '$2a$10$encrypted2', '+1234567891', '456 Oak Ave', 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Admin User', 'admin@example.com',
+   '$2a$10$encrypted3', '+1234567892', '789 Admin St', 101, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mark Wilson', 'mark@example.com',
+   '$2a$10$encrypted4', '+1234567893', '321 Oak Ave', 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Sarah Brown', 'sarah@example.com',
+   '$2a$10$encrypted5', '+1234567894', '654 Pine St', 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Asif Iqbal', 'asif783810@gmail.com',
+   '$2y$10$eYGOYQm9XRLex5KQQuXITecm5FqIqY0tlFq3awFjed8A9MwRAPX5W', '+1234567894', 'Dhamrai, Dhaka', 102, true, NOW(), NOW()),
+('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Rifat Shariar Sakil', 'shariarsakil101@gmail.com',
+   '$2a$12$Sdg6oZNAi0XulmEeJluSfu6HGG43mIoH0kCXlli6CJinjnSToY3km', '+1234567894', '654 Pine St', 102, true, NOW(), NOW());
+
+-- Insert Accounts (updated total_earnings to 0.00)
+INSERT INTO account (id, total_earnings, total_withdrawals, status, user_id, created_at, updated_at) VALUES
+(101, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
+(102, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
+(103, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440002'::uuid, NOW(), NOW()),
+(104, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+(105, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
+(106, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+(107, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440006'::uuid, NOW(), NOW());
+
 
 -- Insert Categories
 INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
@@ -132,22 +140,7 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 (10067, 'Printing Supplies', true, 10008, NOW(), NOW()),
 (10068, 'Organizers', true, 10008, NOW(), NOW());
 
--- Insert Products
---INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, created_at, updated_at) VALUES
---(1, 'iPhone 13 Pro', 899.99, 'Slightly used iPhone 13 Pro, 256GB', true, false, 'USED', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
---(2, 'MacBook Pro 2022', 1499.99, 'New MacBook Pro M1', true, false, 'NEW', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
---(3, 'Samsung Galaxy S21', 699.99, 'Brand new Samsung Galaxy S21', true, false, 'NEW', 2, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
---(4, 'Dell XPS 13', 1299.99, 'Dell XPS 13 laptop, slightly used', true, false, 'USED', 3, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
---(5, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
---(6, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
---(7, 'Leather Jacket', 199.99, 'Genuine leather jacket', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
---(8, 'Sony WH-1000XM4 Headphones', 350.00, 'Noise-canceling headphones', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
---(9, 'Nike Air Max', 120.00, 'Brand new running shoes', true, false, 'NEW', 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
---(10, 'Apple Watch Series 6', 399.00, 'Used but in great condition', true, false, 'USED', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
---(11, 'Canon EOS Rebel T7', 450.00, 'Digital SLR Camera', true, false, 'NEW', 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW());
 
--- Insert new products from the updated data
--- Insert Products with updated conditions and fields
 INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at) VALUES
 (1, 'iPhone 13 Pro', 'Slightly used iPhone 13 Pro', '256GB storage, excellent condition', 899.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Minimal signs of use', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
 (2, 'MacBook Pro 2022', 'New MacBook Pro M1', 'Latest model with M1 chip', 1499.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Brand new', 3, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
@@ -199,23 +192,23 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 -- Insert Bids
 -- Bids where Asif is the Bidder (Buyer)
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1001, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1002, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'USD', 'PENDING', NOW(), NOW()),    -- Pending
-(1006, 2, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'USD', 'ACCEPTED', NOW(), NOW()),   -- Accepted
-(1003, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'USD', 'PENDING', NOW(), NOW()),   -- Pending
-(1008, 4, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'USD', 'ACCEPTED', NOW(), NOW()),   -- Accepted
-(1009, 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'USD', 'ACCEPTED', NOW(), NOW()),   -- Accepted
-(1016, 8, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'USD', 'ACCEPTED', NOW(), NOW());   -- Accepted
+(1001, 1, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
+(1002, 1, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'BDT', 'PENDING', NOW(), NOW()),    -- Pending
+(1006, 2, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'ACCEPTED', NOW(), NOW()),   -- Accepted
+(1003, 2, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'BDT', 'PENDING', NOW(), NOW()),   -- Pending
+(1008, 4, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'BDT', 'ACCEPTED', NOW(), NOW()),   -- Accepted
+(1009, 5, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'ACCEPTED', NOW(), NOW()),   -- Accepted
+(1016, 8, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'BDT', 'ACCEPTED', NOW(), NOW());   -- Accepted
 
 -- Bids where Asif is the Seller
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1010, 6, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1011, 6, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'PENDING', NOW(), NOW()),
-(1013, 7, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1014, 7, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'USD', 'PENDING', NOW(), NOW()),
-(1017, 9, '550e8400-e29b-41d4-a716-446655440001'::uuid, 115.00, 'USD', 'ACCEPTED', NOW(), NOW()),   -- Accepted
-(1018, 10, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'USD', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1020, 11, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'USD', 'ACCEPTED', NOW(), NOW());  -- Accepted
+(1010, 6, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
+(1011, 6, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
+(1013, 7, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
+(1014, 7, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
+(1017, 9, '550e8400-e29b-41d4-a716-446655440001'::uuid, 115.00, 'BDT', 'ACCEPTED', NOW(), NOW()),   -- Accepted
+(1018, 10, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
+(1020, 11, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'BDT', 'ACCEPTED', NOW(), NOW());  -- Accepted
 
 -- Reviews where Asif Iqbal is reviewed as a Buyer (Total 5)
 INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
