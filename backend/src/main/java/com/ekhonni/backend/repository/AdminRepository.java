@@ -1,6 +1,6 @@
 package com.ekhonni.backend.repository;
 
-import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.projection.DetailedUserProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,11 +16,11 @@ import java.util.UUID;
  */
 @Repository
 public interface AdminRepository extends UserRepository {
-    Page<UserProjection> findAllByBlockedAtIsNotNull(Class<UserProjection> projection, Pageable pageable);
+    Page<DetailedUserProjection> findAllByBlockedAtIsNotNull(Class<DetailedUserProjection> projection, Pageable pageable);
 
-    Page<UserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNull(Class<UserProjection> projection, Pageable pageable);
+    Page<DetailedUserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNull(Class<DetailedUserProjection> projection, Pageable pageable);
 
-    Page<UserProjection> findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(Class<UserProjection> projection, Pageable pageable, String name, String email);
+    Page<DetailedUserProjection> findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(Class<DetailedUserProjection> projection, Pageable pageable, String name, String email);
 
 
     @Modifying
