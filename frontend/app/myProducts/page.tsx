@@ -2,7 +2,7 @@ import React from 'react';
 import MyProductRenderer from './MyProductRenderer';
 
 interface ProductData {
-  id: string;
+  id: number;
   price: number;
   title: string;
   subTitle: string;

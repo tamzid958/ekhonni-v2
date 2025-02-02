@@ -3,10 +3,15 @@
 import React, { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Package } from 'lucide-react';
-import { CardDemo } from '@/components/SellerCard';
+import { CardDemo } from '@/components/Card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { BidsShowPage } from './Components/bidingPage';
 
 interface ProductData {
-  id: string;
+  id: number;
   price: number;
   title: string;
   subTitle: string;
@@ -33,11 +38,37 @@ interface ProductData {
 export default function MyProducts({ products }: { products: ProductData[] }) {
   const [filter, setFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null); // Selected product ID
+  const { data: session } = useSession(); // Get session data
+  const bearerToken = session?.user?.token; // Access token from session
+
 
   const filteredProducts =
     filter === 'ALL' ? products : products.filter((product) => product.status === filter);
+
+  const handleOpenDialog = (id: number) => {
+    setSelectedProductId(id);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedProductId(null);
+  };
+
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return <Badge variant="default">Approved</Badge>;
+      case 'DECLINED':
+        return <Badge variant="destructive">Declined</Badge>;
+      case 'PENDING_APPROVAL':
+        return <Badge variant="secondary">Pending Approval</Badge>;
+      case 'ARCHIVED':
+        return <Badge variant="outline">Archived</Badge>;
+      default:
+        return <Badge variant="default">Default</Badge>;
+    }
+  };
 
   return (
     <div className="space-y-6 container mx-12 p-4">
@@ -85,33 +116,37 @@ export default function MyProducts({ products }: { products: ProductData[] }) {
               <p className="text-center font-semibold text-3xl">No products found</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts
                 .filter((product) => product.title.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((product) => (
-                  <div key={product.id} className="bg-white">
+                  <div key={product.id} className="relative flex flex-col">
+                    <span className="absolute top-2 left-2 z-10">{getStatusBadge(product.status)}</span>
                     <CardDemo
-                      key={product.id}
                       id={product.id}
-                      name={product.title}
+                      title={product.title}
                       description={product.description}
-                      img={product.images[0]?.imagePath || '/placeholder.jpg'}
+                      img={product.images[0].imagePath}
                       price={product.price}
-                      status={product.status}
-                      condition={product.condition}
-                      createdAt={product.createdAt}
-                      updatedAt={product.updatedAt}
-                      seller={product.seller}
-                      category={product.category}
-                      bids={product.bids}
                     />
-                    <button>Bid Details</button>
+                    <Button onClick={() => handleOpenDialog(product.id)}>Bidding Details</Button>
                   </div>
                 ))}
             </div>
-          )
-        }
+          )}
       </div>
+      {/* Dialog for BiddingPage */}
+      {selectedProductId !== null && (
+        <Dialog open={selectedProductId !== null} onOpenChange={handleCloseDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Bidding Details</DialogTitle>
+            </DialogHeader>
+            {BidsShowPage(selectedProductId, bearerToken)}
+            <Button onClick={handleCloseDialog}>Close</Button>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
