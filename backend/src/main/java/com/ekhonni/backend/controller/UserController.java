@@ -3,14 +3,17 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.*;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
+import com.ekhonni.backend.model.Report;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
+import com.ekhonni.backend.service.ReportService;
 import com.ekhonni.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +36,7 @@ public class UserController {
     private final UserService userService;
     private final BidService bidService;
     private final ProductService productService;
+    private final ReportService reportService;
 
     @GetMapping("/{id}")
     public UserProjection getById(@PathVariable UUID id) {
@@ -76,6 +80,18 @@ public class UserController {
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public AuthToken getNewAccessToken(@PathVariable UUID id, @RequestBody RefreshTokenDTO refreshTokenDTO) {
         return userService.getNewAccessToken(refreshTokenDTO);
+    }
+
+
+    @PostMapping("/{id}/report")
+    public ResponseEntity<Report> createReport(@PathVariable UUID reporterId, @RequestBody ReportDTO reportDTO) {
+        Report savedReport = reportService.createReport(reporterId, reportDTO);
+        return ResponseEntity.ok(savedReport);
+    }
+
+    @GetMapping("/{id}/reports")
+    public ResponseEntity<Page<Report>> getReportsByUser(@PathVariable UUID userId, Pageable pageable) {
+        return ResponseEntity.ok(reportService.getAllReportsByUser(userId, pageable));
     }
 
     @GetMapping("/{id}/product/{product_id}/bid")

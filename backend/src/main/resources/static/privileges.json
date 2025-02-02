@@ -204,6 +204,18 @@
     "endpoint": "/api/v2/role/{id}"
   },
   {
+    "name": "Get all reports",
+    "description": "Allows viewing all available reports",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/reports"
+  },
+  {
+    "name": "Report a user",
+    "description": "Allows Reporting a user",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/report"
+  },
+  {
     "name": "Process Payment Success",
     "description": "Handles successful payment processing",
     "httpMethod": "POST",
