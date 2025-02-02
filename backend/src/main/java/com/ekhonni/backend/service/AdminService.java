@@ -39,6 +39,7 @@ public class AdminService extends BaseService<User, UUID> {
         return adminRepository.findAllByBlockedAtIsNotNull(projection, pageable);
     }
 
+
     public void block(UUID id) {
         adminRepository.block(id);
     }

@@ -6,8 +6,8 @@ import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
+import com.ekhonni.backend.exception.UserBlockedException;
 import com.ekhonni.backend.model.*;
-import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
@@ -83,6 +83,10 @@ public class AuthService {
 
         if (!user.isVerified()) {
             throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
+        }
+
+        if (user.getBlockedAt() != null) {
+            throw new UserBlockedException("User Blocked by Authority");
         }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);

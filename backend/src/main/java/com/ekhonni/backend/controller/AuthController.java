@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +31,7 @@ public class AuthController {
     ResendEmailService resendEmailService;
 
     @PostMapping("/sign-in")
-    @PreAuthorize("@userService.isActive(#authDTO.email())")
     public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
-
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 

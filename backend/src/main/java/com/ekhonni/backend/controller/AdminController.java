@@ -24,20 +24,6 @@ public class AdminController {
     private final AdminService adminService;
     private final RoleService roleService;
 
-//    @PostMapping("/add-admin")
-//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-//    public ResponseEntity<?> add(@RequestBody EmailDTO emailDTO) {
-//        adminService.add(emailDTO.email());
-//        return ResponseEntity.ok("admin added");
-//    }
-//
-//    @PostMapping("/remove-admin")
-//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-//    public ResponseEntity<?> remove(@RequestBody EmailDTO emailDTO) {
-//        adminService.remove(emailDTO.email());
-//        return ResponseEntity.ok("admin removed");
-//    }
-
 
     @GetMapping("/users")
     public Page<DetailedUserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
