@@ -1,7 +1,7 @@
 "use client"
-import  React from "react"
+import React, { useState } from 'react';
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { LogOut, MoreHorizontal, ShieldIcon, UserIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -14,16 +14,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from '@/components/ui/badge';
+import { useSession } from 'next-auth/react';
+
+import DeleteConfirmationDialog from '../components/useDeleteUser';
+import { mutate } from 'swr';
+import { users } from '@/data/users';
+
+
 
 
 export type User = {
   id: string
   name: string
   email: string
-  role: "admin" | "user"
+  role: "Admin" | "User"
   image: string
-  status: "pending" | "processing" | "success" | "failed"
-  lastSeen: string
+  status: "active" | "banned" | "disabled" | "failed"
+  CreatedAt: string
+  UpdatedAt: string
+  address: string
+
 }
 
 export const columns: ColumnDef<User>[] = [
@@ -49,7 +60,6 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
   {
     accessorKey: "name",
     header: "Name",
@@ -71,16 +81,56 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     header: "Role",
+    cell: ({ row }) => {
+      const role = "Admin"; //row.getValue("role")
+      return (
+        <div className="flex items-start">
+          {role === "Admin" ? (
+            <ShieldIcon className="h-4 w-4 mr-1" />
+          ) : (
+            <UserIcon className="h-4 w-4 mr-1" />
+          )}
+          <Badge className="bg-green-500">{role}</Badge>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
   },
   {
     accessorKey: "status",
     header: "Status",
+    cell : ({ row }) => {
+      const status = "active"; // row.getValue("status")
+      let color = "gray"
+      if (status === "active") {
+        color = "green"
+      } else if (status === "banned") {
+        color = "red"
+      }
+      return (
+        <Badge className={`bg-${color}-500`}>
+
+          {status}
+        </Badge>)
+    }
   },
   {
-    accessorKey: "lastSeen",
-    header: "Last Seen",
+    accessorKey: "createdAt",
+    header: "Created At",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("lastSeen"))
+      const date = new Date(row.getValue("createdAt"))
+      const formatted = date.toDateString()
+      return <div className="text-right font-medium">{formatted}</div>
+    }
+  },
+  {
+    accessorKey: "updatedAt",
+    header: "Updated At",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"))
       const formatted = date.toDateString()
       return <div className="text-right font-medium">{formatted}</div>
     }
@@ -89,6 +139,12 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     cell: ({ row }) => {
       const User = row.original
+      const { data: session } = useSession();
+      const userToken = session?.user?.token;
+      const handleDeleteSuccess = (deletedUserId) => {
+        mutate('/api/users', users.filter(user => User.id !== deletedUserId), false);
+
+      };
 
       return (
         <DropdownMenu>
@@ -106,9 +162,27 @@ export const columns: ColumnDef<User>[] = [
              Copy User ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View User Public Details </DropdownMenuItem>
-            <DropdownMenuItem>Change User Role</DropdownMenuItem>
-            <DropdownMenuItem>Delete User</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => alert(`Viewing user ${User.name}`)}
+            >View User Public Details </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={() => alert(`Editing user ${User.name}`)}
+            >Change User Role</DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem>
+              <DeleteConfirmationDialog
+                userId={User.id}
+                userToken={userToken}
+                onDeleteSuccess={handleDeleteSuccess}
+              />
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
           </DropdownMenuContent>
         </DropdownMenu>
       )
