@@ -14,12 +14,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 @Repository
 public class CustomProductRepositoryImpl implements CustomProductRepository {
 
@@ -27,8 +28,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
     private EntityManager entityManager;
 
     @Override
-    public List<Long> findAllFiltered(Specification<Product> spec,Pageable pageable) {
-
+    public Page<Long> findAllFiltered(Specification<Product> spec, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<Product> root = query.from(Product.class);
@@ -51,13 +51,16 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
 
 
         List<Long> productIds = idQuery.getResultList();
+        System.out.println(productIds);
 
 
-        return productIds;
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Product> countRoot = countQuery.from(Product.class);
+        Predicate countPredicate = spec.toPredicate(countRoot, countQuery, cb);
+        countQuery.select(cb.count(countRoot)).where(countPredicate);
+        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+
+
+        return new PageImpl<>(productIds, pageable, totalCount);
     }
-
-
-
-
-
 }

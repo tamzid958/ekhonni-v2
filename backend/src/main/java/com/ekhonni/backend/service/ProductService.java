@@ -120,12 +120,14 @@ public class ProductService extends BaseService<Product, Long> {
         SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
+        System.out.println(page.getContent());
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 
@@ -192,12 +194,12 @@ public class ProductService extends BaseService<Product, Long> {
 
         Specification<Product> spec = UserProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 
