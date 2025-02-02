@@ -1,6 +1,6 @@
 package com.ekhonni.backend.validation.validator;
 
-import com.ekhonni.backend.dto.account.payout.PayoutAccountCreateDTO;
+import com.ekhonni.backend.dto.payoutaccount.PayoutAccountCreateDTO;
 import com.ekhonni.backend.enums.PayoutCategory;
 import com.ekhonni.backend.validation.annotation.ValidPayoutAccount;
 import jakarta.validation.ConstraintValidator;

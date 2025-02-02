@@ -30,14 +30,36 @@ import java.util.List;
 @Tag(name = "Bid", description = "Manage bid operations")
 public class BidController {
 
-    BidService bidService;
-    ProductService productService;
+    private final BidService bidService;
+    private final ProductService productService;
 
     /**
      *================================================================
      *                   Public, Buyer, Seller API
      *================================================================
      */
+    @PostMapping()
+    public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
+        bidService.handlePreviousBid(bidCreateDTO);
+        bidService.create(bidCreateDTO);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
+    }
+
+    @PatchMapping("/{id}/update")
+    @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
+    public ResponseEntity<ApiResponse<Void>> update(
+            @PathVariable Long id, @Valid @RequestBody BidUpdateDTO bidUpdateDTO) {
+        bidService.updateBid(id, bidUpdateDTO);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/{id}/accept")
+    @PreAuthorize("@bidService.isProductOwner(authentication.principal.id, #id)")
+    public ResponseEntity<ApiResponse<Void>> accept(@PathVariable Long id) {
+        bidService.accept(id);
+        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
     public ResponseEntity<ApiResponse<BidderBidProjection>> get(@PathVariable Long id) {
@@ -74,28 +96,6 @@ public class BidController {
                 bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
-    @PostMapping()
-    public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
-        bidService.handlePreviousBid(bidCreateDTO);
-        bidService.create(bidCreateDTO);
-        return ResponseUtil.createResponse(HTTPStatus.CREATED);
-    }
-
-    @PatchMapping("/{id}/update")
-    @PreAuthorize("@bidService.getBidderId(#id) == authentication.principal.id")
-    public ResponseEntity<ApiResponse<Void>> update(
-            @PathVariable Long id, @Valid @RequestBody BidUpdateDTO bidUpdateDTO) {
-        bidService.updateBid(id, bidUpdateDTO);
-        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
-    }
-
-    @PatchMapping("/{id}/accept")
-    @PreAuthorize("@bidService.isProductOwner(authentication.principal.id, #id)")
-    public ResponseEntity<ApiResponse<Void>> accept(@PathVariable Long id) {
-        bidService.accept(id);
-        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
-    }
-
     /**
      *================================================================
      *                          Admin API
@@ -112,8 +112,6 @@ public class BidController {
         return ResponseUtil.createResponse(HTTPStatus.OK,
                 bidService.getAllForProduct(productId, AdminBidProjection.class, pageable));
     }
-
-
 
     @GetMapping("/product/{product_id}/audit")
     public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAuditForProduct(
