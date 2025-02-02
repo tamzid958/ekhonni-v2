@@ -15,9 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { toast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,14 +37,12 @@ interface Props {
 
 export default function CategoryRender({ category, categories }: Props) {
   const [newCategory, setNewCategory] = useState('');
-  const [alertVisible, setAlertVisible] = useState(false);
   const handleSubmit = async () => {
     if (newCategory.trim() === '') {
-      toast({
-        title: 'Category name cannot be empty',
-        description: 'Please enter a valid category name.',
-        variant: 'destructive', // Optionally, use a variant to style it
-      });
+      toast('Category name cannot be empty', {
+          description: 'Please enter a valid category name.',
+        },// Show success toast
+      );
       return;
     }
 
@@ -63,21 +59,21 @@ export default function CategoryRender({ category, categories }: Props) {
       });
 
       if (!response.ok) {
-        toast({
-          title: 'Failed to add category',
-          description: 'There was an issue adding the category.',
-          variant: 'destructive',
-        });
+        toast('Failed to add category', {
+            description: 'There was an issue adding the category.',
+          },
+        );
         throw new Error('Failed to add category');
       }
 
       setNewCategory('');
-      toast({
-        title: 'Category added successfully',
-        description: 'Your new category has been added.',
-        variant: 'default', // Show success toast
-      });
-      window.location.reload();
+      toast('Category added successfully', {
+          description: 'Your new category has been added.',
+        },// Show success toast
+      );
+      setTimeout(() => {
+        window.location.reload(); // Reload after 3 seconds
+      }, 3000);
     } catch (error) {
       console.error('Error adding category:', error);
     }
@@ -99,11 +95,17 @@ export default function CategoryRender({ category, categories }: Props) {
       const responseData = await response.json();
       console.log(responseData);
       if (!response.ok) {
-        alert('Failed to delete category, check if it has subcategories inside');
+        toast('Failed to delete category', {
+            description: 'Check if it has subcategories inside.',
+          },
+        );
         throw new Error('Failed to delete category');
       }
       console.log(response);
-      setAlertVisible(true);
+      toast('Category deleted successfully', {
+          description: 'Your selected category has been deleted.',
+        },// Show success toast
+      );
 
       setTimeout(() => {
         window.location.reload(); // Reload after 3 seconds
@@ -119,6 +121,7 @@ export default function CategoryRender({ category, categories }: Props) {
 
       {/* Title Left-Aligned */}
       <h1 className="text-5xl font-bold m-8 text-left w-full pl-4">Category Management</h1>
+      <Toaster position="top-right" />
 
       {/* Breadcrumbs */}
       <div className="w-full max-w-4xl">
@@ -254,11 +257,6 @@ export default function CategoryRender({ category, categories }: Props) {
           </DialogContent>
         </Dialog>
       </div>
-      {alertVisible && <Alert className="fixed w-96 bottom-4 right-4 z-50">
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>Deletion done!</AlertTitle>
-        <AlertDescription>Category deleted successfully</AlertDescription>
-      </Alert>}
     </div>
   );
 }

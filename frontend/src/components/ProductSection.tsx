@@ -6,7 +6,8 @@ import React from 'react';
 interface Data {
   id: string;
   price: number;
-  name: string;
+  title: string;
+  subTitle: string;
   description: string;
   status: string;
   condition: string;
@@ -19,6 +20,7 @@ interface Data {
   }[];
   label: string;
 }
+
 
 interface ProductSectionProps {
   title: string;
@@ -48,7 +50,7 @@ export function ProductSection({ title, products, selectedCategory }: ProductSec
               <CardDemo
                 key={product.id}
                 id={product.id}
-                title={product.name}
+                title={product.title}
                 description={product.description}
                 img={product.images[0].imagePath}
                 price={product.price}
