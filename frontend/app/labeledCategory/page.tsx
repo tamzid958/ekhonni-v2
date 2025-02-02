@@ -2,28 +2,27 @@ import React from 'react';
 import { CardDemo } from '@/components/Card';
 
 interface Data {
-  id: string;
+  id: number;
   title: string;
   description: string;
   img: string;
   price: number;
-  category: string;
-  label: string;
 }
 
 interface Props {
   searchParams: {
     category?: string,
-    label?: string
+    totalPages?: number;
+    currentPage?: number;
   };
 }
 
 export default async function labeledCategory({ searchParams }: Props) {
   const category = searchParams.category || 'All';
-  const label = searchParams.label || 'All';
+  const totalPages = searchParams.totalPages || 10;
+  const currentPage = searchParams.currentPage || 1;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
-  const url = `${baseUrl}/api/mock-data?category=${encodeURIComponent(category)}&label=${encodeURIComponent(label)}`;
+  const url = `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(category)}&page=${currentPage}`;
 
   let products: Data[] = [];
   try {
@@ -31,7 +30,8 @@ export default async function labeledCategory({ searchParams }: Props) {
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
-    products = await response.json();
+    const json = await response.json();
+    products = json.data.content;
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -40,7 +40,7 @@ export default async function labeledCategory({ searchParams }: Props) {
     <div className="bg-gray-100 flex-1 min-h-screen flex-col">
       <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden flex-grow">
         <h1 className="text-5xl font-bold my-12">
-          {category} Category : {label} Products
+          {category} Products
         </h1>
         {/*<Separator />*/}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -56,6 +56,53 @@ export default async function labeledCategory({ searchParams }: Props) {
             )))}
         </div>
       </div>
+
+      {/*TODO: Pagination fix*/}
+
+      {/*<div className="flex justify-center mt-8">*/}
+      {/*  <Pagination>*/}
+      {/*    <PaginationContent>*/}
+      {/*      /!* First Page *!/*/}
+      {/*      <PaginationItem>*/}
+      {/*        <Link href="?page=1">*/}
+      {/*          <PaginationLink isActive={currentPage === 1}>1</PaginationLink>*/}
+      {/*        </Link>*/}
+      {/*      </PaginationItem>*/}
+
+      {/*      /!* Left Ellipsis (if needed) *!/*/}
+      {/*      {currentPage > 3 && (*/}
+      {/*        <PaginationItem>*/}
+      {/*          <PaginationEllipsis />*/}
+      {/*        </PaginationItem>*/}
+      {/*      )}*/}
+
+      {/*      /!* Pages around current *!/*/}
+      {/*      {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)*/}
+      {/*        .filter((page) => page > 1 && page < totalPages)*/}
+      {/*        .map((page) => (*/}
+      {/*          <PaginationItem key={page}>*/}
+      {/*            <Link href={`?page=${page}`}>*/}
+      {/*              <PaginationLink isActive={currentPage === page}>{page}</PaginationLink>*/}
+      {/*            </Link>*/}
+      {/*          </PaginationItem>*/}
+      {/*        ))}*/}
+
+      {/*      /!* Right Ellipsis (if needed) *!/*/}
+      {/*      {currentPage < totalPages - 2 && (*/}
+      {/*        <PaginationItem>*/}
+      {/*          <PaginationEllipsis />*/}
+      {/*        </PaginationItem>*/}
+      {/*      )}*/}
+
+      {/*      /!* Last Page *!/*/}
+      {/*      <PaginationItem>*/}
+      {/*        <Link href={`?page=${totalPages}`}>*/}
+      {/*          <PaginationLink>{totalPages}</PaginationLink>*/}
+      {/*        </Link>*/}
+      {/*      </PaginationItem>*/}
+      {/*    </PaginationContent>*/}
+      {/*  </Pagination>*/}
+      {/*</div>*/}
     </div>
   );
 

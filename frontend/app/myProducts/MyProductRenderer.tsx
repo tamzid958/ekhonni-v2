@@ -7,8 +7,8 @@ import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BidsShowPage } from './Components/bidingPage';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface ProductData {
   id: number;
@@ -38,21 +38,12 @@ interface ProductData {
 export default function MyProducts({ products }: { products: ProductData[] }) {
   const [filter, setFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null); // Selected product ID
   const { data: session } = useSession(); // Get session data
   const bearerToken = session?.user?.token; // Access token from session
 
 
   const filteredProducts =
     filter === 'ALL' ? products : products.filter((product) => product.status === filter);
-
-  const handleOpenDialog = (id: number) => {
-    setSelectedProductId(id);
-  };
-
-  const handleCloseDialog = () => {
-    setSelectedProductId(null);
-  };
 
 
   const getStatusBadge = (status: string) => {
@@ -71,7 +62,7 @@ export default function MyProducts({ products }: { products: ProductData[] }) {
   };
 
   return (
-    <div className="space-y-6 container mx-12 p-4">
+    <div className="space-y-6 h-min-screen container mx-12 p-4">
       <div className="flex flex-col justify-between mt-4">
         <div className="flex justify-between">
           <h1 className="text-3xl font-semibold mb-6 text-gray-700">Products</h1>
@@ -105,7 +96,7 @@ export default function MyProducts({ products }: { products: ProductData[] }) {
       </div>
       {/* Products */}
 
-      <div className="h-screen space-y-6 mx-16">
+      <div className="space-y-6 mx-16">
         {
           // Apply the filtering first, then check for the length
           filteredProducts
@@ -129,24 +120,21 @@ export default function MyProducts({ products }: { products: ProductData[] }) {
                       img={product.images[0].imagePath}
                       price={product.price}
                     />
-                    <Button onClick={() => handleOpenDialog(product.id)}>Bidding Details</Button>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button variant="link" className="absolute right-4 bottom-4">
+                          View Bids
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-full flex justify-center items-center">
+                        {BidsShowPage(product.id, bearerToken)}
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 ))}
             </div>
           )}
       </div>
-      {/* Dialog for BiddingPage */}
-      {selectedProductId !== null && (
-        <Dialog open={selectedProductId !== null} onOpenChange={handleCloseDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Bidding Details</DialogTitle>
-            </DialogHeader>
-            {BidsShowPage(selectedProductId, bearerToken)}
-            <Button onClick={handleCloseDialog}>Close</Button>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
