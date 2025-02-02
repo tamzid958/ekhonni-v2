@@ -526,5 +526,35 @@
     "description": "Allows admin to approve a refund request",
     "httpMethod": "PATCH",
     "endpoint": "/api/v2/refund/approve/{id}"
+  },
+  {
+    "name": "Create Payout Account",
+    "description": "Allows users to create a new payout account",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/account/payout"
+  },
+  {
+    "name": "Update Payout Account",
+    "description": "Allows users to update an existing payout account",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/account/payout/{id}"
+  },
+  {
+    "name": "Get Payout Account",
+    "description": "Fetches details of a specific payout account",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/payout/{id}"
+  },
+  {
+    "name": "Get All Payout Accounts for User",
+    "description": "Fetches all payout accounts for the authenticated user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/payout"
+  },
+  {
+    "name": "Delete Payout Account",
+    "description": "Permanently deletes a payout account",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/account/payout/{id}"
   }
 ]
