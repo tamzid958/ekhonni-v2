@@ -48,11 +48,6 @@ public record AccountController(AccountService accountService) {
         return new ApiResponse<>(HTTPStatus.FOUND, accountService.getAllIncludingDeleted());
     }
 
-    @PostMapping("/{user_id}")
-    public ApiResponse<?> create(@PathVariable("user_id") UUID userId) {
-        accountService.create(userId);
-        return new ApiResponse<>(HTTPStatus.CREATED, null);
-    }
 
     @PatchMapping("/{id}")
     public ApiResponse<?> update(@PathVariable("id") Long id, @Valid @RequestBody AccountDTO accountDto) {

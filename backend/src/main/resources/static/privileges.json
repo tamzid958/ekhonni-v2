@@ -438,6 +438,12 @@
     "endpoint": "/api/v2/review/seller/{id}"
   },
   {
+    "name": "Get Average Seller Rating",
+    "description": "Allows fetching the average rating of a seller",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/{id}/average"
+  },
+  {
     "name": "Get Seller Product Reviews",
     "description": "Allows viewing seller reviews for a specific product",
     "httpMethod": "GET",
@@ -448,6 +454,12 @@
     "description": "Fetches reviews of a buyer by their ID",
     "httpMethod": "GET",
     "endpoint": "/api/v2/review/buyer/{id}"
+  },
+  {
+    "name": "Get Average Buyer Rating",
+    "description": "Allows fetching the average rating of a buyer",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/{id}/average"
   },
   {
     "name": "Get Buyer Product Reviews",

@@ -74,8 +74,6 @@ public class BidController {
                 bidService.getAllForProduct(productId, SellerBidProjection.class, pageable));
     }
 
-
-
     @PostMapping()
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody BidCreateDTO bidCreateDTO) {
         bidService.handlePreviousBid(bidCreateDTO);
