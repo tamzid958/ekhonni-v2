@@ -9,15 +9,11 @@ import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
 import com.ekhonni.backend.util.SslcommerzUtil;
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.MaxRetriesExceededException;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.concurrent.CircuitBreakingException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -72,7 +68,7 @@ public class PaymentService {
         return new InitiatePaymentResponse(response.getGatewayPageURL());
     }
 
-    public InitiatePaymentResponse initiatePaymentFallback(Long bidId, Exception e) {
+    public InitiatePaymentResponse initiatePaymentFallback(Long bidId, Exception e) throws Exception {
 
         if (e instanceof InvalidTransactionRequestException) {
             throw (InvalidTransactionRequestException) e;
@@ -88,24 +84,7 @@ public class PaymentService {
             throw new InitiatePaymentException("Connection error");
         }
 
-        if (e instanceof InitiatePaymentException) {
-            throw (InitiatePaymentException) e;
-        }
-
-       return null;
-    }
-
-    private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
-        return sslcommerzUtil.getParamsString(transaction, true);
-    }
-
-    private InitialResponse sendPaymentRequest(String requestBody) {
-        return restClient.post()
-                .uri(sslCommerzConfig.getApiUrl())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(requestBody)
-                .retrieve()
-                .body(InitialResponse.class);
+        throw e;
     }
 
     private void verifyBid(Bid bid) {
@@ -125,21 +104,34 @@ public class PaymentService {
         }
     }
 
+    private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
+        return sslcommerzUtil.getParamsString(transaction, true);
+    }
+
+    private InitialResponse sendPaymentRequest(String requestBody) {
+        return restClient.post()
+                .uri(sslCommerzConfig.getApiUrl())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(requestBody)
+                .retrieve()
+                .body(InitialResponse.class);
+    }
+
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
 
-        String protocol = request.getHeader("x-forwarded-proto");
-        String hostName = getHostName(getIpAddress(request));
-        log.info("Protocol: {}, domain name: {}", protocol, hostName);
-
-        if (!"https".equals(protocol)) {
-            log.warn("Connection not secure for transaction in request: {}", request.getRemoteHost());
+//        String protocol = request.getHeader("x-forwarded-proto");
+//        String hostName = getHostName(getIpAddress(request));
+//        log.info("Protocol: {}, domain name: {}", protocol, hostName);
+//
+//        if (!"https".equals(protocol)) {
+//            log.warn("Connection not secure for transaction in request: {}", request.getRemoteHost());
 //            throw new InvalidTransactionException();  // when not using ngrok
-        }
-
-        if (!sslCommerzConfig.getDomain().equals(hostName)) {
-            log.warn("Transaction request from unknown domain in request: {}", request.getRemoteHost());
+//        }
+//
+//        if (!sslCommerzConfig.getDomain().equals(hostName)) {
+//            log.warn("Transaction request from unknown domain in request: {}", request.getRemoteHost());
 //            throw new InvalidTransactionException();   // when not using ngrok
-        }
+//        }
 
         String gatewayIpAddress = getIpAddress(request);
         if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
@@ -163,7 +155,7 @@ public class PaymentService {
             return;
         }
 
-        if (!verifyTransactionParameters(transaction, response)) {
+        if (!matchTransactionParameters(transaction, response)) {
             log.warn("Response parameters don't match for transaction: {}", transaction.getId());
 //            validateTransaction(response.getValId());
 //            throw new InvalidTransactionException();
@@ -196,7 +188,7 @@ public class PaymentService {
             return false;
         }
         Transaction transaction = getDBTransactionFromResponse(response.getTranId());
-        if (!verifyTransactionParameters(transaction, response)) {
+        if (!matchTransactionParameters(transaction, response)) {
             transactionService.updateStatus(transaction, TransactionStatus.PARAMETERS_MISMATCH);
             transactionService.updateTransaction(transaction, response);
             log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
@@ -225,7 +217,7 @@ public class PaymentService {
             response.getCurrencyType() == null;
     }
 
-    private boolean verifyTransactionParameters(Transaction transaction, PaymentResponse response) {
+    private boolean matchTransactionParameters(Transaction transaction, PaymentResponse response) {
         if (hasNullInRequiredParameters(response)) {
             log.warn("Null value in required parameters of payment response for transaction : {}", transaction.getId());
             return false;

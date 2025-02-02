@@ -154,4 +154,12 @@ public class ReviewService extends BaseService<Review, Long> {
         Review review = get(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
         return review.getBid().getProduct().getSeller().getId();
     }
+
+    public Double getAverageSellerRating(UUID sellerId) {
+        return reviewRepository.findAverageSellerRating(sellerId);
+    }
+
+    public Double getAverageBuyerRating(UUID buyerId) {
+        return reviewRepository.findAverageBuyerRating(buyerId);
+    }
 }
