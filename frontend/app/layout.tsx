@@ -36,18 +36,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
       <CustomErrorBoundary>
-        <div className="w-full">
-          <NavBar placeholder="What are you looking for?" />
-          <TopCAtegory />
-        </div>
         <SessionWrapper>
+          <div className="w-full">
+            <NavBar placeholder="What are you looking for?" />
+            <TopCAtegory />
+          </div>
+
 
           <main>{children}</main>
 
+
+          <div className="bg-gray-800 text-white">
+            <Footer />
+          </div>
         </SessionWrapper>
-        <div className="bg-gray-800 text-white">
-          <Footer />
-        </div>
       </CustomErrorBoundary>
     </RootLayoutWrapper>
 

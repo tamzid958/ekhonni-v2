@@ -21,19 +21,19 @@ export default function Home() {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
-//   fetch(`http://localhost:8080/api/v2/user/${userId}/notifications`, {
-//     method: 'GET',
-//     headers: {
-//       'Authorization': `Bearer ${userToken}`,
-//       'Content-Type': 'application/json',
-//     },
-//   })
-//     .then(response => response.json())
-//     .then(data => console.log(data)) // Log the fetched notifications
-//     .catch(error => console.error('Error fetching notifications:', error));
-//   console.log(userId);
-//   console.log(userToken);
-//for notification console
+  // fetch(`http://localhost:8080/api/v2/user/${userId}/notifications`, {
+  //   method: 'GET',
+  //   headers: {
+  //     'Authorization': `Bearer ${userToken}`,
+  //     'Content-Type': 'application/json',
+  //   },
+  // })
+  //   .then(response => response.json())
+  //   .then(data => console.log(data)) // Log the fetched notifications
+  //   .catch(error => console.error('Error fetching notifications:', error));
+  // console.log(userId);
+  // console.log(userToken);
+// for notification console
 
 
   const form = useForm({
