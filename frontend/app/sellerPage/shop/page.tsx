@@ -27,24 +27,22 @@ interface ProductData {
 }
 
 
-
 const ShopPage = () => {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const userId = "550e8400-e29b-41d4-a716-446655440006";
+  const userId = '550e8400-e29b-41d4-a716-446655440000';
 
   useEffect(() => {
     console.log(selectedCategory);
     const fetchProducts = async () => {
       let apiUrl;
-      if(selectedCategory==='All'){
-        apiUrl = `http://localhost:8080/api/v2/product/user/filter`;
+      if (selectedCategory === 'All') {
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${userId}`;
 
-      }
-      else{
+      } else {
         apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
 
       }
@@ -56,7 +54,7 @@ const ShopPage = () => {
         }
 
         const data = await response.json();
-        console.log("API Response Data:", data.data.content);
+        console.log('API Response Data:', data.data.content);
 
         const productsData = data?.data?.content || [];
         setProducts(productsData);
@@ -72,7 +70,7 @@ const ShopPage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const userId = "550e8400-e29b-41d4-a716-446655440006";
+        const userId = '550e8400-e29b-41d4-a716-446655440006';
         const apiUrl = `http://localhost:8080/api/v2/category/all/${userId}`;
 
         const response = await fetch(apiUrl);
@@ -81,7 +79,7 @@ const ShopPage = () => {
         }
         const data = await response.json();
 
-         console.log(data.data);
+        console.log(data.data);
 
         setCategories(data?.data || []);
         console.log(categories);
@@ -94,9 +92,8 @@ const ShopPage = () => {
   }, []);
 
 
-
   const handleCategorySelect = (categoryName: string) => {
-      setSelectedCategory(categoryName);
+    setSelectedCategory(categoryName);
     setIsSidebarOpen(true);
   };
 
@@ -116,7 +113,7 @@ const ShopPage = () => {
               </button>
             </li>
             {categories.map((category) => (
-              <li key={category }>
+              <li key={category}>
                 <button
                   onClick={() => handleCategorySelect(category)}
                   className={`cursor-pointer ${selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'}`}
@@ -129,7 +126,6 @@ const ShopPage = () => {
 
         </div>
       )}
-
 
 
       <div className="absolute top-100 left-17 mb-4">
@@ -159,32 +155,32 @@ const ShopPage = () => {
 
         <div>
 
-            <div
-              className={`grid gap-6 mb-6 ${
-                isSidebarOpen
-                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
-                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
-              }`}
-            >
-              {products
-                .map((product) => (
-                  <CardDemo
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    description={product.description}
-                    img={product.images[0]?.imagePath || '/placeholder.jpg'}
-                    price={product.price}
-                    status={product.status}
-                    condition={product.condition}
-                    createdAt={product.createdAt}
-                    updatedAt={product.updatedAt}
-                    seller={product.seller}
-                    category={product.category}
-                    bids={product.bids}
-                  />
-                ))}
-            </div>
+          <div
+            className={`grid gap-6 mb-6 ${
+              isSidebarOpen
+                ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
+                : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+            }`}
+          >
+            {products
+              .map((product) => (
+                <CardDemo
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description}
+                  img={product.images[0]?.imagePath || '/placeholder.jpg'}
+                  price={product.price}
+                  status={product.status}
+                  condition={product.condition}
+                  createdAt={product.createdAt}
+                  updatedAt={product.updatedAt}
+                  seller={product.seller}
+                  category={product.category}
+                  bids={product.bids}
+                />
+              ))}
+          </div>
         </div>
       </main>
     </div>

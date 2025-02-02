@@ -183,7 +183,7 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       case 'PENDING_APPROVAL':
         return <Badge variant="secondary">Pending Approval</Badge>;
       case 'ARCHIVED':
-        return <Badge variant="warning">Archived</Badge>;
+        return <Badge variant="secondary">Archived</Badge>;
       default:
         return <Badge variant="default">Default</Badge>;
     }
