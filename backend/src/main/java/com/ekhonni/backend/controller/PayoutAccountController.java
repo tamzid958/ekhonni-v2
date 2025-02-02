@@ -26,6 +26,7 @@ public class PayoutAccountController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse<Void>> create(@Valid @RequestBody PayoutAccountCreateDTO dto) {
-        return ResponseUtil.createResponse(HTTPStatus.CREATED, payoutAccountService.create(dto));
+        payoutAccountService.create(dto);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 }
