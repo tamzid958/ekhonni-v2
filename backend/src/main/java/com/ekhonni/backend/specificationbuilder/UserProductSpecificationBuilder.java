@@ -11,15 +11,29 @@ package com.ekhonni.backend.specificationbuilder;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.specification.ProductSpecification;
+import com.ekhonni.backend.specification.SpecificationResult;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 public class UserProductSpecificationBuilder {
     public static Specification<Product> build(UserProductFilter filter, List<Long> categoryIds) {
-        Specification<Product> spec = CommonProductSpecificationBuilder.build(filter, categoryIds);
+        SpecificationResult result = CommonProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = result.getSpec();
+        boolean hasConditions = result.isHasConditions();
+
         if (filter.getUserId() != null) {
             spec = spec.and(ProductSpecification.belongsToUser(filter.getUserId()));
+            hasConditions = true;
+        }
+
+        if (filter.getProductStatus() != null) {
+            spec = spec.and(ProductSpecification.hasStatus(filter.getProductStatus()));
+            hasConditions = true;
+        }
+
+        if (!hasConditions) {
+            spec = spec.and(ProductSpecification.defaultSpec());
         }
         return spec;
     }

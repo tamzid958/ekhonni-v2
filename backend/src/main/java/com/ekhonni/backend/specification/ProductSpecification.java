@@ -38,18 +38,12 @@ public class ProductSpecification {
     }
 
     public static Specification<Product> belongsToUser(UUID userId) {
-        return (product, cq, cb) -> cb.equal(product.get("sellernoteno").get("id"), userId);
+        return (product, cq, cb) -> cb.equal(product.get("seller").get("id"), userId);
     }
 
     public static Specification<Product> hasStatus(ProductStatus status) {
         return (product, cq, cb) -> cb.equal(product.get("status"), status);
     }
-
-
-
-
-
-
 
 
     // sorting

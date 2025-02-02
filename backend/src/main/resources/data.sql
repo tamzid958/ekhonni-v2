@@ -132,6 +132,12 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 (10067, 'Printing Supplies', true, 10008, NOW(), NOW()),
 (10068, 'Organizers', true, 10008, NOW(), NOW());
 
+
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
+(10069, 'Furniture 2', true, 10021, NOW(), NOW()),
+(10070, 'Furniture 3', true, 10069, NOW(), NOW()),
+(10071, 'Furniture 4', true, 10070, NOW(), NOW());
+
 -- Insert Products
 --INSERT INTO product (id, name, price, description, approved, sold, condition, category_id, seller_id, created_at, updated_at) VALUES
 --(1, 'iPhone 13 Pro', 899.99, 'Slightly used iPhone 13 Pro, 256GB', true, false, 'USED', 2, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
@@ -169,8 +175,8 @@ INSERT INTO product (id, title, sub_title, description, price, division, address
 (304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
 (305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
 (306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
-
+(352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
+(353, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10070, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
 -- Add product images for the original products
 INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) VALUES
 (100, 202, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/uqoduxx5ewvnchgsuols.jpg', NOW(), NOW()),
@@ -184,7 +190,9 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 (108, 306, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269460/plwi5lonfnwb4mvarfpy.jpg', NOW(), NOW()),
 (109, 306, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269462/xpwozjsexnldymbyal1c.jpg', NOW(), NOW()),
 (110, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
-(111, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW());
+(111, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW()),
+(112, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
+(113, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW());
 
 
 --(13, 1, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/iphone13pro.jpg', NOW(), NOW()),

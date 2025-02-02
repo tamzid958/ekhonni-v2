@@ -12,7 +12,10 @@ import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.exception.*;
+import com.ekhonni.backend.exception.CategoryNotFoundException;
+import com.ekhonni.backend.exception.ProductNotCreatedException;
+import com.ekhonni.backend.exception.ProductNotFoundException;
+import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Category;
@@ -23,6 +26,7 @@ import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
@@ -55,7 +59,7 @@ public class ProductService extends BaseService<Product, Long> {
     String PRODUCT_UPLOAD_DIR;
 
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository,CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository, CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
@@ -73,10 +77,7 @@ public class ProductService extends BaseService<Product, Long> {
             Category category = categoryRepository.findByNameAndActive(dto.category(), true);
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-         //   CloudinaryImageUploadUtil cloudinaryImageUploadUtil = new CloudinaryImageUploadUtil();
-
-
-            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages( dto.images());
+            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages(dto.images());
             List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
                 ProductImage image = new ProductImage(imagePath);
@@ -84,11 +85,6 @@ public class ProductService extends BaseService<Product, Long> {
             }
 
             ProductStatus status = ProductStatus.PENDING_APPROVAL;
-
-//            UUID id = UUID.fromString("665e2027-bdf1-433d-a6f5-9171ab58d455");
-//
-//            Optional<User> optionalAdmin = userRepository.findById(id);
-//            User admin = optionalAdmin.orElseThrow(() -> new UserNotFoundException("Admin user not found"));
 
             Product product = new Product(
                     dto.title(),
@@ -113,24 +109,6 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-//    @Transactional
-//    public boolean approveProduct(Long id) {
-//        productRepository.findById(id).ifPresent(product -> {
-//            product.setApproved(true);
-//            productRepository.save(product);
-//        });
-//        return productRepository.existsById(id);
-//    }
-
-
-//    public boolean declineProduct(Long id) {
-//        productRepository.findById(id).ifPresent(product -> {
-//            // notify seller
-//        });
-//        return true;
-//    }
-
-
     public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
         List<Long> categoryIds = new ArrayList<>();
         if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
@@ -138,7 +116,8 @@ public class ProductService extends BaseService<Product, Long> {
         }
 
 
-        Specification<Product> spec = CommonProductSpecificationBuilder.build(filter, categoryIds);
+        SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = specificationResult.getSpec();
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
         List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
         List<ProductProjection> projections = productRepository.findByIdIn(productIds);
@@ -152,8 +131,7 @@ public class ProductService extends BaseService<Product, Long> {
 
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
-        ProductResponseDTO product = ProductProjectionConverter.convert(projection);
-        return product;
+        return ProductProjectionConverter.convert(projection);
     }
 
 

@@ -8,12 +8,9 @@
 package com.ekhonni.backend.specification;
 
 
-
 import com.ekhonni.backend.model.Product;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
 
 @Getter
@@ -22,4 +19,3 @@ public class SpecificationResult {
     private final Specification<Product> spec;
     private final boolean hasConditions;
 }
-;

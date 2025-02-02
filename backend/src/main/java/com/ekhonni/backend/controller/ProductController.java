@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -38,12 +37,12 @@ public record ProductController(ProductService productService, BidService bidSer
             )
     )
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> create(
+    public ApiResponse<?> create(
             @Parameter(description = "Product details for creation")
             @Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
 
         productService.create(productCreateDTO);
-        return ResponseEntity.status(201).body(new ApiResponse<>(HTTPStatus.CREATED, null));
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
 
@@ -54,6 +53,13 @@ public record ProductController(ProductService productService, BidService bidSer
     }
 
 
+    @Operation(
+            summary = "Update a product",
+            description = "Updates a product using the provided details",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Product update form with images and details"
+            )
+    )
     @PatchMapping("/{id}")
     public ApiResponse<?> updateOne(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
@@ -69,17 +75,14 @@ public record ProductController(ProductService productService, BidService bidSer
 
     @GetMapping("/filter")
     public ApiResponse<?> getFiltered(@ModelAttribute ProductFilter filter) {
-        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 
 
     @GetMapping("/user/filter")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
-        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
     }
-
 
 
     @GetMapping("/{id}/bid")
@@ -87,8 +90,6 @@ public record ProductController(ProductService productService, BidService bidSer
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
                 bidService.getAllForProduct(id, BuyerBidProjection.class, pageable));
     }
-
-
 
 
 }

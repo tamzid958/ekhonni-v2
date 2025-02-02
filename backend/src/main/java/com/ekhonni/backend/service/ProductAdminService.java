@@ -11,12 +11,10 @@ import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.filter.AdminProductFilter;
-import com.ekhonni.backend.filter.UserProductFilter;
-import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
+import com.ekhonni.backend.specificationbuilder.AdminProductSpecificationBuilder;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -40,7 +38,6 @@ public class ProductAdminService {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
     }
-
 
 
     public Page<ProductProjection> getAll(Pageable pageable) {
@@ -94,7 +91,7 @@ public class ProductAdminService {
     }
 
     @Transactional
-    public String deleteOne(Long id){
+    public String deleteOne(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product doesn't exist"));
 
@@ -109,7 +106,6 @@ public class ProductAdminService {
 
         return "Post Archived";
     }
-
 
 
     public Page<ProductResponseDTO> getAllFilteredForAdmin(AdminProductFilter filter) {

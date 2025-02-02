@@ -7,6 +7,7 @@
 
 package com.ekhonni.backend.filter;
 
+import com.ekhonni.backend.enums.ProductStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
-public class UserProductFilter extends ProductFilter{
-   private UUID userId;
+public class UserProductFilter extends ProductFilter {
+    private final ProductStatus productStatus = ProductStatus.APPROVED;
+    private UUID userId;
 }

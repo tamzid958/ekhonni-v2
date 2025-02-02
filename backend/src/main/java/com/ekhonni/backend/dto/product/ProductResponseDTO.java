@@ -39,8 +39,7 @@ import java.util.List;
         "updatedAt",
         "seller",
         "category",
-        "images",
-        "bids"
+        "images"
 })
 public class ProductResponseDTO {
     private Long id;
