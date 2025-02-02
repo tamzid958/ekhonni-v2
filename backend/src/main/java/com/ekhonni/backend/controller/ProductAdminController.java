@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v2/admin/product")
 public record ProductAdminController(ProductAdminService productAdminService) {
-    @GetMapping("/pending")
-    public ApiResponse<?> getAll(Pageable pageable) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAll(pageable));
-    }
+//    @GetMapping("/pending")
+//    public ApiResponse<?> getAll(Pageable pageable) {
+//        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAll(pageable));
+//    }
 
-    @GetMapping("/pending/{id}")
+    @GetMapping("/{id}")
     public ApiResponse<?> getOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getOne(id));
     }

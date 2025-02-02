@@ -16,6 +16,7 @@ import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
+import com.ekhonni.backend.exception.bid.BidNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Category;
@@ -147,14 +148,16 @@ public class ProductService extends BaseService<Product, Long> {
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
 
-            List<String> imagePaths = ImageUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
-            List<ProductImage> newImages = new ArrayList<>();
+            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages(dto.images());
+            List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
-                newImages.add(new ProductImage(imagePath));
+                ProductImage image = new ProductImage(imagePath);
+                images.add(image);
             }
 
             product.getImages().clear();
-            product.getImages().addAll(newImages);
+            product.getImages().addAll(images);
+
             product.setTitle(dto.title());
             product.setSubTitle(dto.subTitle());
             product.setDescription(dto.description());
@@ -197,4 +200,8 @@ public class ProductService extends BaseService<Product, Long> {
         long totalElements = 0;
         return new PageImpl<>(products, pageable, totalElements);
     }
+
+
+
+
 }
