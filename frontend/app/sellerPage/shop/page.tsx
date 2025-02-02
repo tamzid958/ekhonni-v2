@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { CardDemo } from '@/components/SellerCard';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'; // Import router for URL manipulation
 
 interface ProductData {
   id: string;
   price: number;
-  name: string;
+  title: string;
   description: string;
   status: string;
   condition: string;
@@ -26,77 +28,83 @@ interface ProductData {
   bids: never;
 }
 
-
-
 const ShopPage = () => {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const userId = "550e8400-e29b-41d4-a716-446655440006";
+  // Extract userId from URL or session
+  const { data: session } = useSession();
+  const userId = "550e8400-e29b-41d4-a716-446655440005"; // Get userId from session (or URL if needed)
+
+  const router = useRouter();
 
   useEffect(() => {
-    console.log(selectedCategory);
+    if (!userId) return; // If userId is not available, exit early
+
+    // Fetch products based on selected category
     const fetchProducts = async () => {
       let apiUrl;
-      if(selectedCategory==='All'){
-        apiUrl = `http://localhost:8080/api/v2/product/user/filter`;
-
-      }
-      else{
+      if (selectedCategory === 'All') {
+        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${userId}`;
+      } else {
         apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
-
       }
-      try {
 
-        const response = await fetch(apiUrl);
+      try {
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         if (!response.ok) {
-          throw new Error('Failed to fetch categories');
+          throw new Error('Failed to fetch products');
         }
 
         const data = await response.json();
-        console.log("API Response Data:", data.data.content);
-
-        const productsData = data?.data?.content || [];
-        setProducts(productsData);
+        setProducts(data?.data?.content || []);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching products:', error);
       }
     };
 
     fetchProducts();
-  }, [selectedCategory]);
-
+  }, [selectedCategory, userId]);
 
   useEffect(() => {
+    if (!userId) return; // If userId is not available, exit early
+
+    // Fetch categories
     const fetchCategories = async () => {
       try {
-        const userId = "550e8400-e29b-41d4-a716-446655440006";
         const apiUrl = `http://localhost:8080/api/v2/category/all/${userId}`;
 
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         if (!response.ok) {
           throw new Error('Failed to fetch categories');
         }
+
         const data = await response.json();
-
-         console.log(data.data);
-
         setCategories(data?.data || []);
-        console.log(categories);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching categories:', error);
       }
     };
 
     fetchCategories();
-  }, []);
-
-
+  }, [userId]);
 
   const handleCategorySelect = (categoryName: string) => {
-      setSelectedCategory(categoryName);
+    setSelectedCategory(categoryName);
     setIsSidebarOpen(true);
   };
 
@@ -116,7 +124,7 @@ const ShopPage = () => {
               </button>
             </li>
             {categories.map((category) => (
-              <li key={category }>
+              <li key={category}>
                 <button
                   onClick={() => handleCategorySelect(category)}
                   className={`cursor-pointer ${selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'}`}
@@ -126,11 +134,8 @@ const ShopPage = () => {
               </li>
             ))}
           </ul>
-
         </div>
       )}
-
-
 
       <div className="absolute top-100 left-17 mb-4">
         <button
@@ -156,35 +161,32 @@ const ShopPage = () => {
       </div>
 
       <main className="container mx-auto px-4 py-8 flex-1 mt-16">
-
         <div>
-
-            <div
-              className={`grid gap-6 mb-6 ${
-                isSidebarOpen
-                  ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
-                  : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
-              }`}
-            >
-              {products
-                .map((product) => (
-                  <CardDemo
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    description={product.description}
-                    img={product.images[0]?.imagePath || '/placeholder.jpg'}
-                    price={product.price}
-                    status={product.status}
-                    condition={product.condition}
-                    createdAt={product.createdAt}
-                    updatedAt={product.updatedAt}
-                    seller={product.seller}
-                    category={product.category}
-                    bids={product.bids}
-                  />
-                ))}
-            </div>
+          <div
+            className={`grid gap-6 mb-6 ${
+              isSidebarOpen
+                ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
+                : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+            }`}
+          >
+            {products.map((product) => (
+              <CardDemo
+                key={product.id}
+                id={product.id}
+                title={product.title}
+                description={product.description}
+                img={product.images[0]?.imagePath || '/placeholder.jpg'}
+                price={product.price}
+                status={product.status}
+                condition={product.condition}
+                createdAt={product.createdAt}
+                updatedAt={product.updatedAt}
+                seller={product.seller}
+                category={product.category}
+                bids={product.bids}
+              />
+            ))}
+          </div>
         </div>
       </main>
     </div>

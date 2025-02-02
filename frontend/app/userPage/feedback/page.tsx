@@ -1,80 +1,62 @@
-'use client';
+"use client";
 
-import React from 'react';
-import FeedbackPage from '@/components/FeedbackPage';
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import Feedback from "@/components/Feedback"; // Adjust the path if necessary
 
-const UserProfile = () => {
-  const personalFeedback = [
-    {
-      type: 'Buyer',
-      name: 'Jerin Priya',
-      feedback: 'Great experience shopping here!',
-      reply: 'Thank you so much!',
-      time: '2024-12-20 15:00',
-      rating: 5,
-    },
-    {
-      type: 'Seller',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
+export default function PersonalFeedbackPage() {
+  const { data: session } = useSession();
+  const [buyerFeedbacks, setBuyerFeedbacks] = useState([]);
+  const [sellerFeedbacks, setSellerFeedbacks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    {
-      type: 'Seller',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
+  const userId = session?.user?.id;
+  const token = session?.user?.token;
 
-    {
-      type: 'Seller',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
+  useEffect(() => {
+    if (!userId || !token) {
+      setLoading(false);
+      return;
+    }
 
-    {
-      type: 'Seller',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
+    const fetchFeedback = async (type: "buyer" | "seller") => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/review/${type}/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    {
-      type: 'Buyer',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
-    {
-      type: 'Buyer',
-      name: 'Jisan Ahmed',
-      feedback: 'Smooth transaction! Thank you for purchasing.',
-      reply: 'Thanks for the great service!',
-      time: '2024-12-18 10:30',
-      rating: 4,
-    },
-  ];
+        const data = await response.json();
+        if (data.success && data.data?.content) {
+          if (type === "buyer") setBuyerFeedbacks(data.data.content);
+          else setSellerFeedbacks(data.data.content);
+        }
+      } catch (error) {
+        console.error(`Error fetching ${type} feedback:`, error);
+      }
+    };
+
+    Promise.all([fetchFeedback("buyer"), fetchFeedback("seller")]).finally(() => setLoading(false));
+  }, [userId, token]);
+
+  if (!session) {
+    return <div className="text-center text-lg font-semibold text-red-600">⚠ Please log in to view your feedback.</div>;
+  }
+
+  if (loading) {
+    return <div className="text-center text-lg font-semibold text-blue-500">⏳ Loading feedback...</div>;
+  }
 
   return (
-    <div className="bg-[#FAF7F0]">
-      <FeedbackPage
-        feedbackData={personalFeedback}
-        title="Feedback for Personal Profile"
-      />
+    <div className="min-h-screen flex flex-col items-center bg-brand-bright p-6">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Your Feedback</h2>
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <Feedback title="As a Buyer" feedbacks={buyerFeedbacks}  />
+
+        <Feedback title="As a Seller" feedbacks={sellerFeedbacks} />
+      </div>
     </div>
   );
-};
-
-export default UserProfile;
+}
