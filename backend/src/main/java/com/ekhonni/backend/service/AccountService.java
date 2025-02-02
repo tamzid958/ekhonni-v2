@@ -4,6 +4,7 @@
 
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.AccountStatus;
 import com.ekhonni.backend.exception.AccountNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
@@ -31,19 +32,21 @@ public class AccountService extends BaseService<Account, Long> {
         return accountRepository.findUserById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+    public Account getByUserId(UUID userId) {
+        return accountRepository.findByUserId(userId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+    }
+
     public Account getSuperAdminAccount() {
-        return accountRepository.findByRoleName("SUPER_ADMIN")
+        return accountRepository.findSuperAdminAccount()
                 .orElseThrow(() -> new AccountNotFoundException("Super admins account not found"));
     }
 
     @Transactional
-    public Account create(UUID userId) {
+    public void create(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Account account = new Account(0.0, "Active");
-        user.setAccount(account);
+        Account account = new Account(user, 0.0, 0.0, AccountStatus.ACTIVE);
         accountRepository.save(account);
-        return account;
     }
 
     public double getBalance(Long id) {
@@ -51,5 +54,6 @@ public class AccountService extends BaseService<Account, Long> {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         return account.getBalance();
     }
+
 
 }

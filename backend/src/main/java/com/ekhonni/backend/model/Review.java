@@ -36,17 +36,4 @@ public class Review extends BaseEntity<Long> {
     @Column(length = 1000)
     private String description;
 
-
-    public User getReviewedUser() {
-        return type == ReviewType.SELLER
-                ? bid.getProduct().getSeller()
-                : bid.getBidder();
-    }
-
-    public User getReviewer() {
-        return type == ReviewType.SELLER
-                ? bid.getBidder()
-                : bid.getProduct().getSeller();
-    }
-
 }

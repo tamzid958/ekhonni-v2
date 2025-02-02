@@ -124,10 +124,9 @@ public class NotificationService {
         User seller = product.getSeller();
         NotificationType type = NotificationType.NEW_BID;
         String message = String.format(
-                "Your product %s has received a new bid of %s %s",
+                "Your product %s has received a new bid of %s",
                 product.getTitle(),
-                bidCreateDTO.amount(),
-                bidCreateDTO.currency()
+                bidCreateDTO.amount()
         );
         String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
         create(seller, type, message, redirectUrl);

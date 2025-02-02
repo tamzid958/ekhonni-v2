@@ -8,23 +8,18 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import com.ekhonni.backend.dto.ProductCategoryDTO;
-import com.ekhonni.backend.dto.ProductImageDTO;
-import com.ekhonni.backend.dto.ProductSellerDTO;
+import com.ekhonni.backend.dto.product.ProductCategoryDTO;
+import com.ekhonni.backend.dto.product.ProductImageDTO;
+import com.ekhonni.backend.dto.product.ProductSellerDTO;
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.validation.annotation.ImageOnly;
-import com.ekhonni.backend.validation.annotation.NonEmptyMultipartFile;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -43,7 +38,6 @@ public class Product extends BaseEntity<Long> {
 
     @NotBlank
     private String description;
-
 
     @Positive
     @Column(nullable = false)
@@ -77,11 +71,6 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    // add reviewedBy ( need to change)
-//    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "admin_id")
-//    private User approvedBy;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images;
@@ -101,9 +90,6 @@ public class Product extends BaseEntity<Long> {
                 .map(image -> new ProductImageDTO(image.getImagePath()))
                 .toList();
     }
-
-
-
 
 
 }

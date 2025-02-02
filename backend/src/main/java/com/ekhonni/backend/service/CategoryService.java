@@ -10,15 +10,13 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.CategoryCreateDTO;
 import com.ekhonni.backend.dto.CategorySubCategoryDTO;
+import com.ekhonni.backend.dto.CategoryTreeDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.projection.UserCategoryProjection;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,6 @@ public class CategoryService extends BaseService<Category, Long> {
 
     CategoryRepository categoryRepository;
     ProductRepository productRepository;
-
 
 
     public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
@@ -100,6 +97,12 @@ public class CategoryService extends BaseService<Category, Long> {
         if (category == null) {
             throw new CategoryNotFoundException("category by this name not found");
         }
+        List<Category> children = categoryRepository.findByParentCategory(category);
+        if (!children.isEmpty()) {
+            throw new CategoryNotFoundException("sub category exists");
+        }
+        System.out.println(category);
+        System.out.println(category.getId());
         categoryRepository.deleteCategoryById(category.getId());
     }
 
@@ -112,13 +115,6 @@ public class CategoryService extends BaseService<Category, Long> {
             throw new CategoryNotFoundException("Category by this name not found");
         }
 
-        // parent is inactive
-//        Category parent = category.getParentCategory();
-//        if(parent!=null && !parent.isActive()){
-//            throw new CategoryNotFoundException("Parent category is inactive");
-//        }
-
-        //update th
         category.setActive(categoryUpdateDTO.active());
         categoryRepository.save(category);
 
@@ -148,13 +144,10 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-
-
     public Set<String> findRootCategoriesBySeller(UUID sellerId) {
 
         List<Category> categories = productRepository.findCategoriesBySeller(sellerId);
         Set<String> rootCategoryNames = new HashSet<>();
-
 
         for (Category category : categories) {
             String rootCategoryName = getRootCategoryName(category);
@@ -166,6 +159,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     private String getRootCategoryName(Category category) {
 
+
         Category currentCategory = category;
         while (currentCategory.getParentCategory() != null) {
             currentCategory = currentCategory.getParentCategory();
@@ -174,5 +168,57 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
+    public List<CategoryTreeDTO> getCategoryTree() {
+        List<Category> categories = categoryRepository.findAll();
+        return buildCategoryTree(categories);
+    }
+
+
+    public List<CategoryTreeDTO> getUserCategoryTree(UUID id) {
+
+        List<Category> userCategories = productRepository.findCategoriesBySeller(id);
+        Set<Category> allCategories = new HashSet<>();
+        for (Category category : userCategories) {
+            allCategories.add(category);
+            fetchParentCategories(category, allCategories);
+        }
+        return buildCategoryTree(new ArrayList<>(allCategories));
+    }
+
+
+    private void fetchParentCategories(Category category, Set<Category> allCategories) {
+        if (category.getParentCategory() != null) {
+            allCategories.add(category.getParentCategory());
+            fetchParentCategories(category.getParentCategory(), allCategories);
+        }
+    }
+
+
+    private List<CategoryTreeDTO> buildCategoryTree(List<Category> categories) {
+
+        Map<Long, CategoryTreeDTO> categoryMap = new HashMap<>();
+        for (Category category : categories) {
+            CategoryTreeDTO dto = new CategoryTreeDTO(
+                    category.getId(),
+                    category.getName(),
+                    category.isActive()
+            );
+            categoryMap.put(category.getId(), dto);
+        }
+
+
+        List<CategoryTreeDTO> rootCategories = new ArrayList<>();
+        for (Category category : categories) {
+            if (category.getParentCategory() == null) {
+                rootCategories.add(categoryMap.get(category.getId()));
+            } else {
+                CategoryTreeDTO parentDTO = categoryMap.get(category.getParentCategory().getId());
+                if (parentDTO != null) {
+                    parentDTO.addChild(categoryMap.get(category.getId()));
+                }
+            }
+        }
+        return rootCategories;
+    }
 
 }

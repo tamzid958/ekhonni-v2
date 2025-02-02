@@ -10,12 +10,13 @@ package com.ekhonni.backend.specificationbuilder;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.specification.ProductSpecification;
+import com.ekhonni.backend.specification.SpecificationResult;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
-public class ProductSpecificationBuilder {
-    public static Specification<Product> build(ProductFilter filter, List<Long> categoryIds) {
+public class CommonProductSpecificationBuilder {
+    public static SpecificationResult build(ProductFilter filter, List<Long> categoryIds) {
 
         Specification<Product> spec = Specification.where(null);
         boolean hasConditions = false;
@@ -48,6 +49,6 @@ public class ProductSpecificationBuilder {
         {
             spec = spec.and(ProductSpecification.defaultSpec());
         }
-        return spec;
+        return new SpecificationResult(spec, hasConditions);
     }
 }

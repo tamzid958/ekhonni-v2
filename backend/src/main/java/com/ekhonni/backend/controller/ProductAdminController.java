@@ -8,6 +8,8 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.filter.AdminProductFilter;
+import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.ProductAdminService;
 import org.springframework.data.domain.Pageable;
@@ -39,5 +41,12 @@ public record ProductAdminController(ProductAdminService productAdminService) {
     @DeleteMapping("/approve/{id}")
     public ApiResponse<?> deleteOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.deleteOne(id));
+    }
+
+
+    @GetMapping("/filter")
+    public ApiResponse<?> getFilteredForAdmin(@ModelAttribute AdminProductFilter filter) {
+        //System.out.println(filter.getCategoryName());
+        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAllFilteredForAdmin(filter));
     }
 }

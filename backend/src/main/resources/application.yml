@@ -24,16 +24,16 @@ spring:
         format_sql: ${JPA_FORMAT_SQL:false}
         highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
 
+  sql:
+    init:
+      platform: ${SQL_INIT_PLATFORM:postgresql}
+      mode: ${SQL_INIT_MODE:never}
+
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
-
-  sql:
-    init:
-      platform: ${SQL_INIT_PLATFORM:postgresql}
-      mode: ${SQL_INIT_MODE:never}
 
   security:
     oauth2:
@@ -191,4 +191,11 @@ info:
     email: ekhonni72@gmail.com
     team: Backend Team
   environment: ${spring.profiles.active}
+
+
+
+
+
+
+
 

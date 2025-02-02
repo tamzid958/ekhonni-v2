@@ -44,9 +44,6 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-    @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
-    private Account account;
     private String profileImage;
     @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "refresh_token_id", referencedColumnName = "id")

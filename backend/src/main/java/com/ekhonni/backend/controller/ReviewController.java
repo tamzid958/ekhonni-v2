@@ -71,10 +71,30 @@ public class ReviewController {
         return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getSellerReviews(sellerId, pageable));
     }
 
+    @GetMapping("/seller/{seller_id}/average")
+    public ResponseEntity<ApiResponse<Double>> getAverageSellerRating(@PathVariable("seller_id") UUID sellerId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getAverageSellerRating(sellerId));
+    }
+
+    @GetMapping("/seller/product/{product_id}")
+    public ResponseEntity<ApiResponse<Object>> getSellerReview(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getSellerReview(productId));
+    }
+
     @GetMapping("/buyer/{buyer_id}")
     public ResponseEntity<ApiResponse<Page<BuyerReviewProjection>>> getBuyerReviews(
             @PathVariable("buyer_id") UUID buyerId, Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getBuyerReviews(buyerId, pageable));
+    }
+
+    @GetMapping("/buyer/{buyer_id}/average")
+    public ResponseEntity<ApiResponse<Double>> getAverageBuyerRating(@PathVariable("buyer_id") UUID buyerId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getAverageBuyerRating(buyerId));
+    }
+
+    @GetMapping("/buyer/product/{product_id}")
+    public ResponseEntity<ApiResponse<Object>> getBuyerReview(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getBuyerReview(productId));
     }
 
     @GetMapping("/user/seller")
@@ -99,13 +119,13 @@ public class ReviewController {
      * =================================================================
      */
 
-    @GetMapping("/product/{product_id}/seller/edit-history")
+    @GetMapping("/seller/product/{product_id}/edit-history")
     public ResponseEntity<ApiResponse<Page<SellerReviewProjection>>> getEditHistoryForSellerReviews(
             @PathVariable("product_id") Long productId, Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getEditHistoryForSellerReviews(productId, pageable));
     }
 
-    @GetMapping("/product/{product_id}/buyer/edit-history")
+    @GetMapping("/buyer/product/{product_id}/edit-history")
     public ResponseEntity<ApiResponse<Page<BuyerReviewProjection>>> getEditHistoryForBuyerReviews(
             @PathVariable("product_id") Long productId, Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK, reviewService.getEditHistoryForBuyerReviews(productId, pageable));

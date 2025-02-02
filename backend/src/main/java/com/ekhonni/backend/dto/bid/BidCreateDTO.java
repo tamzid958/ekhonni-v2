@@ -30,22 +30,7 @@ public record BidCreateDTO(
         @Digits(integer = 10, fraction = 2,
                 message = "Amount must have up to 10 integer digits and 2 decimal places")
         @Positive
-        Double amount,
+        Double amount)
 
-        @Schema(
-                description = "Currency code for the bid amount. If not provided, defaults to 'BDT'",
-                example = "USD",
-                defaultValue = "BDT",
-                nullable = true
-        )
-        String currency) {
-
-    /**
-     * Compact constructor that sets default currency to 'BDT' if not provided.
-     */
-    public BidCreateDTO {
-        if (currency == null) {
-            currency = "BDT";
-        }
-    }
+    {
 }

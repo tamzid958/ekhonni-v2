@@ -51,7 +51,7 @@ public class ResilienceConfig {
                 .maxAttempts(3)
                 .intervalFunction(IntervalFunction.ofExponentialBackoff(
                         Duration.ofSeconds(1),
-                        2.0,
+                        3.0,
                         Duration.ofSeconds(10)
                 ))
                 .retryExceptions(

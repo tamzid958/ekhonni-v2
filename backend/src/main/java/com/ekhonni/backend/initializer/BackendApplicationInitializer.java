@@ -7,6 +7,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.service.AccountService;
 import com.ekhonni.backend.service.PrivilegeService;
 import com.ekhonni.backend.util.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,7 +26,7 @@ import java.util.List;
 public class BackendApplicationInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final RoleRepository roleRepository;
     private final JsonUtil jsonUtil;
     private final PrivilegeService privilegeService;
@@ -34,11 +35,11 @@ public class BackendApplicationInitializer implements CommandLineRunner {
     @Value("${spring.security.admin.password}")
     private String adminPassword;
 
-    public BackendApplicationInitializer(PrivilegeService privilegeService, JsonUtil jsonUtil, RoleRepository roleRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public BackendApplicationInitializer(PrivilegeService privilegeService, JsonUtil jsonUtil, RoleRepository roleRepository, AccountService accountService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.privilegeService = privilegeService;
         this.jsonUtil = jsonUtil;
         this.roleRepository = roleRepository;
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
@@ -57,7 +58,6 @@ public class BackendApplicationInitializer implements CommandLineRunner {
             roleRepository.save(superAdmin);
 
             if (!userRepository.existsByRole(superAdmin)) {
-                Account account = new Account(0.0, "Active");
                 User user = new User(
                         "Md Jahid Hasan",
                         adminEmail,
@@ -65,15 +65,14 @@ public class BackendApplicationInitializer implements CommandLineRunner {
                         "01710108965",
                         "Shafipur, Kaliakair, Gazipur",
                         superAdmin,
-                        account,
                         null,
                         null,
                         null,
                         true
                 );
 
-                accountRepository.save(account);
                 userRepository.save(user);
+                accountService.create(user.getId());
 
             }
         }

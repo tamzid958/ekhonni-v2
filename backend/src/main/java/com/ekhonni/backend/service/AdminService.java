@@ -1,7 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.repository.AdminRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +35,7 @@ public class AdminService extends BaseService<User, UUID> {
 //        user.setRole(Role.USER);
 //    }
 
-    public Page<UserProjection> getAllBlocked(Class<UserProjection> projection, Pageable pageable) {
+    public Page<DetailedUserProjection> getAllBlocked(Class<DetailedUserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByBlockedAtIsNotNull(projection, pageable);
     }
 
@@ -44,11 +44,11 @@ public class AdminService extends BaseService<User, UUID> {
     }
 
 
-    public Page<UserProjection> getAllUser(Class<UserProjection> projection, Pageable pageable) {
+    public Page<DetailedUserProjection> getAllUser(Class<DetailedUserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
     }
 
-    public Page<UserProjection> getAllUserByNameOrEmail(Class<UserProjection> projection, Pageable pageable, String name, String email) {
+    public Page<DetailedUserProjection> getAllUserByNameOrEmail(Class<DetailedUserProjection> projection, Pageable pageable, String name, String email) {
         return adminRepository.findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(projection, pageable, name, email);
     }
 

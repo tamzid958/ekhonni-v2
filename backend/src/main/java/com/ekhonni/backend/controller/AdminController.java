@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
 import com.ekhonni.backend.service.RoleService;
@@ -36,14 +37,14 @@ public class AdminController {
 //        adminService.remove(emailDTO.email());
 //        return ResponseEntity.ok("admin removed");
 //    }
-    
+
 
     @GetMapping("/users")
-    public Page<UserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
+    public Page<DetailedUserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
         if (name != null || email != null) {
-            return adminService.getAllUserByNameOrEmail(UserProjection.class, pageable, name, email);
+            return adminService.getAllUserByNameOrEmail(DetailedUserProjection.class, pageable, name, email);
         } else {
-            return adminService.getAllUser(UserProjection.class, pageable);
+            return adminService.getAllUser(DetailedUserProjection.class, pageable);
         }
     }
 
@@ -72,8 +73,8 @@ public class AdminController {
     }
 
     @GetMapping("/users/blocked/")
-    public Page<UserProjection> getAllBlockedUser(Pageable pageable) {
-        return adminService.getAllBlocked(UserProjection.class, pageable);
+    public Page<DetailedUserProjection> getAllBlockedUser(Pageable pageable) {
+        return adminService.getAllBlocked(DetailedUserProjection.class, pageable);
     }
 
 
