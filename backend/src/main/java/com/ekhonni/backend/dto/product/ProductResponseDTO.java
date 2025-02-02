@@ -5,7 +5,7 @@
  * Project Name: ekhonni-v2
  */
 
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.product;
 
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
@@ -31,7 +31,7 @@ import java.util.List;
         "description",
         "price",
         "division",
-        "location",
+        "address",
         "condition",
         "conditionDetails",
         "status",
@@ -39,8 +39,7 @@ import java.util.List;
         "updatedAt",
         "seller",
         "category",
-        "images",
-        "bids"
+        "images"
 })
 public class ProductResponseDTO {
     private Long id;
@@ -49,7 +48,7 @@ public class ProductResponseDTO {
     private String description;
     private Double price;
     private Division division;
-    private String location;
+    private String address;
     private ProductCondition condition;
     private String conditionDetails;
     private ProductStatus status;

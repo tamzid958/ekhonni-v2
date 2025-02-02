@@ -10,6 +10,7 @@ package com.ekhonni.backend.specification;
 
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductSort;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.Product;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -37,11 +38,12 @@ public class ProductSpecification {
     }
 
     public static Specification<Product> belongsToUser(UUID userId) {
-        return (product, cq, cb) -> cb.equal(product.get("sellernoteno").get("id"), userId);
+        return (product, cq, cb) -> cb.equal(product.get("seller").get("id"), userId);
     }
 
-
-
+    public static Specification<Product> hasStatus(ProductStatus status) {
+        return (product, cq, cb) -> cb.equal(product.get("status"), status);
+    }
 
 
     // sorting

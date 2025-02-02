@@ -1,7 +1,7 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 3:31 PM
- * Date: 1/14/25
+ * Time: 2:06 PM
+ * Date: 1/30/25
  * Project Name: ekhonni-v2
  */
 
@@ -11,11 +11,8 @@ import com.ekhonni.backend.enums.ProductStatus;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Setter
 @Getter
-public class UserProductFilter extends ProductFilter {
-    private final ProductStatus productStatus = ProductStatus.APPROVED;
-    private UUID userId;
+public class AdminProductFilter extends ProductFilter{
+    private ProductStatus productStatus;
 }

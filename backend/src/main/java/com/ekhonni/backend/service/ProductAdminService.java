@@ -7,25 +7,37 @@
 
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
+import com.ekhonni.backend.filter.AdminProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.specificationbuilder.AdminProductSpecificationBuilder;
+import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductAdminService {
 
     ProductRepository productRepository;
+    CategoryService categoryService;
 
-    public ProductAdminService(ProductRepository productRepository) {
+    public ProductAdminService(ProductRepository productRepository, CategoryService categoryService) {
+
         this.productRepository = productRepository;
+        this.categoryService = categoryService;
     }
-
 
 
     public Page<ProductProjection> getAll(Pageable pageable) {
@@ -79,7 +91,7 @@ public class ProductAdminService {
     }
 
     @Transactional
-    public String deleteOne(Long id){
+    public String deleteOne(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product doesn't exist"));
 
@@ -93,5 +105,24 @@ public class ProductAdminService {
         // notify seller.
 
         return "Post Archived";
+    }
+
+
+    public Page<ProductResponseDTO> getAllFilteredForAdmin(AdminProductFilter filter) {
+        List<Long> categoryIds = new ArrayList<>();
+        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
+            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
+        }
+
+
+        Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        List<ProductResponseDTO> products = projections.stream()
+                .map(ProductProjectionConverter::convert)
+                .toList();
+        long totalElements = 0;
+        return new PageImpl<>(products, pageable, totalElements);
     }
 }

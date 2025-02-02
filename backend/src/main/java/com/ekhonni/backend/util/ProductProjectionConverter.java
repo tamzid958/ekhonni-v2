@@ -7,7 +7,7 @@
 
 package com.ekhonni.backend.util;
 
-import com.ekhonni.backend.dto.ProductResponseDTO;
+import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.projection.ProductProjection;
 
 public class ProductProjectionConverter {
@@ -20,10 +20,10 @@ public class ProductProjectionConverter {
         dto.setPrice(projection.getPrice());
 
         dto.setDivision(projection.getDivision());
-        dto.setLocation(projection.getLocation());
+        dto.setAddress(projection.getAddress());
 
-        dto.setCondition(dto.getCondition());
-        dto.setConditionDetails(dto.getConditionDetails());
+        dto.setCondition(projection.getCondition());
+        dto.setConditionDetails(projection.getConditionDetails());
 
         dto.setStatus(projection.getStatus());
 

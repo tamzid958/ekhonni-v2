@@ -5,11 +5,7 @@
  * Project Name: ekhonni-v2
  */
 
-package com.ekhonni.backend.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+package com.ekhonni.backend.dto.product;
 
 
 public record ProductImageDTO(String imagePath) {

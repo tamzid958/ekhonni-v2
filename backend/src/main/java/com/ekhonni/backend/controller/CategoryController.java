@@ -9,15 +9,15 @@ package com.ekhonni.backend.controller;
 
 
 import com.ekhonni.backend.dto.CategoryCreateDTO;
+import com.ekhonni.backend.dto.CategoryTreeDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/api/v2/category")
@@ -62,9 +62,19 @@ public record CategoryController(CategoryService categoryService) {
 //        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getUserCategory(userId));
 //    }
 
+    @GetMapping("/tree/{user_id}")
+    public ApiResponse<?> getUserCategoryTree(@PathVariable("user_id") String userId) {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getUserCategoryTree(UUID.fromString(userId)));
+    }
+
     @GetMapping("/all/{user_id}")
     public ApiResponse<?> getCategoryTreeByUser(@PathVariable("user_id") String userId) {
-        return new ApiResponse<>(HTTPStatus.FOUND,   categoryService.findRootCategoriesBySeller(UUID.fromString(userId)));
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.findRootCategoriesBySeller(UUID.fromString(userId)));
+    }
+
+    @GetMapping("/tree")
+    public List<CategoryTreeDTO> getCategoryTree() {
+        return categoryService.getCategoryTree();
     }
 
 }

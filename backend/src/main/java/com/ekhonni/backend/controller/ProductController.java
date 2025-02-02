@@ -8,9 +8,9 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.ProductCreateDTO;
-import com.ekhonni.backend.dto.ProductResponseDTO;
-import com.ekhonni.backend.dto.ProductUpdateDTO;
+import com.ekhonni.backend.dto.product.ProductCreateDTO;
+import com.ekhonni.backend.dto.product.ProductResponseDTO;
+import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
@@ -18,6 +18,8 @@ import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +29,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/product")
 public record ProductController(ProductService productService, BidService bidService) {
 
+    @Operation(
+            summary = "Create a new product",
+            description = "Creates a new product using the provided details, including images",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Product creation form with images and details"
+            )
+    )
     @PostMapping
-    public ApiResponse<?> create(@Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
+    public ApiResponse<?> create(
+            @Parameter(description = "Product details for creation")
+            @Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
+
         productService.create(productCreateDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
@@ -41,6 +53,13 @@ public record ProductController(ProductService productService, BidService bidSer
     }
 
 
+    @Operation(
+            summary = "Update a product",
+            description = "Updates a product using the provided details",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Product update form with images and details"
+            )
+    )
     @PatchMapping("/{id}")
     public ApiResponse<?> updateOne(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
@@ -56,17 +75,14 @@ public record ProductController(ProductService productService, BidService bidSer
 
     @GetMapping("/filter")
     public ApiResponse<?> getFiltered(@ModelAttribute ProductFilter filter) {
-        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFiltered(filter));
     }
 
 
     @GetMapping("/user/filter")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
-        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
     }
-
 
 
     @GetMapping("/{id}/bid")
@@ -74,8 +90,6 @@ public record ProductController(ProductService productService, BidService bidSer
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
                 bidService.getAllForProduct(id, BuyerBidProjection.class, pageable));
     }
-
-
 
 
 }
