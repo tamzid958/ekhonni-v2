@@ -5,7 +5,7 @@ import CustomErrorBoundary from '@/components/ErrorBoundary';
 import { ProductSection } from '@/components/ProductSection';
 
 interface Data {
-  id: string;
+  id: number;
   price: number;
   title: string;
   subTitle: string;
