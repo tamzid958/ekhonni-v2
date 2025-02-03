@@ -1,6 +1,6 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.exception.PrivilegeNotFoundException;
+import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.service.PrivilegeService;
 import lombok.AllArgsConstructor;

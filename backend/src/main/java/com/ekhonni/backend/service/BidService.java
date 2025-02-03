@@ -4,15 +4,17 @@ import com.ekhonni.backend.dto.bid.BidCreateDTO;
 import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
-import com.ekhonni.backend.exception.bid.*;
+import com.ekhonni.backend.exception.bid.BidAlreadyAcceptedException;
+import com.ekhonni.backend.exception.bid.BidCreationException;
+import com.ekhonni.backend.exception.bid.BidNotFoundException;
+import com.ekhonni.backend.exception.bid.InvalidBidAmountException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
+
 @Slf4j
 @Setter
 @Getter
