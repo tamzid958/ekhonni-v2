@@ -9,9 +9,11 @@ import com.ekhonni.backend.enums.PayoutMethod;
  */
 public interface PayoutAccountProjection {
     Long getId();
+    Long getAccountId();
+    Long getAccountUserId();
     PayoutCategory getCategory();
     PayoutMethod getMethod();
-    String getAccountNumber();
+    String getPayoutAccountNumber();
     String getBankName();
     String getBranchName();
     String getAccountHolderName();

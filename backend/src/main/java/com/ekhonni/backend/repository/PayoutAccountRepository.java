@@ -12,6 +12,6 @@ import java.util.UUID;
  */
 public interface PayoutAccountRepository extends BaseRepository<PayoutAccount, Long> {
 
-    <P> Page<P> findByUserIdAndDeletedAtIsNull(UUID userId, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByAccountIdAndDeletedAtIsNull(Long accountId, Class<P> projection, Pageable pageable);
 
 }

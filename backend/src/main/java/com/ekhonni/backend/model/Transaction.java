@@ -28,8 +28,8 @@ public class Transaction extends BaseEntity<Long> {
     @Column(nullable = false)
     private TransactionStatus status;
 
-    private Double storeAmount;
-    private Double bdtAmount;
+    private double storeAmount;
+    private double bdtAmount;
     private String sessionKey;
     private String validationId;
     private String bankTransactionId;
