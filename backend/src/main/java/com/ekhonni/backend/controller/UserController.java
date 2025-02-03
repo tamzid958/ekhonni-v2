@@ -1,6 +1,11 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.*;
+import com.ekhonni.backend.dto.EmailDTO;
+import com.ekhonni.backend.dto.ReportDTO;
+import com.ekhonni.backend.dto.user.PasswordChangeDTO;
+import com.ekhonni.backend.dto.user.ProfileImageDTO;
+import com.ekhonni.backend.dto.user.RefreshTokenDTO;
+import com.ekhonni.backend.dto.user.UserUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.projection.ReportByUserProjection;
@@ -59,9 +64,10 @@ public class UserController {
 
     @PatchMapping("/{id}/change-password")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updatePassword(id, passwordDTO));
+    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updatePassword(id, passwordChangeDTO));
     }
+
 
     @PatchMapping("/{id}/image")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")

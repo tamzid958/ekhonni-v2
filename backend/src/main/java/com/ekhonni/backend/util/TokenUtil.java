@@ -1,6 +1,6 @@
 package com.ekhonni.backend.util;
 
-import com.ekhonni.backend.exception.RefreshTokenNotFoundException;
+import com.ekhonni.backend.exception.user.RefreshTokenNotFoundException;
 import com.ekhonni.backend.model.RefreshToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.RefreshTokenRepository;

@@ -1,4 +1,4 @@
-package com.ekhonni.backend.exception;
+package com.ekhonni.backend.exception.user;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

@@ -2,7 +2,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.ReportDTO;
 import com.ekhonni.backend.enums.ReportStatus;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.Report;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ReportAgainstUserProjection;

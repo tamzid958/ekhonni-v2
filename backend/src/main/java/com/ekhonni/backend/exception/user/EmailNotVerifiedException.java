@@ -1,4 +1,4 @@
-package com.ekhonni.backend.exception;
+package com.ekhonni.backend.exception.user;
 
 public class EmailNotVerifiedException extends RuntimeException {
     public EmailNotVerifiedException(String message) {

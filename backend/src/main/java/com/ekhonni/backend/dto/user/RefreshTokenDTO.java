@@ -1,4 +1,4 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,5 +8,5 @@ import jakarta.validation.constraints.NotNull;
  * Date: 12/26/24
  */
 public record RefreshTokenDTO(@NotNull @NotBlank
-                       String refreshToken) {
+                              String refreshToken) {
 }

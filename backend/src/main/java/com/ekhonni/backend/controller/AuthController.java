@@ -1,6 +1,10 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.*;
+import com.ekhonni.backend.dto.EmailDTO;
+import com.ekhonni.backend.dto.user.AuthDTO;
+import com.ekhonni.backend.dto.user.PasswordResetRequestDTO;
+import com.ekhonni.backend.dto.user.ResetPasswordDTO;
+import com.ekhonni.backend.dto.user.UserDTO;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
