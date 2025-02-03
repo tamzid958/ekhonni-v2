@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v2/account/payout")
-@Tag(name = "Payout Account", description = "Manage review payout accounts")
+@Tag(name = "Payout Account", description = "Manage payout accounts")
 public class PayoutAccountController {
 
     private final PayoutAccountService payoutAccountService;

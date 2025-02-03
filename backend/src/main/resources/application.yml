@@ -87,9 +87,9 @@ sslcommerz:
   domain: ${SSLCOMMERZ_DOMAIN}
   store-id: ${SSLCOMMERZ_STORE_ID}
   store-password: ${SSLCOMMERZ_STORE_PASSWORD}
-  success-url: ${BASE_PAYMENT_URL}/success
-  fail-url: ${BASE_PAYMENT_URL}/fail
-  cancel-url: ${BASE_PAYMENT_URL}/cancel
+  success-url: ${SSLCOMMERZ_SUCCESS_URL}
+  fail-url: ${SSLCOMMERZ_FAIL_URL}
+  cancel-url: ${SSLCOMMERZ_CANCEL_URL}
   ipn-url: ${SSLCOMMERZ_IPN_URL}
   api-url: ${SSLCOMMERZ_API_URL}
   validation-api-url: ${SSLCOMMERZ_VALIDATION_API_URL}
@@ -97,6 +97,13 @@ sslcommerz:
   connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
+
+bkash:
+  username: ${BKASH_USERNAME}
+  password: ${BKASH_PASSWORD}
+  app-key: ${BKASH_APP_KEY}
+  app-secret: ${BKASH_APP_SECRET}
+
 
 refund:
   processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}
