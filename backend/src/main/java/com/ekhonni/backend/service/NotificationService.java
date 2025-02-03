@@ -132,6 +132,18 @@ public class NotificationService {
         create(seller, type, message, redirectUrl);
     }
 
+    public void createForBidAccepted(Bid bid) {
+        User bidder = bid.getBidder();
+        Product product = bid.getProduct();
+        NotificationType type = NotificationType.BID_ACCEPTED;
+        String message = String.format(
+                "Congratulations! Your bid for the product %s has been accepted.",
+                product.getTitle()
+        );
+        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        create(bidder, type, message, redirectUrl);
+    }
+
     public void createForProductAccepted(Product product) {
         User seller = product.getSeller();
         NotificationType type = NotificationType.PRODUCT_ACCEPTED;
@@ -163,15 +175,4 @@ public class NotificationService {
         create(seller, type, message, null);
     }
 
-    public void createForBidAccepted(Bid bid) {
-        User bidder = bid.getBidder();
-        Product product = bid.getProduct();
-        NotificationType type = NotificationType.BID_ACCEPTED;
-        String message = String.format(
-                "Congratulations! Your bid for the product %s has been accepted.",
-                product.getTitle()
-        );
-        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
-        create(bidder, type, message, redirectUrl);
-    }
 }
