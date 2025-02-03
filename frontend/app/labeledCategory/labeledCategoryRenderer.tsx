@@ -54,8 +54,14 @@ export default function LabeledCategoryRenderer({ products, category, totalPages
           <PaginationContent>
             {/* First Page */}
             <PaginationItem>
-              <Link href={`?category=${category}&currentPage=${1}`}>
-                <PaginationLink isActive={currentPage === 1}>1</PaginationLink>
+              <Link href={`?category=${category}&currentPage=1`}>
+                <PaginationLink
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    currentPage === 1 ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
+                  }`}
+                >
+                  1
+                </PaginationLink>
               </Link>
             </PaginationItem>
 
@@ -72,7 +78,13 @@ export default function LabeledCategoryRenderer({ products, category, totalPages
               .map((page) => (
                 <PaginationItem key={page}>
                   <Link href={`?category=${category}&currentPage=${page}`}>
-                    <PaginationLink isActive={currentPage === page}>{page}</PaginationLink>
+                    <PaginationLink
+                      className={`px-4 py-2 rounded-md transition-colors ${
+                        currentPage === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
+                      }`}
+                    >
+                      {page}
+                    </PaginationLink>
                   </Link>
                 </PaginationItem>
               ))}
@@ -87,12 +99,19 @@ export default function LabeledCategoryRenderer({ products, category, totalPages
             {/* Last Page */}
             <PaginationItem>
               <Link href={`?category=${category}&currentPage=${totalPages}`}>
-                <PaginationLink>{totalPages}</PaginationLink>
+                <PaginationLink
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    currentPage === totalPages ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
+                  }`}
+                >
+                  {totalPages}
+                </PaginationLink>
               </Link>
             </PaginationItem>
           </PaginationContent>
         </Pagination>
       </div>
+
     </div>
   );
 }
