@@ -9,6 +9,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { QuickBid } from '@/components/QuickBid';
 import { z } from "zod";
 import { useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
+import Link from 'next/link';
+
 
 
 interface ProductDetailsProps {
@@ -44,6 +47,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   const {data: session, status} = useSession();
   const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
+  const router = useRouter();
 
 
 
@@ -291,12 +295,11 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
-              <div className="pl-2 italic">{productDetails.seller.name.toUpperCase()}</div>
-
-              {/*<Link href={`/sellerPage?id=${productDetails.seller.id}`} className=" pl-2 italic hover:underline">*/}
-
-              {/*</Link>*/}
-
+              <Link href={`/sellerPage/${productDetails.seller.id}`}>
+                <div className="pl-2 italic cursor-pointer hover:underline">
+                  {productDetails.seller.name.toUpperCase()}
+                </div>
+              </Link>
             </div>
             <br />
             <div className="pt-2 font-bold inline-flex">
