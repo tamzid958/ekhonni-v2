@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { CardDemo } from '@/components/SellerCard';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; // Import router for URL manipulation
+import { useParams } from 'next/navigation';
 
 interface ProductData {
   id: string;
@@ -29,45 +28,46 @@ interface ProductData {
 }
 
 const ShopPage = () => {
+  const params = useParams(); // ✅ Get params using useParams
+  const userId = params?.id as string; // ✅ Extract the ID safely
+
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-
-  // Extract userId from URL or session
-  const { data: session } = useSession();
-  const userId = "550e8400-e29b-41d4-a716-446655440005"; // Get userId from session (or URL if needed)
-
-  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return; // If userId is not available, exit early
+    if (!userId) return;
 
-    // Fetch products based on selected category
     const fetchProducts = async () => {
-      let apiUrl;
-      if (selectedCategory === 'All') {
-        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${userId}`;
-      } else {
-        apiUrl = `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
-      }
+       const apiUrl =
+        selectedCategory === 'All'
+          ? `http://localhost:8080/api/v2/product/user/filter?userId=${userId}`
+          : `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(
+            userId
+          )}&categoryName=${encodeURIComponent(selectedCategory)}`;
+
+      setLoadingProducts(true);
 
       try {
         const response = await fetch(apiUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
+        if (!response.ok) throw new Error('Failed to fetch products');
 
         const data = await response.json();
         setProducts(data?.data?.content || []);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        setError('Error fetching products');
+      } finally {
+        setLoadingProducts(false);
       }
     };
 
@@ -75,28 +75,28 @@ const ShopPage = () => {
   }, [selectedCategory, userId]);
 
   useEffect(() => {
-    if (!userId) return; // If userId is not available, exit early
+    if (!userId) return;
 
-    // Fetch categories
     const fetchCategories = async () => {
+      setLoadingCategories(true);
+
       try {
         const apiUrl = `http://localhost:8080/api/v2/category/all/${userId}`;
-
         const response = await fetch(apiUrl, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
+        if (!response.ok) throw new Error('Failed to fetch categories');
 
         const data = await response.json();
         setCategories(data?.data || []);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        setError('Error fetching categories');
+      } finally {
+        setLoadingCategories(false);
       }
     };
 
@@ -110,15 +110,16 @@ const ShopPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       {isSidebarOpen && (
-        <div className="flex flex-col top-120 left-15 mt-12 w-60  text-black p-4 rounded-lg">
+        <div className="flex flex-col top-120 left-15 mt-12 w-60 text-black p-4 rounded-lg">
           <h2 className="text-xl font-bold mb-4">Categories</h2>
           <ul>
             <li>
               <button
                 onClick={() => handleCategorySelect('All')}
-                className={`cursor-pointer ${selectedCategory === 'All' ? 'font-bold underline' : 'text-black hover:underline'}`}
+                className={`cursor-pointer ${
+                  selectedCategory === 'All' ? 'font-bold underline' : 'text-black hover:underline'
+                }`}
               >
                 All
               </button>
@@ -127,7 +128,9 @@ const ShopPage = () => {
               <li key={category}>
                 <button
                   onClick={() => handleCategorySelect(category)}
-                  className={`cursor-pointer ${selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'}`}
+                  className={`cursor-pointer ${
+                    selectedCategory === category ? 'font-bold underline' : 'text-black hover:underline'
+                  }`}
                 >
                   {category}
                 </button>
@@ -149,24 +152,21 @@ const ShopPage = () => {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
           <span>Categories</span>
         </button>
       </div>
 
       <main className="container mx-auto px-4 py-8 flex-1 mt-16">
+        {loadingCategories && <div>Loading categories...</div>}
+        {loadingProducts && <div>Loading products...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+
         <div>
           <div
             className={`grid gap-6 mb-6 ${
-              isSidebarOpen
-                ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3'
-                : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
+              isSidebarOpen ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3' : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
             }`}
           >
             {products.map((product) => (
