@@ -5,12 +5,23 @@ import { HorizontalAdminCard } from '../components/HorizontalAdminCard';
 import { Package } from 'lucide-react';
 import { Data } from './fetchProducts';
 import { Separator } from '@/components/ui/separator';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from '@/components/ui/pagination';
+import Link from 'next/link';
 
 interface Props {
   products: Data[];
+  totalPages: number;
+  currentPage: number;
 }
 
-export default function ProductRenderer({ products }: Props) {
+export default function ProductRenderer({ products, totalPages, currentPage }: Props) {
+
   const [filter, setFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -45,7 +56,7 @@ export default function ProductRenderer({ products }: Props) {
           {
             // Apply the filtering first, then check for the length
             filteredProducts
-              .filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .filter((product) => product.title.toLowerCase().includes(searchQuery.toLowerCase()))
               .length === 0 ? (
               <div className="flex flex-col mx-60 items-center justify-center text-gray-600">
                 <Package className="w-24 h-24 mb-4 text-gray-400" />
@@ -53,12 +64,12 @@ export default function ProductRenderer({ products }: Props) {
               </div>
             ) : (
               filteredProducts
-                .filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                .filter((product) => product.title.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((product) => (
                   <div key={product.id} className="bg-white flex items-center justify-between pt-8">
                     <HorizontalAdminCard
                       id={parseInt(product.id)}
-                      title={product.name}
+                      title={product.title}
                       img={product.images[0]?.imagePath || ''}
                       price={product.price}
                       shipping={0}
@@ -71,7 +82,51 @@ export default function ProductRenderer({ products }: Props) {
                   </div>
                 ))
             )
-          }
+          } {/* Pagination */}
+          <div className="flex justify-center mt-8">
+            <Pagination>
+              <PaginationContent>
+                {/* First Page */}
+                <PaginationItem>
+                  <Link href="?page=1">
+                    <PaginationLink isActive={currentPage === 1}>1</PaginationLink>
+                  </Link>
+                </PaginationItem>
+
+                {/* Left Ellipsis (if needed) */}
+                {currentPage > 3 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+                {/* Pages around current */}
+                {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                  .filter((page) => page > 1 && page < totalPages)
+                  .map((page) => (
+                    <PaginationItem key={page}>
+                      <Link href={`?page=${page}`}>
+                        <PaginationLink isActive={currentPage === page}>{page}</PaginationLink>
+                      </Link>
+                    </PaginationItem>
+                  ))}
+
+                {/* Right Ellipsis (if needed) */}
+                {currentPage < totalPages - 2 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+                {/* Last Page */}
+                <PaginationItem>
+                  <Link href={`?page=${totalPages}`}>
+                    <PaginationLink>{totalPages}</PaginationLink>
+                  </Link>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         </div>
         <div className="w-3/10 p-4">
           <input

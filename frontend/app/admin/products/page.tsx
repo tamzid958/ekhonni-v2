@@ -2,9 +2,14 @@ import React from 'react';
 import { fetchProducts } from './fetchProducts';
 import ProductRenderer from './ProductRender';
 
-export default async function ProductViewPage() {
-  const products = await fetchProducts();
+interface Props {
+  searchParams: { page?: string };
+}
 
-  return <ProductRenderer products={products} />;
+export default async function ProductViewPage({ searchParams }: Props) {
+  const currentPage = Number(searchParams.page) || 1;
+  const products = await fetchProducts(currentPage);
+
+  return <ProductRenderer products={products} currentPage={currentPage} totalPages={10} />;
 }
 

@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface data {
-  id: string; // Add `id` for dynamic routing
+  id: number; // Add `id` for dynamic routing
   title: string;
   description: string;
   img: string;
