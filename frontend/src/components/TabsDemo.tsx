@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,66 +10,179 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs";
+} from '@/components/ui/tabs';
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Toaster, toast } from "sonner";
+import { z } from 'zod';
+
+
 
 export function TabsDemo() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [location, setLocation] = useState("");
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const token = session?.user?.token;
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [location, setLocation] = useState('');
+  const [profile, setProfile] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
-  const isAccountFormValid =
-    name.trim() !== "" && email.trim() !== "" && location.trim() !== "";
+  const router = useRouter();
 
-  const isPasswordFormValid =
-    currentPassword.trim() !== "" && newPassword.trim() !== "";
+  const nameSchema = z.string().regex(/^[a-zA-Z\s]*$/, 'Name must contain only alphabets');
+  const emailSchema = z.string().email('Invalid email address');
+  const phoneSchema = z.string().regex(/^01[0-9]{9}$/, 'Phone number must start with 01 and contain 11 digits');
+  const addressSchema = z.string().min(5, 'Address must be at least 5 characters long');
+  const passwordSchema = z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
 
-  const handleSaveChanges = () => {
-    alert("Account information saved successfully!");
-    setName("");
-    setEmail("");
-    setLocation("");
-    setProfilePicture(null);
-    setPreview(null);
+  const imageSchema = z.instanceof(File).optional(); // Optional image file validation
+
+  // ✅ Check if email or password form is filled for validation
+  const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
+  const isEmailFormValid = email.trim() !== '';
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setProfileImage(file);
+  };
+
+  const handleSaveChanges = async () => {
+    if (!userId || !token) {
+      toast.error("User not authenticated.");
+      return;
+    }
+
+    const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
+    const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
+    const imageUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/image`;
+
+    // ✅ Send the entire profile with empty strings for fields that are not updated
+    const updatedProfile = {
+      name: name.trim() || "",
+      phone: phone.trim() || "",
+      address: location.trim() || "",
+    };
+
+    try {
+      if (Object.keys(updatedProfile).length > 0) {
+        // ✅ Update the profile only if something has changed
+        const profileResponse = await fetch(profileUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedProfile),
+        });
+
+        if (!profileResponse.ok) throw new Error("Failed to update profile");
+
+        toast.success("Profile updated successfully!");
+        setName('');
+        setPhone('');
+        setLocation('');
+      }
+
+      if (email.trim()) {
+        // ✅ Only update email if provided
+        const emailResponse = await fetch(emailUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (!emailResponse.ok) throw new Error("Failed to update email");
+
+          setEmail('');
+
+        toast.success("Email updated successfully! You'll be logged out.");
+        await signOut({ redirect: false });
+        setTimeout(() => router.push("/auth/login"), 500);
+      }
+
+      // Handle profile image update
+      if (profileImage) {
+        const formData = new FormData();
+        formData.append("image", profileImage);
+
+        const imageResponse = await fetch(imageUpdateUrl, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!imageResponse.ok) throw new Error("Failed to update profile image");
+        setProfileImage(null);
+        toast.success("Profile image updated successfully!");
+      }
+
+    } catch (error) {
+      console.error("Error updating profile, email, or image:", error);
+      toast.error("Failed to update profile, email, or image. Please try again.");
+    }
   };
 
   const handleSavePassword = async () => {
-    // const userId=
-    // const apiUrl = `/api/v2/user/${userId}/change-password`;
+    if (!userId || !token) {
+      alert("User not authenticated.");
+      return;
+    }
 
-    alert("Password updated successfully! You'll be logged out.");
-    setCurrentPassword("");
-    setNewPassword("");
-    setShowPassword(false);
-  };
+    const passwordUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-password`;
+    const passwordData = { currentPassword, newPassword };
 
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setProfilePicture(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const response = await fetch(passwordUpdateUrl, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(passwordData),
+      });
+
+      if (!response.ok) throw new Error("Failed to update password");
+      setCurrentPassword('');
+      setNewPassword('');
+
+      toast.success("Password updated successfully! You'll be logged out.");
+      await signOut({ redirect: false });
+      setTimeout(() => router.push("/auth/login"), 500);
+
+    } catch (error) {
+      console.error("Error updating password:", error);
+      toast.error("Failed to update password. Please try again.");
     }
   };
 
   return (
     <Tabs defaultValue="account" className="w-[400px] bg-white rounded-lg shadow-md">
+      <Toaster position="top-right" />
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="account" className="px-4 py-2 font-medium">
           Account
@@ -78,104 +192,58 @@ export function TabsDemo() {
         </TabsTrigger>
       </TabsList>
 
+      {/* Account Tab */}
       <TabsContent value="account">
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
-            <CardDescription>
-              Update your account details. All fields are required.
-            </CardDescription>
+            <CardDescription>Update any account detail. Fields are optional.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="profile-picture">Profile Picture</Label>
-              <div className="flex items-center space-x-4">
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="Profile Preview"
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                    N/A
-                  </div>
-                )}
-                <input
-                  id="profile-picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                  className="hidden"
-                />
-                <Label
-                  htmlFor="profile-picture"
-                  className="cursor-pointer bg-blue-500 text-white px-3 py-1 rounded-lg"
-                >
-                  Upload
-                </Label>
-              </div>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="name">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <Label htmlFor="email">Email (Logout required)</Label>
+              <Input id="email" placeholder="Your email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="email">
-                Email <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <Label htmlFor="phone">Phone</Label>
+              <Input id="phone" placeholder="Your phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="location">
-                Location <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="location">Location</Label>
+              <Input id="location" placeholder="Your location" value={location} onChange={(e) => setLocation(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="profile-image">Profile Image</Label>
               <Input
-                id="location"
-                placeholder="Your location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                id="profile-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
               />
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              className="w-full"
-              onClick={handleSaveChanges}
-              disabled={!isAccountFormValid}
-            >
+            <Button className="w-full" onClick={handleSaveChanges} disabled={!(name || phone || email || location || profileImage)}>
               Save changes
             </Button>
           </CardFooter>
         </Card>
       </TabsContent>
 
+      {/* Password Tab */}
       <TabsContent value="password">
         <Card>
           <CardHeader>
             <CardTitle>Password</CardTitle>
-            <CardDescription>
-              Change your password here. All fields are required.
-            </CardDescription>
+            <CardDescription>Change your password (Logout required).</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="current-password">
-                Current Password <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="current-password">Current Password *</Label>
               <Input
                 id="current-password"
                 type={showPassword ? "text" : "password"}
@@ -185,9 +253,7 @@ export function TabsDemo() {
               />
             </div>
             <div>
-              <Label htmlFor="new-password">
-                New Password <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="new-password">New Password *</Label>
               <Input
                 id="new-password"
                 type={showPassword ? "text" : "password"}
@@ -210,11 +276,7 @@ export function TabsDemo() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              className="w-full"
-              onClick={handleSavePassword}
-              disabled={!isPasswordFormValid}
-            >
+            <Button className="w-full" onClick={handleSavePassword} disabled={!isPasswordFormValid}>
               Save password
             </Button>
           </CardFooter>

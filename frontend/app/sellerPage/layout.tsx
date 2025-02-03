@@ -4,12 +4,44 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import { useSession } from 'next-auth/react';
 
 const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
   const [activeMenu, setActiveMenu] = useState<string>("");
+  const [profile, setProfile] = useState<any>(null);  // State to hold profile data
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession(); // Get logged-in user session
 
+  // Extract the userId from the URL (e.g., /sellerPage/{userId}/shop)
+  const userId = pathname.split('/')[2];  // Get userId from the URL (position 2 in /sellerPage/{userId}/shop)
+
+  // Fetch user profile info when the component mounts
+  useEffect(() => {
+    if (userId) {
+      const fetchProfile = async () => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/v2/user/550e8400-e29b-41d4-a716-446655440005`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+          }
+
+          const data = await response.json();
+          setProfile(data);  // Set profile data in state
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        }
+      };
+
+      fetchProfile();
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (pathname === "/sellerPage") {
@@ -17,14 +49,11 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [pathname, router]);
 
-
   useEffect(() => {
     if (pathname.includes("/shop")) {
-      setActiveMenu("shop");
-    } else if (pathname.includes("/about")) {
-      setActiveMenu("about");
+      setActiveMenu("/shop");
     } else if (pathname.includes("/feedback")) {
-      setActiveMenu("feedback");
+      setActiveMenu("/feedback");
     }
   }, [pathname]);
 
@@ -38,13 +67,14 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <img
-              src="/tracker.webp"
-              alt="Seller Logo"
+              src={profile?.profileImage || "/placeholder.jpg"}  // Display profile image or a placeholder
+              alt="User Profile"
               className="w-16 h-16 rounded-full object-cover"
             />
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Electronics Media</h1>
-              <p className="text-sm text-gray-500">Verified Seller</p>
+              <h1 className="text-2xl font-bold text-gray-800">{profile?.name || 'Loading...'}</h1>
+              <p className="text-sm text-gray-500">{profile?.email || 'Loading email...'}</p>
+              <p className="text-sm text-gray-500">{profile?.address || 'Loading address...'}</p>
             </div>
           </div>
           <div className="flex space-x-4">
@@ -60,7 +90,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
 
       <nav className="bg-gray-200 py-3">
         <div className="container mx-auto px-4 flex space-x-6">
-          <Link href="/sellerPage/shop">
+          <Link href={`/sellerPage/${userId}/shop`}>
             <span
               onClick={() => handleMenuClick("shop")}
               className={`text-gray-700 font-medium hover:text-black ${
@@ -72,19 +102,8 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
               Shop
             </span>
           </Link>
-          <Link href="/sellerPage/about">
-            <span
-              onClick={() => handleMenuClick("about")}
-              className={`text-gray-700 font-medium hover:text-black ${
-                activeMenu === "about"
-                  ? "text-black font-bold border-b-2 border-black"
-                  : ""
-              }`}
-            >
-              About
-            </span>
-          </Link>
-          <Link href="/sellerPage/feedback">
+
+          <Link href={`/sellerPage/${userId}/feedback`}>
             <span
               onClick={() => handleMenuClick("feedback")}
               className={`text-gray-700 font-medium hover:text-black ${
@@ -98,7 +117,6 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
           </Link>
         </div>
       </nav>
-
 
       <main className="container mx-auto px-4 py-6">{children}</main>
     </div>

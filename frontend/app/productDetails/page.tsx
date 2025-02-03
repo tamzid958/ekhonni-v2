@@ -5,10 +5,10 @@ async function fetchProductDetails(productId: string) {
   const productResponse = await fetch(`http://localhost:8080/api/v2/product/${productId}`);
   const productData = await productResponse.json();
 
-  const biddingCountResponse = await fetch(`http://localhost:8080/api/v2/bid/${productId}/count`);
+  const biddingCountResponse = await fetch(`http://localhost:8080/api/v2/bid/product/${productId}/count`);
   const biddingCountData = await biddingCountResponse.json();
 
-  const biddingDetailsResponse = await fetch(`http://localhost:8080/api/v2/bid/buyer/${productId}`);
+  const biddingDetailsResponse = await fetch(`http://localhost:8080/api/v2/bid/buyer/product/${productId}`);
   const biddingDetailsData = await biddingDetailsResponse.json();
 
 
