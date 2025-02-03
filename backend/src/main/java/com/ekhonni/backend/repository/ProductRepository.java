@@ -39,4 +39,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
     List<Category> findCategoriesBySeller(@Param("id") UUID id);
 
 
+    Long countByIdInAndStatus(List<Long> ids, ProductStatus status);
+
+
 }

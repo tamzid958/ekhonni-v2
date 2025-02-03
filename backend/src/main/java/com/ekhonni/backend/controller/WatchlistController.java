@@ -13,8 +13,9 @@ import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.WatchlistService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2/user/watchlist")
@@ -24,15 +25,19 @@ public class WatchlistController {
     private final WatchlistService watchlistService;
 
     @PostMapping
-    public ApiResponse<?> addProduct(@RequestParam("productId") Long productId){
+    public ApiResponse<?> addProduct(@RequestParam("productId") Long productId) {
         watchlistService.addProduct(productId);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
 
     @GetMapping
-    public ApiResponse<?> getAllProducts(Pageable pageable){
+    public ApiResponse<?> getAllProducts(Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.FOUND, watchlistService.getAllProducts(pageable));
+    }
 
+    @DeleteMapping
+    public ApiResponse<?> removeProducts(@RequestBody List<Long> productIds) {
+        return new ApiResponse<>(HTTPStatus.DELETED, watchlistService.removeProducts(productIds));
     }
 }

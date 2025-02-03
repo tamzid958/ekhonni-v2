@@ -8,20 +8,24 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.WatchlistProduct;
-import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.projection.WatchlistProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.WatchlistRepository;
 import com.ekhonni.backend.util.AuthUtil;
+import com.ekhonni.backend.util.ProductProjectionConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -31,11 +35,14 @@ public class WatchlistService {
     private final WatchlistRepository watchlistRepository;
 
 
-    public void addProduct(Long id){
+    public void addProduct(Long id) {
         User user = AuthUtil.getAuthenticatedUser();
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found to add to watchlist"));
+
+        if (product.getStatus() != ProductStatus.APPROVED)
+            throw new ProductNotFoundException("Product must be approved to add to watchlist");
 
         WatchlistProduct watchlistProduct = new WatchlistProduct();
         watchlistProduct.setUser(user);
@@ -46,14 +53,27 @@ public class WatchlistService {
 
     }
 
-    public Page<?> getAllProducts(Pageable pageable) {
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
         User user = AuthUtil.getAuthenticatedUser();
+        Page<WatchlistProductProjection> watchlistProducts = watchlistRepository.findAllProjectionByUser(user, pageable);
+        List<ProductResponseDTO> products = watchlistProducts.getContent().stream()
+                .map(watchlistProduct -> ProductProjectionConverter.convert(watchlistProduct.getProduct()))
+                .toList();
+        return new PageImpl<>(products, pageable, watchlistProducts.getTotalElements());
+    }
 
-        Page<WatchlistProductProjection> watchlistProducts = watchlistRepository.findAllProductIdsByUser(user, pageable );
-        System.out.println(watchlistProducts);
-        return watchlistProducts;
+    @Transactional
+    public String removeProducts(List<Long> productIds) {
 
+        User user = AuthUtil.getAuthenticatedUser();
+        Long foundCount = productRepository.countByIdInAndStatus(productIds, ProductStatus.APPROVED);
 
-
+        if (foundCount != productIds.size()) {
+            throw new ProductNotFoundException("Some products not found");
+        }
+        // need to check the productIds by that user in watchlist
+        
+        watchlistRepository.deleteByUserIdAndProductIdIn(user.getId(), productIds);
+        return "Removed selected products from the watchlist";
     }
 }
