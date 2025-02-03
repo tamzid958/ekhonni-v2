@@ -32,12 +32,14 @@ public class BidService extends BaseService<Bid, Long> {
     private final BidRepository bidRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final NotificationService notificationService;
 
-    public BidService(BidRepository bidRepository, UserService userService, ProductService productService) {
+    public BidService(BidRepository bidRepository, UserService userService, ProductService productService, NotificationService notificationService) {
         super(bidRepository);
         this.bidRepository = bidRepository;
         this.userService = userService;
         this.productService = productService;
+        this.notificationService = notificationService;
     }
 
     public <P> Page<P> getAllForProduct(Long productId, Class<P> projection, Pageable pageable) {
@@ -65,6 +67,7 @@ public class BidService extends BaseService<Bid, Long> {
                 .orElseThrow(() -> new UserNotFoundException("Bidder not found for bid"));
         Bid bid = new Bid(product, bidder, bidCreateDTO.amount(), "BDT", BidStatus.PENDING);
         bidRepository.save(bid);
+        notificationService.createForNewBid(product, bidCreateDTO);
     }
 
     @Modifying
@@ -113,6 +116,7 @@ public class BidService extends BaseService<Bid, Long> {
             throw new BidAlreadyAcceptedException();
         }
         bid.setStatus(BidStatus.ACCEPTED);
+        notificationService.createForBidAccepted(bid);
     }
 
     public Double getHighestBidAmount(Long productId) {
