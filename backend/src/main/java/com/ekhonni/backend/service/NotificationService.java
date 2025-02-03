@@ -84,7 +84,7 @@ public class NotificationService {
 
     public List<NotificationPreviewProjection> getAllNew(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
         if (lastFetchTime == null) return getAll(recipientId, pageable);
-        return notificationRepository.findByRecipientIdOrRecipientIdIsNullAndCreatedAtAfter(recipientId, lastFetchTime, pageable);
+        return notificationRepository.findNewNotifications(recipientId, lastFetchTime, pageable);
     }
 
 
