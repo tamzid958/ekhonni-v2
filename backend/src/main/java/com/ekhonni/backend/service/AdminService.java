@@ -23,17 +23,6 @@ public class AdminService extends BaseService<User, UUID> {
         this.adminRepository = adminRepository;
     }
 
-//    @Transactional
-//    public void add(String email) {
-//        User user = adminRepository.findByEmail(email);
-//        user.setRole(Role.ADMIN);
-//    }
-//
-//    @Transactional
-//    public void remove(String email) {
-//        User user = adminRepository.findByEmail(email);
-//        user.setRole(Role.USER);
-//    }
 
     public Page<UserProjection> getAllBlocked(Class<UserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByBlockedAtIsNotNull(projection, pageable);

@@ -5,9 +5,10 @@ import com.ekhonni.backend.enums.ReportStatus;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.Report;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.ReportAgainstUserProjection;
+import com.ekhonni.backend.projection.ReportByUserProjection;
 import com.ekhonni.backend.repository.ReportRepository;
 import com.ekhonni.backend.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,18 @@ import java.util.UUID;
  * Date: 2/2/25
  */
 @Service
-@AllArgsConstructor
-public class ReportService {
-    private ReportRepository reportRepository;
-    private UserRepository userRepository;
+public class ReportService extends BaseService<Report, Long> {
+    private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
+
+    public ReportService(ReportRepository reportRepository, UserRepository userRepository) {
+        super(reportRepository);
+        this.reportRepository = reportRepository;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
-    public Report createReport(UUID reporterId, ReportDTO reportDTO) {
+    public void createReport(UUID reporterId, ReportDTO reportDTO) {
 
         User reporter = userRepository.findById(reporterId).orElseThrow(() -> new UserNotFoundException("reporter not found"));
 
@@ -40,18 +46,14 @@ public class ReportService {
 
         reportRepository.save(report);
 
-        return report;
     }
 
-    public Page<Report> getAllReports(Pageable pageable) {
-        return reportRepository.findAll(pageable);
+
+    public Page<ReportAgainstUserProjection> getAllReportsAgainstUser(Class<ReportAgainstUserProjection> projection, UUID userId, Pageable pageable) {
+        return reportRepository.findAllByReportedId(projection, userId, pageable);
     }
 
-    public Page<Report> getAllReportsAgainstUser(UUID userId, Pageable pageable) {
-        return reportRepository.findAllByReportedId(userId, pageable);
-    }
-
-    public Page<Report> getAllReportsByUser(UUID userId, Pageable pageable) {
-        return reportRepository.findAllByReporterId(userId, pageable);
+    public Page<ReportByUserProjection> getAllReportsByUser(Class<ReportByUserProjection> projection, UUID userId, Pageable pageable) {
+        return reportRepository.findAllByReporterId(projection, userId, pageable);
     }
 }

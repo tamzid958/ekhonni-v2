@@ -210,6 +210,18 @@
     "endpoint": "/api/v2/reports"
   },
   {
+    "name": "Get all reports against user",
+    "description": "Allows viewing all available reports against user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/reports/{id}"
+  },
+  {
+    "name": "Get all reports reported by user",
+    "description": "Allows viewing all available reports reported by user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/{id}/reports"
+  },
+  {
     "name": "Report a user",
     "description": "Allows Reporting a user",
     "httpMethod": "POST",

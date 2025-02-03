@@ -27,7 +27,7 @@ public class Report extends BaseEntity<Long> {
     private User reported;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReportType reason;
+    private ReportType type;
     @Column(columnDefinition = "TEXT")
     private String details;
     @Enumerated(EnumType.STRING)

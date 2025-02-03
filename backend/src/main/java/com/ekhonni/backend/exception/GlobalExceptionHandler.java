@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        ErrorResponse response = new ErrorResponse("Body cannot be empty", LocalDateTime.now().toString());
+        ErrorResponse response = new ErrorResponse("Invalid request format", LocalDateTime.now().toString());
         return new ResponseEntity<>(response, HttpStatus.valueOf(400));
     }
 
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Bid Exceptions
+     * Bid Exceptions
      * =================================================================
      */
 
@@ -157,7 +157,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Payment Exceptions
+     * Payment Exceptions
      * =================================================================
      */
     @ExceptionHandler(InvalidTransactionException.class)
@@ -192,7 +192,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Review Exceptions
+     * Review Exceptions
      * =================================================================
      */
     @ExceptionHandler(ReviewNotFoundException.class)
@@ -239,6 +239,7 @@ public class GlobalExceptionHandler {
         var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleProductNotFoundException(ProductNotFoundException ex) {
         var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
@@ -269,7 +270,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                             Common
+     * Common
      * =================================================================
      */
 

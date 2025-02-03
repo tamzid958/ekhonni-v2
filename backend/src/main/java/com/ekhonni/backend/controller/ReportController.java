@@ -1,6 +1,7 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.model.Report;
+import com.ekhonni.backend.projection.ReportAgainstUserProjection;
+import com.ekhonni.backend.projection.ReportProjection;
 import com.ekhonni.backend.service.ReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,19 +26,14 @@ public class ReportController {
     ReportService reportService;
 
     @GetMapping("/reports")
-    public ResponseEntity<Page<Report>> getAllReports(Pageable pageable) {
-        return ResponseEntity.ok(reportService.getAllReports(pageable));
+    public ResponseEntity<Page<ReportProjection>> getAllReports(Pageable pageable) {
+        return ResponseEntity.ok(reportService.getAll(ReportProjection.class, pageable));
     }
 
     @GetMapping("/reports/{userId}")
-    public ResponseEntity<Page<Report>> getAllReportsAgainstUser(@PathVariable UUID userId, Pageable pageable) {
-        return ResponseEntity.ok(reportService.getAllReportsAgainstUser(userId, pageable));
+    public ResponseEntity<Page<ReportAgainstUserProjection>> getAllReportsAgainstUser(@PathVariable UUID userId, Pageable pageable) {
+        return ResponseEntity.ok(reportService.getAllReportsAgainstUser(ReportAgainstUserProjection.class, userId, pageable));
     }
 
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
-//        reportService.deleteReport(id);
-//        return ResponseEntity.noContent().build();
-//    }
 }

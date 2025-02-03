@@ -3,7 +3,7 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.*;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.model.AuthToken;
-import com.ekhonni.backend.model.Report;
+import com.ekhonni.backend.projection.ReportByUserProjection;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.projection.bid.SellerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
@@ -11,6 +11,7 @@ import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.ProductService;
 import com.ekhonni.backend.service.ReportService;
 import com.ekhonni.backend.service.UserService;
+import com.ekhonni.backend.util.ResponseUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,59 +40,59 @@ public class UserController {
     private final ReportService reportService;
 
     @GetMapping("/{id}")
-    public UserProjection getById(@PathVariable UUID id) {
-        return userService.get(id, UserProjection.class);
+    public ResponseEntity<ApiResponse<UserProjection>> getById(@PathVariable UUID id) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.get(id, UserProjection.class));
     }
 
 
     @PatchMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public UserUpdateDTO update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
-        return userService.update(id, userUpdateDTO);
+    public ResponseEntity<ApiResponse<UserUpdateDTO>> update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.update(id, userUpdateDTO));
     }
 
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
-        return userService.updateEmail(id, emailDTO);
+    public ResponseEntity<ApiResponse<String>> updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updateEmail(id, emailDTO));
     }
 
     @PatchMapping("/{id}/change-password")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
-        return userService.updatePassword(id, passwordDTO);
+    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updatePassword(id, passwordDTO));
     }
 
     @PatchMapping("/{id}/image")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String upload(@PathVariable UUID id, @Valid @ModelAttribute ProfileImageDTO profileImageDTO) throws IOException {
-        return userService.upload(id, profileImageDTO);
+    public ResponseEntity<ApiResponse<String>> upload(@PathVariable UUID id, @Valid @ModelAttribute ProfileImageDTO profileImageDTO) throws IOException {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.upload(id, profileImageDTO));
     }
 
 
     @DeleteMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<ResponseEntity<Object>>> delete(@PathVariable UUID id) {
         userService.softDelete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseUtil.createResponse(HTTPStatus.DELETED, ResponseEntity.noContent().build());
     }
 
     @PostMapping("/{id}/refresh-token")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public AuthToken getNewAccessToken(@PathVariable UUID id, @RequestBody RefreshTokenDTO refreshTokenDTO) {
-        return userService.getNewAccessToken(refreshTokenDTO);
+    public ResponseEntity<ApiResponse<AuthToken>> getNewAccessToken(@PathVariable UUID id, @RequestBody RefreshTokenDTO refreshTokenDTO) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.getNewAccessToken(refreshTokenDTO));
     }
 
 
     @PostMapping("/{id}/report")
-    public ResponseEntity<Report> createReport(@PathVariable UUID reporterId, @RequestBody ReportDTO reportDTO) {
-        Report savedReport = reportService.createReport(reporterId, reportDTO);
-        return ResponseEntity.ok(savedReport);
+    public ResponseEntity<ApiResponse<ResponseEntity<String>>> createReport(@PathVariable("id") UUID reporterId, @Valid @RequestBody ReportDTO reportDTO) {
+        reportService.createReport(reporterId, reportDTO);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED, ResponseEntity.ok("Report submitted successfully"));
     }
 
     @GetMapping("/{id}/reports")
-    public ResponseEntity<Page<Report>> getReportsByUser(@PathVariable UUID userId, Pageable pageable) {
-        return ResponseEntity.ok(reportService.getAllReportsByUser(userId, pageable));
+    public ResponseEntity<ApiResponse<ResponseEntity<Page<ReportByUserProjection>>>> getReportsByUser(@PathVariable UUID id, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, ResponseEntity.ok(reportService.getAllReportsByUser(ReportByUserProjection.class, id, pageable)));
     }
 
     @GetMapping("/{id}/product/{product_id}/bid")
