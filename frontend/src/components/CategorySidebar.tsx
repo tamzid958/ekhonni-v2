@@ -39,7 +39,7 @@ export default async function Sidebar({ selectedCategory }: SidebarProps) {
     console.error('Error fetching category data:', error);
   }
 
-  console.log(categories);
+  // console.log(categories);
 
   return (
     <aside className="w-56 flex-shrink-0 min-h-screen">
