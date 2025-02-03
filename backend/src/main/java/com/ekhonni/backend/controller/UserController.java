@@ -17,10 +17,14 @@ import com.ekhonni.backend.service.ProductService;
 import com.ekhonni.backend.service.ReportService;
 import com.ekhonni.backend.service.UserService;
 import com.ekhonni.backend.util.ResponseUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +73,15 @@ public class UserController {
     }
 
 
+    @Operation(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = ProfileImageDTO.class)
+                    )
+            )
+    )
     @PatchMapping("/{id}/image")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<ApiResponse<String>> upload(@PathVariable UUID id, @Valid @ModelAttribute ProfileImageDTO profileImageDTO) throws IOException {
