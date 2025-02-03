@@ -41,32 +41,32 @@ public class UserController {
 
 
     @PatchMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public UserUpdateDTO update(@PathVariable UUID id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return userService.update(id, userUpdateDTO);
     }
 
     @PatchMapping("/{id}/change-email")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public String updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
         return userService.updateEmail(id, emailDTO);
     }
 
     @PatchMapping("/{id}/change-password")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public String updatePassword(@PathVariable UUID id, @Valid @RequestBody PasswordDTO passwordDTO) {
         return userService.updatePassword(id, passwordDTO);
     }
 
     @PatchMapping("/{id}/image")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public String upload(@PathVariable UUID id, @Valid @ModelAttribute ProfileImageDTO profileImageDTO) throws IOException {
         return userService.upload(id, profileImageDTO);
     }
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         userService.softDelete(id);
         return ResponseEntity.noContent().build();

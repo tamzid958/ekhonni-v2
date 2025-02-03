@@ -28,4 +28,8 @@ public interface AdminRepository extends UserRepository {
     @Query("UPDATE User e SET e.blockedAt=CURRENT_TIMESTAMP() WHERE e.id = :id")
     void block(UUID id);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE User e SET e.blockedAt=NULL WHERE e.id = :id")
+    void unblock(UUID id);
 }

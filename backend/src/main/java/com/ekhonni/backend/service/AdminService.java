@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.exception.UserNotActiveException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.repository.AdminRepository;
@@ -17,40 +18,36 @@ import java.util.UUID;
 public class AdminService extends BaseService<User, UUID> {
 
     AdminRepository adminRepository;
+    UserService userService;
 
-    public AdminService(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository, UserService userService) {
         super(adminRepository);
         this.adminRepository = adminRepository;
+        this.userService = userService;
     }
 
-//    @Transactional
-//    public void add(String email) {
-//        User user = adminRepository.findByEmail(email);
-//        user.setRole(Role.ADMIN);
-//    }
-//
-//    @Transactional
-//    public void remove(String email) {
-//        User user = adminRepository.findByEmail(email);
-//        user.setRole(Role.USER);
-//    }
 
     public Page<DetailedUserProjection> getAllBlocked(Class<DetailedUserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByBlockedAtIsNotNull(projection, pageable);
     }
 
+
     public void block(UUID id) {
-        adminRepository.block(id);
+        if (userService.isActive(id)) adminRepository.block(id);
+        else throw new UserNotActiveException("User not active. cannot be blocked");
     }
 
-
-    public Page<DetailedUserProjection> getAllUser(Class<DetailedUserProjection> projection, Pageable pageable) {
-        return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
-    }
 
     public Page<DetailedUserProjection> getAllUserByNameOrEmail(Class<DetailedUserProjection> projection, Pageable pageable, String name, String email) {
         return adminRepository.findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(projection, pageable, name, email);
     }
 
 
+    public void unblock(UUID id) {
+        adminRepository.unblock(id);
+    }
+
+    public Page<DetailedUserProjection> getAllActive(Class<DetailedUserProjection> projection, Pageable pageable) {
+        return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
+    }
 }

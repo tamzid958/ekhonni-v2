@@ -81,19 +81,25 @@
     "name": "Get All User ",
     "description": "Allows retrieving all user (possibly by name/email)",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/users"
+    "endpoint": "/api/v2/admin/user"
   },
   {
-    "name": "Get All Deleted User ",
-    "description": "Allows retrieving all deleted user",
+    "name": "Get All Active User ",
+    "description": "Allows retrieving all active user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/users/deleted/"
+    "endpoint": "/api/v2/admin/user/active"
   },
   {
     "name": "Get All Blocked User ",
     "description": "Allows retrieving all blocked user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/users/blocked/"
+    "endpoint": "/api/v2/admin/user/block"
+  },
+  {
+    "name": "Get All Deleted User ",
+    "description": "Allows retrieving all deleted user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/user/delete"
   },
   {
     "name": "Assign user a role ",
@@ -231,7 +237,13 @@
     "name": "Admin User Block",
     "description": "Admin user blocking functionality",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/{id}/block"
+    "endpoint": "/api/v2/admin/user/block"
+  },
+  {
+    "name": "Admin User UnBlock",
+    "description": "Admin user unblocking functionality",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/unblock"
   },
   {
     "name": "Admin Product Approve",
