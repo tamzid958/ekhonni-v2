@@ -12,7 +12,7 @@ import {  Toaster, toast } from "sonner"
 
 interface CardDemoProps {
   id: string;
-  name: string;
+  title: string;
   description: string;
   img: string;
   price: number;
@@ -32,7 +32,7 @@ interface CardDemoProps {
 
 export function CardDemo({
                            id,
-                           name,
+                           title,
                            description,
                            img,
                            price,
@@ -61,7 +61,7 @@ export function CardDemo({
         <AspectRatio ratio={1} className="bg-muted"><Toaster position="top-right" />
           <Image
             src={img}
-            alt={`Image of ${name}`}
+            alt={`Image of ${title}`}
             fill
             className="rounded-md object-fill"
           />
@@ -77,7 +77,7 @@ export function CardDemo({
       </CardContent>
       <CardFooter className="px-0 flex-col items-start">
         <CardTitle className="mb-2 text-lg font-sans font-medium hover:underline">
-          {name}
+          {title}
         </CardTitle>
         <CardTitle className="text-2xl">{`৳ ${price}`}</CardTitle>
         <Button
