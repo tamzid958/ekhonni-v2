@@ -64,7 +64,6 @@ public class UserController {
         return userService.upload(id, profileImageDTO);
     }
 
-
     @DeleteMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {

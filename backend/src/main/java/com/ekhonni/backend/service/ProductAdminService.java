@@ -116,13 +116,13 @@ public class ProductAdminService {
 
 
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
         List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 }

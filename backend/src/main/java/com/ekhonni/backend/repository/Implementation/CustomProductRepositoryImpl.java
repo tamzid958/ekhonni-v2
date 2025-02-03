@@ -30,37 +30,31 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
     @Override
     public Page<Long> findAllFiltered(Specification<Product> spec, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        // Query to fetch product IDs for the current page
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<Product> root = query.from(Product.class);
-
-
         Predicate predicate = spec.toPredicate(root, query, cb);
-        query.where(predicate);
-
-
         query.select(root.get("id")).where(predicate);
 
+        int page = Math.max(0, pageable.getPageNumber());
+        int size = Math.max(5, pageable.getPageSize());
+        int firstResult = page  * size;
 
-        int page = Math.max(1, pageable.getPageNumber());
-        int size = Math.max(1, pageable.getPageSize());
-
-        int firstResult = (page - 1) * size;
         TypedQuery<Long> idQuery = entityManager.createQuery(query);
         idQuery.setFirstResult(firstResult);
         idQuery.setMaxResults(size);
 
-
         List<Long> productIds = idQuery.getResultList();
-        System.out.println(productIds);
 
-
+        // Query to count total elements matching the specification
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Product> countRoot = countQuery.from(Product.class);
         Predicate countPredicate = spec.toPredicate(countRoot, countQuery, cb);
         countQuery.select(cb.count(countRoot)).where(countPredicate);
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
 
+        Long totalElements = entityManager.createQuery(countQuery).getSingleResult();
 
-        return new PageImpl<>(productIds, pageable, totalCount);
+        return new PageImpl<>(productIds, pageable, totalElements);
     }
 }

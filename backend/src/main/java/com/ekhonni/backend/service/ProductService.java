@@ -119,11 +119,11 @@ public class ProductService extends BaseService<Product, Long> {
 
         SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
 
         List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
-        System.out.println(page.getContent());
+
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
@@ -193,7 +193,7 @@ public class ProductService extends BaseService<Product, Long> {
 
 
         Specification<Product> spec = UserProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
         List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
         List<ProductResponseDTO> products = projections.stream()

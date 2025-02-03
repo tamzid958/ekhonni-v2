@@ -199,8 +199,8 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 (109, 306, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737269462/xpwozjsexnldymbyal1c.jpg', NOW(), NOW()),
 (110, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
 (111, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW()),
-(112, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
-(113, 352, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW());
+(112, 353, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284715/pjgaqxks4wrh34civzle.jpg', NOW(), NOW()),
+(113, 353, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737284716/gnoxqfkpgcgvly3yjbfa.jpg', NOW(), NOW());
 
 
 --(13, 1, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/iphone13pro.jpg', NOW(), NOW()),
