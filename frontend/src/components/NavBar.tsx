@@ -2,24 +2,101 @@
 'use client';
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-
+import { NotificationGetter } from '@/components/Notification';
+import { useSession } from 'next-auth/react';
 
 type Props = {
   placeholder?: string;
 };
 
+//
+// const notifications = [
+//   {
+//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
+//     link: 'http://localhost:3000/update',
+//   },
+//   {
+//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
+//     link: 'http://localhost:3000/form',
+//   },
+//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
+//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
+//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
+//   {
+//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
+//     link: 'http://localhost:3000/update',
+//   },
+//   {
+//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
+//     link: 'http://localhost:3000/form',
+//   },
+//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
+//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
+//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
+//   {
+//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
+//     link: 'http://localhost:3000/update',
+//   },
+//   {
+//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
+//     link: 'http://localhost:3000/form',
+//   },
+//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
+//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
+//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
+// ];
+
 export function NavBar({ placeholder }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    console.log('Session Data:', session);
+    if (!session) return;
+
+    const userId = session?.user?.id;
+    const userToken = session?.user?.token;
+
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1); // Subtract 1 day to get yesterday
+    const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
+
+    async function fetchNotifications(lastFetchTime: string) {
+      console.log('Fetching notifications for user:', userId);
+      const result = await NotificationGetter(userId, userToken, lastFetchTime);
+      console.log('Notification API result:', result);
+
+      console.info('the last fetch time is->');
+      console.log(lastFetchTime);
+
+      if (result.success) {
+        if (Array.isArray(result.data)) {
+          // Only update notifications if result.data is an array (new notifications)
+          setNotifications(prevNotifications => [
+            ...prevNotifications,
+            ...result.data.filter(item => item.message.trim().length > 0),
+          ]);
+        }
+        fetchNotifications(result.lastFetchTime);
+      } else {
+        console.error(result.message);
+      }
+    }
+
+    fetchNotifications(lastFetchTime);
+  }, [session]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+
   return (
     <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
       <div className="font-bold ml-16 mt-2">
@@ -59,14 +136,27 @@ export function NavBar({ placeholder }: Props) {
             className="text-primary bg-brand-mid hover:bg-brand-light h-12 w-12 px-3 rounded-full focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
             <Bell className="w-5 h-5" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-brand-bright right-12 w-96">
             <SelectGroup>
-              <SelectLabel>Notifications</SelectLabel>
-              <SelectItem value="update">System Update Available</SelectItem>
-              <SelectItem value="message">New Message from John</SelectItem>
-              <SelectItem value="reminder">Meeting Reminder: 2 PM</SelectItem>
-              <SelectItem value="offer">Exclusive Offer: 20% Off</SelectItem>
-              <SelectItem value="alert">Security Alert: Unusual Login Attempt</SelectItem>
+              <p className="text-xm font-bold p-2 justify-center flex">NOTIFICATION</p>
+              <div
+                className="max-h-80 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
+                {notifications.length > 0 ? (
+                  notifications.map((item, index) => (
+
+                    <Link key={index} href="/">
+                      <div
+                        className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">
+                        {item.message}
+                        {item.lastFetchTime}
+                      </div>
+                    </Link>
+
+                  ))
+                ) : (
+                  <p className="text-center p-2">No new notifications</p>
+                )}
+              </div>
             </SelectGroup>
           </SelectContent>
         </Select>

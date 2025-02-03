@@ -10,7 +10,7 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
   return (
     <>
       <h1 className="font-bold text-center text-3xl">Images </h1>
-      {/* Image Upload Section */}
+
       <FormField
         control={control}
         name="images"
@@ -19,8 +19,8 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
             <FormLabel>Product Images</FormLabel>
             <div className="grid grid-cols-3 gap-4">
               {Array.from({ length: 7 }).map((_, index) => {
-                const names = ['Front', 'Back', 'Left Side', 'Right side', 'Details', 'Damage', 'Other']; // Random names list
-                const name = names[index]; // Get name based on index
+                const names = ['Front', 'Back', 'Left Side', 'Right side', 'Details', 'Damage', 'Other'];
+                const name = names[index];
 
                 return (
                   <div
@@ -41,10 +41,10 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
                             field.onChange(updatedImages);
                           }
                         }}
-                        className="absolute inset-0 cursor-pointer w-full h-full opacity-0 z-10" // Hide file input behind container
+                        className="absolute inset-0 cursor-pointer w-full h-full opacity-0 z-10"
                         ref={(el) => {
                           if (el && !field.value?.[index]) {
-                            el.value = ''; // Reset file input when image is removed
+                            el.value = '';
                           }
                         }}
                       />
@@ -59,8 +59,8 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
                             type="button"
                             onClick={() => {
                               const updatedImages = [...(field.value || [])];
-                              updatedImages[index] = null; // Set the image slot to null (not removing it)
-                              field.onChange(updatedImages); // Update the field value with the modified array
+                              updatedImages[index] = null;
+                              field.onChange(updatedImages);
                             }}
                             className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md z-20"
                           >
@@ -69,7 +69,6 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
                         </>
                       )}
                       <div className="absolute inset-0 flex items-center justify-center z-0">
-                        {/*{index < 5 && <><span className="text-red-500">*</span>&nbsp;</>}*/}
                         <span className="text-gray-500 ">{name}</span> {/* Display custom name */}
                       </div>
                     </div>
@@ -92,9 +91,7 @@ export default function FormPage2({ nextStep, prevStep }: { nextStep: () => void
         >
           Next
         </Button>
-        {/*<Button type="submit" className="w-full" onClick={handleSubmit}>*/}
-        {/*  Submit*/}
-        {/*</Button>*/}
+
       </div>
     </>
   );
