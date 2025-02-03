@@ -18,8 +18,6 @@ import java.util.UUID;
 public interface AdminRepository extends UserRepository {
     Page<DetailedUserProjection> findAllByBlockedAtIsNotNull(Class<DetailedUserProjection> projection, Pageable pageable);
 
-    Page<DetailedUserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNull(Class<DetailedUserProjection> projection, Pageable pageable);
-
     Page<DetailedUserProjection> findAllByNameContainingIgnoreCaseOrEmailAndDeletedAtIsNullAndBlockedAtIsNull(Class<DetailedUserProjection> projection, Pageable pageable, String name, String email);
 
 
@@ -32,4 +30,6 @@ public interface AdminRepository extends UserRepository {
     @Transactional
     @Query("UPDATE User e SET e.blockedAt=NULL WHERE e.id = :id")
     void unblock(UUID id);
+
+    Page<DetailedUserProjection> findAllByDeletedAtIsNullAndBlockedAtIsNullAndVerifiedIsTrue(Class<DetailedUserProjection> projection, Pageable pageable);
 }

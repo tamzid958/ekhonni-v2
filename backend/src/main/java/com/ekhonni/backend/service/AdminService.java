@@ -48,6 +48,6 @@ public class AdminService extends BaseService<User, UUID> {
     }
 
     public Page<DetailedUserProjection> getAllActive(Class<DetailedUserProjection> projection, Pageable pageable) {
-        return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNull(projection, pageable);
+        return adminRepository.findAllByDeletedAtIsNullAndBlockedAtIsNullAndVerifiedIsTrue(projection, pageable);
     }
 }

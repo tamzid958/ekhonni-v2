@@ -2,7 +2,6 @@ package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.UserIdDTO;
 import com.ekhonni.backend.projection.DetailedUserProjection;
-import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
 import com.ekhonni.backend.service.RoleService;
 import lombok.AllArgsConstructor;
@@ -49,8 +48,8 @@ public class AdminController {
     }
 
     @GetMapping("/user/delete")
-    public Page<UserProjection> getAllDeletedUser(Pageable pageable) {
-        return adminService.getAllDeleted(UserProjection.class, pageable);
+    public Page<DetailedUserProjection> getAllDeletedUser(Pageable pageable) {
+        return adminService.getAllDeleted(DetailedUserProjection.class, pageable);
     }
 
     @GetMapping("/user/block")
