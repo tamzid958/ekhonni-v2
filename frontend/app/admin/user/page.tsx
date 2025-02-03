@@ -15,20 +15,77 @@ import useSWR from 'swr';
 import Loading from '@/components/Loading';
 import fetcher from '@/data/services/fetcher';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { setAllRoles } from '@/components/roles';
+
+
+const processUsers = (users: any[]) : User[] => {
+  return users.map(user => {
+    let status = "ACTIVE";
+
+    if (user.deletedAt) {
+      status = "DELETED";
+    } else if (user.blockedAt) {
+      status = "BLOCKED";
+    } else if (!user.verified) {
+      status = "UNVERIFIED";
+    }
+    return {
+      ...user,
+      status,
+    };
+  });
+};
 
 export default  function User  () {
 
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
-  const role = session?.user?.role;
+  const [error, setError] = React.useState(null);
 
-  const { data: userData, error, isLoading } = useSWR(
-    userId ? `/api/v2/admin/users` : null,
+
+  const { data: allUsers, error: allError, isLoading: isLoading } = useSWR(
+    userId ? `/api/v2/admin/user` : null,
     (url) => fetcher(url, userToken)
   );
 
-  if (status === "loading" || isLoading) {
+  const { data: activeUsers, error: activeError , isLoading: isLoadingActive } = useSWR(
+    userId ? `/api/v2/admin/user/active` : null,
+    (url) => fetcher(url, userToken)
+  );
+  const { data: deletedUsers, error: deletedError, isLoading:isLoadingDelete } = useSWR(
+    userId ? `/api/v2/admin/user/delete` : null,
+    (url) => fetcher(url, userToken)
+  );
+  const { data: blockedUsers, error: blockedError, isLoading: isLoadingBlock } = useSWR(
+    userId ? `/api/v2/admin/user/block` : null,
+    (url) => fetcher(url, userToken)
+  );
+
+  const { data: allRole, error: roleError, isLoading: isLoadingRole } = useSWR(
+    userId ? `/api/v2/role/` : null,
+    (url) => fetcher(url, userToken)
+  );
+  const allRoles = allRole?.content?.map(role => ({
+    id: role.id,
+    name: role.name,
+    description: role.description, // Optional if needed later
+  })) || [];
+
+  setAllRoles(allRoles);
+
+  const adminRoleId = allRoles?.find((role) => role.name === "ADMIN")?.id;
+
+  const { data: admin, error: adminError, isLoading: isLoadingAdmin } = useSWR(
+    userId ? `/api/v2/role/${adminRoleId}/users/` : null,
+    (url) => fetcher(url, userToken)
+  );
+
+
+  const processedUsers: User[] = allUsers ? processUsers(allUsers.content) : [];
+
+
+  if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock) {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
           <div className="flex justify-center items-center h-screen">
@@ -46,18 +103,18 @@ export default  function User  () {
     );
 
   }
-  else if(error)
+  else if(activeError || allError || deletedError || blockedError)
   {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Error</h1>
-        <p>Something went wrong : {error}</p>
+        <p>Failed to Load User Data </p>
       </div>
     );
   }
 
   return (
-    <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
+    <div className="flex w-[1220px] h-[1250px] flex-col  bg-white ">
 
       {/* Top section */}
       <div className="flex flex-col md:flex-row w-full">
@@ -104,7 +161,7 @@ export default  function User  () {
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                   <CardTitle className="flex text-gray-500 mb-2 text-xl  ">Total User</CardTitle>
-                  <h1 className="text-4xl font-bold">12,000</h1>
+                  <h1 className="text-4xl font-bold">{processedUsers.length}</h1>
                 </div>
                 <div className="flex  mt-6">
                   {/* Static Badge for Increase */}
@@ -129,7 +186,8 @@ export default  function User  () {
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <CardTitle className="flex text-gray-500 mb-2 text-xl">Admins</CardTitle>
-                <h1 className="text-4xl font-bold">200</h1>
+                <h1 className="text-4xl font-bold">54</h1>
+
               </div>
               <div className="flex  mt-6">
                 {/* Static Badge for Increase */}
@@ -153,7 +211,7 @@ export default  function User  () {
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <CardTitle className="flex text-gray-500 mb-2 text-xl">Moderators and Others</CardTitle>
-                <h1 className="text-4xl font-bold">67</h1>
+                <h1 className="text-4xl font-bold">1</h1>
               </div>
               <div className="flex  mt-6">
                 {/* Static Badge for Increase */}
@@ -174,19 +232,34 @@ export default  function User  () {
       </div>
 
       <Separator className="flex  p-0" />
-
       {/* Bottom section */}
       <div className="w-full  h-36 mt-2">
-        <section className=" flex pl-4">
+        <section className=" flex pr-4 ">
           <div className="flex flex-col justify-start items-start">
-            <h1 className="text-2xl mb-4 font-bold">All Users(12,000)</h1>
-            <div className="flex mb-4  ">
-            <DataTable columns={columns} data={userData.content} />
-            </div>
+            {/*<h1 className="text-2xl mb-4 font-bold">All Users(12,000)</h1>*/}
+            <Tabs defaultValue="all" className="w-[400px]">
+              <TabsList>
+                <TabsTrigger value="all" >All Users({processedUsers.length} )</TabsTrigger>
+                <TabsTrigger value="active">Active Users({activeUsers?.content?.length?? 0})</TabsTrigger>
+                <TabsTrigger value="blocked">Blocked Users({blockedUsers?.content?.length?? 0})</TabsTrigger>
+                <TabsTrigger value="deleted">Deleted Users({deletedUsers?.content?.length?? 0})</TabsTrigger>
+              </TabsList>
+              <TabsContent value="all" className = "flex w-[1220px] min-h[400px] ">
+                  <DataTable key = {processedUsers.length} columns={columns} data={processedUsers}/>
+              </TabsContent>
+              <TabsContent value="active" className = "flex w-[1220px] min-h[400px] ">
+                  <DataTable key={activeUsers?.content?.length ?? 0} columns={columns} data={activeUsers?.content ?? []} />
+              </TabsContent>
+              <TabsContent key={blockedUsers?.content?.length ?? 0}  value="blocked" className = "flex min-w-[1220px] min-h[400px] ">
+                  <DataTable  columns={columns} data={blockedUsers?.content ?? []} />
+              </TabsContent>
+              <TabsContent value="deleted" className = "flex min-w-[1220px] min-h[400px] ">
+                <DataTable  key={deletedUsers?.content?.length ?? 0} columns={columns} data={deletedUsers?.content ?? []} />
+              </TabsContent>
+            </Tabs>
           </div>
         </section>
       </div>
-
     </div>
   );
 }

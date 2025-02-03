@@ -13,11 +13,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { axiosInstance } from '@/data/services/fetcher';
+import { mutate } from 'swr';
 
 interface DeleteConfirmationDialogProps {
   userId: string;
   userToken: string;
-  onDeleteSuccess: () => void;
+  onDeleteSuccess: (userId: string) => void;
 }
 
 const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ userId, userToken, onDeleteSuccess }) => {
@@ -29,10 +30,12 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ use
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
+
       });
       if (res.status === 200) {
         console.log("User deleted successfully");
         setOpen(false);
+        mutate(`/api/v2/admin/users`);
         onDeleteSuccess(userId);
       }
     } catch (error) {
@@ -42,9 +45,9 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ use
 
   return (
     <>
-      <Button variant="destructive" onClick={() => setOpen(true)}>
+      <div  onClick={() => setOpen(true)}>
         Delete User
-      </Button>
+      </div>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

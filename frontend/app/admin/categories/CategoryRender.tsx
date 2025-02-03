@@ -119,7 +119,6 @@ export default function CategoryRender({ category, categories }: Props) {
 
       {/* Title Left-Aligned */}
       <h1 className="text-5xl font-bold m-8 text-left w-full pl-4">Category Management</h1>
-
       {/* Breadcrumbs */}
       <div className="w-full max-w-4xl">
         <Breadcrumb>
