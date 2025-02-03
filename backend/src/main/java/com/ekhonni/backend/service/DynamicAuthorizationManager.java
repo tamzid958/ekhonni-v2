@@ -55,6 +55,8 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
 
         boolean granted = roleService.hasPrivilegeAccess(role, privilege);
 
+        System.out.println("granted: " + granted);
+
         return new AuthorizationDecision(granted);
 
     }
