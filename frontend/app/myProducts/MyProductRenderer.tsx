@@ -7,7 +7,7 @@ import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
-import { BidsShowPage } from './Components/bidingPage';
+import { BidsShowPage } from './Components/bidsView';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface ProductData {

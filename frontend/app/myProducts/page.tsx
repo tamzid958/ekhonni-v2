@@ -26,16 +26,6 @@ interface ProductData {
   bids: never;
 }
 
-interface Props {
-  searchParams: { page?: string };
-}
-
-interface CategoryNode {
-  name: string;
-  subCategories: string[];
-  chainCategories: string[];
-}
-
 async function fetchMyProduct(userId: string, selectedCategory: string): Promise<ProductData[]> {
   const category = selectedCategory || 'All';
   const url =
