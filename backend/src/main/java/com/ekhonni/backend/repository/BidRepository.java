@@ -24,6 +24,9 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     Optional<Bid> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
+    <P> Optional<P> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId, Class<P> projection);
+
+
     @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
     Optional<UUID> findBidderIdById(Long id);
 

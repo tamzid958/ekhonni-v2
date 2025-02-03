@@ -83,6 +83,11 @@ public class BidController {
                 bidService.getAllForProduct(productId, BuyerBidProjection.class, pageable));
     }
 
+    @GetMapping("/user/product/{product_id}")
+    public ResponseEntity<ApiResponse<BuyerBidProjection>> getAuthenticatedUserBidForProduct(@PathVariable("product_id") Long productId) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAuthenticatedUserBidForProduct(productId));
+    }
+
     @GetMapping("/product/{product_id}/count")
     public ResponseEntity<ApiResponse<Long>> getCountForProduct(@PathVariable("product_id") Long productId) {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getCountForProduct(productId));

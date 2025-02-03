@@ -294,6 +294,12 @@
     "endpoint": "/api/v2/bid/buyer/product/{id}"
   },
   {
+    "name": "Get User Bid for Product",
+    "description": "Fetches the authenticated user's bid for a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/user/product/{id}"
+  },
+  {
     "name": "Get Product Bid Count",
     "description": "Allows viewing bid count for a product",
     "httpMethod": "GET",
@@ -568,5 +574,107 @@
     "description": "Permanently deletes a payout account",
     "httpMethod": "DELETE",
     "endpoint": "/api/v2/account/payout/{id}"
+  },
+  {
+    "name": "Get Transaction by ID",
+    "description": "Fetches a specific transaction by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/{id}"
+  },
+  {
+    "name": "Get User Transactions",
+    "description": "Fetches all transactions for the authenticated user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user"
+  },
+  {
+    "name": "Get User Transactions by Status",
+    "description": "Fetches all transactions for the authenticated user filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/status/{id}"
+  },
+  {
+    "name": "Get User Transactions (Admin)",
+    "description": "Fetches all transactions for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/{id}"
+  },
+  {
+    "name": "Get User Transactions by Status (Admin)",
+    "description": "Fetches all transactions for a specific user filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/{id}/status/{id}"
+  },
+  {
+    "name": "Get All Transactions",
+    "description": "Fetches all transactions with pagination (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction"
+  },
+  {
+    "name": "Get All Transactions by Status",
+    "description": "Fetches all transactions filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/status/{id}"
+  },
+  {
+    "name": "Get Transactions by Date Range",
+    "description": "Fetches all transactions within a specified date range (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/date-range"
+  },
+  {
+    "name": "Get Withdraw by ID",
+    "description": "Fetches a specific withdrawal by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/{id}"
+  },
+  {
+    "name": "Get User Withdraws",
+    "description": "Fetches all withdrawals for the authenticated user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user"
+  },
+  {
+    "name": "Get User Withdraws by Status",
+    "description": "Fetches all withdrawals for the authenticated user filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/status/{id}"
+  },
+  {
+    "name": "Get All Withdraws",
+    "description": "Fetches all withdrawals with pagination (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw"
+  },
+  {
+    "name": "Get User Withdraws (Admin)",
+    "description": "Fetches all withdrawals for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}"
+  },
+  {
+    "name": "Get User Withdraws by Status (Admin)",
+    "description": "Fetches all withdrawals for a specific user filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}/status/{id}"
+  },
+  {
+    "name": "Get All Withdraws by Status",
+    "description": "Fetches all withdrawals filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/status/{id}"
+  },
+  {
+    "name": "Get User Withdraw Statistics",
+    "description": "Fetches withdrawal statistics for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}/statistics"
+  },
+  {
+    "name": "Get Withdraws by Date Range",
+    "description": "Fetches all withdrawals within a specified date range (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/date-range"
   }
 ]

@@ -7,6 +7,7 @@ import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.RefundService;
 import com.ekhonni.backend.service.TransactionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v2/refund")
 @AllArgsConstructor
+@Tag(name = "Refund", description = "Manage refund operations")
 public class RefundController {
 
     RefundService refundService;

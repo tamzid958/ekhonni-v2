@@ -7,6 +7,7 @@ import com.ekhonni.backend.repository.PayoutAccountProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.PayoutAccountService;
 import com.ekhonni.backend.util.ResponseUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v2/account/payout")
+@Tag(name = "Payout Account", description = "Manage review payout accounts")
 public class PayoutAccountController {
 
     private final PayoutAccountService payoutAccountService;
@@ -51,7 +53,7 @@ public class PayoutAccountController {
     @DeleteMapping("/{id}")
     @PreAuthorize("@payoutAccountService.isOwner(#id, authentication.principal.id)")
     public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id) {
-        payoutAccountService.deletePermanently(id);
+        payoutAccountService.softDelete(id);
         return ResponseUtil.createResponse(HTTPStatus.DELETED);
     }
 

@@ -3,18 +3,17 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.bid.BidCreateDTO;
 import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
+import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +23,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.UUID;
 @Slf4j
-@Setter
-@Getter
 @Service
 public class BidService extends BaseService<Bid, Long> {
 
@@ -84,7 +81,6 @@ public class BidService extends BaseService<Bid, Long> {
         }
     }
 
-
     @Modifying
     @Transactional
     public void updateBid(Long id, BidUpdateDTO bidUpdateDTO) {
@@ -112,6 +108,7 @@ public class BidService extends BaseService<Bid, Long> {
         if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bid.getProduct().getId(), BidStatus.ACCEPTED)) {
             throw new BidAlreadyAcceptedException();
         }
+        bid.getProduct().setStatus(ProductStatus.SOLD);
         bid.setStatus(BidStatus.ACCEPTED);
     }
 
@@ -119,15 +116,6 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(productId)
                 .map(Bid::getAmount)
                 .orElse(0.0);
-    }
-
-    public UUID getBidderId(Long id) {
-        return bidRepository.findBidderIdById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
-    }
-
-    public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
-        Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
-        return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
     }
 
     @Modifying
@@ -149,4 +137,18 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findAllByBidderId(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
     }
 
+    public UUID getBidderId(Long id) {
+        return bidRepository.findBidderIdById(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
+    }
+
+    public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
+        Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
+        return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
+    }
+
+    public BuyerBidProjection getAuthenticatedUserBidForProduct(Long productId) {
+        return bidRepository.findByProductIdAndBidderIdAndDeletedAtIsNull(
+                productId, AuthUtil.getAuthenticatedUser().getId(), BuyerBidProjection.class)
+                .orElseThrow(() -> new BidNotFoundException("No bid submitted for this product"));
+    }
 }

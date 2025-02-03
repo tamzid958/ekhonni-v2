@@ -1,5 +1,7 @@
 package com.ekhonni.backend.projection.bid;
 
+import com.ekhonni.backend.enums.BidStatus;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,7 +13,7 @@ import java.util.UUID;
 public interface BidderBidProjection {
     Long getId();
     Double getAmount();
-    String getStatus();
+    BidStatus getStatus();
     String getCurrency();
     Long getProductId();
     UUID getProductSellerId();

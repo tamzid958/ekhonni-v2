@@ -7,9 +7,13 @@ import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.PaymentResponse;
+import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.repository.TransactionRepository;
+import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -110,4 +114,34 @@ public class TransactionService extends BaseService<Transaction, Long> {
         transactionRepository.deleteByBidId(bidId);
     }
 
+    public Page<TransactionProjection> getAllForUser(Pageable pageable) {
+        UUID userId = AuthUtil.getAuthenticatedUser().getId();
+        return transactionRepository.findByBidBidderId(userId, TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getAllByStatus(TransactionStatus status, Pageable pageable) {
+        return transactionRepository.findByStatus(status, TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getUserTransactionsByStatus(TransactionStatus status, Pageable pageable) {
+        UUID userId = AuthUtil.getAuthenticatedUser().getId();
+        return transactionRepository.findByBidBidderIdAndStatus(userId, status, TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getAllTransactions(Pageable pageable) {
+        return transactionRepository.findBy(TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getTransactionsByDateRange(
+            LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return transactionRepository.findByCreatedAtBetween(startDate, endDate, TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getAllForUserAdmin(UUID userId, Pageable pageable) {
+        return transactionRepository.findByBidBidderId(userId, TransactionProjection.class, pageable);
+    }
+
+    public Page<TransactionProjection> getUserTransactionsByStatusAdmin(UUID userId, TransactionStatus status, Pageable pageable) {
+        return transactionRepository.findByBidBidderIdAndStatus(userId, status, TransactionProjection.class, pageable);
+    }
 }

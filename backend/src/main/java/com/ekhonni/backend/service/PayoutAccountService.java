@@ -1,12 +1,9 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.payoutaccount.PayoutAccountCreateDTO;
-import com.ekhonni.backend.exception.AccountNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.PayoutAccount;
-import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.PayoutAccountProjection;
 import com.ekhonni.backend.repository.PayoutAccountRepository;
 import com.ekhonni.backend.util.AuthUtil;

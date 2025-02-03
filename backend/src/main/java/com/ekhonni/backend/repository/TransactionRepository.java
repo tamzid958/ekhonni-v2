@@ -1,11 +1,16 @@
 package com.ekhonni.backend.repository;
 
+import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Author: Asif Iqbal
@@ -22,4 +27,12 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
     @Modifying
     @Query("UPDATE Transaction SET sessionKey = :sessionKey, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
     void updateSessionKeyById(Long id, String sessionKey);
+
+    <P> Page<P> findByBidBidderId(UUID userId, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByStatus(TransactionStatus status, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByBidBidderIdAndStatus(UUID userId, TransactionStatus status, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
 }
