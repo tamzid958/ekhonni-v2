@@ -526,5 +526,11 @@
     "description": "Allows admin to approve a refund request",
     "httpMethod": "PATCH",
     "endpoint": "/api/v2/refund/approve/{id}"
+  },
+  {
+    "name": "Add Product To Watchlist",
+    "description": "Allows user to add products to their watchlist",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/watchlist"
   }
 ]
