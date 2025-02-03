@@ -42,7 +42,7 @@ public class NotificationService {
 
 
     public DeferredResult<ApiResponse<?>> handleLongPolling(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
-        long timeout = 3000;
+        long timeout = 30000;
 
         DeferredResult<ApiResponse<?>> deferredResult = new DeferredResult<>(timeout);
 
