@@ -1,6 +1,5 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.exception.UserNotActiveException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.repository.AdminRepository;
@@ -33,8 +32,7 @@ public class AdminService extends BaseService<User, UUID> {
 
 
     public void block(UUID id) {
-        if (userService.isActive(id)) adminRepository.block(id);
-        else throw new UserNotActiveException("User not active. cannot be blocked");
+        adminRepository.block(id);
     }
 
 
