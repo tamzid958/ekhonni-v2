@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { allRolesList, reverseRoleMapping } from '@/components/roles';
+import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
 
 
 export type User = {
@@ -212,8 +213,8 @@ export const columns: ColumnDef<User>[] = [
                   <select
                     id="role"
                     className="col-span-3 border rounded p-2"
-                    value={selectedRole}  // Only use 'value'
-                    onChange={(e) => setSelectedRole(Number(e.target.value))} // Convert to number
+                    value={selectedRole}
+                    onChange={(e) => setSelectedRole(Number(e.target.value))}
                   >
                     {allRolesList.map((role) => (
                       <option key={role.id} value={role.id}>
@@ -225,7 +226,10 @@ export const columns: ColumnDef<User>[] = [
               </div>
               <DialogFooter>
                 <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={() => handleChangeUserRole(User.id, selectedRole, userToken)} type="submit">
+                <Button onClick={() => {
+                  setIsDialogOpen(false);
+                  handleChangeUserRole(User.id, selectedRole, userToken)}}
+                  type="submit">
                   Save changes
                 </Button>
               </DialogFooter>

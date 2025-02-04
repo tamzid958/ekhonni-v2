@@ -1,6 +1,6 @@
 
 'use client';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 
 import { FaArrowDown, FaFileCsv, FaUserPlus } from 'react-icons/fa6';
@@ -15,8 +15,7 @@ import useSWR from 'swr';
 import Loading from '@/components/Loading';
 import fetcher from '@/data/services/fetcher';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { setAllRoles } from '@/components/roles';
-
+import { useRoles } from '../hooks/useRoles';
 
 const processUsers = (users: any[]) : User[] => {
   return users.map(user => {
@@ -41,8 +40,8 @@ export default  function User  () {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
-  const [error, setError] = React.useState(null);
 
+  const { allRolesList, isLoading: isLoadingRole , error: roleError} = useRoles(userId, userToken);
 
   const { data: allUsers, error: allError, isLoading: isLoading } = useSWR(
     userId ? `/api/v2/admin/user` : null,
@@ -62,30 +61,19 @@ export default  function User  () {
     (url) => fetcher(url, userToken)
   );
 
-  const { data: allRole, error: roleError, isLoading: isLoadingRole } = useSWR(
-    userId ? `/api/v2/role/` : null,
-    (url) => fetcher(url, userToken)
-  );
-  const allRoles = allRole?.content?.map(role => ({
-    id: role.id,
-    name: role.name,
-    description: role.description, // Optional if needed later
-  })) || [];
-
-  setAllRoles(allRoles);
-
-  const adminRoleId = allRoles?.find((role) => role.name === "ADMIN")?.id;
+  const adminRoleId = allRolesList?.find((role) => role.name === "ADMIN")?.id;
 
   const { data: admin, error: adminError, isLoading: isLoadingAdmin } = useSWR(
-    userId ? `/api/v2/role/${adminRoleId}/users/` : null,
+    userId  && adminRoleId ? `/api/v2/role/${adminRoleId}/users/` : null,
     (url) => fetcher(url, userToken)
   );
 
+  const totalAdmins = admin?.content?.length ?? 0;
 
   const processedUsers: User[] = allUsers ? processUsers(allUsers.content) : [];
+  const totalUsers = processedUsers.length;
 
-
-  if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock) {
+  if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock || isLoadingAdmin || isLoadingRole) {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
           <div className="flex justify-center items-center h-screen">
@@ -103,7 +91,7 @@ export default  function User  () {
     );
 
   }
-  else if(activeError || allError || deletedError || blockedError)
+  else if(activeError || allError || deletedError || blockedError || adminError || roleError)
   {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
@@ -161,7 +149,7 @@ export default  function User  () {
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                   <CardTitle className="flex text-gray-500 mb-2 text-xl  ">Total User</CardTitle>
-                  <h1 className="text-4xl font-bold">{processedUsers.length}</h1>
+                  <h1 className="text-4xl font-bold">{totalUsers}</h1>
                 </div>
                 <div className="flex  mt-6">
                   {/* Static Badge for Increase */}
@@ -186,7 +174,7 @@ export default  function User  () {
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <CardTitle className="flex text-gray-500 mb-2 text-xl">Admins</CardTitle>
-                <h1 className="text-4xl font-bold">54</h1>
+                <h1 className="text-4xl font-bold">{totalAdmins}</h1>
 
               </div>
               <div className="flex  mt-6">

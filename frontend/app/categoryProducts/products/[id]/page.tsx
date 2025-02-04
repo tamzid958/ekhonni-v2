@@ -1,4 +1,4 @@
-// app/product/[id]/page.tsx
+// app/product/[id]/useRoles.tsx
 import React from 'react';
 import Image from 'next/image';
 import Loading from '@/components/Loading';
