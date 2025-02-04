@@ -4,6 +4,7 @@ import com.ekhonni.backend.dto.UserBlockDTO;
 import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.BlockInfo;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.repository.AdminRepository;
 import com.ekhonni.backend.repository.BlockInfoRepository;
@@ -36,8 +37,9 @@ public class AdminService extends BaseService<User, UUID> {
     }
 
 
-    public Page<DetailedUserProjection> getAllBlocked(Class<DetailedUserProjection> projection, Pageable pageable) {
-        return adminRepository.findAllByIsBlockedIsTrue(projection, pageable);
+    public Page<BlockedUserProjection> getAllBlocked(Class<BlockedUserProjection> projection, Pageable pageable) {
+        return blockInfoRepository.findAllBy(projection, pageable);
+//        return adminRepository.findAllByIsBlockedIsTrue(projection, pageable);
     }
 
 

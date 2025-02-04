@@ -1,6 +1,7 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.UserBlockDTO;
+import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.service.AdminService;
 import com.ekhonni.backend.service.RoleService;
@@ -54,8 +55,8 @@ public class AdminController {
     }
 
     @GetMapping("/user/block")
-    public Page<DetailedUserProjection> getAllBlockedUser(Pageable pageable) {
-        return adminService.getAllBlocked(DetailedUserProjection.class, pageable);
+    public Page<BlockedUserProjection> getAllBlockedUser(Pageable pageable) {
+        return adminService.getAllBlocked(BlockedUserProjection.class, pageable);
     }
 
     @GetMapping("/user/active")
