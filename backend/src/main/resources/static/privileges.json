@@ -264,12 +264,6 @@
     "endpoint": "/api/v2/user/{id}/notifications"
   },
   {
-    "name": "Redirect notifications",
-    "description": "Redirect to the link when specific notification is clicked",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/user/{id}/notifications/{notificationId}/redirect"
-  },
-  {
     "name": "Admin create notifications",
     "description": "Create notification for specific or all users",
     "httpMethod": "POST",
