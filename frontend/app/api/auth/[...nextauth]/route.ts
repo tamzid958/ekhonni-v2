@@ -89,6 +89,7 @@ const options: NextAuthOptions = {
 
   pages: {
     signIn: "/auth/login",
+    signOut: "/auth/logout",
   },
 
   callbacks: {
