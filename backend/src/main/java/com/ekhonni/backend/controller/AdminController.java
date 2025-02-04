@@ -4,6 +4,7 @@ import com.ekhonni.backend.dto.UserBlockDTO;
 import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.service.AdminService;
+import com.ekhonni.backend.service.BlockInfoService;
 import com.ekhonni.backend.service.RoleService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final RoleService roleService;
+    private final BlockInfoService blockInfoService;
 
 
     @PostMapping("user/{userId}/assign/role/{roleId}")
@@ -56,7 +58,7 @@ public class AdminController {
 
     @GetMapping("/user/block")
     public Page<BlockedUserProjection> getAllBlockedUser(Pageable pageable) {
-        return adminService.getAllBlocked(BlockedUserProjection.class, pageable);
+        return blockInfoService.getAllBlocked(BlockedUserProjection.class, pageable);
     }
 
     @GetMapping("/user/active")

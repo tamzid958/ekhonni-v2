@@ -16,4 +16,6 @@ public interface BlockInfoRepository extends BaseRepository<BlockInfo, Long> {
     Page<BlockedUserProjection> findAllBy(Class<BlockedUserProjection> projection, Pageable pageable);
 
     List<BlockInfo> findAllByUnblockAtBeforeAndUserIsBlockedTrue(LocalDateTime now);
+
+    Page<BlockedUserProjection> findAllByUserIsBlockedTrue(Class<BlockedUserProjection> projection, Pageable pageable);
 }

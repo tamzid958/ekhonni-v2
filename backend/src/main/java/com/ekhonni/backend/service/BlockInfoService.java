@@ -2,8 +2,11 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.model.BlockInfo;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.repository.BlockInfoRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -43,5 +46,9 @@ public class BlockInfoService extends BaseService<BlockInfo, Long> {
 
             this.softDelete(blockInfo.getId());
         }
+    }
+
+    public Page<BlockedUserProjection> getAllBlocked(Class<BlockedUserProjection> projection, Pageable pageable) {
+        return blockInfoRepository.findAllByUserIsBlockedTrue(projection, pageable);
     }
 }
