@@ -1,10 +1,8 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.ekhonni.backend.enums.BlockPolicy;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +31,10 @@ public class BlockInfo extends BaseEntity<Long> {
 
     @Column(nullable = false)
     private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BlockPolicy blockPolicy;
 
     @Column(nullable = false)
     private LocalDateTime blockedAt;

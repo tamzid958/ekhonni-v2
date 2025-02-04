@@ -51,8 +51,9 @@ public class AdminService extends BaseService<User, UUID> {
                 user,
                 AuthUtil.getAuthenticatedUser(),
                 userBlockDTO.reason(),
+                userBlockDTO.blockPolicy(),
                 LocalDateTime.now(),
-                LocalDateTime.now().plusDays(30)
+                LocalDateTime.now().plusDays(userBlockDTO.blockPolicy().getDays())
         );
         blockInfoRepository.save(blockInfo);
         user.setBlocked(true);

@@ -1,5 +1,6 @@
 package com.ekhonni.backend.dto;
 
+import com.ekhonni.backend.enums.BlockPolicy;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,5 +13,8 @@ import java.util.UUID;
 public record UserBlockDTO(@NotNull(message = "id cannot be null")
                            UUID id,
                            @NotBlank(message = "Reason can not be blank")
-                           String reason) {
+                           String reason,
+                           @NotNull(message = "Block Policy can not be null")
+                           BlockPolicy blockPolicy
+) {
 }
