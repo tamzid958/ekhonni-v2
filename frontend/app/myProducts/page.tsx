@@ -57,13 +57,15 @@ export default function MyProductPage() {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
-  const [filter, setFilter] = useState<string>('ALL');
+  const [filter, setFilter] = useState<string>('APPROVED');
 
   // const selectedCategory = 'All'; // You can modify this dynamically
 
   // Construct API endpoint
   // const categoryQuery = selectedCategory !== 'All' ? `&categoryName=${encodeURIComponent(selectedCategory)}` : '';
-  const url = `/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&productStatus=${encodeURIComponent(filter)}`;
+  const url = filter === 'ALL' ?
+    `/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}` :
+    `/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&status=${encodeURIComponent(filter)}`;
 
   console.log(url);
   console.log(userToken);

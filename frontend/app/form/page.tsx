@@ -91,6 +91,7 @@ export default function Home() {
 
     if (result.success) {
       console.log(result.message);
+      window.location.href = '/';
     } else {
       console.error(result.message);
     }

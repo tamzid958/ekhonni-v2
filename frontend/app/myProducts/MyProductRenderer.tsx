@@ -78,12 +78,12 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
 
         {/*Button Group*/}
         <div className="flex mb-6 space-x-4">
-          {['ALL', 'APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
+          {['APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
             <button
               key={status}
               onClick={() => setFilter(status)}
               className={`text-sm font-medium pb-2 ${
-                products.length === 0 || filter === status ? 'border-b-2 border-blue-500' : ' text-gray-700 hover:bg-gray-100'
+                filter === status ? 'border-b-2 border-blue-500' : ' text-gray-700 hover:bg-gray-100'
               }`}
             >
               {status.replace('_', ' ')}

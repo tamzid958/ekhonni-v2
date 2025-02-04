@@ -22,7 +22,7 @@ export interface Data {
 
 export async function fetchProducts(page: number = 1): Promise<Data[]> {
   try {
-    const url = `http://localhost:8080/api/v2/product/filter?page=${encodeURIComponent(page)}`;
+    const url = `http://localhost:8080/api/v2/admin/product/filter?page=${encodeURIComponent(page)}`;
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error('Failed to fetch products');
