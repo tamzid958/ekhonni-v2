@@ -30,10 +30,7 @@ import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
-import com.ekhonni.backend.util.AuthUtil;
-import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
-import com.ekhonni.backend.util.ImageUtil;
-import com.ekhonni.backend.util.ProductProjectionConverter;
+import com.ekhonni.backend.util.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -119,10 +116,11 @@ public class ProductService extends BaseService<Product, Long> {
 
         SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
+//        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage()-1, filter.getSize(), filter.getSortBy());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
 
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(),pageable);
 
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
@@ -192,10 +190,11 @@ public class ProductService extends BaseService<Product, Long> {
         }
 
 
-        Specification<Product> spec = UserProductSpecificationBuilder.build(filter, categoryIds);
+        SpecificationResult specificationResult = UserProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = specificationResult.getSpec();
         Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(),pageable);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();

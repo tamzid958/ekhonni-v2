@@ -118,7 +118,7 @@ public class ProductAdminService {
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
         Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent());
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(),pageable);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();

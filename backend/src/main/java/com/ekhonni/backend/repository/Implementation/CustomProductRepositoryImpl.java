@@ -37,6 +37,16 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         Predicate predicate = spec.toPredicate(root, query, cb);
         query.select(root.get("id")).where(predicate);
 
+        // Apply sorting from Pageable
+        if (pageable.getSort().isSorted()) {
+            System.out.println(pageable.getSort());
+            List<Order> orderList = pageable.getSort().stream()
+                    .map(order -> order.isAscending() ? cb.asc(root.get(order.getProperty()))
+                            : cb.desc(root.get(order.getProperty())))
+                    .toList();
+            query.orderBy(orderList);
+        }
+
         int page = Math.max(0, pageable.getPageNumber());
         int size = Math.max(5, pageable.getPageSize());
         int firstResult = page  * size;
@@ -54,6 +64,8 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         countQuery.select(cb.count(countRoot)).where(countPredicate);
 
         Long totalElements = entityManager.createQuery(countQuery).getSingleResult();
+
+        System.out.println(productIds);
 
         return new PageImpl<>(productIds, pageable, totalElements);
     }
