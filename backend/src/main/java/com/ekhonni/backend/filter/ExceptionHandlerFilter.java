@@ -1,8 +1,8 @@
 package com.ekhonni.backend.filter;
 
 import com.ekhonni.backend.exception.ErrorResponse;
-import com.ekhonni.backend.exception.InvalidJwtTokenException;
-import com.ekhonni.backend.exception.NoResourceFoundException;
+import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
+import com.ekhonni.backend.exception.user.InvalidJwtTokenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

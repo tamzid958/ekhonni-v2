@@ -1,10 +1,10 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailDTO;
-import com.ekhonni.backend.dto.PasswordDTO;
-import com.ekhonni.backend.dto.ProfileImageDTO;
-import com.ekhonni.backend.dto.RefreshTokenDTO;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.dto.user.PasswordChangeDTO;
+import com.ekhonni.backend.dto.user.ProfileImageDTO;
+import com.ekhonni.backend.dto.user.RefreshTokenDTO;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
@@ -60,19 +60,19 @@ public class UserService extends BaseService<User, UUID> {
 
     @Transactional
     @Modifying
-    public String updatePassword(UUID id, PasswordDTO passwordDTO) {
+    public String updatePassword(UUID id, PasswordChangeDTO passwordChangeDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found when updating password"));
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordDTO.currentPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordChangeDTO.currentPassword());
 
         Authentication authenticatedUser = authenticationManager.authenticate(authentication);
 
-        user.setPassword(passwordEncoder.encode(passwordDTO.newPassword()));
+        user.setPassword(passwordEncoder.encode(passwordChangeDTO.newPassword()));
         return "Password Updated";
     }
 
     public boolean isActive(UUID id) {
-        return userRepository.existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(id);
+        return userRepository.existsByIdAndDeletedAtIsNullAndIsBlockedIsFalse(id);
     }
 
     public boolean isSuperAdmin(UUID id) {
@@ -82,7 +82,7 @@ public class UserService extends BaseService<User, UUID> {
     }
 
     public boolean isActive(String email) {
-        return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
+        return userRepository.existsByEmailAndDeletedAtIsNullAndIsBlockedIsFalse(email);
     }
 
     public AuthToken getNewAccessToken(RefreshTokenDTO refreshTokenDTO) {

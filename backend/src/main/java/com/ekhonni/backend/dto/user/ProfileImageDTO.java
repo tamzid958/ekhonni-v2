@@ -1,4 +1,4 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.user;
 
 import com.ekhonni.backend.validation.annotation.ImageOnly;
 import org.springframework.web.multipart.MultipartFile;

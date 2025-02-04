@@ -1,9 +1,9 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
-import com.ekhonni.backend.exception.NoResourceFoundException;
-import com.ekhonni.backend.exception.PrivilegeNotFoundException;
-import com.ekhonni.backend.exception.RoleNotFoundException;
+import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
+import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
+import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.RolePrivilegeAssignment;

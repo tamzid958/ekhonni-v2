@@ -6,7 +6,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.enums.AccountStatus;
 import com.ekhonni.backend.exception.AccountNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.AccountRepository;

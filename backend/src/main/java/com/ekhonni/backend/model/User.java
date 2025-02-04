@@ -13,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -48,8 +47,8 @@ public class User extends BaseEntity<UUID> implements UserDetails, Serializable 
     @OneToOne(cascade = CascadeType.MERGE, orphanRemoval = true)
     @JoinColumn(name = "refresh_token_id", referencedColumnName = "id")
     private RefreshToken refreshToken;
-    @Column
-    private LocalDateTime blockedAt;
+    @Column(nullable = false)
+    private boolean isBlocked;
     @Column(nullable = false)
     private boolean verified;
 

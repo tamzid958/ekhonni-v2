@@ -1,10 +1,13 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.UserIdDTO;
+import com.ekhonni.backend.dto.UserBlockDTO;
+import com.ekhonni.backend.dto.user.UserUnblockDTO;
+import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
-import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
+import com.ekhonni.backend.service.BlockInfoService;
 import com.ekhonni.backend.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final RoleService roleService;
+    private final BlockInfoService blockInfoService;
 
 
     @PostMapping("user/{userId}/assign/role/{roleId}")
@@ -44,18 +48,18 @@ public class AdminController {
         if (name != null || email != null) {
             return adminService.getAllUserByNameOrEmail(DetailedUserProjection.class, pageable, name, email);
         } else {
-            return adminService.getAll(DetailedUserProjection.class, pageable);
+            return adminService.getAllIncludingDeleted(DetailedUserProjection.class, pageable);
         }
     }
 
     @GetMapping("/user/delete")
-    public Page<UserProjection> getAllDeletedUser(Pageable pageable) {
-        return adminService.getAllDeleted(UserProjection.class, pageable);
+    public Page<DetailedUserProjection> getAllDeletedUser(Pageable pageable) {
+        return adminService.getAllDeleted(DetailedUserProjection.class, pageable);
     }
 
     @GetMapping("/user/block")
-    public Page<DetailedUserProjection> getAllBlockedUser(Pageable pageable) {
-        return adminService.getAllBlocked(DetailedUserProjection.class, pageable);
+    public Page<BlockedUserProjection> getAllBlockedUser(Pageable pageable) {
+        return blockInfoService.getAllBlocked(BlockedUserProjection.class, pageable);
     }
 
     @GetMapping("/user/active")
@@ -64,13 +68,14 @@ public class AdminController {
     }
 
     @PostMapping("/user/block")
-    public void block(@RequestBody UserIdDTO userIdDTO) {
-        adminService.block(userIdDTO.id());
+    @PreAuthorize("!@userService.isSuperAdmin(#userBlockDTO.id)")
+    public void block(@Valid @RequestBody UserBlockDTO userBlockDTO) {
+        adminService.block(userBlockDTO);
     }
 
     @PostMapping("/user/unblock")
-    public void unblock(@RequestBody UserIdDTO userIdDTO) {
-        adminService.unblock(userIdDTO.id());
+    public void unblock(@RequestBody UserUnblockDTO userUnblockDTO) {
+        adminService.unblock(userUnblockDTO.id());
     }
 
 

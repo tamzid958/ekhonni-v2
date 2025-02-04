@@ -1,6 +1,6 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.exception.RoleNotFoundException;
+import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.projection.UserProjection;

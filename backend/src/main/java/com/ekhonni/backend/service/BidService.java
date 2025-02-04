@@ -5,7 +5,7 @@ import com.ekhonni.backend.dto.bid.BidUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.ProductNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;

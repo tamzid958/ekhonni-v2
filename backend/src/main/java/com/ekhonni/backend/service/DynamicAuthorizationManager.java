@@ -1,6 +1,6 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.exception.RoleNotFoundException;
+import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
@@ -54,8 +54,6 @@ public class DynamicAuthorizationManager implements AuthorizationManager<Request
         Privilege privilege = privilegeService.getByHttpMethodAndEndpoint(httpMethod, endpoint);
 
         boolean granted = roleService.hasPrivilegeAccess(role, privilege);
-
-        System.out.println("granted: " + granted);
 
         return new AuthorizationDecision(granted);
 

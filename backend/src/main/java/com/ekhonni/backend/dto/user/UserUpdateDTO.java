@@ -1,4 +1,4 @@
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.user;
 
 import jakarta.validation.constraints.NotNull;
 

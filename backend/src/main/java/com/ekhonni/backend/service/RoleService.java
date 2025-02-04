@@ -1,9 +1,9 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.exception.RoleAlreadyExistsException;
-import com.ekhonni.backend.exception.RoleCannotBeDeletedException;
-import com.ekhonni.backend.exception.RoleNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.role.RoleAlreadyExistsException;
+import com.ekhonni.backend.exception.role.RoleCannotBeDeletedException;
+import com.ekhonni.backend.exception.role.RoleNotFoundException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
