@@ -1,4 +1,3 @@
-// components/NavBar.tsx
 'use client';
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
@@ -15,46 +14,17 @@ type Props = {
   placeholder?: string;
 };
 
-//
-// const notifications = [
-//   {
-//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
-//     link: 'http://localhost:3000/update',
-//   },
-//   {
-//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
-//     link: 'http://localhost:3000/form',
-//   },
-//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
-//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
-//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
-//   {
-//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
-//     link: 'http://localhost:3000/update',
-//   },
-//   {
-//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
-//     link: 'http://localhost:3000/form',
-//   },
-//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
-//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
-//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
-//   {
-//     text: 'System Update Available asssssssss sssssssssssssssssssssssssssssssss ssssssssssssssssssssss ssssssssssssssssssssss ssssssssssss ssssssssssss ssssss',
-//     link: 'http://localhost:3000/update',
-//   },
-//   {
-//     text: 'gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji gujibugji gujibuji ',
-//     link: 'http://localhost:3000/form',
-//   },
-//   { text: 'Meeting Reminder: 2 PM', link: 'http://localhost:3000/reminder' },
-//   { text: 'Exclusive Offer: 20% Off', link: 'http://localhost:3000/offer' },
-//   { text: 'Security Alert: Unusual Login Attempt', link: 'http://localhost:3000/alert' },
-// ];
+type Notification = {
+  id: number;
+  message: string;
+  lastFetchTime?: string;
+  createdAt: string;
+  type: string;
+};
 
 export function NavBar({ placeholder }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -64,8 +34,6 @@ export function NavBar({ placeholder }: Props) {
     const userId = session?.user?.id;
     const userToken = session?.user?.token;
 
-    // const yesterday = new Date();
-    // yesterday.setDate(yesterday.getDate() - 1); // Subtract 1 day to get yesterday
     const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
 
     async function fetchNotifications(lastFetchTime: string) {
@@ -78,11 +46,27 @@ export function NavBar({ placeholder }: Props) {
 
       if (result.success) {
         if (Array.isArray(result.data)) {
-          // Only update notifications if result.data is an array (new notifications)
-          setNotifications(prevNotifications => [
-            ...prevNotifications,
-            ...result.data.filter(item => item.message.trim().length > 0),
-          ]);
+          // Filter out notifications with empty messages and duplicates
+          const newNotifications = result.data
+            .filter((item) => item.message.trim().length > 0) // Filter empty messages
+            .filter((item) => !notifications.some((notification) => notification.id === item.id)); // Filter duplicates
+
+          // Add new notifications to the state
+          setNotifications((prevNotifications) => {
+            const updatedNotifications = [...prevNotifications, ...newNotifications];
+
+            // Remove neighboring duplicates
+            const filteredNotifications = updatedNotifications.filter(
+              (notification, index, array) => {
+                if (index < array.length - 1 && notification.id === array[index + 1].id) {
+                  return false;
+                }
+                return true;
+              },
+            );
+
+            return filteredNotifications;
+          });
         }
         fetchNotifications(result.lastFetchTime);
       } else {
@@ -143,15 +127,14 @@ export function NavBar({ placeholder }: Props) {
                 className="max-h-80 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
                 {notifications.length > 0 ? (
                   notifications.map((item, index) => (
-
                     <Link key={index} href="/">
                       <div
                         className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">
                         {item.message}
+                        {item.id}
                         {item.lastFetchTime}
                       </div>
                     </Link>
-
                   ))
                 ) : (
                   <p className="text-center p-2">No new notifications</p>
@@ -168,8 +151,6 @@ export function NavBar({ placeholder }: Props) {
           {isSidebarOpen && <AppSidebar />}
         </SidebarProvider>
       </div>
-
-      {/* Trigger Sidebar */}
     </nav>
   );
 }
