@@ -82,6 +82,7 @@ spring:
 
 server:
   address: ${SERVER_ADDRESS}
+  port: ${SERVER_PORT}
 
 sslcommerz:
   domain: ${SSLCOMMERZ_DOMAIN}
@@ -103,19 +104,19 @@ bkash:
   password: ${BKASH_PASSWORD}
   app-key: ${BKASH_APP_KEY}
   app-secret: ${BKASH_APP_SECRET}
-
+  x-app-key: ${BKASH_X_APP_KEY}
+  merchant-invoice-number: ${BKASH_MERCHANT_INVOICE_NUMBER}
+  disbursement-url: ${BKASH_DISBURSEMENT_URL}
+  grant-token-url: ${BKASH_GRANT_TOKEN_URL}
+  refresh-token-url: ${BKASH_REFRESH_TOKEN_URL}
+  query-balance-url: ${BKASH_QUERY_BALANCE_URL}
+  intra-account-transfer-url: ${BKASH_INTRA_ACCOUNT_TRANSFER_URL}
+  search-transaction-details-url: ${BKASH_SEARCH_TRANSACTION_DETAILS_URL}
 
 refund:
   processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}
   query-interval: ${REFUND_QUERY_INTERVAL:1800000}
   batch-size: ${REFUND_BATCH_SIZE}
-
-upload:
-  dir: ${UPLOAD_DIR}
-
-product:
-  upload:
-    dir: ${UPLOAD_DIR}
 
 rabbitmq-custom:
   email-configuration:
