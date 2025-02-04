@@ -23,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v2/bid")
@@ -109,6 +110,13 @@ public class BidController {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAll(Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAll(AdminBidProjection.class, pageable));
+    }
+
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAllForUserAdmin(
+            @PathVariable("user_id") UUID userId, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForUserAdmin(userId, AdminBidProjection.class, pageable));
     }
 
     @GetMapping("/admin/product/{product_id}")

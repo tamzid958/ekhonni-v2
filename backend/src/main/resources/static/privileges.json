@@ -348,6 +348,12 @@
     "endpoint": "/api/v2/bid/admin/product/{id}"
   },
   {
+    "name": "Get User Bids Admin",
+    "description": "Fetches all bids for a specific user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/user/{id}"
+  },
+  {
     "name": "Get Product Bid Audit",
     "description": "Allows viewing bid audit for a product",
     "httpMethod": "GET",

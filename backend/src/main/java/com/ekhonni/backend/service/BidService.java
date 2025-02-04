@@ -10,6 +10,7 @@ import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.bid.AdminBidProjection;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
@@ -134,7 +135,11 @@ public class BidService extends BaseService<Bid, Long> {
     }
 
     public <P> Page<P> getAllForUser(Class<P> projection, Pageable pageable) {
-        return bidRepository.findAllByBidderId(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
+        return bidRepository.findByBidderIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
+    }
+
+    public <P> Page<P> getAllForUserAdmin(UUID userId, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByBidderIdAndDeletedAtIsNull(userId, projection, pageable);
     }
 
     public UUID getBidderId(Long id) {
@@ -151,4 +156,5 @@ public class BidService extends BaseService<Bid, Long> {
                 productId, AuthUtil.getAuthenticatedUser().getId(), BuyerBidProjection.class)
                 .orElseThrow(() -> new BidNotFoundException("No bid submitted for this product"));
     }
+
 }

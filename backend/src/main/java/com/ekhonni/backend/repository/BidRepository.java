@@ -7,25 +7,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface BidRepository extends BaseRepository<Bid, Long> {
 
-    <P> List<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection);
-
     <P> Page<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByProductId(Long productId, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findAllByBidderId(UUID bidderId, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByBidderId(UUID bidderId, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByBidderIdAndDeletedAtIsNull(UUID bidderId, Class<P> projection, Pageable pageable);
 
     Optional<Bid> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
     <P> Optional<P> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId, Class<P> projection);
-
 
     @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
     Optional<UUID> findBidderIdById(Long id);
