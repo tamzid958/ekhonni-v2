@@ -91,6 +91,7 @@ public class ProductController {
 
 
     @GetMapping("/user/filter")
+    @PreAuthorize("#filter.userId == authentication.principal.id")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
     }
