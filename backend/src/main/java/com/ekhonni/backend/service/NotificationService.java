@@ -15,6 +15,7 @@ import com.ekhonni.backend.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -40,6 +41,8 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ExecutorService executorService = Executors.newFixedThreadPool(32);
 
+    @Value("${notification.product-redirect-url}")
+    private String productRedirectUrl;
 
     public DeferredResult<ApiResponse<?>> handleLongPolling(UUID recipientId, LocalDateTime lastFetchTime, Pageable pageable) {
         long timeout = 30000;
@@ -88,16 +91,6 @@ public class NotificationService {
     }
 
 
-    public ApiResponse<?> redirect(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
-
-        notification.setReadAt(LocalDateTime.now());
-        notificationRepository.save(notification);
-        return new ApiResponse<>(HTTPStatus.OK, notification.getRedirectUrl());
-    }
-
-
     public void create(User recipient, NotificationType type, String message, String redirectUrl) {
         Notification notification = new Notification(
                 recipient,
@@ -128,7 +121,7 @@ public class NotificationService {
                 product.getTitle(),
                 bidCreateDTO.amount()
         );
-        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        String redirectUrl = productRedirectUrl + product.getId();
         create(seller, type, message, redirectUrl);
     }
 
@@ -140,7 +133,7 @@ public class NotificationService {
                 "Congratulations! Your bid for the product %s has been accepted.",
                 product.getTitle()
         );
-        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        String redirectUrl = productRedirectUrl + product.getId();
         create(bidder, type, message, redirectUrl);
     }
 
@@ -151,7 +144,7 @@ public class NotificationService {
                 "Your product %s has been accepted by the admin.",
                 product.getTitle()
         );
-        String redirectUrl = "http://localhost:8080/api/v2/product/" + product.getId();
+        String redirectUrl = productRedirectUrl + product.getId();
         create(seller, type, message, redirectUrl);
     }
 
@@ -175,4 +168,29 @@ public class NotificationService {
         create(seller, type, message, null);
     }
 
+    public void createForSellerReview(Bid bid){
+        User seller = bid.getProduct().getSeller();
+        User buyer = bid.getBidder();
+        NotificationType type = NotificationType.NEW_REVIEW;
+        String messae = String.format(
+                "Your have received a new review on product %s by %s",
+                bid.getProduct().getTitle(),
+                buyer.getName()
+        );
+        String redirectUrl = productRedirectUrl + bid.getProduct().getId();
+        create(seller, type, messae, redirectUrl);
+    }
+
+    public void createForBuyerReview(Bid bid){
+        User buyer = bid.getBidder();
+        User seller = bid.getProduct().getSeller();
+        NotificationType type = NotificationType.NEW_REVIEW;
+        String messae = String.format(
+                "You have received a new review to your bid on '%s' by %s.",
+                bid.getProduct().getTitle(),
+                seller.getName()
+        );
+        String redirectUrl = productRedirectUrl + bid.getProduct().getId();
+        create(buyer, type, messae, redirectUrl);
+    }
 }

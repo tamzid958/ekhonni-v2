@@ -21,14 +21,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<NotificationPreviewProjection> findByRecipientIdOrRecipientIdIsNull(UUID recipientId, Pageable pageable);
 
     @Query("""
-    SELECT n FROM Notification n
-    WHERE (n.recipient.id = :recipientId OR n.recipient IS NULL)
-    AND (n.createdAt > :lastFetchTime)
-""")
+           SELECT n FROM Notification n
+           WHERE (n.recipient.id = :recipientId OR n.recipient IS NULL)
+           AND (n.createdAt > :lastFetchTime)
+    """)
     List<NotificationPreviewProjection> findNewNotifications(
             @Param("recipientId") UUID recipientId,
             @Param("lastFetchTime") LocalDateTime lastFetchTime,
             Pageable pageable
     );
-
 }
