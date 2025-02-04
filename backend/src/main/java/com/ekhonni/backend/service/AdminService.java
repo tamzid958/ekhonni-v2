@@ -59,15 +59,19 @@ public class AdminService extends BaseService<User, UUID> {
         user.setBlocked(true);
     }
 
+    @Transactional
+    @Modifying
+    public void unblock(UUID id) {
+        User user = adminRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
+        BlockInfo blockInfo = blockInfoRepository.findByUserAndDeletedAtIsNull(user);
+        blockInfo.setUnblockAt(LocalDateTime.now());
+        blockInfoRepository.softDelete(blockInfo.getId());
+        user.setBlocked(false);
+    }
 
     public Page<DetailedUserProjection> getAllUserByNameOrEmail(Class<DetailedUserProjection> projection, Pageable pageable, String name, String email) {
         return adminRepository.findAllByNameContainingIgnoreCaseOrEmail(projection, pageable, name, email);
     }
-
-
-//    public void unblock(UUID id) {
-//        adminRepository.unblock(id);
-//    }
 
     public Page<DetailedUserProjection> getAllActive(Class<DetailedUserProjection> projection, Pageable pageable) {
         return adminRepository.findAllByDeletedAtIsNullAndIsBlockedIsFalseAndVerifiedIsTrue(projection, pageable);

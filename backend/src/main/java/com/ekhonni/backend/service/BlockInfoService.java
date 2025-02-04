@@ -33,10 +33,10 @@ public class BlockInfoService extends BaseService<BlockInfo, Long> {
 
     @Transactional
     @Modifying
-    @Scheduled(fixedRate = 600)
+    @Scheduled(fixedRate = 86400000)
     public void unblockUsers() {
 
-        List<BlockInfo> blockInfos = blockInfoRepository.findAllByUnblockAtBeforeAndUserIsBlockedTrue(LocalDateTime.now());
+        List<BlockInfo> blockInfos = blockInfoRepository.findAllByUnblockAtBeforeAndDeletedAtIsNullAndUserIsBlockedTrue(LocalDateTime.now());
 
         for (BlockInfo blockInfo : blockInfos) {
 

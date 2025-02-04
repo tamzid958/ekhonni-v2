@@ -1,6 +1,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.BlockInfo;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.BlockedUserProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,8 @@ public interface BlockInfoRepository extends BaseRepository<BlockInfo, Long> {
     List<BlockInfo> findAllByUnblockAtBeforeAndUserIsBlockedTrue(LocalDateTime now);
 
     Page<BlockedUserProjection> findAllByUserIsBlockedTrue(Class<BlockedUserProjection> projection, Pageable pageable);
+
+    BlockInfo findByUserAndDeletedAtIsNull(User user);
+
+    List<BlockInfo> findAllByUnblockAtBeforeAndDeletedAtIsNullAndUserIsBlockedTrue(LocalDateTime now);
 }

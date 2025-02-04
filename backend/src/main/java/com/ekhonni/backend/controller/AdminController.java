@@ -1,6 +1,7 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.UserBlockDTO;
+import com.ekhonni.backend.dto.user.UserUnblockDTO;
 import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
 import com.ekhonni.backend.service.AdminService;
@@ -71,10 +72,10 @@ public class AdminController {
         adminService.block(userBlockDTO);
     }
 
-//    @PostMapping("/user/unblock")
-//    public void unblock(@RequestBody UserBlockDTO userBlockDTO) {
-//        adminService.unblock(userBlockDTO);
-//    }
+    @PostMapping("/user/unblock")
+    public void unblock(@RequestBody UserUnblockDTO userUnblockDTO) {
+        adminService.unblock(userUnblockDTO.id());
+    }
 
 
     @PostMapping("/user/{id}/warn")
