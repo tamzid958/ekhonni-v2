@@ -35,6 +35,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { logout } from '../../app/auth/logout/page';
 
 const items = [
   { title: "Edit Profile", url: "/userPage/editProfile", icon: Settings },
@@ -64,7 +65,9 @@ export function AppSidebar() {
   const handleLogout = () => {
     console.log("Logging out...");
     setIsSidebarOpen(false);
-    router.push('/');
+    setTimeout(() => {
+      logout();
+    }, 200);
   };
 
   const handleButtonClick = (url) => {

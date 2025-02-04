@@ -4,7 +4,7 @@ import { CardDemo } from '@/components/Card';
 import React from 'react';
 
 interface Data {
-  id: string;
+  id: number;
   price: number;
   title: string;
   subTitle: string;
@@ -36,7 +36,7 @@ export function ProductSection({ title, products, selectedCategory }: ProductSec
         <span>
                   <Link href={{
                     pathname: '/labeledCategory',
-                    query: { category: selectedCategory, label: title },
+                    query: { category: selectedCategory },
                   }}
                         className="text-xl"
                   > See All </Link> </span>
@@ -47,14 +47,15 @@ export function ProductSection({ title, products, selectedCategory }: ProductSec
         ) : (
           <div className="flex w-[1000px] space-x-4 py-4">
             {products.map((product) => (
-              <CardDemo
-                key={product.id}
-                id={product.id}
-                title={product.title}
-                description={product.description}
-                img={product.images[0].imagePath}
-                price={product.price}
-              />
+              <Link key={product.id} href={`/productDetails?id=${product.id}`} className="cursor-pointer">
+                <CardDemo
+                  id={product.id}
+                  title={product.title}
+                  description={product.description}
+                  img={product.images[0].imagePath}
+                  price={product.price}
+                />
+              </Link>
             ))}
           </div>
         )}
