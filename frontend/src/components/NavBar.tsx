@@ -1,7 +1,7 @@
 'use client';
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
@@ -20,12 +20,15 @@ type Notification = {
   createdAt: string;
   type: string;
   redirectUrl: string;
+  isRead: boolean;
 };
 
 export function NavBar({ placeholder }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session, status } = useSession();
+  const [query, setQuery] = useState('');
+  const linkRef = useRef<HTMLAnchorElement | null>(null);
 
   useEffect(() => {
     console.log('Session Data:', session);
@@ -83,17 +86,24 @@ export function NavBar({ placeholder }: Props) {
           <input
             type="text"
             placeholder={placeholder}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className={cn(
               'flex h-12 w-full rounded-md border border-input bg-background py-2 px-4 text-xl ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50',
               'pr-6',
             )}
           />
           <div className="absolute left-[92%] top-1/2 transform -translate-y-1/2">
-            <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
-              <Link href="/search">
+            <Link
+              href={{
+                pathname: '/search',
+                query: query ? { q: query } : {},
+              }}
+            >
+              <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
                 <Search className="text-muted-foreground" size={18} />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -68,8 +68,8 @@ export default function Home() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    //'use server';
     console.log('Form Submitted:', values);
+
 
     const formData = new FormData();
     formData.append('title', values.productName);
@@ -91,6 +91,7 @@ export default function Home() {
 
     if (result.success) {
       console.log(result.message);
+      window.location.href = '/';
     } else {
       console.error(result.message);
     }
