@@ -15,27 +15,23 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     <P> Page<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findByProductId(Long productId, Class<P> projection, Pageable pageable);
-
-    <P> Page<P> findByBidderId(UUID bidderId, Class<P> projection, Pageable pageable);
-
     <P> Page<P> findByBidderIdAndDeletedAtIsNull(UUID bidderId, Class<P> projection, Pageable pageable);
 
     Optional<Bid> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
     <P> Optional<P> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId, Class<P> projection);
 
-    @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id")
+    @Query("SELECT b.bidder.id FROM Bid b WHERE b.id = :id AND b.deletedAt IS NULL")
     Optional<UUID> findBidderIdById(Long id);
-
-    boolean existsByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
     boolean existsByProductIdAndStatusAndDeletedAtIsNull(Long productId, BidStatus status);
 
     long countByProductIdAndDeletedAtIsNull(Long productId);
 
-    long countByProductId(Long productId);
-
     Optional<Bid> findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(Long productId);
+
+    <P> Page<P> findByProductId(Long productId, Class<P> projection, Pageable pageable);
+
+    long countByProductId(Long productId);
 
 }

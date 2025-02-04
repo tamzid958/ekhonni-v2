@@ -69,7 +69,7 @@ public class BidController {
 
     @GetMapping("/bidder")
     public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForUser(Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForUser(BidderBidProjection.class, pageable));
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForAuthenticatedUser(BidderBidProjection.class, pageable));
     }
 
     @GetMapping("/product/{product_id}/highest")
@@ -116,7 +116,7 @@ public class BidController {
     public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAllForUserAdmin(
             @PathVariable("user_id") UUID userId, Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK,
-                bidService.getAllForUserAdmin(userId, AdminBidProjection.class, pageable));
+                bidService.getAllForUser(userId, AdminBidProjection.class, pageable));
     }
 
     @GetMapping("/admin/product/{product_id}")

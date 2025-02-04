@@ -10,7 +10,6 @@ import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.projection.bid.AdminBidProjection;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
@@ -36,14 +35,6 @@ public class BidService extends BaseService<Bid, Long> {
         this.bidRepository = bidRepository;
         this.userService = userService;
         this.productService = productService;
-    }
-
-    public <P> Page<P> getAllForProduct(Long productId, Class<P> projection, Pageable pageable) {
-        return bidRepository.findByProductIdAndDeletedAtIsNull(productId, projection, pageable);
-    }
-
-    public <P> Page<P> getAuditForProduct(Long productId, Class<P> projection, Pageable pageable) {
-        return bidRepository.findByProductId(productId, projection, pageable);
     }
 
     @Modifying
@@ -113,17 +104,25 @@ public class BidService extends BaseService<Bid, Long> {
         bid.setStatus(BidStatus.ACCEPTED);
     }
 
-    public Double getHighestBidAmount(Long productId) {
-        return bidRepository.findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(productId)
-                .map(Bid::getAmount)
-                .orElse(0.0);
-    }
-
     @Modifying
     @Transactional
     public void updateStatus(Long id, BidStatus status) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         bid.setStatus(status);
+    }
+
+    public <P> Page<P> getAllForProduct(Long productId, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductIdAndDeletedAtIsNull(productId, projection, pageable);
+    }
+
+    public <P> Page<P> getAuditForProduct(Long productId, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductId(productId, projection, pageable);
+    }
+
+    public Double getHighestBidAmount(Long productId) {
+        return bidRepository.findTopByProductIdAndDeletedAtIsNullOrderByAmountDesc(productId)
+                .map(Bid::getAmount)
+                .orElse(0.0);
     }
 
     public long getCountForProduct(Long productId) {
@@ -134,12 +133,18 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.countByProductId(productId);
     }
 
-    public <P> Page<P> getAllForUser(Class<P> projection, Pageable pageable) {
+    public <P> Page<P> getAllForAuthenticatedUser(Class<P> projection, Pageable pageable) {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
     }
 
-    public <P> Page<P> getAllForUserAdmin(UUID userId, Class<P> projection, Pageable pageable) {
+    public <P> Page<P> getAllForUser(UUID userId, Class<P> projection, Pageable pageable) {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(userId, projection, pageable);
+    }
+
+    public BuyerBidProjection getAuthenticatedUserBidForProduct(Long productId) {
+        return bidRepository.findByProductIdAndBidderIdAndDeletedAtIsNull(
+                productId, AuthUtil.getAuthenticatedUser().getId(), BuyerBidProjection.class)
+                .orElseThrow(() -> new BidNotFoundException("No bid submitted for this product"));
     }
 
     public UUID getBidderId(Long id) {
@@ -149,12 +154,6 @@ public class BidService extends BaseService<Bid, Long> {
     public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
-    }
-
-    public BuyerBidProjection getAuthenticatedUserBidForProduct(Long productId) {
-        return bidRepository.findByProductIdAndBidderIdAndDeletedAtIsNull(
-                productId, AuthUtil.getAuthenticatedUser().getId(), BuyerBidProjection.class)
-                .orElseThrow(() -> new BidNotFoundException("No bid submitted for this product"));
     }
 
 }
