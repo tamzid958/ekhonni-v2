@@ -90,7 +90,7 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id) && !@userService.isSuperAdmin(#userBlockDTO.id)")
     public ResponseEntity<ApiResponse<ResponseEntity<Object>>> delete(@PathVariable UUID id) {
         userService.softDelete(id);
         return ResponseUtil.createResponse(HTTPStatus.DELETED, ResponseEntity.noContent().build());
