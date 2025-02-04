@@ -57,7 +57,7 @@ public class AuthService {
                 userRole,
                 null,
                 null,
-                null,
+                false,
                 false
         );
 
@@ -85,7 +85,7 @@ public class AuthService {
             throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
         }
 
-        if (user.getBlockedAt() != null) {
+        if (user.isBlocked()) {
             throw new UserBlockedException("User Blocked by Authority");
         }
 

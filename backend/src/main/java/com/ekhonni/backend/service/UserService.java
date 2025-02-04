@@ -72,7 +72,7 @@ public class UserService extends BaseService<User, UUID> {
     }
 
     public boolean isActive(UUID id) {
-        return userRepository.existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(id);
+        return userRepository.existsByIdAndDeletedAtIsNullAndIsBlockedIsFalse(id);
     }
 
     public boolean isSuperAdmin(UUID id) {
@@ -82,7 +82,7 @@ public class UserService extends BaseService<User, UUID> {
     }
 
     public boolean isActive(String email) {
-        return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
+        return userRepository.existsByEmailAndDeletedAtIsNullAndIsBlockedIsFalse(email);
     }
 
     public AuthToken getNewAccessToken(RefreshTokenDTO refreshTokenDTO) {

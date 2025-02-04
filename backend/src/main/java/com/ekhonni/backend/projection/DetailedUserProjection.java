@@ -23,7 +23,7 @@ public interface DetailedUserProjection {
 
     boolean getVerified();
 
-    LocalDateTime getBlockedAt();
+    boolean getIsBlocked();
 
     LocalDateTime getCreatedAt();
 
