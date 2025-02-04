@@ -68,6 +68,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/block")
+    @PreAuthorize("!@userService.isSuperAdmin(#userId)")
     public void block(@Valid @RequestBody UserBlockDTO userBlockDTO) {
         adminService.block(userBlockDTO);
     }
