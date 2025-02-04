@@ -48,8 +48,9 @@ const items = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeButton, setActiveButton] = useState(""); // Track active button
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeButton, setActiveButton] = useState("");
+
 
   const handleClose = () => {
     setIsSidebarOpen(false);
@@ -70,6 +71,8 @@ export function AppSidebar() {
     setActiveButton(url);
     router.push(url);
   };
+
+
 
   return (
     <>
