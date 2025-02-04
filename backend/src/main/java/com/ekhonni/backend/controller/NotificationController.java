@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("/api/v2/user/{userId}/notifications")
+@RequestMapping("/api/v2")
 @AllArgsConstructor
 @Validated
 @Tag(name = "Notification", description = "APIs for managing user notifications")
@@ -33,7 +33,7 @@ public class NotificationController {
      * ---------User API---------
      */
 
-    @GetMapping
+    @GetMapping("/user/{userId}/notifications")
     @PreAuthorize("#userId == authentication.principal.id")
     public DeferredResult<ApiResponse<?>> get(
             @PathVariable UUID userId,
@@ -48,9 +48,18 @@ public class NotificationController {
      * ---------Admin API---------
      */
 
-    @PostMapping("/create")
+    @PostMapping("/admin/{userId}/notifications/create")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ApiResponse<?> create(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
         return notificationService.createForAllUser(notificationCreateRequestDTO);
+    }
+
+    @GetMapping("/admin/{userId}/notifications")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    public DeferredResult<ApiResponse<?>> get(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchTime,
+            Pageable pageable
+    ){
+        return notificationService.handleLongPolling(null, lastFetchTime, pageable);
     }
 }
