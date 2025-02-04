@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/
 import { cn } from '@/lib/utils';
 import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { useRouter } from 'next/navigation';
+
 
 type Props = {
   placeholder?: string;
@@ -26,6 +29,13 @@ export function NavBar({ placeholder }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session, status } = useSession();
+  const router = useRouter(); // Access the router
+
+
+  const handleLoginRedirect = () => {
+    router.push('/'); // Redirect to home page
+  };
+
 
   useEffect(() => {
     console.log('Session Data:', session);
@@ -81,8 +91,9 @@ export function NavBar({ placeholder }: Props) {
     setSidebarOpen(!isSidebarOpen);
   };
 
+
   return (
-    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
+    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40">
       <div className="font-bold ml-16 mt-2">
         <Link href="/">
           <img src="frame.png" alt="logo" className="h-[75px]" />
@@ -144,11 +155,34 @@ export function NavBar({ placeholder }: Props) {
           </SelectContent>
         </Select>
 
+
+
         <SidebarProvider>
-          <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
-            <User />
-          </Button>
-          {isSidebarOpen && <AppSidebar />}
+          {session ? (
+            <>
+              <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
+                <User />
+              </Button>
+              {isSidebarOpen && <AppSidebar />}
+            </>
+          ) : (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="custom" size="icon2" className="rounded-full">
+                  <User />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="p-2 text-center mt-0"
+                style={{ marginTop: '-40px' }}
+              >
+                <p className="mb-2">Log in first</p>
+                <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
+                  Go to Login
+                </Link>
+              </PopoverContent>
+            </Popover>
+          )}
         </SidebarProvider>
       </div>
     </nav>
