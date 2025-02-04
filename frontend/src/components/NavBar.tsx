@@ -93,7 +93,7 @@ export function NavBar({ placeholder }: Props) {
 
 
   return (
-    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
+    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40">
       <div className="font-bold ml-16 mt-2">
         <Link href="/">
           <img src="frame.png" alt="logo" className="h-[75px]" />
