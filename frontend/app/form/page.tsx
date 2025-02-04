@@ -82,7 +82,6 @@ export default function Home() {
     formData.append('conditionDetails', values.productConditionDescription);
     formData.append('category', values.category);
 
-    // Append images
     values.images.forEach((file) => {
       formData.append('images', file);
     });
