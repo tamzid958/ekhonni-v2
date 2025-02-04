@@ -1,5 +1,6 @@
 package com.ekhonni.backend.util;
 
+import com.ekhonni.backend.exception.InvalidVerificationTokenException;
 import com.ekhonni.backend.exception.RefreshTokenNotFoundException;
 import com.ekhonni.backend.model.RefreshToken;
 import com.ekhonni.backend.model.User;
@@ -120,6 +121,28 @@ public class TokenUtil {
             return Base64.getUrlEncoder().encodeToString(hmac);
         } catch (Exception e) {
             throw new RuntimeException("Error generating HMAC token", e);
+        }
+    }
+
+    public String encodeTokenWithEmail(String token, String email) {
+        String data = token + ":" + email;
+        return Base64.getUrlEncoder().encodeToString(data.getBytes());
+    }
+
+
+    public String[] extractTokenAndEmail(String token) {
+        try {
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
+            String decodedString = new String(decodedBytes);
+
+            String[] parts = decodedString.split(":");
+            if (parts.length != 2) {
+                throw new InvalidVerificationTokenException("Malformed token data");
+            }
+
+            return parts; // [token, email]
+        } catch (Exception e) {
+            throw new InvalidVerificationTokenException("Invalid token format");
         }
     }
 }

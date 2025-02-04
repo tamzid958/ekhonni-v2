@@ -53,8 +53,8 @@ public class PasswordResetService {
         }
 
         VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUser(user) != null) {
-            verificationToken = verificationTokenService.replace(user);
+        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
+            verificationToken = verificationTokenService.replace(user, VerificationTokenType.RESET_PASSWORD);
         } else {
             verificationToken = verificationTokenService.create(user, VerificationTokenType.RESET_PASSWORD);
         }
@@ -78,12 +78,11 @@ public class PasswordResetService {
                 url
         );
 
-        EmailTaskDTO emailTaskDTO = new EmailTaskDTO(
+        return new EmailTaskDTO(
                 email,
                 subject,
                 message
         );
-        return emailTaskDTO;
     }
 
 

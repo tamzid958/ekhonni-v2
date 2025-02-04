@@ -46,10 +46,22 @@ public class UserController {
         return userService.update(id, userUpdateDTO);
     }
 
+    @PostMapping("/{id}/request-change-email")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public String updateEmailRequest(
+            @PathVariable UUID id,
+            @Valid @RequestBody EmailDTO emailDTO
+    ){
+        return userService.updateEmailRequest(id, emailDTO);
+    }
+
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public String updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
-        return userService.updateEmail(id, emailDTO);
+    public ApiResponse<?> updateEmail(
+            @PathVariable("id") UUID userId,
+            @RequestParam("token") String token
+    ) {
+        return userService.updateEmail(token);
     }
 
     @PatchMapping("/{id}/change-password")

@@ -44,16 +44,16 @@ public class VerificationTokenService {
         return verificationTokenRepository.save(verificationToken);
     }
 
-    public VerificationToken replace(User user) {
+    public VerificationToken replace(User user, VerificationTokenType type) {
 
-        VerificationToken verificationToken = verificationTokenRepository.findByUser(user);
+        VerificationToken verificationToken = verificationTokenRepository.findByUserId(user.getId());
         String token = tokenUtil.generateVerificationToken();
 
         verificationToken.setToken(token);
+        verificationToken.setType(type);
         verificationToken.setExpiryDate(LocalDateTime.now().plusMinutes(5));
 
         return verificationTokenRepository.save(verificationToken);
 
     }
-
 }

@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.cloudinary.Api;
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.ProfileImageDTO;
@@ -7,7 +8,9 @@ import com.ekhonni.backend.dto.RefreshTokenDTO;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,25 +40,31 @@ public class UserService extends BaseService<User, UUID> {
     private final PasswordEncoder passwordEncoder;
     private final TokenUtil tokenUtil;
     private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
+    private final EmailChangeService emailChangeService;
 
     @Value("${profile.image.upload.dir}")
     String PROFILE_IMAGE_UPLOAD_DIR;
 
-    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil, CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
+    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenUtil tokenUtil, CloudinaryImageUploadUtil cloudinaryImageUploadUtil, EmailChangeService emailChangeService) {
         super(userRepository);
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.tokenUtil = tokenUtil;
         this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
+        this.emailChangeService = emailChangeService;
     }
 
+    public String updateEmailRequest(UUID id, EmailDTO emailDTO){
+        User user = userRepository.findById(id)
+                .orElseThrow( () -> new UserNotFoundException("User not Found"));
+        emailChangeService.request(user, emailDTO);
+        return "send";
+    }
 
     @Transactional
-    public String updateEmail(UUID id, EmailDTO emailDTO) {
-        // email to be verified
-        this.update(id, emailDTO);
-        return "Email Updated";
+    public ApiResponse<?> updateEmail(String token) {
+        return emailChangeService.verifyAndUpdate(token);
     }
 
     @Transactional

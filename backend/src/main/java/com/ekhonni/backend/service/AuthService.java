@@ -7,7 +7,6 @@ import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.RoleNotFoundException;
 import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.model.*;
-import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
@@ -64,7 +63,7 @@ public class AuthService {
         userRepository.save(user);
         accountService.create(user.getId());
 
-        emailVerificationService.send(user);
+        emailVerificationService.request(user);
 
         String responseMessage = "Sign up successful! Please verify your email to sign in";
         return new ApiResponse<>(HTTPStatus.OK, responseMessage);
