@@ -8,6 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { QuickBid } from '@/components/QuickBid';
 import { z } from "zod";
+import { useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
+import Link from 'next/link';
+
 
 
 interface ProductDetailsProps {
@@ -41,7 +45,9 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
 
+  const {data: session, status} = useSession();
   const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
+  const router = useRouter();
 
 
 
@@ -52,7 +58,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       onChange={onChange}
     />
   );
-
 
   const handleClick = () => {
     toast.success("Product has been added to cart!");
@@ -92,8 +97,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       currency: "BDT",
     };
 
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YWplcmluOUBnbWFpbC5jb20iLCJpYXQiOjE3MzgwNDcxNDIsImV4cCI6MTczODA1MzE0Mn0.KAYrxyjbYCi6bmslgb7jtDtBv348rZJ6QEdF043iSvc"; // Your Bearer token
-
+    const token = session.user.token;
+    console.log(token);
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
         method: "POST",
@@ -290,12 +295,11 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
-              <div className="pl-2 italic">{productDetails.seller.name.toUpperCase()}</div>
-
-              {/*<Link href={`/sellerPage?id=${productDetails.seller.id}`} className=" pl-2 italic hover:underline">*/}
-
-              {/*</Link>*/}
-
+              <Link href={`/sellerPage/${productDetails.seller.id}`}>
+                <div className="pl-2 italic cursor-pointer hover:underline">
+                  {productDetails.seller.name.toUpperCase()}
+                </div>
+              </Link>
             </div>
             <br />
             <div className="pt-2 font-bold inline-flex">

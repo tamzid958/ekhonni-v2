@@ -1,25 +1,86 @@
-// components/NavBar.tsx
 'use client';
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-
+import { NotificationGetter } from '@/components/Notification';
+import { useSession } from 'next-auth/react';
 
 type Props = {
   placeholder?: string;
 };
 
+type Notification = {
+  id: number;
+  message: string;
+  lastFetchTime?: string;
+  createdAt: string;
+  type: string;
+};
+
 export function NavBar({ placeholder }: Props) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    console.log('Session Data:', session);
+    if (!session) return;
+
+    const userId = session?.user?.id;
+    const userToken = session?.user?.token;
+
+    const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
+
+    async function fetchNotifications(lastFetchTime: string) {
+      console.log('Fetching notifications for user:', userId);
+      const result = await NotificationGetter(userId, userToken, lastFetchTime);
+      console.log('Notification API result:', result);
+
+      console.info('the last fetch time is->');
+      console.log(lastFetchTime);
+
+      if (result.success) {
+        if (Array.isArray(result.data)) {
+          // Filter out notifications with empty messages and duplicates
+          const newNotifications = result.data
+            .filter((item) => item.message.trim().length > 0) // Filter empty messages
+            .filter((item) => !notifications.some((notification) => notification.id === item.id)); // Filter duplicates
+
+          // Add new notifications to the state
+          setNotifications((prevNotifications) => {
+            const updatedNotifications = [...prevNotifications, ...newNotifications];
+
+            // Remove neighboring duplicates
+            const filteredNotifications = updatedNotifications.filter(
+              (notification, index, array) => {
+                if (index < array.length - 1 && notification.id === array[index + 1].id) {
+                  return false;
+                }
+                return true;
+              },
+            );
+
+            return filteredNotifications;
+          });
+        }
+        fetchNotifications(result.lastFetchTime);
+      } else {
+        console.error(result.message);
+      }
+    }
+
+    fetchNotifications(lastFetchTime);
+  }, [session]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+
   return (
     <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px]">
       <div className="font-bold ml-16 mt-2">
@@ -59,14 +120,26 @@ export function NavBar({ placeholder }: Props) {
             className="text-primary bg-brand-mid hover:bg-brand-light h-12 w-12 px-3 rounded-full focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
             <Bell className="w-5 h-5" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-brand-bright right-12 w-96">
             <SelectGroup>
-              <SelectLabel>Notifications</SelectLabel>
-              <SelectItem value="update">System Update Available</SelectItem>
-              <SelectItem value="message">New Message from John</SelectItem>
-              <SelectItem value="reminder">Meeting Reminder: 2 PM</SelectItem>
-              <SelectItem value="offer">Exclusive Offer: 20% Off</SelectItem>
-              <SelectItem value="alert">Security Alert: Unusual Login Attempt</SelectItem>
+              <p className="text-xm font-bold p-2 justify-center flex">NOTIFICATION</p>
+              <div
+                className="max-h-80 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
+                {notifications.length > 0 ? (
+                  notifications.map((item, index) => (
+                    <Link key={index} href="/">
+                      <div
+                        className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">
+                        {item.message}
+                        {item.id}
+                        {item.lastFetchTime}
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-center p-2">No new notifications</p>
+                )}
+              </div>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -78,8 +151,6 @@ export function NavBar({ placeholder }: Props) {
           {isSidebarOpen && <AppSidebar />}
         </SidebarProvider>
       </div>
-
-      {/* Trigger Sidebar */}
     </nav>
   );
 }

@@ -1,4 +1,4 @@
-// app/product/[id]/useRoles.tsx
+// app/product/[id]/bidsPage.tsx
 import React from 'react';
 import Image from 'next/image';
 import Loading from '@/components/Loading';

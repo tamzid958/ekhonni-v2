@@ -38,12 +38,12 @@ import {
 import { logout } from '../../app/auth/logout/page';
 
 const items = [
-  { title: "Edit Profile", url: "/editProfile", icon: Settings },
-  { title: "About", url: "/userAbout", icon: Info },
-  { title: "Inbox", url: "/inbox", icon: Inbox },
-  { title: "Feedback", url: "/feedback", icon: MessageCircle },
-  { title: "Watchlist", url: "/watchlist", icon: List },
-  { title: "Shop", url: "/shop", icon: ShoppingBag },
+  { title: "Edit Profile", url: "/userPage/editProfile", icon: Settings },
+  { title: "About", url: "/userPage/userAbout", icon: Info },
+  { title: "Inbox", url: "/userPage/inbox", icon: Inbox },
+  { title: "Feedback", url: "/userPage/feedback", icon: MessageCircle },
+  { title: "Watchlist", url: "/userPage/watchlist", icon: List },
+  { title: "Shop", url: "/userPage/shop", icon: ShoppingBag },
 ];
 
 export function AppSidebar() {
