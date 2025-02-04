@@ -49,9 +49,8 @@ const items = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeButton, setActiveButton] = useState("");
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeButton, setActiveButton] = useState(""); // Track active button
 
   const handleClose = () => {
     setIsSidebarOpen(false);
@@ -74,8 +73,6 @@ export function AppSidebar() {
     setActiveButton(url);
     router.push(url);
   };
-
-
 
   return (
     <>
@@ -101,7 +98,7 @@ export function AppSidebar() {
                       <SidebarMenuItem
                         className={`flex items-center space-x-2 pt-1 ${
                           pathname === item.url || activeButton === item.url
-                            ? 'bg-blue-500 text-white rounded w-full'
+                            ? 'bg-brand-dark text-white rounded w-full'
                             : 'text-black-700 hover:bg-black-200'
                         }`}
                       >
@@ -117,7 +114,7 @@ export function AppSidebar() {
                         <SidebarMenuItem
                           className={`flex items-center space-x-2 pt-1 ${
                             activeButton === "logout"
-                              ? 'bg-blue-500 text-white rounded w-full'
+                              ? 'bg-brand-dark text-white rounded w-full'
                               : 'text-black-700 hover:bg-black-200'
                           }`}
                         >
