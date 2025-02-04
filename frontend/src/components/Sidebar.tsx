@@ -1,16 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import {
-  X,
-  LogOut,
-  ShoppingBag,
-  Inbox,
-  Settings,
-  Info,
-  List,
-  MessageCircle,
-} from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ArrowBigDown, Inbox, Info, List, LogOut, MessageCircle, Settings, ShoppingBag, X } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
 import {
   AlertDialog,
@@ -32,16 +22,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import { logout } from '../../app/auth/logout/page';
 
 const items = [
-  { title: "Edit Profile", url: "/userPage/editProfile", icon: Settings },
-  { title: "About", url: "/userPage/userAbout", icon: Info },
-  { title: "Inbox", url: "/userPage/inbox", icon: Inbox },
-  { title: "Feedback", url: "/userPage/feedback", icon: MessageCircle },
-  { title: "Watchlist", url: "/userPage/watchlist", icon: List },
-  { title: "Shop", url: "/userPage/shop", icon: ShoppingBag },
+  { title: 'Edit Profile', url: '/userPage/editProfile', icon: Settings },
+  { title: 'About', url: '/userPage/userAbout', icon: Info },
+  { title: 'Inbox', url: '/userPage/inbox', icon: Inbox },
+  { title: 'Feedback', url: '/userPage/feedback', icon: MessageCircle },
+  { title: 'Watchlist', url: '/userPage/watchlist', icon: List },
+  { title: 'Shop', url: '/userPage/shop', icon: ShoppingBag },
+  { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
 ];
 
 export function AppSidebar() {
@@ -63,7 +54,7 @@ export function AppSidebar() {
   };
 
   const handleLogout = () => {
-    console.log("Logging out...");
+    console.log('Logging out...');
     setIsSidebarOpen(false);
     setTimeout(() => {
       logout();
@@ -113,10 +104,10 @@ export function AppSidebar() {
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <SidebarMenuButton onClick={() => setActiveButton("logout")}>
+                      <SidebarMenuButton onClick={() => setActiveButton('logout')}>
                         <SidebarMenuItem
                           className={`flex items-center space-x-2 pt-1 ${
-                            activeButton === "logout"
+                            activeButton === 'logout'
                               ? 'bg-brand-dark text-white rounded w-full'
                               : 'text-black-700 hover:bg-black-200'
                           }`}
