@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 export interface BidData {
   createdAt: string;
@@ -22,9 +23,8 @@ export interface BidData {
   currency: string;
 }
 
-async function handleApprove(bidId: number) {
+async function handleApprove(bidId: number, token: string) {
   try {
-    const token = 'token'; // Get token from session
     const response = await fetch(`http://localhost:8080/api/v2/bid/${bidId}/accept`, {
       method: 'PATCH',
       headers: {
@@ -42,26 +42,6 @@ async function handleApprove(bidId: number) {
     console.error(error);
   }
 }
-
-async function handleDelete(bidId: number) {
-  try {
-    const response = await fetch('/api/deleteBid', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ bidId }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete bid');
-    }
-    console.log('Bid deleted successfully');
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 
 const columnHelper = createColumnHelper<BidData>();
 
@@ -93,7 +73,10 @@ export const columns = [
     header: 'Actions',
     cell: (info) => {
       const bidId = info.row.original.id;
+      const { data: session } = useSession();
+      const token = session?.user?.token;
       console.log('Bid ID:', bidId);
+      console.log('Token:', token);
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -103,13 +86,10 @@ export const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => handleApprove(bidId)}>
+            <DropdownMenuItem onClick={() => handleApprove(bidId, token)}>
               Approve
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(bidId)}>
-              Delete
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
