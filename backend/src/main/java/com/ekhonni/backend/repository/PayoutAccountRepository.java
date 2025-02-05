@@ -1,5 +1,7 @@
 package com.ekhonni.backend.repository;
 
+import com.ekhonni.backend.enums.PayoutCategory;
+import com.ekhonni.backend.enums.PayoutMethod;
 import com.ekhonni.backend.model.PayoutAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,5 +15,9 @@ import java.util.UUID;
 public interface PayoutAccountRepository extends BaseRepository<PayoutAccount, Long> {
 
     <P> Page<P> findByAccountIdAndDeletedAtIsNull(Long accountId, Class<P> projection, Pageable pageable);
+
+    boolean existsByAccountIdAndCategoryAndMethodAndPayoutAccountNumber(
+            Long accountId, PayoutCategory category,
+            PayoutMethod method, String payoutAccountNumber);
 
 }

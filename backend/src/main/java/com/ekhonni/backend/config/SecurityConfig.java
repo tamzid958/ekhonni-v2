@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(HttpMethod.POST, AUTH_URLS).permitAll()
-                                .requestMatchers(HttpMethod.GET, PUBLIC_URLS).permitAll()
+                                .requestMatchers(PUBLIC_URLS).permitAll()
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling

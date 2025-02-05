@@ -22,11 +22,9 @@ public record PayoutAccountCreateDTO(
         @NotBlank(message = "Account number cannot be blank")
         String accountNumber,
 
-        String bankName,
+        String bankName ,
         String branchName,
         String accountHolderName,
         String routingNumber
 
-) {
-
-}
+) {}

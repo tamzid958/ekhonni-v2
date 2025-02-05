@@ -65,11 +65,10 @@ public class RefundController {
         return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 
-    @PatchMapping("/reject/{id}")
+    @PatchMapping("/reject")
     public ResponseEntity<ApiResponse<Void>> reject(@RequestBody List<Long> ids) {
         refundService.softDelete(ids);
         return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
-
 
 }
