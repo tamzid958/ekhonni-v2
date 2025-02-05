@@ -62,6 +62,8 @@ spring:
       urls: ${PUBLIC_URLS}
     email-verification-url: ${EMAIL_VERIFICATION_URL}
     password-reset-url: ${PASSWORD_RESET_URL}
+    auth:
+      urls: ${AUTH_URLS}
 
   mail:
     host: ${SMTP_MAIL_HOST}
