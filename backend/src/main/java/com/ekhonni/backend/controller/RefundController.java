@@ -7,11 +7,15 @@ import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.RefundService;
 import com.ekhonni.backend.service.TransactionService;
+import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Author: Asif Iqbal
@@ -24,8 +28,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Refund", description = "Manage refund operations")
 public class RefundController {
 
-    RefundService refundService;
-    TransactionService transactionService;
+    private final RefundService refundService;
+    private final TransactionService transactionService;
 
     /**
      * ===============================================
@@ -35,11 +39,11 @@ public class RefundController {
 
     @PostMapping("/{transaction_id}")
     @PreAuthorize("@transactionService.getBuyerId(transactionId) == authentication.principal.id")
-    public ApiResponse<?> create(
+    public ResponseEntity<ApiResponse<Void>> create(
             @PathVariable("transaction_id") Long transactionId,
             @Valid @RequestBody RefundRequestDTO refundRequestDTO) {
         refundService.create(transactionId, refundRequestDTO);
-        return new ApiResponse<>(HTTPStatus.CREATED, null);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 
 
@@ -50,10 +54,21 @@ public class RefundController {
      */
 
     @PatchMapping("/approve/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
-    public ApiResponse<?> approve(@PathVariable Long id, @Valid @RequestBody RefundApproveDTO refundApproveDTO) {
+    public ResponseEntity<ApiResponse<Void>> approve(@PathVariable Long id, @Valid @RequestBody RefundApproveDTO refundApproveDTO) {
         refundService.approve(id, refundApproveDTO);
-        return new ApiResponse<>(HTTPStatus.CREATED, null);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
+    }
+
+    @PatchMapping("/reject/{id}")
+    public ResponseEntity<ApiResponse<Void>> reject(@PathVariable Long id) {
+        refundService.softDelete(id);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
+    }
+
+    @PatchMapping("/reject/{id}")
+    public ResponseEntity<ApiResponse<Void>> reject(@RequestBody List<Long> ids) {
+        refundService.softDelete(ids);
+        return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 
 

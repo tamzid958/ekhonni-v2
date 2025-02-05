@@ -17,6 +17,7 @@ import com.ekhonni.backend.payment.sslcommerz.refund.RefundResponse;
 import com.ekhonni.backend.repository.RefundRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -46,8 +47,7 @@ public class RefundService extends BaseService<Refund, Long> {
     private final SSLCommerzConfig sslCommerzConfig;
     private final RestClient restClient;
 
-    @Value("${refund.batch-size}")
-    private int batchSize;
+    private final int BATCH_SIZE = 50;
 
     public RefundService(RefundRepository refundRepository,
                          TransactionService transactionService,
@@ -118,7 +118,7 @@ public class RefundService extends BaseService<Refund, Long> {
                 .and(Sort.by("id").ascending());
 
         while (hasMorePages) {
-            PageRequest pageRequest = PageRequest.of(pageNumber, batchSize, sort);
+            PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Refund> refundPage = refundRepository.findByStatusIn(toBeProcessedStatuses, pageRequest);
             processBatch(refundPage.getContent());
             hasMorePages = refundPage.hasNext();
@@ -173,6 +173,7 @@ public class RefundService extends BaseService<Refund, Long> {
                 .body(RefundResponse.class);
     }
 
+//    @Scheduled(cron = "0 0 0 * * *")  // Runs at 12 AM (midnight) every day
     @Scheduled(fixedDelayString = "${refund.query-interval}")
     public void queryRefund() {
         log.info("Starting refund query");
@@ -187,7 +188,7 @@ public class RefundService extends BaseService<Refund, Long> {
                 .and(Sort.by("id").ascending());
 
         while (hasMorePages) {
-            PageRequest pageRequest = PageRequest.of(pageNumber, batchSize, sort);
+            PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Refund> refundPage = refundRepository.findByStatusIn(toBeQueriedStatuses, pageRequest);
             processBatch(refundPage.getContent());
             hasMorePages = refundPage.hasNext();

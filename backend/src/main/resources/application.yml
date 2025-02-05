@@ -120,6 +120,9 @@ refund:
   query-interval: ${REFUND_QUERY_INTERVAL:1800000}
   batch-size: ${REFUND_BATCH_SIZE}
 
+notification:
+  product-redirect-url: ${PRODUCT_REDIRECT_URL}
+
 rabbitmq-custom:
   email-configuration:
     queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
