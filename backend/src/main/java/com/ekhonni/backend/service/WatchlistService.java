@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,5 +76,19 @@ public class WatchlistService {
         
         watchlistRepository.deleteByUserIdAndProductIdIn(user.getId(), productIds);
         return "Removed selected products from the watchlist";
+    }
+
+
+
+    @Transactional
+    public void removeProductFromAllUser(Long productId) {
+        List<Long>productIds = new ArrayList<>();
+        productIds.add(productId);
+        Long foundCount = productRepository.countByIdInAndStatus(productIds, ProductStatus.SOLD);
+        if (foundCount != productIds.size()) {
+            throw new ProductNotFoundException("Product Not Found");
+        }
+        watchlistRepository.deleteByProductIdIn(productIds);
+
     }
 }
