@@ -36,10 +36,12 @@ interface ProductDetailsProps {
   };
   biddingCount: number | null;
   biddingDetails: Array<{ id: number; productId: number; amount: number; currency: string; status: string; createdAt: string | null }>;
+  sellerRating: number;
+
 }
 
 
-export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails }: ProductDetailsProps) {
+export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating }: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState("");
   const [error, setError] = useState("");
@@ -222,7 +224,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                         START BIDDING
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="w-[460px] h-[450px] bg-white border border-gray-300 rounded-lg p-6">
+                    <DialogContent className="w-[460px] bg-white border border-gray-300 rounded-lg p-6">
                       <DialogHeader>
                         <DialogTitle className="text-xl font-bold mb-2">Place Your Bid</DialogTitle>
                         <div className="text-gray-700">
@@ -315,7 +317,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
               <div className="w-40">SELLER RATING:</div>
               <div className="flex space-x-1 text-yellow-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} />
+                  <Star key={i} className={i < sellerRating ? "text-yellow-500" : "text-gray-300"} />
                 ))}
               </div>
             </div>

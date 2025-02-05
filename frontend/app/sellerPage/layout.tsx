@@ -25,8 +25,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Extract seller ID from the pathname
-  const sellerId = pathname.split('/')[2]; // Extracts the dynamic [id] from '/sellerPage/[id]/...'
+  const sellerId = pathname.split('/')[2];
 
   useEffect(() => {
     if (sellerId) {
