@@ -7,7 +7,6 @@ import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import BidsShowPage from './Components/bidsView';
 
 interface ProductData {
   id: number;
@@ -78,12 +77,12 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
 
         {/*Button Group*/}
         <div className="flex mb-6 space-x-4">
-          {['ALL', 'APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
+          {['APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
             <button
               key={status}
               onClick={() => setFilter(status)}
               className={`text-sm font-medium pb-2 ${
-                products.length === 0 || filter === status ? 'border-b-2 border-blue-500' : ' text-gray-700 hover:bg-gray-100'
+                filter === status ? 'border-b-2 border-blue-500' : ' text-gray-700 hover:bg-gray-100'
               }`}
             >
               {status.replace('_', ' ')}
@@ -122,7 +121,7 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="w-full flex justify-center items-center">
-                      {BidsShowPage(product.id)}
+                      {/*{BidsShowPage(product.id)}*/}
                     </DialogContent>
                   </Dialog>
                 </div>
