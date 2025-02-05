@@ -32,11 +32,12 @@ public class ProductAdminService {
 
     ProductRepository productRepository;
     CategoryService categoryService;
+    NotificationService notificationService;
 
-    public ProductAdminService(ProductRepository productRepository, CategoryService categoryService) {
-
+    public ProductAdminService(ProductRepository productRepository, CategoryService categoryService, NotificationService notificationService) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.notificationService = notificationService;
     }
 
 
@@ -66,6 +67,7 @@ public class ProductAdminService {
 
         // should we work with projection or product?
         // notify seller
+        notificationService.createForProductAccepted(product);
 
         return "Product approved successfully";
     }
@@ -85,6 +87,7 @@ public class ProductAdminService {
 
         // should we work with projection or product?
         // notify seller
+        notificationService.createForProductRejected(product);
 
         return "Post declined";
 
@@ -103,6 +106,7 @@ public class ProductAdminService {
 
         // should we work with projection or product
         // notify seller.
+        notificationService.createForProductDeleted(product);
 
         return "Post Archived";
     }
@@ -116,13 +120,13 @@ public class ProductAdminService {
 
 
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(),pageable);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 }

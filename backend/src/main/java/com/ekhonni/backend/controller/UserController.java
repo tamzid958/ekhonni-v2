@@ -88,7 +88,6 @@ public class UserController {
         return ResponseUtil.createResponse(HTTPStatus.OK, userService.upload(id, profileImageDTO));
     }
 
-
     @DeleteMapping("/{id}")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id) && !@userService.isSuperAdmin(#userBlockDTO.id)")
     public ResponseEntity<ApiResponse<ResponseEntity<Object>>> delete(@PathVariable UUID id) {

@@ -32,11 +32,13 @@ public class ReviewService extends BaseService<Review, Long> {
 
     private final ReviewRepository reviewRepository;
     private final BidService bidService;
+    private final NotificationService notificationService;
 
-    public ReviewService(ReviewRepository reviewRepository, BidService bidService) {
+    public ReviewService(ReviewRepository reviewRepository, BidService bidService, NotificationService notificationService) {
         super(reviewRepository);
         this.reviewRepository = reviewRepository;
         this.bidService = bidService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -48,6 +50,7 @@ public class ReviewService extends BaseService<Review, Long> {
         }
         Review review = new Review(bid, ReviewType.SELLER, dto.rating(), dto.description());
         reviewRepository.save(review);
+        notificationService.createForSellerReview(bid);
     }
 
     @Transactional
@@ -59,6 +62,7 @@ public class ReviewService extends BaseService<Review, Long> {
         }
         Review review = new Review(bid, ReviewType.BUYER, dto.rating(), dto.description());
         reviewRepository.save(review);
+        notificationService.createForBuyerReview(bid);
     }
 
     @Modifying

@@ -6,6 +6,7 @@ import com.ekhonni.backend.service.NotificationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("/api/v2/user/{userId}/notifications")
+@RequestMapping("/api/v2")
 @AllArgsConstructor
 @Validated
 @Tag(name = "Notification", description = "APIs for managing user notifications")
@@ -32,21 +33,14 @@ public class NotificationController {
      * ---------User API---------
      */
 
-    @GetMapping
+    @GetMapping("/user/{userId}/notifications")
     @PreAuthorize("#userId == authentication.principal.id")
     public DeferredResult<ApiResponse<?>> get(
             @PathVariable UUID userId,
-            @RequestParam(required = false) LocalDateTime lastFetchTime,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchTime,
             Pageable pageable
     ) {
         return notificationService.handleLongPolling(userId, lastFetchTime, pageable);
-    }
-
-
-    @GetMapping("/{notificationId}/redirect")
-    @PreAuthorize("#userId == authentication.principal.id")
-    public ApiResponse<?> redirect(@PathVariable UUID userId, @PathVariable Long notificationId) {
-        return notificationService.redirect(notificationId);
     }
 
 
@@ -54,9 +48,18 @@ public class NotificationController {
      * ---------Admin API---------
      */
 
-    @PostMapping("/create")
+    @PostMapping("/admin/{userId}/notifications/create")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ApiResponse<?> create(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
         return notificationService.createForAllUser(notificationCreateRequestDTO);
+    }
+
+    @GetMapping("/admin/{userId}/notifications")
+    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
+    public DeferredResult<ApiResponse<?>> get(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastFetchTime,
+            Pageable pageable
+    ){
+        return notificationService.handleLongPolling(null, lastFetchTime, pageable);
     }
 }

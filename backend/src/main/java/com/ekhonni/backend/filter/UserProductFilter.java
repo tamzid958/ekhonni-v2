@@ -16,6 +16,6 @@ import java.util.UUID;
 @Setter
 @Getter
 public class UserProductFilter extends ProductFilter {
-    private final ProductStatus productStatus = ProductStatus.APPROVED;
+    private  ProductStatus status;
     private UUID userId;
 }

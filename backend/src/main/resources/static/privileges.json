@@ -35,30 +35,8 @@
     "httpMethod": "GET",
     "endpoint": "/api/v2/account"
   },
-  {
-    "name": "Get Products",
-    "description": "Allows viewing all products",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/product"
-  },
-  {
-    "name": "Create Product",
-    "description": "Allows adding new products",
-    "httpMethod": "POST",
-    "endpoint": "/products"
-  },
-  {
-    "name": "Get Categories",
-    "description": "Allows viewing categories",
-    "httpMethod": "GET",
-    "endpoint": "/category"
-  },
-  {
-    "name": "Create Category",
-    "description": "Allows adding new categories",
-    "httpMethod": "POST",
-    "endpoint": "/category"
-  },
+
+
   {
     "name": "Update User Profile",
     "description": "Allows updating user profile information",
@@ -269,18 +247,7 @@
     "httpMethod": "POST",
     "endpoint": "/api/v2/admin/user/unblock"
   },
-  {
-    "name": "Admin Product Approve",
-    "description": "Admin approval of products",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/product/{id}/approve"
-  },
-  {
-    "name": "Admin Product Decline",
-    "description": "Admin declining of products",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/product/{id}/decline"
-  },
+
   {
     "name": "Retrieve API Documentation",
     "description": "Available API endpoints Documented",
@@ -298,6 +265,12 @@
     "description": "Get all the notifications of a specific user",
     "httpMethod": "GET",
     "endpoint": "/api/v2/user/{id}/notifications"
+  },
+  {
+    "name": "Admin create notifications",
+    "description": "Create notification for specific or all users",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/notifications/create"
   },
   {
     "name": "Get Bid Details",
@@ -712,5 +685,155 @@
     "description": "Allows user to initiate a withdrawal request",
     "httpMethod": "POST",
     "endpoint": "/api/v2/payout"
+  },
+  {
+    "name": "Create Product",
+    "description": "Creates a new product using the provided details, including images",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/product"
+  },
+  {
+    "name": "Get Product",
+    "description": "Retrieves a product by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/{id}"
+  },
+  {
+    "name": "Update Product",
+    "description": "Updates a product using the provided details",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/product/{id}"
+  },
+  {
+    "name": "Delete Product",
+    "description": "Deletes a product (soft delete)",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/product/{id}"
+  },
+  {
+    "name": "Filter Products",
+    "description": "Retrieves filtered products based on given criteria",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/filter"
+  },
+  {
+    "name": "Filter User Products",
+    "description": "Retrieves filtered products for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/user/filter"
+  },
+  {
+    "name": "Get Product",
+    "description": "Retrieves a product by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/product/{id}"
+  },
+  {
+    "name": "Approve Product",
+    "description": "Approves a pending product",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/admin/product/pending/{id}/approve"
+  },
+  {
+    "name": "Decline Product",
+    "description": "Declines a pending product",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/admin/product/pending/{id}/decline"
+  },
+  {
+    "name": "Delete Product",
+    "description": "Deletes an approved product",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/admin/product/approved/{id}"
+  },
+  {
+    "name": "Filter Products for Admin",
+    "description": "Retrieves filtered products for the admin",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/product/filter"
+  },
+  {
+    "name": "Create Category",
+    "description": "Creates a new category",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/category"
+  },
+  {
+    "name": "Get All Categories",
+    "description": "Retrieves all categories and subcategories",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/category/all"
+  },
+  {
+    "name": "Get Subcategories",
+    "description": "Retrieves subcategories of a specific category",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/category/{name}/subcategories"
+  },
+  {
+    "name": "Delete Category",
+    "description": "Deletes a category by name",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/admin/category/{name}"
+  },
+  {
+    "name": "Update Category",
+    "description": "Updates an existing category",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/admin/category/{name}"
+  },
+  {
+    "name": "Get Category Tree",
+    "description": "Retrieves the category tree structure",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/category/tree"
+  },
+  {
+    "name": "Get Subcategories",
+    "description": "Retrieves subcategories of a category by its name",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/category/{name}/subcategories"
+  },
+  {
+    "name": "Get User Category Tree",
+    "description": "Retrieves the category tree for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/category/tree/{user_id}"
+  },
+  {
+    "name": "Get Categories by User",
+    "description": "Retrieves root categories for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/category/all/{user_id}"
+  },
+  {
+    "name": "Get All Categories",
+    "description": "Retrieves all categories and subcategories",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/category/all"
+  },
+  {
+    "name": "Get Category Tree",
+    "description": "Retrieves the complete category tree",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/category/tree"
+  },
+  {
+    "name": "Add Product to Watchlist",
+    "description": "Adds a product to the user's watchlist",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/watchlist"
+  },
+  {
+    "name": "Get All Watchlist Products",
+    "description": "Retrieves all products in the user's watchlist",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/watchlist"
+  },
+  {
+    "name": "Remove Products from Watchlist",
+    "description": "Removes multiple products from the user's watchlist",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/user/watchlist"
   }
 ]

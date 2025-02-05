@@ -40,8 +40,17 @@ public class CommonProductSpecificationBuilder {
         if (filter.getSearchTerm() != null) {
             spec = spec.and(ProductSpecification.hasTerm(filter.getSearchTerm()));
         }
-        if (filter.getSortBy() != null) {
-            spec = spec.and(ProductSpecification.applySorting(filter.getSortBy()));
+        if(filter.getDivision() != null){
+            spec = spec.and(ProductSpecification.belongsToDivision(filter.getDivision()));
+        }
+//        if (filter.getSortBy() != null) {
+//            System.out.println("sort");
+//            spec = spec.and(ProductSpecification.applySorting(filter.getSortBy()));
+//            hasConditions = true;
+//        }
+
+        if (filter.getStatus() != null) {
+            spec = spec.and(ProductSpecification.hasStatus(filter.getStatus()));
             hasConditions = true;
         }
 

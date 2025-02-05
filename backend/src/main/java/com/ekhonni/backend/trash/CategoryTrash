@@ -71,7 +71,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     public List<CategorySubCategoryDTO> getAllCategories() {
         List<Category> rootCat = categoryRepository.findByParentCategoryIsNullAndActive(true);
-        System.out.println(rootCat);
+
         return categoryRepository.findByParentCategoryIsNullAndActive(true).stream()
                 .map(rootCategory -> {
                     List<String> subCategoryNames = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true).stream()
