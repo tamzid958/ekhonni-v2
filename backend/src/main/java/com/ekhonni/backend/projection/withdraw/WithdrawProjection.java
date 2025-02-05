@@ -14,5 +14,5 @@ public interface WithdrawProjection {
     String getBankTransactionId();
     Double getAmount();
     String getCurrency();
-    LocalDateTime getUpdatedAt();
+    LocalDateTime getProcessedAt();
 }

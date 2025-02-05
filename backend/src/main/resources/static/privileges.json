@@ -706,5 +706,11 @@
     "description": "Fetches all withdrawals within a specified date range (Admin only)",
     "httpMethod": "GET",
     "endpoint": "/api/v2/withdraw/date-range"
+  },
+  {
+    "name": "Initiate Payout",
+    "description": "Allows user to initiate a withdrawal request",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payout"
   }
 ]

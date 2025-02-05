@@ -62,7 +62,7 @@ public abstract class BaseService<T, ID> {
 
     /**
      * =========================
-     * Soft deleted
+     *        Soft deleted
      * =========================
      */
     public T getDeleted(ID id) {

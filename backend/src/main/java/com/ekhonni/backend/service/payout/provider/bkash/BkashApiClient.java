@@ -1,7 +1,6 @@
 package com.ekhonni.backend.service.payout.provider.bkash;
 
 import com.ekhonni.backend.config.payout.BkashConfig;
-import com.ekhonni.backend.dto.withdraw.WithdrawRequest;
 import com.ekhonni.backend.exception.payout.PayoutProcessingException;
 import com.ekhonni.backend.service.payout.provider.bkash.request.BkashPayoutRequest;
 import com.ekhonni.backend.service.payout.provider.bkash.response.BkashPayoutResponse;
@@ -30,7 +29,6 @@ public class BkashApiClient {
 
     private final BkashConfig bkashConfig;
     private final RestClient restClient;
-
 
     public TokenResponse grantToken() throws PayoutProcessingException {
         String url = bkashConfig.getGrantTokenUrl();
@@ -121,7 +119,7 @@ public class BkashApiClient {
                 throw new PayoutProcessingException("Error processing withdraw request");
             }
 
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             log.error("Error sending money via bKash: {}", e.getMessage());
             throw new PayoutProcessingException("Error processing withdraw request");
         }

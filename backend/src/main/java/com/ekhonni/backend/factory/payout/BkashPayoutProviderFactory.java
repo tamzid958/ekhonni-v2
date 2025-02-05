@@ -1,4 +1,5 @@
 package com.ekhonni.backend.factory.payout;
+
 import com.ekhonni.backend.enums.PayoutCategory;
 import com.ekhonni.backend.enums.PayoutMethod;
 import com.ekhonni.backend.service.payout.provider.bkash.BkashPayoutProvider;
@@ -32,4 +33,5 @@ public class BkashPayoutProviderFactory implements PayoutProviderFactory {
     public PayoutProvider createPayoutProvider() {
         return bkashPayoutProvider;
     }
+
 }

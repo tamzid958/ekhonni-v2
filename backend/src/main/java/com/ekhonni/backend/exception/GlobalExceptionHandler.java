@@ -3,6 +3,8 @@ package com.ekhonni.backend.exception;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.bid.*;
 import com.ekhonni.backend.exception.payment.*;
+import com.ekhonni.backend.exception.payout.UnsupportedPayoutMethodException;
+import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
 import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
 import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.review.InvalidReviewTypeException;
@@ -166,7 +168,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     * Payment Exceptions
+     *                      Payment Exceptions
      * =================================================================
      */
     @ExceptionHandler(InvalidTransactionException.class)
@@ -204,6 +206,24 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
         return ResponseEntity.status(404).body(response);
     }
+
+    /**
+     * =================================================================
+     *                      Payment Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(PayoutAccountNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePayoutAccountNotFoundException(PayoutAccountNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(UnsupportedPayoutMethodException.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedPayoutMethodException(UnsupportedPayoutMethodException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
 
     /**
      * =================================================================

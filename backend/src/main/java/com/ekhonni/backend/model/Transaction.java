@@ -28,14 +28,14 @@ public class Transaction extends BaseEntity<Long> {
     @Column(nullable = false)
     private TransactionStatus status;
 
-    private double storeAmount;
-    private double bdtAmount;
+    private Double storeAmount;
+    private Double bdtAmount;
     private String sessionKey;
     private String validationId;
     private String bankTransactionId;
     private LocalDateTime processedAt;
 
-    public double getAmount() {
+    public Double getAmount() {
         return bid.getAmount();
     }
 

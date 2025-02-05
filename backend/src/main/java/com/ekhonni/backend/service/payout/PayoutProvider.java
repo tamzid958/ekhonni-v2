@@ -1,7 +1,7 @@
 package com.ekhonni.backend.service.payout;
 
-import com.ekhonni.backend.dto.withdraw.WithdrawRequest;
 import com.ekhonni.backend.exception.payout.PayoutProcessingException;
+import com.ekhonni.backend.model.Withdraw;
 
 /**
  * Author: Asif Iqbal
@@ -9,5 +9,5 @@ import com.ekhonni.backend.exception.payout.PayoutProcessingException;
  */
 
 public interface PayoutProvider {
-    void processPayout(WithdrawRequest withdrawRequest) throws PayoutProcessingException;
+    void processPayout(Withdraw withdraw) throws PayoutProcessingException;
 }

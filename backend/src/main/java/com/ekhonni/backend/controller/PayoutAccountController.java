@@ -46,8 +46,9 @@ public class PayoutAccountController {
         return ResponseUtil.createResponse(HTTPStatus.OK, payoutAccountService.get(id, PayoutAccountProjection.class));
     }
 
-    public ResponseEntity<ApiResponse<Page<PayoutAccountProjection>>> getAllForUser(Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, payoutAccountService.getAllForUser(pageable));
+    @GetMapping("/user")
+    public ResponseEntity<ApiResponse<Page<PayoutAccountProjection>>> getAllForAuthenticatedUser(Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, payoutAccountService.getAllForAuthenticatedUser(pageable));
     }
 
     @DeleteMapping("/{id}")

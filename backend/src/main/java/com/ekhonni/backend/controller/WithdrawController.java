@@ -1,9 +1,7 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.enums.HTTPStatus;
-import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.enums.WithdrawStatus;
-import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.projection.withdraw.WithdrawProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.WithdrawService;

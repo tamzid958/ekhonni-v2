@@ -40,7 +40,7 @@ public class PayoutAccountService extends BaseService<PayoutAccount, Long> {
         payoutAccountRepository.save(payoutAccount);
     }
 
-    public Page<PayoutAccountProjection> getAllForUser(Pageable pageable) {
+    public Page<PayoutAccountProjection> getAllForAuthenticatedUser(Pageable pageable) {
         Long accountId = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId()).getId();
         return payoutAccountRepository.findByAccountIdAndDeletedAtIsNull(accountId, PayoutAccountProjection.class, pageable);
     }

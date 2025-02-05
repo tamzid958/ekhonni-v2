@@ -44,9 +44,8 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
     }
 
     @Transactional
-    public void create(WithdrawRequest withdrawRequest) {
+    public Withdraw create(WithdrawRequest withdrawRequest) {
         Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
-
         validateWithdrawalAmount(account, withdrawRequest.amount());
 
         PayoutAccount payoutAccount = payoutAccountService.get(withdrawRequest.payoutAccountId())
@@ -58,7 +57,7 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
         withdraw.setAmount(withdrawRequest.amount());
         withdraw.setStatus(WithdrawStatus.PENDING);
 
-        withdrawRepository.save(withdraw);
+        return withdrawRepository.save(withdraw);
     }
 
     private void validateWithdrawalAmount(Account account, double withdrawAmount) {

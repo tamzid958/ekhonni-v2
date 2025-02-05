@@ -29,12 +29,12 @@ public class Withdraw extends BaseEntity<Long> {
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "payout_account_id", nullable = false)
+    @JoinColumn(name = "payout_account_id")
     private PayoutAccount payoutAccount;
 
     @Min(value = 50)
     @Column(nullable = false)
-    private double amount;
+    private Double amount;
     private String currency = "BDT";
 
     @NotNull
@@ -43,7 +43,7 @@ public class Withdraw extends BaseEntity<Long> {
 
     private Double bdtAmount;
 
-    private Double payoutFee;
+    private Double payoutFee = 0.0;
     private String bankTransactionId;
     private LocalDateTime processedAt;
 

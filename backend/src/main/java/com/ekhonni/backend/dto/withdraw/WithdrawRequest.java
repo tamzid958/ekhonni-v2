@@ -2,7 +2,6 @@ package com.ekhonni.backend.dto.withdraw;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 /**
  * Author: Asif Iqbal
