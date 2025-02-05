@@ -32,7 +32,7 @@ export async function NotificationGetter(userID: string, userToken: string, last
       success: true,
       message: 'Notification fetched successfully!',
       data: data.data,
-      lastFetchTime: new Date(Date.now()).toISOString().split('.')[0], // current time + 1 ms
+      lastFetchTime: new Date(Date.now() + 100).toISOString().split('.')[0],
     };
   } catch (error) {
     console.error('Error fetching notification:', error);
