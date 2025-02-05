@@ -52,12 +52,10 @@ public class PasswordResetService {
             throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
         }
 
-        VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
-            verificationToken = verificationTokenService.replace(user, VerificationTokenType.RESET_PASSWORD);
-        } else {
-            verificationToken = verificationTokenService.create(user, VerificationTokenType.RESET_PASSWORD);
-        }
+        VerificationToken verificationToken = verificationTokenService.generate(
+                user,
+                VerificationTokenType.RESET_PASSWORD
+        );
 
         EmailTaskDTO emailTaskDTO = getEmailTaskDTO(email, verificationToken);
         emailProducerService.send(emailTaskDTO);

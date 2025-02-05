@@ -43,12 +43,10 @@ public class EmailVerificationService {
 
     public void request(User user) {
 
-        VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
-            verificationToken = verificationTokenService.replace(user, VerificationTokenType.EMAIL);
-        } else {
-            verificationToken = verificationTokenService.create(user, VerificationTokenType.EMAIL);
-        }
+        VerificationToken verificationToken = verificationTokenService.generate(
+                user,
+                VerificationTokenType.EMAIL
+        );
 
         String recipientEmail = user.getEmail();
         String subject = "Email Verification";

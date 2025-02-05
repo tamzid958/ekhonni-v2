@@ -39,17 +39,11 @@ public class EmailChangeService {
 
     public void request(User user, EmailDTO emailDTO) {
 
-        VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
-            verificationToken = verificationTokenService.replace(user, VerificationTokenType.CHANGE_EMAIL);
-        } else {
-            verificationToken = verificationTokenService.create(user, VerificationTokenType.CHANGE_EMAIL);
-        }
-
-        String token = tokenUtil.encodeTokenWithEmail(verificationToken.getToken(), emailDTO.email());
-
-        verificationToken.setToken(token);
-        verificationTokenRepository.save(verificationToken);
+        VerificationToken verificationToken = verificationTokenService.generateForEmailChange(
+                user,
+                VerificationTokenType.CHANGE_EMAIL,
+                emailDTO.email()
+        );
 
         String recipientEmail = emailDTO.email();
         EmailTaskDTO emailTaskDTO = getEmailTaskDTO(verificationToken, recipientEmail);
@@ -93,8 +87,13 @@ public class EmailChangeService {
             throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
-        String[] tokenAndEmail = tokenUtil.extractTokenAndEmail(token);
-        String newEmail = tokenAndEmail[1];
+        String decryptedToken = tokenUtil.decrypt(token);
+        String[] parts = decryptedToken.split(":");
+        if (parts.length != 2) {
+            throw new InvalidVerificationTokenException("Malformed token data");
+        }
+
+        String newEmail = parts[1];
 
 
         User user = verificationToken.getUser();

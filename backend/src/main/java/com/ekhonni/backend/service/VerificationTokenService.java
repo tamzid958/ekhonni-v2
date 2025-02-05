@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 /**
@@ -30,9 +31,8 @@ public class VerificationTokenService {
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
 
-    public VerificationToken create(User user, VerificationTokenType type) {
+    public VerificationToken create(String token, User user, VerificationTokenType type) {
 
-        String token = tokenUtil.generateVerificationToken();
 
         VerificationToken verificationToken = new VerificationToken(
                 token,
@@ -44,10 +44,9 @@ public class VerificationTokenService {
         return verificationTokenRepository.save(verificationToken);
     }
 
-    public VerificationToken replace(User user, VerificationTokenType type) {
+    public VerificationToken replace(String token, User user, VerificationTokenType type) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByUserId(user.getId());
-        String token = tokenUtil.generateVerificationToken();
 
         verificationToken.setToken(token);
         verificationToken.setType(type);
@@ -55,5 +54,33 @@ public class VerificationTokenService {
 
         return verificationTokenRepository.save(verificationToken);
 
+    }
+
+    public VerificationToken generate(User user, VerificationTokenType type){
+
+        String rawToken = UUID.randomUUID().toString();
+        String encodedToken = tokenUtil.encrypt(rawToken);
+
+        VerificationToken verificationToken;
+        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
+            verificationToken = replace(encodedToken, user, type);
+        } else {
+            verificationToken = create(encodedToken, user, type);
+        }
+        return verificationToken;
+    }
+
+    public VerificationToken generateForEmailChange(User user, VerificationTokenType type, String newEmail){
+
+        String rawToken = UUID.randomUUID() + ":" + newEmail;
+        String encodedToken = tokenUtil.encrypt(rawToken);
+
+        VerificationToken verificationToken;
+        if (verificationTokenRepository.findByUserId(user.getId()) != null) {
+            verificationToken = replace(encodedToken, user, type);
+        } else {
+            verificationToken = create(encodedToken, user, type);
+        }
+        return verificationToken;
     }
 }

@@ -4,6 +4,7 @@ import com.ekhonni.backend.exception.InvalidVerificationTokenException;
 import com.ekhonni.backend.exception.RefreshTokenNotFoundException;
 import com.ekhonni.backend.model.RefreshToken;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,6 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
+import javax.crypto.Cipher;
+
 
 /**
  * Author: Md Jahid Hasan
@@ -43,6 +46,8 @@ public class TokenUtil {
 
     @Value("${spring.security.jwt.secret}")
     private String secret;
+
+    private final String ALGORITHM = "AES";
 
     public TokenUtil(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
@@ -111,37 +116,28 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String generateVerificationToken() {
-        String token = UUID.randomUUID().toString();
+    public String encrypt(String data) {
         try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-            mac.init(secretKeySpec);
-            byte[] hmac = mac.doFinal(token.getBytes());
-            return Base64.getUrlEncoder().encodeToString(hmac);
+            SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(), ALGORITHM);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+            byte[] encryptedBytes = cipher.doFinal(data.getBytes());
+            return Base64.getUrlEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
-            throw new RuntimeException("Error generating HMAC token", e);
+            throw new RuntimeException("Error during encryption", e);
         }
     }
 
-    public String encodeTokenWithEmail(String token, String email) {
-        String data = token + ":" + email;
-        return Base64.getUrlEncoder().encodeToString(data.getBytes());
-    }
-
-
-    public String[] extractTokenAndEmail(String token) {
+    public  String decrypt(String encryptedData) {
         try {
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
-            String decodedString = new String(decodedBytes);
-
-            String[] parts = decodedString.split(":");
-            if (parts.length != 2) {
-                throw new InvalidVerificationTokenException("Invalid Verification Token");
-            }
-            return parts;
+            SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(), ALGORITHM);
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec);
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(encryptedData);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes);
         } catch (Exception e) {
-            throw new InvalidVerificationTokenException("Invalid Verification Token");
+            throw new RuntimeException("Error during decryption", e);
         }
     }
 }
