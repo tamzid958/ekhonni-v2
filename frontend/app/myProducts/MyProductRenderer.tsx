@@ -6,7 +6,7 @@ import { Package } from 'lucide-react';
 import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 interface ProductData {
   id: number;
@@ -42,6 +42,7 @@ interface MyProductPageProps {
 
 export default function MyProducts({ products, filter, setFilter }: MyProductPageProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const router = useRouter();
 
 
   const getStatusBadge = (status: string) => {
@@ -60,7 +61,7 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
   };
 
   return (
-    <div className="space-y-6 h-min-screen container mx-12 p-4">
+    <div className="space-y-6 h-screen container mx-12 p-4">
       <div className="flex flex-col justify-between mt-4">
         <div className="flex justify-between">
           <h1 className="text-3xl font-semibold mb-6 text-gray-700">Products</h1>
@@ -114,16 +115,13 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
                     img={product.images[0].imagePath}
                     price={product.price}
                   />
-                  <Dialog>
-                    <DialogTrigger>
-                      <Button variant="link" className="absolute right-4 bottom-4">
-                        View Bids
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="w-full flex justify-center items-center">
-                      {/*{BidsShowPage(product.id)}*/}
-                    </DialogContent>
-                  </Dialog>
+                  {filter === 'APPROVED' && <Button
+                    variant="link"
+                    className="absolute right-4 bottom-4"
+                    onClick={() => router.push(`/myProducts/bidList?id=${product.id}`)}
+                  >
+                    View Bids
+                  </Button>}
                 </div>
               ))}
           </div>

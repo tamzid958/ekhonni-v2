@@ -43,7 +43,7 @@ export default function ProductViewPage() {
 
   const { data, error, isLoading } = useSWR(userToken ? [url, userToken] : null, ([url, token]) => fetcher(url, token));
   const products = data?.data?.content || [];
-  const totalPages = data?.data?.page.totalPages || 10;
+  const totalPages = data?.data?.page.totalPages;
 
   if (isLoading) {
     return (
