@@ -25,8 +25,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-
-
   const {
     register,
     handleSubmit,
@@ -57,7 +55,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       }
 
       alert("Login successful!");
-      router.push("/");
+      window.location.href = "/"
 
     } catch (err: any) {
       console.error("Login error:", err);

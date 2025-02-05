@@ -1,12 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { ColumnDef } from "@tanstack/react-table"
-import { Ban, Hourglass, LogOut, MoreHorizontal, ShieldCheck, ShieldIcon, Trash2, UserIcon } from 'lucide-react';
+import { Ban, Hourglass, MoreHorizontal, ShieldCheck, ShieldIcon, Trash2, UserIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,11 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
-import { axiosInstance } from '@/data/services/fetcher';
-import { Toast } from '@/components/ui/toast';
-import { toast, Toaster } from 'sonner';
+import { Toaster } from 'sonner';
 import { handleBlcokUser, handleUnblcokUser } from '../components/useHandleBlock';
-import { handleChangeUserRole, openDialog } from '../components/useHandleRole';
+import { handleChangeUserRole } from '../components/useHandleRole';
 import {
   Dialog,
   DialogContent,
@@ -29,12 +25,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
-
 
 export type User = {
   id: string
@@ -74,7 +67,18 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+           Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
   },
   {
     accessorKey: "email",
@@ -104,9 +108,9 @@ export const columns: ColumnDef<User>[] = [
 
 
       const roleColor =
-        User.roleName === "ADMIN"
+        User.roleName === "SUPER_ADMIN"
           ? "bg-red-500"
-          : User.roleName === "SUPER_ADMIN"
+          : User.roleName === "ADMIN"
             ? "bg-purple-500"
             : "bg-blue-500";
 
@@ -156,20 +160,41 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       const formatted = date.toDateString()
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     }
   },
   {
     accessorKey: "updatedAt",
-    header: "Updated At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
     cell: ({ row }) => {
       const date = new Date(row.getValue("updatedAt"))
       const formatted = date.toDateString()
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     }
   },
   {
