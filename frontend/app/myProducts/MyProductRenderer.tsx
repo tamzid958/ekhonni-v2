@@ -7,7 +7,6 @@ import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import BidsShowPage from './Components/bidsView';
 
 interface ProductData {
   id: number;
@@ -122,7 +121,7 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="w-full flex justify-center items-center">
-                      {BidsShowPage(product.id)}
+                      {/*{BidsShowPage(product.id)}*/}
                     </DialogContent>
                   </Dialog>
                 </div>

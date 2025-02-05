@@ -32,26 +32,6 @@ interface ProductData {
   bids: never;
 }
 
-// async function fetchMyProduct(userId: string, selectedCategory: string): Promise<ProductData[]> {
-//   const category = selectedCategory || 'All';
-//   const url =
-//     category === 'All'
-//       ? `http://localhost:8080/api/v2/product/user/filter`
-//       : `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(userId)}&categoryName=${encodeURIComponent(selectedCategory)}`;
-//
-//   try {
-//     const response = await fetch(url, { cache: 'no-store' });
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch products');
-//     }
-//     const json = await response.json();
-//     console.log('API Response Data:', json.data.content);
-//     return json.data.content;
-//   } catch (error) {
-//     console.error('Error fetching products:', error);
-//     return [];
-//   }
-// }
 
 export default function MyProductPage() {
   const { data: session, status } = useSession();
