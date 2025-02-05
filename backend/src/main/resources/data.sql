@@ -31,13 +31,6 @@ INSERT INTO account (id, total_earnings, total_withdrawals, status, user_id, cre
 (105, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
 (106, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 (107, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440006'::uuid, NOW(), NOW());
--- Insert Categories
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(1, 'Electronics', true, null, NOW(), NOW()),
-(2, 'Smartphones', true, 1, NOW(), NOW()),
-(3, 'Laptops', true, 1, NOW(), NOW()),
-(4, 'Fashion', true, null, NOW(), NOW()),
-(5, 'Men''s Clothing', true, 4, NOW(), NOW());
 
 INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
 (10000, 'Travel & Nature', true, null, NOW(), NOW()),

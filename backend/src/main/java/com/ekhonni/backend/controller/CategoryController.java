@@ -25,42 +25,11 @@ import java.util.UUID;
 public record CategoryController(CategoryService categoryService) {
 
 
-    @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto) {
-        return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
-    }
-
-
-    @GetMapping("/all")
-    public ApiResponse<?> getAll() {
-        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
-    }
-
-
     @GetMapping("/{name}/subcategories")
     public ApiResponse<?> getSubCategories(@PathVariable("name") String name) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
     }
 
-
-    @DeleteMapping("/{name}")
-    public ApiResponse<?> delete(@PathVariable String name) {
-        categoryService.delete(name);
-        return new ApiResponse<>(HTTPStatus.DELETED, null);
-    }
-
-    @PatchMapping("/{name}")
-    public ApiResponse<?> update(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
-        categoryService.update(categoryUpdateDTO);
-        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
-
-    }
-
-//    // user profile
-//    @GetMapping("/{user_id}/all")
-//    public ApiResponse<?> getUserCategory(@PathVariable("user_id") UUID userId){
-//        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getUserCategory(userId));
-//    }
 
     @GetMapping("/tree/{user_id}")
     public ApiResponse<?> getUserCategoryTree(@PathVariable("user_id") String userId) {
@@ -70,6 +39,11 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping("/all/{user_id}")
     public ApiResponse<?> getCategoryTreeByUser(@PathVariable("user_id") String userId) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.findRootCategoriesBySeller(UUID.fromString(userId)));
+    }
+
+    @GetMapping("/all")
+    public ApiResponse<?> getAll() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
     }
 
     @GetMapping("/tree")

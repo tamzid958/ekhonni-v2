@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v2/admin/product")
 public record ProductAdminController(ProductAdminService productAdminService) {
-//    @GetMapping("/pending")
-//    public ApiResponse<?> getAll(Pageable pageable) {
-//        return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAll(pageable));
-//    }
+
 
     @GetMapping("/{id}")
     public ApiResponse<?> getOne(@PathVariable Long id) {
@@ -38,15 +35,13 @@ public record ProductAdminController(ProductAdminService productAdminService) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.declineOne(id));
     }
 
-    @DeleteMapping("/approve/{id}")
+    @DeleteMapping("/approved/{id}")
     public ApiResponse<?> deleteOne(@PathVariable Long id) {
         return new ApiResponse<>(HTTPStatus.DELETED, productAdminService.deleteOne(id));
     }
 
-
     @GetMapping("/filter")
     public ApiResponse<?> getFilteredForAdmin(@ModelAttribute AdminProductFilter filter) {
-        //System.out.println(filter.getCategoryName());
         return new ApiResponse<>(HTTPStatus.FOUND, productAdminService.getAllFilteredForAdmin(filter));
     }
 }
