@@ -30,13 +30,15 @@ public class BidService extends BaseService<Bid, Long> {
     private final UserService userService;
     private final ProductService productService;
     private final NotificationService notificationService;
+    private final WatchlistService watchlistService;
 
-    public BidService(BidRepository bidRepository, UserService userService, ProductService productService, NotificationService notificationService) {
+    public BidService(BidRepository bidRepository, UserService userService, ProductService productService, NotificationService notificationService, WatchlistService watchlistService) {
         super(bidRepository);
         this.bidRepository = bidRepository;
         this.userService = userService;
         this.productService = productService;
         this.notificationService = notificationService;
+        this.watchlistService =  watchlistService;
     }
 
     @Modifying
@@ -104,6 +106,7 @@ public class BidService extends BaseService<Bid, Long> {
             throw new BidAlreadyAcceptedException();
         }
         bid.getProduct().setStatus(ProductStatus.SOLD);
+        watchlistService.removeProductFromAllUser(bid.getProduct().getId());
         bid.setStatus(BidStatus.ACCEPTED);
         notificationService.createForBidAccepted(bid);
     }

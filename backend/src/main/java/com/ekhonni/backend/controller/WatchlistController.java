@@ -40,4 +40,6 @@ public class WatchlistController {
     public ApiResponse<?> removeProducts(@RequestBody List<Long> productIds) {
         return new ApiResponse<>(HTTPStatus.DELETED, watchlistService.removeProducts(productIds));
     }
+
+
 }

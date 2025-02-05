@@ -24,4 +24,5 @@ public interface WatchlistRepository extends JpaRepository<WatchlistProduct, Lon
     Page<WatchlistProductProjection> findAllProjectionByUser(@Param("user") User user, Pageable pageable);
 
     void deleteByUserIdAndProductIdIn(UUID userId, List<Long> productIds);
+    void deleteByProductIdIn(List<Long> productIds);
 }
