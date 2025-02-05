@@ -6,6 +6,7 @@ import com.ekhonni.backend.model.PayoutAccount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -16,7 +17,15 @@ public interface PayoutAccountRepository extends BaseRepository<PayoutAccount, L
 
     <P> Page<P> findByAccountIdAndDeletedAtIsNull(Long accountId, Class<P> projection, Pageable pageable);
 
+    boolean existsByAccountIdAndCategoryAndMethodAndPayoutAccountNumberAndDeletedAtIsNull(
+            Long accountId, PayoutCategory category,
+            PayoutMethod method, String payoutAccountNumber);
+
     boolean existsByAccountIdAndCategoryAndMethodAndPayoutAccountNumber(
+            Long accountId, PayoutCategory category,
+            PayoutMethod method, String payoutAccountNumber);
+
+    Optional<PayoutAccount> findByAccountIdAndCategoryAndMethodAndPayoutAccountNumber(
             Long accountId, PayoutCategory category,
             PayoutMethod method, String payoutAccountNumber);
 

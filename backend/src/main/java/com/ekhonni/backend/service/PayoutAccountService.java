@@ -10,6 +10,7 @@ import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -30,9 +31,27 @@ public class PayoutAccountService extends BaseService<PayoutAccount, Long> {
         this.accountService = accountService;
     }
 
+    @Modifying
     @Transactional
     public void create(PayoutAccountCreateDTO dto) {
+
         Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
+
+        if (payoutAccountRepository.existsByAccountIdAndCategoryAndMethodAndPayoutAccountNumberAndDeletedAtIsNull(
+                account.getId(), dto.category(), dto.method(), dto.accountNumber()
+        )) {
+            throw new RuntimeException("Payout account already exists");
+        }
+        if (payoutAccountRepository.existsByAccountIdAndCategoryAndMethodAndPayoutAccountNumber(
+                account.getId(), dto.category(), dto.method(), dto.accountNumber()
+        )) {
+            PayoutAccount payoutAccount =  payoutAccountRepository.findByAccountIdAndCategoryAndMethodAndPayoutAccountNumber(
+                    account.getId(), dto.category(), dto.method(), dto.accountNumber())
+                    .orElseThrow(() -> new RuntimeException("Payout Account not found"));
+            payoutAccount.setDeletedAt(null);
+            return;
+        }
+
         PayoutAccount payoutAccount = new PayoutAccount(
                 account, dto.category(), dto.method(), dto.accountNumber(),
                 dto.bankName(), dto.branchName(), dto.accountHolderName(), dto.routingNumber()
