@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         ErrorResponse response = new ErrorResponse("Invalid request format", LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
+        return ResponseEntity.status(400).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
