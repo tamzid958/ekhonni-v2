@@ -137,12 +137,11 @@ public class TokenUtil {
 
             String[] parts = decodedString.split(":");
             if (parts.length != 2) {
-                throw new InvalidVerificationTokenException("Malformed token data");
+                throw new InvalidVerificationTokenException("Invalid Verification Token");
             }
-
-            return parts; // [token, email]
+            return parts;
         } catch (Exception e) {
-            throw new InvalidVerificationTokenException("Invalid token format");
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
     }
 }

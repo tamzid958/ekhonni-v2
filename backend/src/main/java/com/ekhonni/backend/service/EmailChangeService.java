@@ -58,8 +58,9 @@ public class EmailChangeService {
     }
 
     private EmailTaskDTO getEmailTaskDTO(VerificationToken verificationToken, String recipientEmail) {
-        String url = emailChangeUrl.replace("{id}", verificationToken.getUser().getId().toString());
-        url = url + verificationToken.getToken();
+        String url = emailChangeUrl
+                .replace("{id}", verificationToken.getUser().getId().toString())
+                .replace("{token}", verificationToken.getToken());
         String subject = "Email Change Request";
         String message = String.format(
                 "Dear User,\n\n" +

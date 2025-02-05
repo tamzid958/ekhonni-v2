@@ -106,7 +106,7 @@ refund:
 notification:
   product-redirect-url: ${PRODUCT_REDIRECT_URL}
 
-emaiL-change-url: ${EMAIL_CHANGE_URL}
+email-change-url: ${EMAIL_CHANGE_URL}
 
 upload:
   dir: ${UPLOAD_DIR}

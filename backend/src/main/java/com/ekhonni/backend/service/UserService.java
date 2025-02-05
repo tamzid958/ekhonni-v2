@@ -5,6 +5,9 @@ import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.dto.PasswordDTO;
 import com.ekhonni.backend.dto.ProfileImageDTO;
 import com.ekhonni.backend.dto.RefreshTokenDTO;
+import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.exception.EmailAlreadyExistsException;
+import com.ekhonni.backend.exception.UserAlreadyExistsException;
 import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
@@ -55,11 +58,18 @@ public class UserService extends BaseService<User, UUID> {
         this.emailChangeService = emailChangeService;
     }
 
-    public String updateEmailRequest(UUID id, EmailDTO emailDTO){
+    public ApiResponse<?> updateEmailRequest(UUID id, EmailDTO emailDTO){
+        User existingUser = userRepository.findByEmail(emailDTO.email());
+        if(existingUser != null){
+            throw new EmailAlreadyExistsException("The email is already in user");
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow( () -> new UserNotFoundException("User not Found"));
         emailChangeService.request(user, emailDTO);
-        return "send";
+        String responseMessage = "A verification email has been sent to " + emailDTO.email() +
+                ". Please check your inbox to verify your new email address.";
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
     @Transactional
