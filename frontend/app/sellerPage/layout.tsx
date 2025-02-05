@@ -3,6 +3,14 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface SellerProfile {
   profileImage: string | null;
@@ -43,6 +51,9 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [pathname]);
 
+  const shareUrl = `${window.location.origin}/sellerPage/${sellerId}`;
+
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow-md">
@@ -56,9 +67,36 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
             <p className="text-sm text-gray-500">{sellerProfile?.address || 'Loading...'}</p>
           </div>
           <div className="flex space-x-4">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-              Share
-            </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                  Share
+                </button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Share Link</DialogTitle>
+                  <DialogDescription>
+                    Anyone with this link can view the profile. Copy and share it.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4 flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={shareUrl}
+                    readOnly
+                    className="border border-gray-300 rounded-md px-2 py-1 w-full"
+                  />
+                  <button
+                    onClick={() => navigator.clipboard.writeText(shareUrl)}
+                    className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
               Chat
             </button>
