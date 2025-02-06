@@ -71,8 +71,8 @@ public class WithdrawController {
         return ResponseUtil.createResponse(HTTPStatus.OK, withdrawService.getAllByStatus(status, pageable));
     }
 
-    @GetMapping("/user/{userId}/statistics")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserWithdrawStatistics(@PathVariable Long userId) {
+    @GetMapping("/user/{user_id}/statistics")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserWithdrawStatistics(@PathVariable("user_id") Long userId) {
         return ResponseUtil.createResponse(HTTPStatus.OK, withdrawService.getUserWithdrawStatistics(userId));
     }
 
