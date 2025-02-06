@@ -57,10 +57,9 @@ export default function Search() {
 
   const handleFilter = (newValue: [number, number]) => {
     console.log('Filtered values:', newValue);
-    // Here you can use `newValue` to filter your products, call API, etc.
-    setValue(newValue); // Update the value in parent if needed
+    setValue(newValue);
   };
-  
+
   return (
     <div className="bg-brand-bright">
       <div className="flex justify-center items-center w-full text-2xl p-3 ">

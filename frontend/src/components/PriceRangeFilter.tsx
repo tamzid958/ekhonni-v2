@@ -68,11 +68,6 @@ export function SliderDemo({
         <span>Maximum : {tempValue[1]} BDT</span>
       </div>
 
-      {/*/!* Show applied values after filter is clicked *!/*/}
-      {/*<div className="flex justify-between w-[100%] mt-2 text-sm font-semibold text-gray-800">*/}
-      {/*  <span>Applied: {value[0]} BDT</span>*/}
-      {/*  <span>Applied: {value[1]} BDT</span>*/}
-      {/*</div>*/}
 
       {/* Filter Button */}
       <button
