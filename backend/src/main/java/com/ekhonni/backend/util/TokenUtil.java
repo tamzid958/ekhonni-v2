@@ -115,24 +115,4 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String encode(String token) {
-
-        return Base64.getUrlEncoder().encodeToString(token.getBytes());
-    }
-
-
-    public String extractEmail(String token) {
-        try {
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
-            String decodedString = new String(decodedBytes);
-
-            String[] parts = decodedString.split(":");
-            if (parts.length != 2) {
-                throw new InvalidVerificationTokenException("Invalid Verification Token");
-            }
-            return parts[1];
-        } catch (Exception e) {
-            throw new InvalidVerificationTokenException("Invalid Verification Token");
-        }
-    }
 }

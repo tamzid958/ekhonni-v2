@@ -66,7 +66,7 @@ public class PasswordResetService {
 
     private EmailTaskDTO getEmailTaskDTO(String email, VerificationToken verificationToken) {
         String subject = "Password Reset Request";
-        String url = passwordResetUrl + verificationToken.getToken();
+        String url = passwordResetUrl.replace("{token}", verificationToken.getToken());
         String message = String.format(
                 "Dear User,\n\n" +
                         "We received a request to reset your password for your Ekhonni account.\n\n" +

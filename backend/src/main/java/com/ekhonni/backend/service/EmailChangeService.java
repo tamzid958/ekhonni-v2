@@ -10,6 +10,7 @@ import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.repository.VerificationTokenRepository;
 import com.ekhonni.backend.response.ApiResponse;
+import com.ekhonni.backend.util.AESUtil;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class EmailChangeService {
     private final VerificationTokenService verificationTokenService;
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
-    private final TokenUtil tokenUtil;
+    private final AESUtil aesUtil;
     private final EmailService emailService;
     private final EmailProducerService emailProducerService;
 
@@ -77,16 +78,16 @@ public class EmailChangeService {
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-
+            System.out.println("1");
             throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
         if (verificationToken.getType() != VerificationTokenType.CHANGE_EMAIL) {
-
+            System.out.println("2");
             throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
-        String newEmail = tokenUtil.extractEmail(token);
+        String newEmail = aesUtil.extractEmail(token);
 
         User user = verificationToken.getUser();
 

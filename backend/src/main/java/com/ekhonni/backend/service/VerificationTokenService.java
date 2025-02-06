@@ -5,6 +5,7 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.repository.VerificationTokenRepository;
+import com.ekhonni.backend.util.AESUtil;
 import com.ekhonni.backend.util.TokenUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class VerificationTokenService {
 
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
-    private final TokenUtil tokenUtil;
+    private final AESUtil aesUtil;
 
     public VerificationToken create(String token, User user, VerificationTokenType type) {
 
@@ -59,13 +60,13 @@ public class VerificationTokenService {
     public VerificationToken generate(User user, VerificationTokenType type){
 
         String rawToken = UUID.randomUUID().toString();
-        String encodedToken = tokenUtil.encode(rawToken);
+        String encryptedToken = aesUtil.encrypt(rawToken);
 
         VerificationToken verificationToken;
         if (verificationTokenRepository.findByUserId(user.getId()) != null) {
-            verificationToken = replace(encodedToken, user, type);
+            verificationToken = replace(encryptedToken, user, type);
         } else {
-            verificationToken = create(encodedToken, user, type);
+            verificationToken = create(encryptedToken, user, type);
         }
         return verificationToken;
     }
@@ -73,13 +74,13 @@ public class VerificationTokenService {
     public VerificationToken generateForEmailChange(User user, VerificationTokenType type, String newEmail){
 
         String rawToken = UUID.randomUUID() + ":" + newEmail;
-        String encodedToken = tokenUtil.encode(rawToken);
+        String encryptedToken = aesUtil.encrypt(rawToken);
 
         VerificationToken verificationToken;
         if (verificationTokenRepository.findByUserId(user.getId()) != null) {
-            verificationToken = replace(encodedToken, user, type);
+            verificationToken = replace(encryptedToken, user, type);
         } else {
-            verificationToken = create(encodedToken, user, type);
+            verificationToken = create(encryptedToken, user, type);
         }
         return verificationToken;
     }
