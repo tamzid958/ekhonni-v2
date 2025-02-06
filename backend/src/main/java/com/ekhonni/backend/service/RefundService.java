@@ -102,7 +102,7 @@ public class RefundService extends BaseService<Refund, Long> {
         refund.setRefundedOn(LocalDateTime.parse(response.getRefundedOn(), formatter));
     }
 
-    @Scheduled(fixedDelayString = "${refund.processing-interval}")
+    @Scheduled(cron = "0 0 0 * * *")
     public void processRefund() {
         log.info("Starting refund processing");
         List<RefundStatus> toBeProcessedStatuses = List.of(
@@ -173,8 +173,7 @@ public class RefundService extends BaseService<Refund, Long> {
                 .body(RefundResponse.class);
     }
 
-//    @Scheduled(cron = "0 0 0 * * *")  // Runs at 12 AM (midnight) every day
-    @Scheduled(fixedDelayString = "${refund.query-interval}")
+    @Scheduled(cron = "0 0 0 * * *")
     public void queryRefund() {
         log.info("Starting refund query");
         List<RefundStatus> toBeQueriedStatuses = List.of(
