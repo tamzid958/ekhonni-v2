@@ -1,5 +1,6 @@
 package com.ekhonni.backend.projection.account;
 
+import com.ekhonni.backend.enums.AccountStatus;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 public interface UserAccountProjection {
 
     Long getId();
+    AccountStatus getStatus();
 
     @Value("#{target.totalEarnings - target.totalWithdrawals}")
     Double getBalance();
