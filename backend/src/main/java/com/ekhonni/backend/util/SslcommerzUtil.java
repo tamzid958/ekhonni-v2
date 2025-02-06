@@ -57,7 +57,6 @@ public class SslcommerzUtil {
 
     public String getParamsString(Transaction transaction, boolean urlEncode) throws UnsupportedEncodingException {
         constructRequestParameters(transaction);
-        log.info("Payment request parameters: {}", paymentRequest.toString());
         StringBuilder result = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
 

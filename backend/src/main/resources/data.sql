@@ -196,7 +196,7 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 
 -- Bids where Asif is the Bidder (Buyer)
 INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1001, 101, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
+(1001, 101, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
 (1002, 101, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'BDT', 'PENDING', NOW(), NOW()),   -- Pending
 (1006, 102, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
 (1003, 102, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Pending
