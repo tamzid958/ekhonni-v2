@@ -8,7 +8,6 @@ const AdminLayout = ({ children }) => {
       <SidebarProvider defaultOpen={false}>
         <AppSidebar />
         <SidebarTrigger />
-
         <main>
           {/*<SidebarTrigger />*/}
           {children}
