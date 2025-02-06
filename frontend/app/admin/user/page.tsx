@@ -17,9 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRoles } from '../hooks/useRoles';
 import { exportUserDataToCSV } from '../utility/exportUserDataToCSV';
 import { inviteUser } from '../utility/inviteUserViaEmail';
-import { calculateUserStats, UserStats } from '../utility/calculateUserStats';
-import { filterUsersByDate } from '../utility/filterUserByDate';
-import { calculatePercentageChange } from '../utility/calculatePercentageChange';
+import {getUserStats } from '../utility/filterUserByDate';
+import { Select, SelectContent, SelectItem } from '@radix-ui/react-select';
+import { SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const processUsers = (users: any[]) : User[] => {
   return users.map(user => {
@@ -38,6 +38,12 @@ const processUsers = (users: any[]) : User[] => {
     };
   });
 };
+const timePeriodLabels = {
+  all: "All Time",
+  week: "This Week",
+  month: "This Month",
+  year: "This Year",
+};
 
 export default  function User  () {
 
@@ -48,8 +54,7 @@ export default  function User  () {
   const { allRolesList, isLoading: isLoadingRole , error: roleError} = useRoles(userId, userToken);
 
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<"all" | "week" | "month" | "year">("all");
-
-  const [users, setUsers] = useState<any[]>([]);
+  const [stats, setStats] = useState({ userCount: 0, growthPercentage: "0.00" });
 
   const { data: allUsers, error: allError, isLoading: isLoading } = useSWR(
     userId ? `/api/v2/admin/user` : null,
@@ -101,10 +106,61 @@ export default  function User  () {
   const processedUsers: User[] = allUsers ? processUsers(allUsers.content) : [];
   const totalUsers = processedUsers.length;
 
-  const filteredUsers = filterUsersByDate(processedUsers, selectedTimePeriod);
+  function createTestUser(createdAt) {
+    return {
+      verified: false,
+      roleName: "user",
+      updatedAt: new Date().toISOString(),
+      deletedAt: null,
+      profileImage: "https://example.com/profile.jpg",
+      createdAt: new Date(createdAt).toISOString(),
+      blockedAt: new Date(createdAt).toISOString(),
+      email: `user${Math.floor(Math.random() * 1000)}@example.com`,
+      name: `Test User ${Math.floor(Math.random() * 1000)}`,
+      id: crypto.randomUUID(), // Generates a random UUID
+      address: "123 Test Street, City, Country"
+    };
+  }
+  const test = [
+    createTestUser("2024-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2024-01-01T10:00:00.329Z"), // This week
+    createTestUser("2024-01-01T08:30:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2024-01-01T10:00:00.329Z"), // This week
+    createTestUser("2024-01-01T08:30:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2024-01-01T10:00:00.329Z"), // This week
+    createTestUser("2024-01-01T08:30:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2024-01-01T10:00:00.329Z"), // This week
+    createTestUser("2024-01-01T08:30:00.329Z"),
+    createTestUser("2024-01-01T04:47:00.329Z"),// Last week
+    createTestUser("2025-01-01T10:00:00.329Z"), // This week
+    createTestUser("2025-01-01T08:30:00.329Z"),
+    createTestUser("2025-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2025-01-01T10:00:00.329Z"), // This week
+    createTestUser("2025-01-01T08:30:00.329Z"),
+    createTestUser("2025-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2025-01-01T10:00:00.329Z"), // This week
+    createTestUser("2025-01-01T08:30:00.329Z") ,
+    createTestUser("2025-01-01T08:30:00.329Z"),
+    createTestUser("2025-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2025-01-01T10:00:00.329Z"),
+    createTestUser("2025-01-01T08:30:00.329Z"),
+    createTestUser("2025-01-01T04:47:00.329Z"), // Last week
+    createTestUser("2025-01-01T10:00:00.329Z"),
+    // Older than last week
+  ];
 
-  const incrementPercentage = calculatePercentageChange(filteredUsers.length - 2, totalUsers);
-  console.log("User Stats", incrementPercentage);
+  processedUsers.push(...test);
+
+  useEffect(() => {
+    setStats(getUserStats(processedUsers, selectedTimePeriod));
+  }, [selectedTimePeriod]);
+
 
   if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock || isLoadingAdmin || isLoadingRole) {
     return (
@@ -122,18 +178,16 @@ export default  function User  () {
         <p>You need to be signed in to view this page.</p>
       </div>
     );
-
   }
   else if(activeError || allError || deletedError || blockedError || adminError || roleError)
   {
     return (
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>Failed to Load User Data</p>
       </div>
     );
   }
-
   return (
     <div className="flex w-[1220px] h-[1250px] flex-col  bg-white ">
 
@@ -178,25 +232,47 @@ export default  function User  () {
       {/* Middle section */}
       <div className="flex max-w-[1220px] bg-green-100 rounded-xl m-4 p-4 gap-2.5  h-36">
         <div className="flex-1 p-1">
-          <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
+          <Card className="flex flex-col bg-white hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
-                <CardTitle className="flex text-gray-500 mb-2 text-xl">Total Users</CardTitle>
-                <h1 className="text-4xl font-bold">{totalUsers}</h1>
-              </div>
-              <div className="flex mt-6">
 
+                <CardTitle className="flex text-gray-500 mb-2 text-xl">
+                  Total Users ({timePeriodLabels[selectedTimePeriod]})
+                </CardTitle>
+
+                <h1 className="text-4xl font-bold">{stats.userCount}</h1>
+              </div>
+              <div className="flex flex-col gap-2.5 items-end">
+                <div className="relative flex items-end gap-2.5 justify-end w-[50px] md:w-[50px]">
+                  <Select onValueChange={(value) => setSelectedTimePeriod(value as any)} value={selectedTimePeriod}>
+                    <SelectTrigger className="w-[50px] h-[30px] bg-white border rounded-md text-sm shadow-sm">
+                      <SelectValue placeholder="Select Time Period" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border rounded-md shadow-md  w-full" position="item-aligned">
+                      {Object.entries(timePeriodLabels).map(([key, label]) => (
+                        <SelectItem
+                          key={key}
+                          value={key}
+                          className="cursor-pointer hover:bg-gray-100 rounded-md p-2"
+                        >
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Badge
-                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${incrementPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${
+                    stats.growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'
+                  }`}
                 >
-                  {incrementPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                  {incrementPercentage}%
+                  {stats.growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}
+                  {stats.growthPercentage}%
                 </Badge>
               </div>
             </div>
           </Card>
         </div>
-
         <div className="flex-1 p-1">
           <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
             <div className="flex items-start justify-between">
@@ -205,17 +281,16 @@ export default  function User  () {
                 <h1 className="text-4xl font-bold">{totalAdmins}</h1>
               </div>
               <div className="flex mt-6">
-                <Badge
-                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${incrementPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                >
-                  {incrementPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                  {incrementPercentage}%
-                </Badge>
+                {/*<Badge*/}
+                {/*  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}*/}
+                {/*>*/}
+                {/*  {growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}*/}
+                {/*  {growthPercentage}%*/}
+                {/*</Badge>*/}
               </div>
             </div>
           </Card>
         </div>
-
         <div className="flex-1 p-1">
           <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
             <div className="flex items-start justify-between">
@@ -224,17 +299,16 @@ export default  function User  () {
                 <h1 className="text-4xl font-bold">1</h1>
               </div>
               <div className="flex mt-6">
-                <Badge
-                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${incrementPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                >
-                  {incrementPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                  {incrementPercentage}%
-                </Badge>
+                {/*<Badge*/}
+                {/*  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}*/}
+                {/*>*/}
+                {/*  {growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}*/}
+                {/*  {growthPercentage}%*/}
+                {/*</Badge>*/}
               </div>
             </div>
           </Card>
         </div>
-
       </div>
 
       <Separator className="flex  p-0" />

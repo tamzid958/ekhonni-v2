@@ -10,6 +10,7 @@ export interface UserStats {
   newUsersYearChange: string;
 }
 
+
 const getUsersByTimePeriod = (users: any[], period: "week" | "month" | "year") => {
   const now = new Date();
   return users.filter((user) => {
