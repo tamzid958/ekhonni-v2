@@ -8,5 +8,5 @@ public enum PayoutMethod {
     BKASH,
     ROCKET,
     NAGAD,
-    DBBL_BANK
+    DBBL
 }
