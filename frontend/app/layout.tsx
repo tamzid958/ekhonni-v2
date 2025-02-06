@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
 import SessionWrapper from './wrapper/client/SessionWrapper';
+import { ProductProvider } from '@/context/ProductContext';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -37,18 +38,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <RootLayoutWrapper>
       <CustomErrorBoundary>
         <SessionWrapper>
-          <div className="w-full">
-            <NavBar placeholder="What are you looking for?" />
-            <TopCAtegory />
-          </div>
+          <ProductProvider>
+            <div className="w-full">
+              <NavBar placeholder="What are you looking for?" />
+              <TopCAtegory />
+            </div>
 
 
-          <main>{children}</main>
+            <main>{children}</main>
 
 
-          <div className="bg-gray-800 text-white">
-            <Footer />
-          </div>
+            <div className="bg-gray-800 text-white">
+              <Footer />
+            </div>
+          </ProductProvider>
         </SessionWrapper>
       </CustomErrorBoundary>
     </RootLayoutWrapper>
