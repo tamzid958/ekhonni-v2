@@ -1,9 +1,17 @@
+'use client';
+
 import React from 'react';
 import { getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BidData, columns } from './columns';
+import { useSession } from 'next-auth/react';
+import { BidData, getColumns } from './columns';
 
-function DataTable({ data }: { data: BidData[] }) {
+export default function DataTable({ data, productStatus }: { data: BidData[]; productStatus: string }) {
+  const { data: session } = useSession();
+  const token = session?.user?.token; // Get the session token
+
+  const columns = getColumns(productStatus, token); // Pass token to getColumns
+
   const table = useReactTable({
     data,
     columns,
@@ -14,7 +22,7 @@ function DataTable({ data }: { data: BidData[] }) {
   return (
     <div className="rounded-md border">
       <Table className="bg-white">
-        {/* Table Head */}
+        {/* Table Header */}
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -57,5 +65,3 @@ function DataTable({ data }: { data: BidData[] }) {
     </div>
   );
 }
-
-export default DataTable;

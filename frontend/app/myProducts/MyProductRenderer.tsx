@@ -43,6 +43,7 @@ interface MyProductPageProps {
 export default function MyProducts({ products, filter, setFilter }: MyProductPageProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const router = useRouter();
+  // const { setProduct } = useProduct();
 
 
   const getStatusBadge = (status: string) => {
@@ -55,6 +56,8 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
         return <Badge variant="secondary">Pending Approval</Badge>;
       case 'ARCHIVED':
         return <Badge variant="outline">Archived</Badge>;
+      case 'SOLD':
+        return <Badge variant="default">Sold</Badge>;
       default:
         return <Badge variant="default">Default</Badge>;
     }
@@ -78,7 +81,7 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
 
         {/*Button Group*/}
         <div className="flex mb-6 space-x-4">
-          {['APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'].map((status) => (
+          {['APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED', 'SOLD'].map((status) => (
             <button
               key={status}
               onClick={() => setFilter(status)}
@@ -115,10 +118,13 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
                     img={product.images[0].imagePath}
                     price={product.price}
                   />
-                  {filter === 'APPROVED' && <Button
+                  {(filter === 'APPROVED' || 'SOLD') && <Button
                     variant="link"
                     className="absolute right-4 bottom-4"
-                    onClick={() => router.push(`/myProducts/bidList?id=${product.id}`)}
+                    onClick={() => {
+                      // setProduct(product); // Store product in context
+                      router.push(`/myProducts/bidList?id=${product.id}`);
+                    }}
                   >
                     View Bids
                   </Button>}
