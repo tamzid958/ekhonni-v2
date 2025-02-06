@@ -16,7 +16,6 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
 
-
 //for notification console
   const { data: session, status } = useSession();
   const userId = session?.user?.id;

@@ -8,30 +8,27 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/button';
 
 const items = [
-  { id: 'DHAKA', label: 'DHAKA' },
-  { id: 'SYLHET', label: 'SYLHET' },
-  { id: 'CHITTAGONG', label: 'CHITTAGONG' },
-  { id: 'KHULNA', label: 'KHULNA' },
-  { id: 'RAJSHAHI', label: 'RAJSHAHI' },
-  { id: 'BARISHAL', label: 'BARISHAL' },
-  { id: 'RANGPUR', label: 'RANGPUR' },
-  { id: 'MYMENSINGH', label: 'MYMENSINGH' },
+  { id: 'Revive', label: 'REVIVE' },
+  { id: 'Fair', label: 'FAIR' },
+  { id: 'Good', label: 'GOOD' },
+  { id: 'Very_Good', label: 'VERY_GOOD' },
+  { id: 'Like_New', label: 'LIKE_NEW' },
 ] as const;
 
 const FormSchema = z.object({
   items: z.array(z.string()).optional(),
 });
 
-export function CheckboxReactHookFormMultiple({ setSelectedDivisions, selectedDivisions }: {
-  setSelectedDivisions: (divisions: string[]) => void, selectedDivisions: string[];
+export function CheckboxReactHookFormMultipleCondition({ setSelectedConditions, selectedConditions }: {
+  setSelectedConditions: (conditions: string[]) => void, selectedConditions: string[]
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: { items: selectedDivisions },
+    defaultValues: { items: selectedConditions },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    setSelectedDivisions(data.items || []);
+    setSelectedConditions(data.items || []); // Update parent with selected checkboxes
   }
 
   return (
@@ -43,7 +40,7 @@ export function CheckboxReactHookFormMultiple({ setSelectedDivisions, selectedDi
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">FILTER BY LOCATION</FormLabel>
+                <FormLabel className="text-base">FILTER BY CONDITION</FormLabel>
               </div>
               {items.map((item) => (
                 <FormField
