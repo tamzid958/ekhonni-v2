@@ -41,14 +41,12 @@ export function NavBar({ placeholder }: Props) {
 
 
   useEffect(() => {
-    // console.log('Session Data:', session);
     if (!session) return;
     const userId = session?.user?.id;
     const userToken = session?.user?.token;
     const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
 
     async function fetchNotifications(lastFetchTime: string) {
-      // console.log('Fetching notifications for user:', userId);
       const result = await NotificationGetter(userId, userToken, lastFetchTime);
 
 

@@ -1,4 +1,3 @@
-// Need to adjust the height of left filter bar
 // Need to add pagination
 'use client';
 import { useFilterProducts } from '@/hooks/useFilterProducts';
@@ -9,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { CardForSearch } from './components/CardForSearch';
 import Link from 'next/link';
 import { useState } from 'react';
+import { CheckboxReactHookFormMultipleCondition } from '@/components/CheckBoxFilterCondition';
 
 interface Product {
   id: number;
@@ -40,13 +40,27 @@ export default function Search() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || 'No query provided';
   const [sortBy, setSortBy] = useState('');
+  const [selecetedDivisions, setSelectedDivisions] = useState<string[]>([]);
+  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [value, setValue] = useState<[number, number]>([0, 100000]);
 
-  const { products, error, isLoading } = useFilterProducts(query, sortBy);
+  const {
+    products,
+    error,
+    isLoading,
+  } = useFilterProducts(query, sortBy, selecetedDivisions, selectedConditions, value);
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
   const allProductsItems = products || [];
+
+  const handleFilter = (newValue: [number, number]) => {
+    console.log('Filtered values:', newValue);
+    // Here you can use `newValue` to filter your products, call API, etc.
+    setValue(newValue); // Update the value in parent if needed
+  };
+  
   return (
     <div className="bg-brand-bright">
       <div className="flex justify-center items-center w-full text-2xl p-3 ">
@@ -71,17 +85,23 @@ export default function Search() {
           <div className="bg-white mb-4 border-[1px] rounded-lg p-4 m-2">
             <p className="text-bold mb-4">FILTER BY PRICE</p>
             <div className="flex justify-center items-center">
-              <SliderDemo />
+              <SliderDemo value={value} setValue={setValue} onFilter={handleFilter} />
             </div>
           </div>
           <div className="bg-white border-[1px] rounded-lg p-4 m-2">
-            <CheckboxReactHookFormMultiple />
+            <CheckboxReactHookFormMultiple setSelectedDivisions={setSelectedDivisions}
+                                           selectedDivisions={selecetedDivisions} />
+          </div>
+          <div className="bg-white border-[1px] rounded-lg p-4 m-2">
+            <CheckboxReactHookFormMultipleCondition setSelectedConditions={setSelectedConditions}
+                                                    selectedConditions={selectedConditions} />
           </div>
         </div>
         <div
-          className="bg-white max-w-3/4 flex flex-col border-[1px]  rounded-lg p-4 m-2">
+          className="bg-white w-3/4 flex flex-col border-[1px]  rounded-lg p-4 m-2">
           <div className="space-y-6 container mx-auto my-4 px-4">
             <h1 className="text-2xl font-bold my-6">All Products</h1>
+            <hr />
             <div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {allProductsItems.map((item) => (
