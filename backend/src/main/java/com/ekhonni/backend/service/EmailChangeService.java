@@ -5,7 +5,6 @@ import com.ekhonni.backend.dto.EmailTaskDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.VerificationTokenType;
 import com.ekhonni.backend.exception.InvalidVerificationTokenException;
-import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
@@ -87,14 +86,7 @@ public class EmailChangeService {
             throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
 
-        String decryptedToken = tokenUtil.decrypt(token);
-        String[] parts = decryptedToken.split(":");
-        if (parts.length != 2) {
-            throw new InvalidVerificationTokenException("Malformed token data");
-        }
-
-        String newEmail = parts[1];
-
+        String newEmail = tokenUtil.extractEmail(token);
 
         User user = verificationToken.getUser();
 

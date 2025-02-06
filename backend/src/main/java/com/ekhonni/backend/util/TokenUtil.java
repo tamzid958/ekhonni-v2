@@ -47,7 +47,6 @@ public class TokenUtil {
     @Value("${spring.security.jwt.secret}")
     private String secret;
 
-    private final String ALGORITHM = "AES";
 
     public TokenUtil(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
@@ -116,28 +115,24 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String encrypt(String data) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(), ALGORITHM);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-            byte[] encryptedBytes = cipher.doFinal(data.getBytes());
-            return Base64.getUrlEncoder().encodeToString(encryptedBytes);
-        } catch (Exception e) {
-            throw new RuntimeException("Error during encryption", e);
-        }
+    public String encode(String token) {
+
+        return Base64.getUrlEncoder().encodeToString(token.getBytes());
     }
 
-    public  String decrypt(String encryptedData) {
+
+    public String extractEmail(String token) {
         try {
-            SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(), ALGORITHM);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, keySpec);
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(encryptedData);
-            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
-            return new String(decryptedBytes);
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(token);
+            String decodedString = new String(decodedBytes);
+
+            String[] parts = decodedString.split(":");
+            if (parts.length != 2) {
+                throw new InvalidVerificationTokenException("Invalid Verification Token");
+            }
+            return parts[1];
         } catch (Exception e) {
-            throw new RuntimeException("Error during decryption", e);
+            throw new InvalidVerificationTokenException("Invalid Verification Token");
         }
     }
 }

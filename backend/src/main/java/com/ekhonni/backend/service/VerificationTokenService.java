@@ -59,7 +59,7 @@ public class VerificationTokenService {
     public VerificationToken generate(User user, VerificationTokenType type){
 
         String rawToken = UUID.randomUUID().toString();
-        String encodedToken = tokenUtil.encrypt(rawToken);
+        String encodedToken = tokenUtil.encode(rawToken);
 
         VerificationToken verificationToken;
         if (verificationTokenRepository.findByUserId(user.getId()) != null) {
@@ -73,7 +73,7 @@ public class VerificationTokenService {
     public VerificationToken generateForEmailChange(User user, VerificationTokenType type, String newEmail){
 
         String rawToken = UUID.randomUUID() + ":" + newEmail;
-        String encodedToken = tokenUtil.encrypt(rawToken);
+        String encodedToken = tokenUtil.encode(rawToken);
 
         VerificationToken verificationToken;
         if (verificationTokenRepository.findByUserId(user.getId()) != null) {
