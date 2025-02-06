@@ -140,7 +140,8 @@ const ShopPage = () => {
         </div>
       )}
 
-      <div className="absolute top-100 left-17 mb-4">
+      <div className="absolute top-100 mb-4 flex justify-between w-full">
+        {/* Categories Button */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="flex items-center space-x-2 bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-400 transition"
@@ -156,7 +157,29 @@ const ShopPage = () => {
           </svg>
           <span>Categories</span>
         </button>
+
+
+        {/* Sorting and Search Section */}
+        <div className="flex flex-1 items-center space-x-4">
+          {/* Sort By Price Dropdown */}
+          <select
+            onChange={(e) => console.log(`Sort by: ${e.target.value}`)} // Add actual sorting logic
+            className="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg"
+          >
+            <option value="asc">Price: Low to High</option>
+            <option value="desc">Price: High to Low</option>
+          </select>
+
+          {/* Search Input */}
+          <input
+            type="text"
+            placeholder="Search products"
+            onChange={(e) => console.log(`Search term: ${e.target.value}`)} // Add actual search logic
+            className="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg"
+          />
+        </div>
       </div>
+
 
       <main className="container mx-auto px-4 py-8 flex-1 mt-16">
         {loadingCategories && <div>Loading categories...</div>}

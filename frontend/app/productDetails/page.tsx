@@ -16,11 +16,17 @@ async function fetchProductDetails(productId: string) {
   const sellerRatingResponse = await fetch(`http://localhost:8080/api/v2/review/seller/${sellerId}/average`);
   const sellerRatingData = await sellerRatingResponse.json();
 
+  const sellerLocationResponse = await fetch(`http://localhost:8080/api/v2/user/${sellerId}`);
+  const sellerLocationData = await sellerLocationResponse.json();
+
+
+
   return {
     productDetails: productData.data,
     biddingCount: biddingCountData.data,
     biddingDetails: biddingDetailsData.data.content || [],
     sellerRating: sellerRatingData.data || 0,
+    sellerLocation: sellerLocationData.address,
   };
 }
 
@@ -31,7 +37,7 @@ export default async function ProductDetailsPage({ searchParams }: { searchParam
     return <div>Product ID is missing!</div>;
   }
 
-  const { productDetails, biddingCount, biddingDetails, sellerRating } = await fetchProductDetails(productId);
+  const { productDetails, biddingCount, biddingDetails, sellerRating, sellerLocation } = await fetchProductDetails(productId);
   console.log(productDetails.seller);
 
 
@@ -41,6 +47,7 @@ export default async function ProductDetailsPage({ searchParams }: { searchParam
       biddingCount={biddingCount}
       biddingDetails={biddingDetails}
       sellerRating={sellerRating}
+      sellerLocation={sellerLocation}
     />
   );
 }

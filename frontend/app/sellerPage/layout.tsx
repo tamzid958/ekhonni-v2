@@ -31,7 +31,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
     if (sellerId) {
       fetch(`http://localhost:8080/api/v2/user/${sellerId}`)
         .then((res) => res.json())
-        .then((data) => setSellerProfile(data))
+        .then((data) => setSellerProfile(data.data))
         .catch((err) => console.error('Error fetching seller data:', err));
     }
   }, [sellerId]);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CakeSlice, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
@@ -14,11 +14,10 @@ import Link from 'next/link';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 
-
 interface ProductDetailsProps {
   productDetails: {
     id: string;
-    name: string;
+    title: string;
     description: string;
     images: Array<{ imagePath: string }>;
     price: number;
@@ -37,16 +36,18 @@ interface ProductDetailsProps {
   biddingCount: number | null;
   biddingDetails: Array<{ id: number; productId: number; amount: number; currency: string; status: string; createdAt: string | null }>;
   sellerRating: number;
+  sellerLocation: string;
 
 }
 
 
-export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating }: ProductDetailsProps) {
+export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation }: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState("");
   const [error, setError] = useState("");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [previousBid, setPreviousBid] = useState<number | null>(null);
 
   const {data: session, status} = useSession();
   const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
@@ -188,7 +189,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         <div className="w-4/12 mx-auto">
           <div className="pt-16 pl-12">
-            <p className="text-4xl">{productDetails.name}</p>
+            <p className="text-4xl">{productDetails.title}</p>
             <p className="pt-2 italic">{productDetails.status}</p>
             <span className="inline-flex pt-4">
               <CakeSlice />
@@ -307,10 +308,20 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
               <Link href={`/sellerPage/${productDetails.seller.id}`}>
-                <div className="pl-2 italic cursor-pointer hover:underline">
-                  {productDetails.seller.name.toUpperCase()}
+                <div className="pl-2 italic cursor-pointer hover:underline flex items-center space-x-1">
+                  <span>{productDetails.seller.name.toUpperCase()}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-brand-dark"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10H21v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h8v2H5v11h14v-6.172l-4.414 4.414a1 1 0 01-1.414-1.414L19.172 10h-5.344z" />
+                  </svg>
                 </div>
               </Link>
+
             </div>
             <br />
             <div className="pt-2 font-bold inline-flex">
@@ -324,7 +335,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
             <br />
             <div className="pt-2 inline-flex">
               <div className="font-bold w-40">DELIVERY FROM:</div>
-              <div className="pl-2 italic">DHAKA</div>
+              <div className="pl-2 italic">{sellerLocation}</div>
             </div>
             <br />
             <div className="pt-2 inline-flex">
