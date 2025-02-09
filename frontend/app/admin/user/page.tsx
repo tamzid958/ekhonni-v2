@@ -29,7 +29,7 @@ const processUsers = (users: any[]) : User[] => {
       status = "UNVERIFIED";
     } else if (user.deletedAt) {
       status = "DELETED";
-    } else if (user.blockedAt) {
+    } else if (user.isBlocked) {
        status = "BLOCKED";
      }
     return {
@@ -174,7 +174,7 @@ export default  function User  () {
   if (!session) {
     return (
       <div className="flex flex-col w-[1220px] h-[1200px] items-center bg-white ">
-        <div className="flex flexcol justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>You need to be signed in to view this page.</p>
         </div>
@@ -288,7 +288,7 @@ export default  function User  () {
                 <Badge
                   className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
                 >
-                  {(totalAdmins/totalUsers) * 100}%
+                  {((totalAdmins / totalUsers) * 100).toFixed(2)}%
                 </Badge>
               </div>
             </div>
@@ -305,7 +305,7 @@ export default  function User  () {
                 <Badge
                   className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
                 >
-                  {2 * (totalAdmins/totalUsers) * 100}%
+                  {(2 * (totalAdmins / totalUsers) * 100).toFixed(2)}%
                 </Badge>
               </div>
             </div>

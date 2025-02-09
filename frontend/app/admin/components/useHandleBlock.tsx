@@ -1,11 +1,15 @@
 import { axiosInstance } from '@/data/services/fetcher';
 import { toast } from 'sonner';
 
-export const handleBlcokUser = async (userId, userToken) => {
+export const handleBlockUser = async (userId,reason, blockPolicy,  userToken) => {
   try{
     const response = await axiosInstance.post(
       'api/v2/admin/user/block',
-      {id: userId},
+      {
+        id: userId,
+        reason: reason,
+        blockPolicy: blockPolicy
+      },
       {
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -29,7 +33,7 @@ export const handleBlcokUser = async (userId, userToken) => {
     console.error('Error blocking user:', error);
   }
 }
-export const handleUnblcokUser = async (userId, userToken) => {
+export const handleUnblockUser = async (userId,  userToken) => {
   try{
     const response = await axiosInstance.post(
       'api/v2/admin/user/unblock',
