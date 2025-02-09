@@ -7,7 +7,10 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
-import {  Toaster, toast } from "sonner"
+import {  Toaster, toast } from "sonner";
+import { useSession } from 'next-auth/react';
+const { data: session, status } = useSession();
+
 
 
 interface CardDemoProps {
@@ -46,19 +49,53 @@ export function CardDemo({
                          }: CardDemoProps) {
   const router = useRouter();
 
+  const token = session?.user?.token;
+
+
   const handleBidNow = () => {
     router.push(`/productDetails?id=${id}`);
   };
 
-  const handleClick = () => {
-    toast.success("Product has been added to cart!");
+  const handleClick = async () => {
+
+    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${id}`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      console.log('Response Status:', response.status);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('Parsed bid response:', responseData);
+
+        if (responseData.success) {
+          toast.success('Added to wishlist successfully!');
+          window.location.reload();
+
+        } else {
+          toast.error(responseData.message || 'Failed to add to wishlist.');
+        }
+      } else {
+        toast.error('Received an invalid response from the server.');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      toast.error('An error occurred while adding to wishlist.');
+    }
+    // toast.success('Product has been added to cart!');
   };
+
 
   return (
     <Card className="w-64 h-auto cursor-pointer bg-transparent shadow-none transition-shadow border-none">
-      <Toaster position="top-right" />
       <CardContent className="px-0">
-        <AspectRatio ratio={1} className="bg-muted"><Toaster position="top-right" />
+        <AspectRatio ratio={1} className="bg-muted">
           <Image
             src={img}
             alt={`Image of ${title}`}

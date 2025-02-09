@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/
 import { cn } from '@/lib/utils';
 import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
 
 
@@ -41,12 +41,14 @@ export function NavBar({ placeholder }: Props) {
 
 
   useEffect(() => {
+    console.log('Session Data:', session);
     if (!session) return;
     const userId = session?.user?.id;
     const userToken = session?.user?.token;
     const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
 
     async function fetchNotifications(lastFetchTime: string) {
+      console.log('Fetching notifications for user:', userId);
       const result = await NotificationGetter(userId, userToken, lastFetchTime);
 
 
@@ -151,33 +153,30 @@ export function NavBar({ placeholder }: Props) {
         </Select>
 
 
-        <SidebarProvider>
-          {session ? (
-            <>
-              <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
+
+        {session ? (
+          <SidebarProvider>
+            <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
+              <User />
+            </Button>
+            {isSidebarOpen && <AppSidebar />}
+          </SidebarProvider>
+        ) : (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="custom" size="icon2" className="rounded-full">
                 <User />
               </Button>
-              {isSidebarOpen && <AppSidebar />}
-            </>
-          ) : (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="custom" size="icon2" className="rounded-full">
-                  <User />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="p-2 text-center mt-0"
-                style={{ marginTop: '-40px' }}
-              >
-                <p className="mb-2">Log in first</p>
-                <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                  Go to Login
-                </Link>
-              </PopoverContent>
-            </Popover>
-          )}
-        </SidebarProvider>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
+              <p className="mb-2">Log in first</p>
+              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
+                Go to Login
+              </Link>
+            </PopoverContent>
+          </Popover>
+        )}
+
       </div>
     </nav>
   );
