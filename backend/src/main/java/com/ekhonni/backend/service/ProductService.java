@@ -135,15 +135,28 @@ public class ProductService extends BaseService<Product, Long> {
 
 
     public ProductResponseDTO getOne(Long id) {
-
         ProductProjection projection = productRepository.findProjectionById(id);
         if (projection == null) throw new ProductNotFoundException("Product doesn't exist");
-        User seller = AuthUtil.getAuthenticatedUser();
-        if (seller.getId() != projection.getSellerDTO().getId() && projection.getStatus() != ProductStatus.APPROVED) {
-            throw new ProductNotFoundException("User Not Matched To View This product");
+
+        User seller = null;
+        try {
+            seller = AuthUtil.getAuthenticatedUser();
+        } catch (Exception ignored) {
+
         }
+        if (seller == null) {
+            if (projection.getStatus() != ProductStatus.APPROVED) {
+                throw new ProductNotFoundException("Unauthorized to view this product");
+            }
+        } else {
+            if (!seller.getId().equals(projection.getSellerDTO().getId()) && projection.getStatus() != ProductStatus.APPROVED) {
+                throw new ProductNotFoundException("User Not Matched To View This product");
+            }
+        }
+
         return ProductProjectionConverter.convert(projection);
     }
+
 
 
     @Modifying

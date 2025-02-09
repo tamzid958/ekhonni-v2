@@ -91,4 +91,9 @@ public class WatchlistService {
         watchlistRepository.deleteByProductIdIn(productIds);
 
     }
+
+    public Boolean productInWatchlist(Long productId) {
+           User user = AuthUtil.getAuthenticatedUser();
+           return watchlistRepository.existsByUser_IdAndProduct_Id(user.getId(),productId);
+    }
 }

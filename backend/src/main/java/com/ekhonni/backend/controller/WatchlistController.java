@@ -41,5 +41,10 @@ public class WatchlistController {
         return new ApiResponse<>(HTTPStatus.DELETED, watchlistService.removeProducts(productIds));
     }
 
+    @GetMapping("/contains")
+    public ApiResponse<?> isInWatchlist(@RequestParam("productId") Long productId){
+        return new ApiResponse<>(HTTPStatus.OK, watchlistService.productInWatchlist(productId));
+    }
+
 
 }

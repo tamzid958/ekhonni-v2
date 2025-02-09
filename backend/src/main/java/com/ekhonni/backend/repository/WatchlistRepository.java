@@ -25,4 +25,5 @@ public interface WatchlistRepository extends JpaRepository<WatchlistProduct, Lon
 
     void deleteByUserIdAndProductIdIn(UUID userId, List<Long> productIds);
     void deleteByProductIdIn(List<Long> productIds);
+    boolean existsByUser_IdAndProduct_Id(UUID userId, Long productId);
 }
