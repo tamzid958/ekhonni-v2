@@ -154,33 +154,29 @@ export function NavBar({ placeholder }: Props) {
 
 
 
-        <SidebarProvider>
-          {session ? (
-            <>
-              <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
+        {session ? (
+          <SidebarProvider>
+            <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
+              <User />
+            </Button>
+            {isSidebarOpen && <AppSidebar />}
+          </SidebarProvider>
+        ) : (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="custom" size="icon2" className="rounded-full">
                 <User />
               </Button>
-              {isSidebarOpen && <AppSidebar />}
-            </>
-          ) : (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="custom" size="icon2" className="rounded-full">
-                  <User />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="p-2 text-center mt-0"
-                style={{ marginTop: '-40px' }}
-              >
-                <p className="mb-2">Log in first</p>
-                <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                  Go to Login
-                </Link>
-              </PopoverContent>
-            </Popover>
-          )}
-        </SidebarProvider>
+            </PopoverTrigger>
+            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
+              <p className="mb-2">Log in first</p>
+              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
+                Go to Login
+              </Link>
+            </PopoverContent>
+          </Popover>
+        )}
+
       </div>
     </nav>
   );

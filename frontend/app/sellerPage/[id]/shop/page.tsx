@@ -159,22 +159,19 @@ const ShopPage = () => {
         </button>
 
 
-        {/* Sorting and Search Section */}
         <div className="flex flex-1 items-center space-x-4">
-          {/* Sort By Price Dropdown */}
           <select
-            onChange={(e) => console.log(`Sort by: ${e.target.value}`)} // Add actual sorting logic
+            onChange={(e) => console.log(`Sort by: ${e.target.value}`)}
             className="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg"
           >
             <option value="asc">Price: Low to High</option>
             <option value="desc">Price: High to Low</option>
           </select>
 
-          {/* Search Input */}
           <input
             type="text"
             placeholder="Search products"
-            onChange={(e) => console.log(`Search term: ${e.target.value}`)} // Add actual search logic
+            onChange={(e) => console.log(`Search term: ${e.target.value}`)}
             className="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg"
           />
         </div>
