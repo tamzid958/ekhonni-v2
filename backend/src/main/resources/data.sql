@@ -139,7 +139,6 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 (10070, 'Furniture 3', true, 10069, NOW(), NOW()),
 (10071, 'Furniture 4', true, 10070, NOW(), NOW());
 
--- Insert Products with updated conditions and fields
 -- Insert Products with leaf categories and updated IDs
 INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at) VALUES
 (101, 'iPhone 13 Pro', 'Slightly used iPhone 13 Pro', '256GB storage, excellent condition', 899.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Minimal signs of use', 10048, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),

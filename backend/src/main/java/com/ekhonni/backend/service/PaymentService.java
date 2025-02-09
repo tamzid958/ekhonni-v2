@@ -8,6 +8,8 @@ import com.ekhonni.backend.exception.payment.*;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.payment.sslcommerz.*;
+import com.ekhonni.backend.util.HashUtil;
+import com.ekhonni.backend.util.HttpUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
 import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.servlet.http.HttpServletRequest;
@@ -120,7 +122,7 @@ public class PaymentService {
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
 
 //        String protocol = request.getHeader("x-forwarded-proto");
-//        String hostName = getHostName(getIpAddress(request));
+//        String hostName = HttpUtil.getHostName(HttpUtil.getIpAddress(request));
 //        log.info("Protocol: {}, domain name: {}", protocol, hostName);
 //
 //        if (!"https".equals(protocol)) {
@@ -133,7 +135,7 @@ public class PaymentService {
 //            throw new InvalidTransactionException();   // when not using ngrok
 //        }
 
-        String gatewayIpAddress = getIpAddress(request);
+        String gatewayIpAddress = HttpUtil.getIpAddress(request);
         if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
             log.warn("Payment request from unknown ip: {}", gatewayIpAddress);
             throw new InvalidTransactionException();
@@ -157,8 +159,6 @@ public class PaymentService {
 
         if (!matchTransactionParameters(transaction, response)) {
             log.warn("Response parameters don't match for transaction: {}", transaction.getId());
-//            validateTransaction(response.getValId());
-//            throw new InvalidTransactionException();
         }
 
         if (!validateTransaction(response.getValId())) {
@@ -266,24 +266,6 @@ public class PaymentService {
                 .body(TransactionQueryResponse.class);
     }
 
-    private String getIpAddress(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
-
-    private String getHostName(String ipAddress) {
-        try {
-            InetAddress inetAddress = InetAddress.getByName(ipAddress);
-            return inetAddress.getHostName();
-        } catch (UnknownHostException e) {
-            System.out.println("Hostname could not be resolved for IP: " + ipAddress);
-        }
-        return null;
-    }
-
     private boolean ipnHashVerify(final Map<String, String> response) {
         if (response.containsKey("verify_sign") && response.containsKey("verify_key")) {
             String verifySign = response.get("verify_sign");
@@ -298,7 +280,7 @@ public class PaymentService {
                         sortedMap.put(key, response.get(key));
                     }
                 }
-                String hashedPass = md5(sslCommerzConfig.getStorePassword());
+                String hashedPass = HashUtil.md5(sslCommerzConfig.getStorePassword());
                 sortedMap.put("store_passwd", hashedPass);
 
                 StringBuilder hashStringBuilder = new StringBuilder();
@@ -311,28 +293,11 @@ public class PaymentService {
                 if (!hashStringBuilder.isEmpty()) {
                     hashStringBuilder.setLength(hashStringBuilder.length() - 1);
                 }
-                String generatedHash = md5(hashStringBuilder.toString());
+                String generatedHash = HashUtil.md5(hashStringBuilder.toString());
                 return generatedHash.equals(verifySign);
             }
         }
         return false;
-    }
-
-    private String md5(String s) {
-        byte[] bytesOfMessage = s.getBytes(StandardCharsets.UTF_8);
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Error processing transaction.");
-        }
-        byte[] theDigest = md.digest(bytesOfMessage);
-        StringBuilder sb = new StringBuilder();
-        for (byte b : theDigest) {
-            sb.append(Integer.toHexString((b & 0xFF) | 0x100), 1, 3);
-        }
-        return sb.toString();
     }
 
 }

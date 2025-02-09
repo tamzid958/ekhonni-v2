@@ -72,6 +72,13 @@ public class BidController {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForAuthenticatedUser(BidderBidProjection.class, pageable));
     }
 
+    @GetMapping("/bidder/status/{status}")
+    public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForUserByStatus(
+            @PathVariable("status") BidStatus status, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForAuthenticatedUserByStatus(status, BidderBidProjection.class, pageable));
+    }
+
     @GetMapping("/product/{product_id}/highest")
     public ResponseEntity<ApiResponse<Double>> getHighestForProduct(@PathVariable("product_id") Long productId) {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getHighestBidAmount(productId));

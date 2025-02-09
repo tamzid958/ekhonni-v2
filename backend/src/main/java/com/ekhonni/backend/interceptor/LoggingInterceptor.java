@@ -25,12 +25,12 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
     private static Long requestId = 0L;
     private static final Set<String> SENSITIVE_FIELDS = Set.of(
-            "password", "passwd", "apikey", "api_key", "secret", "token",
+            "password", "passwd", "apikey", "api_key", "secret", "token", "card_ref_id",
             "store_id", "store_passwd", "card_no", "card_number",
             "cvv", "cvc", "pin", "ssn", "account_number", "bank_account",
             "routing_number", "key", "private_key", "secret_key", "sessionkey",
             "redirectGatewayURL", "GatewayPageURL", "bank_tran_id",
-            "verify_sign", "verify_key"
+            "verify_sign", "verify_key", "val_id", "ssl_id", "SESSIONKEY"
     );
 
     @Override

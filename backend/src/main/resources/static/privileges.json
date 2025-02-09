@@ -285,6 +285,12 @@
     "endpoint": "/api/v2/bid/bidder"
   },
   {
+    "name": "Get Bidder Bids By Status",
+    "description": "Retrieves paginated list of bids for authenticated user filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/bidder/status/{id}"
+  },
+  {
     "name": "Get Product Buyer Bids",
     "description": "Allows viewing all bids for a product (buyer view)",
     "httpMethod": "GET",

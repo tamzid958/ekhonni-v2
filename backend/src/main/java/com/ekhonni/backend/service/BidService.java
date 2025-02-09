@@ -144,6 +144,11 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
     }
 
+    public <P> Page<P> getAllForAuthenticatedUserByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByBidderIdAndStatusDeletedAtIsNull(
+                AuthUtil.getAuthenticatedUser().getId(), status, projection, pageable);
+    }
+
     public <P> Page<P> getAllForUser(UUID userId, Class<P> projection, Pageable pageable) {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(userId, projection, pageable);
     }
