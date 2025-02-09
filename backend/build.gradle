@@ -75,6 +75,9 @@ dependencies {
     //image
     implementation 'com.cloudinary:cloudinary-http44:1.31.0'
 
+//  WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 
 }
 
