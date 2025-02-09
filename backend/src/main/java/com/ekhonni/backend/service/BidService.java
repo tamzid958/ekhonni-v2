@@ -140,12 +140,21 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.countByProductId(productId);
     }
 
-    public <P> Page<P> getAllForAuthenticatedUser(Class<P> projection, Pageable pageable) {
+    public <P> Page<P> getAllForAuthenticatedBidder(Class<P> projection, Pageable pageable) {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
     }
 
-    public <P> Page<P> getAllForAuthenticatedUserByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
-        return bidRepository.findByBidderIdAndStatusDeletedAtIsNull(
+    public <P> Page<P> getAllForAuthenticatedSeller(Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductSellerIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
+    }
+
+    public <P> Page<P> getAllForAuthenticatedBidderByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByBidderIdAndStatusAndDeletedAtIsNull(
+                AuthUtil.getAuthenticatedUser().getId(), status, projection, pageable);
+    }
+
+    public <P> Page<P> getAllForAuthenticatedSellerByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductSellerIdAndStatusAndDeletedAtIsNull(
                 AuthUtil.getAuthenticatedUser().getId(), status, projection, pageable);
     }
 
@@ -167,5 +176,4 @@ public class BidService extends BaseService<Bid, Long> {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
     }
-
 }

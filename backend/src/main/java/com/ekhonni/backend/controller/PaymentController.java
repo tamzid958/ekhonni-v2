@@ -37,6 +37,24 @@ public class PaymentController {
         return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.initiatePayment(bidId));
     }
 
+    @PostMapping("/success")
+    public ResponseEntity<?> success(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Success Response: {}", validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.OK, validatorResponse);
+    }
+
+    @PostMapping("/fail")
+    public ResponseEntity<?> fail(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Fail Response: {}", validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.BAD_REQUEST, validatorResponse);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancel(@RequestParam Map<String, String> validatorResponse) {
+        log.info("Cancel Response: {}", validatorResponse);
+        return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, validatorResponse);
+    }
+
     @PostMapping("/ipn")
     public ResponseEntity<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
                                        @NotNull HttpServletRequest request) {

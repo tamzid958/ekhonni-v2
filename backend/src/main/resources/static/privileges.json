@@ -279,16 +279,28 @@
     "endpoint": "/api/v2/bid/{id}"
   },
   {
-    "name": "Get All Bids For User",
+    "name": "Get All Bids For Bidder",
     "description": "Allows bidder to view all their bids",
     "httpMethod": "GET",
     "endpoint": "/api/v2/bid/bidder"
   },
   {
     "name": "Get Bidder Bids By Status",
-    "description": "Retrieves paginated list of bids for authenticated user filtered by status",
+    "description": "Retrieves paginated list of bids for authenticated bidder/buyer filtered by status",
     "httpMethod": "GET",
     "endpoint": "/api/v2/bid/bidder/status/{id}"
+  },
+  {
+    "name": "Get All Bids For Seller",
+    "description": "Allows seller to view all their bids",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller"
+  },
+  {
+    "name": "Get Seller Bids By Status",
+    "description": "Retrieves paginated list of bids for authenticated seller filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller/status/{id}"
   },
   {
     "name": "Get Product Buyer Bids",
