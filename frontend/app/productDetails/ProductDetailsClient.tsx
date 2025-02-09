@@ -70,11 +70,14 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         if (response.ok) {
           const data = await response.json();
+          console.log("Fetched previous bid:", data);
           if (data.success && data.data?.amount) {
             setPreviousBid(data.data.amount);
+          } else {
+            console.error("No bid amount returned in the response", data);
           }
         } else {
-          console.error("Failed to fetch previous bid");
+          console.error("Failed to fetch previous bid, Response Status:", response.status);
         }
       } catch (error) {
         console.error("Error fetching previous bid:", error);
@@ -82,7 +85,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     };
 
     fetchPreviousBid();
-  }, [session, productDetails.id]);
+  }, [session, productDetails.id, token]);
+
 
 
   const Checkbox = ({ checked, onChange }) => (
@@ -172,8 +176,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       toast.error("An error occurred while placing your bid.");
     }
   };
-
-
 
 
 
