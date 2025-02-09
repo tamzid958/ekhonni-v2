@@ -1,18 +1,6 @@
-'use client';
-
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
-import {
-  X,
-  LogOut,
-  ShoppingBag,
-  Inbox,
-  Settings,
-  Info,
-  List,
-  MessageCircle,
-} from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ArrowBigDown, Inbox, Info, List, LogOut, MessageCircle, Settings, ShoppingBag, X } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
 import {
   AlertDialog,
@@ -34,27 +22,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import { logout } from '../../app/auth/logout/page';
 
 const items = [
-  { title: "Edit Profile", url: "/userPage/editProfile", icon: Settings },
-  { title: "About", url: "/userPage/userAbout", icon: Info },
-  { title: "Inbox", url: "/userPage/inbox", icon: Inbox },
-  { title: "Feedback", url: "/userPage/feedback", icon: MessageCircle },
-  { title: "Watchlist", url: "/userPage/watchlist", icon: List },
-  { title: "Shop", url: "/userPage/shop", icon: ShoppingBag },
+  { title: 'Edit Profile', url: '/userPage/editProfile', icon: Settings },
+  { title: 'About', url: '/userPage/userAbout', icon: Info },
+  { title: 'Inbox', url: '/userPage/inbox', icon: Inbox },
+  { title: 'Feedback', url: '/userPage/feedback', icon: MessageCircle },
+  { title: 'Watchlist', url: '/userPage/watchlist', icon: List },
+  { title: 'Shop', url: '/userPage/shop', icon: ShoppingBag },
+  { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
 ];
 
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeButton, setActiveButton] = useState(""); // Track active button
+  const [activeButton, setActiveButton] = useState(pathname);
+
+  useEffect(() => {
+    setActiveButton(pathname); // Sync activeButton with pathname when the component loads
+  }, [pathname]);
 
   const handleClose = () => {
     setIsSidebarOpen(false);
-    router.push('/');
   };
 
   const handleCancelButton = () => {
@@ -62,7 +54,7 @@ export function AppSidebar() {
   };
 
   const handleLogout = () => {
-    console.log("Logging out...");
+    console.log('Logging out...');
     setIsSidebarOpen(false);
     setTimeout(() => {
       logout();
@@ -70,23 +62,25 @@ export function AppSidebar() {
   };
 
   const handleButtonClick = (url) => {
-    setActiveButton(url);
-    router.push(url);
+    setActiveButton(url); // Set the active button to the clicked item's URL
+    router.push(url); // Navigate to the new URL
   };
 
   return (
     <>
       {isSidebarOpen && (
-        <Sidebar side="right" variant="floating">
+        <Sidebar side="right" variant="sidebar" className="fixed right-0 top-0 z-50">
           <SidebarContent>
-            <button
-              onClick={handleClose}
-              className="justify-end p-4 text-black-500 font-bold hover:text-red-700"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={handleClose}
+                className="p-4 text-black-500 font-bold hover:text-red-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
 
-            <SidebarGroup className="mt-0">
+            <SidebarGroup className="mt-0" style={{ marginTop: '-35px' }}>
               <SidebarGroupLabel className="pt-2">Menu</SidebarGroupLabel>
               <SidebarGroupContent className="font-bold">
                 <SidebarMenu>
@@ -97,8 +91,8 @@ export function AppSidebar() {
                     >
                       <SidebarMenuItem
                         className={`flex items-center space-x-2 pt-1 ${
-                          pathname === item.url || activeButton === item.url
-                            ? 'bg-blue-500 text-white rounded w-full'
+                          activeButton === item.url
+                            ? 'bg-brand-dark text-white rounded w-full'
                             : 'text-black-700 hover:bg-black-200'
                         }`}
                       >
@@ -110,11 +104,11 @@ export function AppSidebar() {
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <SidebarMenuButton onClick={() => setActiveButton("logout")}>
+                      <SidebarMenuButton onClick={() => setActiveButton('logout')}>
                         <SidebarMenuItem
                           className={`flex items-center space-x-2 pt-1 ${
-                            activeButton === "logout"
-                              ? 'bg-blue-500 text-white rounded w-full'
+                            activeButton === 'logout'
+                              ? 'bg-brand-dark text-white rounded w-full'
                               : 'text-black-700 hover:bg-black-200'
                           }`}
                         >

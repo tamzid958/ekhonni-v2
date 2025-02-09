@@ -16,7 +16,6 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
 
-
 //for notification console
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
@@ -68,8 +67,8 @@ export default function Home() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    //'use server';
     console.log('Form Submitted:', values);
+
 
     const formData = new FormData();
     formData.append('title', values.productName);
@@ -82,7 +81,6 @@ export default function Home() {
     formData.append('conditionDetails', values.productConditionDescription);
     formData.append('category', values.category);
 
-    // Append images
     values.images.forEach((file) => {
       formData.append('images', file);
     });
@@ -91,6 +89,7 @@ export default function Home() {
 
     if (result.success) {
       console.log(result.message);
+      window.location.href = '/';
     } else {
       console.error(result.message);
     }

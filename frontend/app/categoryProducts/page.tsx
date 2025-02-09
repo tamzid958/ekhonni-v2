@@ -28,14 +28,7 @@ interface Props {
 
 export default async function CategoryProductPage({ searchParams }: Props) {
   const selectedCategory = searchParams.category || 'All';
-
-  // Directly fetch products data
-  // const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${process.env.HOST || 'localhost:3000'}`;
-  // const url =
-  //   selectedCategory === 'All'
-  //     ? `${baseUrl}/api/mock-data`
-  //     : `${baseUrl}/api/mock-data?category=${encodeURIComponent(selectedCategory)}`;
-
+  
   const url = selectedCategory === 'All' ?
     `http://localhost:8080/api/v2/product/filter`
     : `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(selectedCategory)}`;
@@ -73,21 +66,9 @@ export default async function CategoryProductPage({ searchParams }: Props) {
           <div className="container mx-auto px-4 w-full space-y-6">
             <Separator className="mt-4" />
 
-            <ProductSection title={selectedCategory} products={products} selectedCategory={selectedCategory} />
+            {/* product view horizontal card, not slide box */}
 
-            {/*{labels.map((label) => {*/}
-            {/*  const filteredProducts = products.filter((product) => product.label === label).slice(0, 10);*/}
-            {/*  return (*/}
-            {/*    <div key={label}>*/}
-            {/*      <ProductSection*/}
-            {/*        key={label}*/}
-            {/*        title={label}*/}
-            {/*        products={filteredProducts}*/}
-            {/*        selectedCategory={selectedCategory} />*/}
-            {/*      <Separator />*/}
-            {/*    </div>*/}
-            {/*  );*/}
-            {/*})}*/}
+            <ProductSection title={selectedCategory} products={products} selectedCategory={selectedCategory} />
           </div>
         </div>
       </div>
