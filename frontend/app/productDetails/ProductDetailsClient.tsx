@@ -377,7 +377,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
-              <Link href={`/sellerPage/${productDetails.seller.id}`}>
+              <Link href={`/seller-page/${productDetails.seller.id}`}>
                 <div className="pl-2 italic cursor-pointer hover:underline flex items-center space-x-1">
                   <span>{productDetails.seller.name.toUpperCase()}</span>
                   <svg

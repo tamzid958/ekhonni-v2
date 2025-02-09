@@ -105,7 +105,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
 
       <nav className="bg-gray-200 py-3">
         <div className="container mx-auto px-4 flex space-x-6">
-          <Link href={`/sellerPage/${sellerId}/shop`}>
+          <Link href={`/seller-page/${sellerId}/shop`}>
             <span
               className={`text-gray-700 font-medium hover:text-black ${
                 activeMenu === '/shop' ? 'text-black font-bold border-b-2 border-black' : ''
@@ -115,7 +115,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
             </span>
           </Link>
 
-          <Link href={`/sellerPage/${sellerId}/feedback`}>
+          <Link href={`/seller-page/${sellerId}/feedback`}>
             <span
               className={`text-gray-700 font-medium hover:text-black ${
                 activeMenu === '/feedback' ? 'text-black font-bold border-b-2 border-black' : ''
