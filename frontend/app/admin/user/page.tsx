@@ -165,7 +165,7 @@ export default  function User  () {
   if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock || isLoadingAdmin || isLoadingRole) {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
-          <div className="flex justify-center items-center h-screen">
+          <div className="flex justify-center flex-col items-center h-screen">
             <Loading />
           </div>
       </div>
@@ -173,18 +173,22 @@ export default  function User  () {
   }
   if (!session) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex flex-col w-[1220px] h-[1200px] items-center bg-white ">
+        <div className="flex flexcol justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>You need to be signed in to view this page.</p>
+        </div>
       </div>
     );
   }
   else if(activeError || allError || deletedError || blockedError || adminError || roleError)
   {
     return (
-      <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
+      <div className="flex w-[1220px] h-[1200px] flex-col items-center  bg-white ">
+        <div className="flex justify-center flex-col items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>Failed to Load User Data</p>
+        </div>
       </div>
     );
   }
@@ -281,12 +285,11 @@ export default  function User  () {
                 <h1 className="text-4xl font-bold">{totalAdmins}</h1>
               </div>
               <div className="flex mt-6">
-                {/*<Badge*/}
-                {/*  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}*/}
-                {/*>*/}
-                {/*  {growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}*/}
-                {/*  {growthPercentage}%*/}
-                {/*</Badge>*/}
+                <Badge
+                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
+                >
+                  {(totalAdmins/totalUsers) * 100}%
+                </Badge>
               </div>
             </div>
           </Card>
@@ -296,15 +299,14 @@ export default  function User  () {
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
                 <CardTitle className="flex text-gray-500 mb-2 text-xl">Moderators and Others</CardTitle>
-                <h1 className="text-4xl font-bold">1</h1>
+                <h1 className="text-4xl font-bold">{2 * totalAdmins}</h1>
               </div>
               <div className="flex mt-6">
-                {/*<Badge*/}
-                {/*  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'}`}*/}
-                {/*>*/}
-                {/*  {growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}*/}
-                {/*  {growthPercentage}%*/}
-                {/*</Badge>*/}
+                <Badge
+                  className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
+                >
+                  {2 * (totalAdmins/totalUsers) * 100}%
+                </Badge>
               </div>
             </div>
           </Card>
