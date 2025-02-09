@@ -34,12 +34,6 @@ public class PayoutAccountController {
         return ResponseUtil.createResponse(HTTPStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> update(@PathVariable Long id, @Valid @RequestBody PayoutAccountUpdateDTO dto) {
-        payoutAccountService.update(id, dto);
-        return ResponseUtil.createResponse(HTTPStatus.NO_CONTENT);
-    }
-
     @GetMapping("/{id}")
     @PreAuthorize("@payoutAccountService.isOwner(#id, authentication.principal.id)")
     public ResponseEntity<ApiResponse<PayoutAccountProjection>> get(@PathVariable Long id) {

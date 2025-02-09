@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
  * Date: 12/9/24
  */
 
-public record AccountDTO(
+public record AccountUpdateDTO(
                       @NotNull(message = "Balance cannot be null.")
                       @DecimalMin(value = "0.0", message = "Balance must be greater than or equal to 0")
                       double balance,

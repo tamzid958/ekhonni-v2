@@ -1,14 +1,9 @@
 package com.ekhonni.backend.service.payout.provider.bkash;
 
 import com.ekhonni.backend.config.payout.BkashConfig;
-import com.ekhonni.backend.dto.withdraw.WithdrawRequest;
 import com.ekhonni.backend.enums.WithdrawStatus;
 import com.ekhonni.backend.exception.payout.PayoutProcessingException;
-import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
-import com.ekhonni.backend.model.PayoutAccount;
 import com.ekhonni.backend.model.Withdraw;
-import com.ekhonni.backend.service.PayoutAccountService;
-import com.ekhonni.backend.service.WithdrawService;
 import com.ekhonni.backend.service.payout.PayoutProvider;
 import com.ekhonni.backend.service.payout.provider.bkash.request.BkashPayoutRequest;
 import com.ekhonni.backend.service.payout.provider.bkash.response.BkashPayoutResponse;
@@ -16,6 +11,10 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Author: Asif Iqbal
@@ -44,11 +43,19 @@ public class BkashPayoutProvider implements PayoutProvider {
         );
 
         try {
-            BkashPayoutResponse response = bkashApiClient.sendMoney(payoutRequest, bkashTokenManager.getAccessToken());
+//            BkashPayoutResponse response = bkashApiClient.sendMoney(payoutRequest, bkashTokenManager.getAccessToken());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss:SSS z")
+                    .withZone(ZoneId.systemDefault());
+            String formatted = formatter.format(LocalDateTime.now());
+            BkashPayoutResponse response = new BkashPayoutResponse(
+                    formatted, "trxId", "Completed", withdraw.getAmount(),
+                    "BDT", withdraw.getPayoutAccount().getPayoutAccountNumber(),
+                    "merchantInvoiceNumber", 0.0);
             updateWithdraw(withdraw, response);
-        } catch (PayoutProcessingException e) {
+        } catch (Exception e) {
             updateWithdrawStatus(withdraw, WithdrawStatus.FAILED);
-            throw e;
+            throw new PayoutProcessingException("exception");
+//            throw e;
         }
 
     }

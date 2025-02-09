@@ -579,6 +579,48 @@
     "endpoint": "/api/v2/account/payout/{id}"
   },
   {
+    "name": "Get All Accounts",
+    "description": "Allows users to retrieve a paginated list of all accounts",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account"
+  },
+  {
+    "name": "Get Account",
+    "description": "Allows users to retrieve a specific account by ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/{id}"
+  },
+  {
+    "name": "Get Account User",
+    "description": "Allows users to retrieve user information for a specific account",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/{id}/user"
+  },
+  {
+    "name": "Update Account",
+    "description": "Allows users to update an existing account",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/account/{id}"
+  },
+  {
+    "name": "Get Account Balance",
+    "description": "Allows users to retrieve the balance for a specific account",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/{id}/balance"
+  },
+  {
+    "name": "Get Authenticated User Account",
+    "description": "Allows users to retrieve their own account information",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/user"
+  },
+  {
+    "name": "Get Authenticated User Balance",
+    "description": "Allows users to retrieve their own account balance",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/user/balance"
+  },
+  {
     "name": "Get Transaction by ID",
     "description": "Fetches a specific transaction by its ID",
     "httpMethod": "GET",

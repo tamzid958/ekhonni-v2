@@ -20,7 +20,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"account_id", "category", "method", "payout_account_number"})})
 public class PayoutAccount extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)

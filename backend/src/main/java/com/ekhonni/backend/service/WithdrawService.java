@@ -1,14 +1,12 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.withdraw.WithdrawRequest;
-import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.enums.WithdrawStatus;
 import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
 import com.ekhonni.backend.exception.withdraw.InsufficientBalanceException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.PayoutAccount;
 import com.ekhonni.backend.model.Withdraw;
-import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.projection.withdraw.WithdrawProjection;
 import com.ekhonni.backend.repository.WithdrawRepository;
 import com.ekhonni.backend.util.AuthUtil;
@@ -85,7 +83,6 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
     public Page<WithdrawProjection> getAllWithdraws(Pageable pageable) {
         return withdrawRepository.findBy(WithdrawProjection.class, pageable);
     }
-
 
     public Map<String, Object> getUserWithdrawStatistics(Long userId) {
         Map<String, Object> statistics = new HashMap<>();
