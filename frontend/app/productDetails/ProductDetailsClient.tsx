@@ -37,6 +37,7 @@ interface ProductDetailsProps {
   biddingDetails: Array<{ id: number; productId: number; amount: number; currency: string; status: string; createdAt: string | null }>;
   sellerRating: number;
   sellerLocation: string;
+  // prevBidding: number;
 
 }
 
@@ -53,6 +54,35 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
   const router = useRouter();
 
+  const token = session?.user?.token;
+
+
+  useEffect(() => {
+    const fetchPreviousBid = async () => {
+      if (!session || !productDetails.id) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/bid/user/product/${productDetails.id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data?.amount) {
+            setPreviousBid(data.data.amount);
+          }
+        } else {
+          console.error("Failed to fetch previous bid");
+        }
+      } catch (error) {
+        console.error("Error fetching previous bid:", error);
+      }
+    };
+
+    fetchPreviousBid();
+  }, [session, productDetails.id]);
 
 
   const Checkbox = ({ checked, onChange }) => (
@@ -80,13 +110,20 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     const result = bidSchema.safeParse(value);
 
     if (result.success) {
-      setError("");
+      const bidValue = Number(value);
+      if (previousBid !== null && bidValue <= previousBid) {
+        setError(`Bid must be higher than your previous bid (৳${previousBid})`);
+        setIsButtonEnabled(false);
+      } else {
+        setError("");
+        setIsButtonEnabled(bidValue > 0);
+      }
       setBidAmount(value);
-      setIsButtonEnabled(Number(value) > 0);
     } else {
       setError(result.error.errors[0].message);
     }
   };
+
 
 
   const handleBidSubmit = async () => {
@@ -101,7 +138,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       currency: "BDT",
     };
 
-    const token = session?.user?.token;
     console.log(token);
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
@@ -136,6 +172,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       toast.error("An error occurred while placing your bid.");
     }
   };
+
+
 
 
 

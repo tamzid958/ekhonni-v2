@@ -21,6 +21,7 @@ async function fetchProductDetails(productId: string) {
 
 
 
+
   return {
     productDetails: productData.data,
     biddingCount: biddingCountData.data,
