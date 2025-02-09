@@ -10,6 +10,7 @@ import { axiosInstance } from '@/data/services/fetcher';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 
 
@@ -47,14 +48,14 @@ export default function ResetPasswordPage (){
         router.push(`/auth/reset-password?success=${encodeURIComponent(true)}`);
       }
       else {
-        alert("Password Update Failed. Please Try Again Later.")
+        toast.error("Password Update Failed. Please Try Again Later.")
       }
 
     }
     catch (err)
     {
       console.error(err)
-      alert("Something Went Wrong. Please Try Again");
+      toast.error("Something Went Wrong. Please Try Again");
     }
   }
    return (

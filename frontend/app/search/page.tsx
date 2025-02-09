@@ -1,113 +1,119 @@
-// Need to adjust the height of left filter bar
 // Need to add pagination
-import React from 'react';
-import { ComboboxPopover } from '@/components/PopoverFilter';
+'use client';
+import { useFilterProducts } from '@/hooks/useFilterProducts';
+import { useSearchParams } from 'next/navigation';
 import { CheckboxReactHookFormMultiple } from '@/components/CheckboxFilter';
 import { SliderDemo } from '@/components/PriceRangeFilter';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { CardForSearch } from './components/CardForSearch';
+import Link from 'next/link';
+import { useState } from 'react';
+import { CheckboxReactHookFormMultipleCondition } from '@/components/CheckBoxFilterCondition';
 
-interface data {
+interface Product {
+  id: number;
   title: string;
+  subTitle: string;
   description: string;
-  img: string;
   price: number;
+  division: string;
+  address: string;
+  condition: string;
+  conditionDetails: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  seller: {
+    id: string;
+    name: string;
+  };
+  category: {
+    id: number;
+    name: string;
+  };
+  images: {
+    imagePath: string;
+  }[];
 }
 
-function CardDemo({ title, description, img, price }: data) {
-  return (
-    <Card className="bg-transparent shadow-none">
-      <CardContent className="pt-6">
-        <AspectRatio ratio={4 / 3} className="bg-muted">
-          <Image
-            src={img}
-            alt="Image of ${title}"
-            fill
-            className="h-full w-full rounded-md object-cover"
-          />
-        </AspectRatio>
-      </CardContent>
-      <CardFooter className="flex-col items-start">
-        <CardTitle className="mb-2 text-xl">{title}</CardTitle>
-        <CardDescription className="text-md">{description}</CardDescription>
-        <CardDescription className="text-lg mt-2">${price}</CardDescription>
-      </CardFooter>
-    </Card>
-  );
-}
+export default function Search() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || 'No query provided';
+  const [sortBy, setSortBy] = useState('');
+  const [selecetedDivisions, setSelectedDivisions] = useState<string[]>([]);
+  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [value, setValue] = useState<[number, number]>([0, 100000]);
 
-interface data {
-  title: string;
-  description: string;
-  img: string;
-  price: number;
-  category: string;
-}
+  const {
+    products,
+    error,
+    isLoading,
+  } = useFilterProducts(query, sortBy, selecetedDivisions, selectedConditions, value);
 
-export default async function Search() {
-  const response = await fetch('http://localhost:3000/api/allProduct', { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error('Failed to fetch data');
-  }
-  const allProductsItems: data[] = await response.json();
+  if (error) return <div>failed to load</div>;
+  if (isLoading) return <div>loading...</div>;
+
+  const allProductsItems = products || [];
+
+  const handleFilter = (newValue: [number, number]) => {
+    console.log('Filtered values:', newValue);
+    setValue(newValue);
+  };
 
   return (
     <div className="bg-brand-bright">
       <div className="flex justify-center items-center w-full text-2xl p-3 ">
-        Search Results for your search...
+        Search Results for your search: {query}
       </div>
       <div className="flex flex-row ml-40 mr-40 mb-8">
         <div className="w-1/4 flex flex-col">
-          <div className="bg-white mb-4 border-[1px] border-gray-700 rounded-lg p-4 m-2">
+          <div className="bg-white mb-4 border-[1px]  rounded-lg p-4 m-2">
             SORT BY:
             <div>
-              <Button variant="custom" className="p-2 m-2">Popular</Button>
-              <Button variant="custom" className="p-2 m-2">Lowest Price</Button>
-              <Button variant="custom" className="p-2 m-2">Highest Price</Button>
-              <Button variant="custom" className="p-2 m-2">Bestselling</Button>
-              <Button variant="custom" className="p-2 m-2">Recent Products</Button>
+              <Button variant="custom" className="p-2 m-2" onClick={() => setSortBy('priceLowToHigh')}>
+                Lowest Price
+              </Button>
+              <Button variant="custom" className="p-2 m-2" onClick={() => setSortBy('priceHighToLow')}>
+                Highest Price
+              </Button>
+              <Button variant="custom" className="p-2 m-2" onClick={() => setSortBy('newlyListed')}>
+                By Time
+              </Button>
             </div>
           </div>
-          <div className="bg-white mb-4 border-[1px] border-gray-700 rounded-lg p-4 m-2">
+          <div className="bg-white mb-4 border-[1px] rounded-lg p-4 m-2">
             <p className="text-bold mb-4">FILTER BY PRICE</p>
             <div className="flex justify-center items-center">
-              <SliderDemo />
+              <SliderDemo value={value} setValue={setValue} onFilter={handleFilter} />
             </div>
           </div>
-          <div className="bg-white border-[1px] border-gray-700 rounded-lg p-4 m-2">
-            <CheckboxReactHookFormMultiple />
+          <div className="bg-white border-[1px] rounded-lg p-4 m-2">
+            <CheckboxReactHookFormMultiple setSelectedDivisions={setSelectedDivisions}
+                                           selectedDivisions={selecetedDivisions} />
+          </div>
+          <div className="bg-white border-[1px] rounded-lg p-4 m-2">
+            <CheckboxReactHookFormMultipleCondition setSelectedConditions={setSelectedConditions}
+                                                    selectedConditions={selectedConditions} />
           </div>
         </div>
         <div
-          className="bg-white w-3/4 flex flex-col border-[1px] border-gray-700 rounded-lg p-4 m-2">
-          <div className="flex justify-end">
-            <ComboboxPopover />
-          </div>
+          className="bg-white w-3/4 flex flex-col border-[1px]  rounded-lg p-4 m-2">
           <div className="space-y-6 container mx-auto my-4 px-4">
             <h1 className="text-2xl font-bold my-6">All Products</h1>
+            <hr />
             <div>
-              <h2 className="text-xl font-semibold my-4">Best Selling</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {allProductsItems.map((item) => (
-                  <CardDemo key={item.title} {...item} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold my-4">Limited Time Deals</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {allProductsItems.map((item) => (
-                  <CardDemo key={item.title} {...item} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold my-4">Top Rated</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {allProductsItems.map((item) => (
-                  <CardDemo key={item.title} {...item} />
+                  <Link key={item.id} href={`/productDetails?id=${item.id}`} className="cursor-pointer">
+                    <CardForSearch
+                      id={item.id}
+                      title={item.title}
+                      subTitle={item.subTitle}
+                      description={item.description}
+                      img={item.images[0].imagePath}
+                      price={item.price}
+                    />
+                  </Link>
                 ))}
               </div>
             </div>

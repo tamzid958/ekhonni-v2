@@ -1,58 +1,56 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import { axiosInstance } from '@/data/services/fetcher';
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { axiosInstance } from "@/data/services/fetcher";
 
 const refreshAccessToken = async ({ accessToken, refreshToken, id }) => {
   try {
-    console.log('Refreshing token...');
+    console.log("Refreshing token...");
     const headers = {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     const res = await axiosInstance.post(
       `/api/v2/user/${id}/refresh-token`,
       { refreshToken },
-      { headers },
+      { headers }
     );
-    console.log(res.data);
+    console.log("New Refreshed Token:", res.data);
 
-    if (!res.data || !res.data.accessToken || !res.data.refreshToken) {
-
-      throw new Error('Invalid response from token refresh endpoint');
+    if (!res.data.data || !res.data.data.accessToken || !res.data.data.refreshToken) {
+      throw new Error("Invalid response from token refresh endpoint");
     }
 
-    console.log('New Refreshed Token:', res.data);
+    console.log("New Refreshed Token:", res.data);
 
-    return res.data;
+    return res.data.data;
   } catch (error) {
-    console.error('Error refreshing access token:', error);
-    return { error: 'RefreshAccessTokenError' };
+    console.error("Error refreshing access token:", error);
+    return { error: "RefreshAccessTokenError" };
   }
 };
 
 const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         const { email, password } = credentials;
 
         if (email && password) {
           try {
-            const response = await axiosInstance.post('/api/v2/auth/sign-in', {
+            const response = await axiosInstance.post("/api/v2/auth/sign-in", {
               email,
               password,
             });
-
             if (response.status === 200) {
               const res = response.data;
-              console.log('Login successful:', res);
+              console.log("Login successful:", res);
 
               return {
                 id: res.id,
@@ -62,14 +60,14 @@ const options: NextAuthOptions = {
               };
             }
           } catch (error) {
-            if (error?.status === 404) {
-              console.error('Email Not Verified, Please verify.');
-              throw new Error('Email Not Verified, Please verify.');
-            } else {
-              console.error('Error logging in:', error);
-              throw new Error('Invalid email or password');
+          if (error?.status === 404) {
+            console.error("Email Not Verified, Please verify.");
+            throw new Error("Email Not Verified, Please verify.");
             }
-          }
+          else{
+            console.error("Error logging in:", error);
+            throw new Error("Invalid email or password");
+          }}
         }
 
         return null;
@@ -82,16 +80,15 @@ const options: NextAuthOptions = {
   ],
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'supersecret',
+    secret: process.env.JWT_SECRET || "supersecret",
   },
 
   pages: {
-    signIn: '/auth/login',
-    signOut: '/auth/logout',
+    signIn: "/auth/login",
   },
 
   callbacks: {
@@ -106,11 +103,11 @@ const options: NextAuthOptions = {
         };
       }
       if (Date.now() < token.accessTokenExpires - 5 * 1000) {
-        console.log('Access token is still valid.');
+        console.log("Access token is still valid.");
         return token;
       }
 
-      console.log('Access token is about to expire, refreshing...');
+      console.log("Access token is about to expire, refreshing...");
       const refreshedToken = await refreshAccessToken({
         accessToken: token.accessToken,
         refreshToken: token.refreshToken,
@@ -118,7 +115,7 @@ const options: NextAuthOptions = {
       });
 
       if (refreshedToken?.error) {
-        console.error('Failed to refresh token:', refreshedToken.error);
+        console.error("Failed to refresh token:", refreshedToken.error);
         return { ...token, error: refreshedToken.error };
       }
 
