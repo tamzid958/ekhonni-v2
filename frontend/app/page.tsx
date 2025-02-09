@@ -12,6 +12,7 @@ export default function Home() {
     <div className="flex-col items-center justify-center min-h-screen poppins.classname bg-white">
       <CustomErrorBoundary>
         <Ads />
+
         <QuickBid title={'START YOUR BIDDING HERE'} />
         <Category />
 

@@ -16,14 +16,15 @@ const refreshAccessToken = async ({ accessToken, refreshToken, id }) => {
       { refreshToken },
       { headers }
     );
+    console.log("New Refreshed Token:", res.data);
 
-    if (!res.data || !res.data.accessToken || !res.data.refreshToken) {
+    if (!res.data.data || !res.data.data.accessToken || !res.data.data.refreshToken) {
       throw new Error("Invalid response from token refresh endpoint");
     }
 
     console.log("New Refreshed Token:", res.data);
 
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Error refreshing access token:", error);
     return { error: "RefreshAccessTokenError" };
@@ -47,7 +48,6 @@ const options: NextAuthOptions = {
               email,
               password,
             });
-
             if (response.status === 200) {
               const res = response.data;
               console.log("Login successful:", res);
@@ -89,7 +89,6 @@ const options: NextAuthOptions = {
 
   pages: {
     signIn: "/auth/login",
-    signOut: "/auth/logout",
   },
 
   callbacks: {

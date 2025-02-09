@@ -10,8 +10,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
+// Define the BidData interface
 export interface BidData {
   createdAt: string;
   status: string;
@@ -23,6 +24,7 @@ export interface BidData {
   currency: string;
 }
 
+// Function to handle the approve action
 async function handleApprove(bidId: number, token: string) {
   try {
     const response = await fetch(`http://localhost:8080/api/v2/bid/${bidId}/accept`, {
@@ -35,64 +37,69 @@ async function handleApprove(bidId: number, token: string) {
     });
 
     if (!response.ok) {
+      toast('Failed to approve bid');
       throw new Error('Failed to approve bid');
     }
-    console.log('Bid approved successfully');
+    toast('Bid accepted successfully');
   } catch (error) {
     console.error(error);
   }
 }
 
+// Create column helper for the table
 const columnHelper = createColumnHelper<BidData>();
 
-{
-  /*TODO: approve functionality fix. useSession token integrate */
+// This function will be used to get the columns for the table
+export function getColumns(productStatus: string, token: string) {
+  const columns = [
+    columnHelper.accessor('bidderName', {
+      header: 'Bidder Name',
+    }),
+    columnHelper.accessor('createdAt', {
+      header: 'Created At',
+      cell: (info) => new Date(info.getValue()).toLocaleString(),
+    }),
+    columnHelper.accessor('amount', {
+      header: 'Amount',
+      cell: (info) => `$${info.getValue().toFixed(2)}`,
+    }),
+    columnHelper.accessor('bidderAddress', {
+      header: 'Bidder Address',
+    }),
+    columnHelper.accessor('status', {
+      header: 'Status',
+    }),
+  ];
+
+  // Conditionally add the "Actions" column based on product status
+  if (productStatus !== 'SOLD') {
+    columns.push(
+      columnHelper.display({
+        id: 'actions',
+        header: 'Actions',
+        cell: (info) => {
+          const bidId = info.row.original.id;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => handleApprove(bidId, token)}>
+                  Approve
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      }),
+    );
+  }
+
+  return columns;
 }
-
-
-export const columns = [
-  columnHelper.accessor('bidderName', {
-    header: 'Bidder Name',
-  }),
-  columnHelper.accessor('createdAt', {
-    header: 'Created At',
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
-  }),
-  columnHelper.accessor('amount', {
-    header: 'Amount',
-    cell: (info) => `$${info.getValue().toFixed(2)}`,
-  }),
-  columnHelper.accessor('bidderAddress', {
-    header: 'Bidder Address',
-  }),
-  columnHelper.accessor('status', {
-    header: 'Status',
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const bidId = info.row.original.id;
-      const { data: session } = useSession();
-      const token = session?.user?.token;
-      console.log('Bid ID:', bidId);
-      console.log('Token:', token);
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => handleApprove(bidId, token)}>
-              Approve
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  }),
-];

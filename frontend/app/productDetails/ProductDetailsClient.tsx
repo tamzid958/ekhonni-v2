@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 
+
 interface ProductDetailsProps {
   productDetails: {
     id: string;
@@ -44,14 +45,14 @@ interface ProductDetailsProps {
 
 export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation }: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [bidAmount, setBidAmount] = useState("");
-  const [error, setError] = useState("");
+  const [bidAmount, setBidAmount] = useState('');
+  const [error, setError] = useState('');
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [previousBid, setPreviousBid] = useState<number | null>(null);
 
-  const {data: session, status} = useSession();
-  const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
+  const { data: session, status } = useSession();
+  const bidSchema = z.string().regex(/^\d+$/, 'Bid amount must be a number');
   const router = useRouter();
 
   const token = session?.user?.token;
@@ -97,16 +98,47 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     />
   );
 
-  const handleClick = () => {
-    toast.success("Product has been added to cart!");
+  const handleClick = async () => {
+
+    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      console.log('Response Status:', response.status);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('Parsed bid response:', responseData);
+
+        if (responseData.success) {
+          toast.success('Added to wishlist successfully!');
+          window.location.reload();
+
+        } else {
+          toast.error(responseData.message || 'Failed to add to wishlist.');
+        }
+      } else {
+        toast.error('Received an invalid response from the server.');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      toast.error('An error occurred while adding to wishlist.');
+    }
+    // toast.success('Product has been added to cart!');
   };
 
   const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    if (value === "") {
+    if (value === '') {
       setBidAmount(value);
-      setError("");
+      setError('');
       setIsButtonEnabled(false);
       return;
     }
@@ -129,10 +161,9 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   };
 
 
-
   const handleBidSubmit = async () => {
     if (!bidAmount || !isCheckboxChecked) {
-      toast.error("Please enter a valid bid amount and agree to the terms.");
+      toast.error('Please enter a valid bid amount and agree to the terms.');
       return;
     }
 
@@ -142,6 +173,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       currency: "BDT",
     };
 
+    const token = session?.user?.token;
     console.log(token);
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
@@ -176,8 +208,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       toast.error("An error occurred while placing your bid.");
     }
   };
-
-
 
 
   const handleCheckboxChange = (event) => {
@@ -283,7 +313,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                                       .map((bid, index) => (
                                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                                           <div className="p-1">
-                                            <div className="flex items-center justify-center p-2 border rounded-lg border-black aspect-auto text-sm">
+                                            <div
+                                              className="flex items-center justify-center p-2 border rounded-lg border-black aspect-auto text-sm">
                                               <span className="text-l font-bold">৳ {bid.amount}</span>
                                             </div>
                                           </div>
@@ -303,14 +334,14 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                                   onChange={handleBidChange}
                                   disabled={!isCheckboxChecked}
                                   className={`flex-grow border border-black rounded-md p-2 text-gray-700 ${
-                                    isCheckboxChecked ? "bg-white" : "bg-gray-200 cursor-not-allowed"
+                                    isCheckboxChecked ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                   }`}
                                 />
                                 <button
                                   className={`px-4 py-2 rounded-md ${
                                     isButtonEnabled
-                                      ? "bg-blue-400 text-white font-bold"
-                                      : "bg-gray-300 text-gray-500"
+                                      ? 'bg-blue-400 text-white font-bold'
+                                      : 'bg-gray-300 text-gray-500'
                                   }`}
                                   onClick={handleBidSubmit}
                                   disabled={!isButtonEnabled || !isCheckboxChecked}
@@ -342,7 +373,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
             <div className="pt-2">
               <Button variant="custom" className="w-full font-bold" onClick={handleClick}>
-                ADD TO  WISHLISTS
+                ADD TO WISHLISTS
               </Button>
             </div>
             <div className="pt-4 inline-flex">
