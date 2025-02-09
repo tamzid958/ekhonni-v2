@@ -220,7 +220,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   return (
     <div className="flex flex-col bg-brand-bright">
-      <Toaster position="top-right" />
       <div className="flex flex-row ml-40 mr-40 pb-12 pt-1    setIsButtonVisible(false);
 2">
         <div className="flex flex-row">
