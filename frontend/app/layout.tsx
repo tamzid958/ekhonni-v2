@@ -11,6 +11,7 @@ import SessionWrapper from './wrapper/client/SessionWrapper'
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '@/components/ErrorFallback';
 import { Toaster } from 'sonner';
+import { ProductProvider } from '@/context/ProductContext';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -39,19 +40,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
       <CustomErrorBoundary>
-        <div className="w-full">
-          <NavBar placeholder="What are you looking for?" />
-          <TopCAtegory />
-        </div>
         <Toaster />
         <SessionWrapper>
-
+            <div className="w-full">
+              <NavBar placeholder="What are you looking for?" />
+              <TopCAtegory />
+            </div>
           <main>{children}</main>
 
         </SessionWrapper>
         <div className="bg-gray-800 text-white">
           <Footer />
         </div>
+
       </CustomErrorBoundary>
     </RootLayoutWrapper>
 

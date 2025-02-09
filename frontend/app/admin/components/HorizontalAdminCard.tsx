@@ -18,6 +18,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import Link from 'next/link';
+import { toast } from 'sonner';
 
 
 interface WatchlistItem {
@@ -131,47 +133,36 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
   // console.log(status);
 
   const handleApprove = async () => {
-    // const confirmed = window.confirm('Are you sure you want to approve this product?');
-    const confirmed = true;
-    if (confirmed) {
-      const result = await approveProduct(id); // revalidate path
-      if (result) {
-        // alert(`Product with ID ${id} successfully approved.`);
-        window.location.reload();
-        alert(`Product with ID ${id} successfully approved.`);
 
-      } else {
-        alert('Failed to approve the product.');
-      }
+    const result = await approveProduct(id); // revalidate path
+    if (result) {
+      toast('Product approved successfully');
+    } else {
+      toast('Failed to approve the product.');
     }
+
   };
 
   const handleDecline = async () => {
-    // const confirmed = window.confirm('Are you sure you want to decline this product?');
-    const confirmed = true;
-    if (confirmed) {
-      const result = await declineProduct(id);
-      if (result) {
-        alert(`Product with ID ${id} successfully declined.`);
-        window.location.reload();
-      } else {
-        alert('Failed to decline the product.');
-      }
+
+    const result = await declineProduct(id);
+    if (result) {
+      toast(`Product successfully declined.`);
+    } else {
+      toast('Failed to decline the product.');
     }
+
   };
 
   const handleDelete = async () => {
-    // const confirmed = window.confirm('Are you sure you want to delete this product?');
-    const confirmed = true;
-    if (confirmed) {
-      const result = await deleteProduct(id);
-      if (result) {
-        alert(`Product with ID ${id} successfully deleted.`);
-        window.location.reload();
-      } else {
-        alert('Failed to delete the product.');
-      }
+
+    const result = await deleteProduct(id);
+    if (result) {
+      toast(`Product successfully deleted.`);
+    } else {
+      toast('Failed to delete the product.');
     }
+
   };
 
   const getStatusBadge = (status: string) => {
@@ -183,13 +174,12 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
       case 'PENDING_APPROVAL':
         return <Badge variant="secondary">Pending Approval</Badge>;
       case 'ARCHIVED':
-        return <Badge variant="warning">Archived</Badge>;
+        return <Badge variant="secondary">Archived</Badge>;
       default:
         return <Badge variant="default">Default</Badge>;
     }
   };
 
-  /*<Button variant="link" onClick={() => {*/
   return (
     <Card className="flex items-center gap-4 mb-4 w-full">
       {/* Checkbox */}
@@ -288,12 +278,6 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>}
-          {/*<Button variant="default" onClick={() => {*/}
-          {/*  handleApprove();*/}
-          {/*}}>Approve</Button>*/}
-          {/*<Button variant="destructive" onClick={() => {*/}
-          {/*  handleDecline();*/}
-          {/*}}>Decline</Button>*/}
 
           {status === 'APPROVED' && <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -321,7 +305,9 @@ export const HorizontalAdminCard: React.FC<WatchlistItem> = ({
             {/* Dropdown Menu */}
             <div
               className="absolute mt-2 bg-white border justify-items-center shadow-lg rounded-md w-32 z-10 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 transition-opacity duration-200">
-              <Button variant="link">Product Details</Button>
+              <Button variant="link" asChild>
+                <Link href={`/productDetails?id=${id}`}>Product Details</Link>
+              </Button>
 
             </div>
           </div>

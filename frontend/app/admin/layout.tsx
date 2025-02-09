@@ -5,11 +5,9 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 const AdminLayout = ({ children }) => {
   return (
     <div>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <AppSidebar />
         <SidebarTrigger />
-
-
         <main>
           {/*<SidebarTrigger />*/}
           {children}

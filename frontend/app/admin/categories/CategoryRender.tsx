@@ -15,16 +15,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { toast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'; // Import ShadCN toast
+} from '@/components/ui/breadcrumb';
+import { useSession } from 'next-auth/react'; // Import ShadCN toast
 
 interface CategoryNode {
   name: string;
@@ -38,24 +37,28 @@ interface Props {
 }
 
 export default function CategoryRender({ category, categories }: Props) {
+  const { data: session, status } = useSession();
+  const userToken = session?.user?.token;
+
   const [newCategory, setNewCategory] = useState('');
-  const [alertVisible, setAlertVisible] = useState(false);
-  const handleSubmit = async () => {
+  const handleSubmit = async (token: string) => {
     if (newCategory.trim() === '') {
-      toast({
-        title: 'Category name cannot be empty',
-        description: 'Please enter a valid category name.',
-        variant: 'destructive', // Optionally, use a variant to style it
-      });
+      toast('Category name cannot be empty', {
+          description: 'Please enter a valid category name.',
+        },// Show success toast
+      );
       return;
     }
 
-    const url = 'http://localhost:8080/api/v2/category';
+    const url = 'http://localhost:8080/api/v2/admin/category';
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: newCategory,
           parentCategory: category === 'All' ? null : category,
@@ -63,21 +66,21 @@ export default function CategoryRender({ category, categories }: Props) {
       });
 
       if (!response.ok) {
-        toast({
-          title: 'Failed to add category',
-          description: 'There was an issue adding the category.',
-          variant: 'destructive',
-        });
+        toast('Failed to add category', {
+            description: 'There was an issue adding the category.',
+          },
+        );
         throw new Error('Failed to add category');
       }
 
       setNewCategory('');
-      toast({
-        title: 'Category added successfully',
-        description: 'Your new category has been added.',
-        variant: 'default', // Show success toast
-      });
-      window.location.reload();
+      toast('Category added successfully', {
+          description: 'Your new category has been added.',
+        },// Show success toast
+      );
+      // setTimeout(() => {
+      //   window.location.reload(); // Reload after 3 seconds
+      // }, 3000);
     } catch (error) {
       console.error('Error adding category:', error);
     }
@@ -86,28 +89,35 @@ export default function CategoryRender({ category, categories }: Props) {
   function handleEdit(category: string) {
   }
 
-  const handleDelete = async (name: string) => {
-    const url = `http://localhost:8080/api/v2/category/${encodeURIComponent(name)}`;
+  const handleDelete = async (name: string, token: string) => {
+    const url = `http://localhost:8080/api/v2/admin/category/${encodeURIComponent(name)}`;
 
     try {
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
       const responseData = await response.json();
       console.log(responseData);
       if (!response.ok) {
-        alert('Failed to delete category, check if it has subcategories inside');
+        toast('Failed to delete category', {
+            description: 'Check if it has subcategories inside.',
+          },
+        );
         throw new Error('Failed to delete category');
       }
       console.log(response);
-      setAlertVisible(true);
+      toast('Category deleted successfully', {
+          description: 'Your selected category has been deleted.',
+        },// Show success toast
+      );
 
-      setTimeout(() => {
-        window.location.reload(); // Reload after 3 seconds
-      }, 3000);
+      // setTimeout(() => {
+      //   window.location.reload(); // Reload after 3 seconds
+      // }, 3000);
     } catch (error) {
       console.error('Error deleting category:', error);
     }
@@ -119,6 +129,7 @@ export default function CategoryRender({ category, categories }: Props) {
 
       {/* Title Left-Aligned */}
       <h1 className="text-5xl font-bold m-8 text-left w-full pl-4">Category Management</h1>
+      <Toaster position="top-right" />
 
       {/* Breadcrumbs */}
       <div className="w-full max-w-4xl">
@@ -172,7 +183,7 @@ export default function CategoryRender({ category, categories }: Props) {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(cat.name)}
+                      onClick={() => handleDelete(cat.name, userToken)}
                       className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
                     >
                       Delete
@@ -205,7 +216,7 @@ export default function CategoryRender({ category, categories }: Props) {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(subCat)}
+                      onClick={() => handleDelete(subCat, userToken)}
                       className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
                     >
                       Delete
@@ -246,7 +257,9 @@ export default function CategoryRender({ category, categories }: Props) {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="submit" onClick={handleSubmit}>
+                <Button type="submit" onClick={() => {
+                  handleSubmit(userToken);
+                }}>
                   Save changes
                 </Button>
               </DialogClose>
@@ -254,11 +267,6 @@ export default function CategoryRender({ category, categories }: Props) {
           </DialogContent>
         </Dialog>
       </div>
-      {alertVisible && <Alert className="fixed w-96 bottom-4 right-4 z-50">
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>Deletion done!</AlertTitle>
-        <AlertDescription>Category deleted successfully</AlertDescription>
-      </Alert>}
     </div>
   );
 }
