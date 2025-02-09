@@ -1,6 +1,4 @@
 
-// This code is for testing  purposes only for the understanding of dev team. It will  not be used in the final project.
-
 "use client";
 
 import React from 'react';
@@ -33,7 +31,7 @@ export default function ProfilePage() {
       </div>
     );
   }
-  const { email, profileImage, name, id, address } = userData;
+  const {  profileImage, email, name, id, address } = userData.data;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
