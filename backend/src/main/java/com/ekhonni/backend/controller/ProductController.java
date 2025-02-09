@@ -13,6 +13,7 @@ import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
@@ -33,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     ProductService productService;
     BidService bidService;
-
 
 
     @PostMapping
@@ -60,7 +60,6 @@ public class ProductController {
     }
 
 
-
     @PatchMapping("/{id}")
     @PreAuthorize("@productService.getSellerId(#id) == authentication.principal.id")
     @Operation(
@@ -73,7 +72,6 @@ public class ProductController {
     public ApiResponse<?> updateOne(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
     }
-
 
 
     @DeleteMapping("/{id}")
@@ -94,6 +92,11 @@ public class ProductController {
     @PreAuthorize("#filter.userId == authentication.principal.id")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
+    }
+
+    @GetMapping("/seller/filter")
+    public ApiResponse<?> getFilteredForSeller(@ModelAttribute SellerProductFilter filter) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForSeller(filter));
     }
 
 
