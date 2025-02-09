@@ -18,7 +18,7 @@ const refreshAccessToken = async ({ accessToken, refreshToken, id }) => {
     );
     console.log(res.data);
 
-    if (!res.data.data || !res.data.data || !res.data.data.refreshToken) {
+    if (!res.data || !res.data.accessToken || !res.data.refreshToken) {
 
       throw new Error('Invalid response from token refresh endpoint');
     }
