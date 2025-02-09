@@ -88,6 +88,7 @@ export function getColumns(token: string) {
 }
 
 async function handleProceedToPayment(bidId: number, token: string) {
+  const newTab = window.open('', '_blank'); // Open empty tab first (prevents popup blocking)
   try {
     const response = await fetch(`http://localhost:8080/api/v2/payment/initiate/${bidId}`, {
       method: 'POST',
@@ -107,7 +108,8 @@ async function handleProceedToPayment(bidId: number, token: string) {
     console.log(url);
     console.log('Redirecting to:', url);
     if (url) {
-      window.open(url, '_blank');
+      console.log('Redirecting new tab to:', url);
+      newTab.location.href = url; // Redirect new tab to payment page
     } else {
       toast('Payment URL not found');
       throw new Error('Payment URL not found in response');
