@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { CakeSlice, Star } from "lucide-react";
+import { CakeSlice, Heart, Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -54,6 +54,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   const { data: session, status } = useSession();
   const bidSchema = z.string().regex(/^\d+$/, 'Bid amount must be a number');
   const router = useRouter();
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const token = session?.user?.token;
 
@@ -98,40 +99,83 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     />
   );
 
-  const handleClick = async () => {
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!token) return;
 
-    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
 
-      console.log('Response Status:', response.status);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Parsed bid response:', responseData);
-
-        if (responseData.success) {
-          toast.success('Added to wishlist successfully!');
-          window.location.reload();
-
-        } else {
-          toast.error(responseData.message || 'Failed to add to wishlist.');
+        if (response.ok) {
+          const data = await response.json();
+          const isAlreadyWishlisted = data?.data?.content?.some((item) => item.id === parseInt(productDetails.id));
+          setIsWishlisted(isAlreadyWishlisted);
         }
-      } else {
-        toast.error('Received an invalid response from the server.');
+      } catch (error) {
+        console.error("Error fetching wishlist status:", error);
       }
-    } catch (error) {
-      console.error('Error adding to wishlist:', error);
-      toast.error('An error occurred while adding to wishlist.');
+    };
+
+    checkWishlistStatus();
+  }, [productDetails.id, token]);
+
+  const toggleWishlist = async () => {
+    if (!token) {
+      toast.error("You need to be logged in to use the wishlist.");
+      return;
     }
-    // toast.success('Product has been added to cart!');
+
+    if (isWishlisted) {
+      try {
+        const response = await fetch("http://localhost:8080/api/v2/user/watchlist", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify([parseInt(productDetails.id)]),
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Removed from wishlist.");
+          setIsWishlisted(false);
+        } else {
+          toast.error(responseData.message || "Failed to remove from wishlist.");
+        }
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
+        toast.error("An error occurred while removing from wishlist.");
+      }
+    } else {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Added to wishlist.");
+          setIsWishlisted(true);
+        } else {
+          toast.error(responseData.message || "Failed to add to wishlist.");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        toast.error("An error occurred while adding to wishlist.");
+      }
+    }
   };
+
 
   const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -173,8 +217,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
       currency: "BDT",
     };
 
-    const token = session?.user?.token;
-    console.log(token);
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
         method: "POST",
@@ -200,7 +242,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
         } else {
           toast.error(responseData.message || "Failed to place bid.");
         }
-      } else {
+      }
+      else {
         toast.error("Received an invalid response from the server.");
       }
     } catch (error) {
@@ -371,8 +414,9 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
 
             <div className="pt-2">
-              <Button variant="custom" className="w-full font-bold" onClick={handleClick}>
-                ADD TO WISHLISTS
+              <Button variant="custom" className="w-full font-bold" onClick={toggleWishlist}>
+                {isWishlisted ?  <Star className="w-5 h-5  text-black" fill="black"/> : <Star />}
+                Add to Watchlist
               </Button>
             </div>
             <div className="pt-4 inline-flex">
