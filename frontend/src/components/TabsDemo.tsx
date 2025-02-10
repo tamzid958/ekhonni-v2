@@ -76,7 +76,6 @@ export function TabsDemo() {
     const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
     const imageUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/image`;
 
-    // ✅ Send the entire profile with empty strings for fields that are not updated
     const updatedProfile = {
       name: name.trim() || "",
       phone: phone.trim() || "",
@@ -85,7 +84,6 @@ export function TabsDemo() {
 
     try {
       if (Object.keys(updatedProfile).length > 0) {
-        // ✅ Update the profile only if something has changed
         const profileResponse = await fetch(profileUpdateUrl, {
           method: "PATCH",
           headers: {
@@ -104,7 +102,6 @@ export function TabsDemo() {
       }
 
       if (email.trim()) {
-        // ✅ Only update email if provided
         const emailResponse = await fetch(emailUpdateUrl, {
           method: "PATCH",
           headers: {
@@ -123,7 +120,6 @@ export function TabsDemo() {
         setTimeout(() => router.push("/auth/login"), 500);
       }
 
-      // Handle profile image update
       if (profileImage) {
         const formData = new FormData();
         formData.append("image", profileImage);

@@ -26,12 +26,12 @@ import {
 import { logout } from '../../app/auth/logout/page';
 
 const items = [
-  { title: 'Edit Profile', url: '/userPage/editProfile', icon: Settings },
-  { title: 'About', url: '/userPage/userAbout', icon: Info },
-  { title: 'Inbox', url: '/userPage/inbox', icon: Inbox },
-  { title: 'Feedback', url: '/userPage/feedback', icon: MessageCircle },
-  { title: 'Watchlist', url: '/userPage/watchlist', icon: List },
-  { title: 'Shop', url: '/userPage/shop', icon: ShoppingBag },
+  { title: 'Edit Profile', url: '/user-page/edit-profile', icon: Settings },
+  { title: 'About', url: '/user-page/user-about', icon: Info },
+  { title: 'Inbox', url: '/user-page/inbox', icon: Inbox },
+  { title: 'Feedback', url: '/user-page/feedback', icon: MessageCircle },
+  { title: 'Watchlist', url: '/user-page/watchlist', icon: List },
+  { title: 'Shop', url: '/user-page/shop', icon: ShoppingBag },
   { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
 ];
 

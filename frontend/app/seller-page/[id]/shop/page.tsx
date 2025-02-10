@@ -28,8 +28,8 @@ interface ProductData {
 }
 
 const ShopPage = () => {
-  const params = useParams(); // ✅ Get params using useParams
-  const userId = params?.id as string; // ✅ Extract the ID safely
+  const params = useParams();
+  const userId = params?.id as string;
 
   const [products, setProducts] = useState<ProductData[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -38,6 +38,10 @@ const ShopPage = () => {
   const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
   const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string>('asc');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+
 
   useEffect(() => {
     if (!userId) return;
@@ -45,8 +49,8 @@ const ShopPage = () => {
     const fetchProducts = async () => {
        const apiUrl =
         selectedCategory === 'All'
-          ? `http://localhost:8080/api/v2/product/user/filter?userId=${userId}`
-          : `http://localhost:8080/api/v2/product/user/filter?userId=${encodeURIComponent(
+          ? `http://localhost:8080/api/v2/product/seller/filter?userId=${userId}`
+          : `http://localhost:8080/api/v2/product/seller/filter?userId=${encodeURIComponent(
             userId
           )}&categoryName=${encodeURIComponent(selectedCategory)}`;
 
@@ -108,6 +112,24 @@ const ShopPage = () => {
     setIsSidebarOpen(true);
   };
 
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOrder(e.target.value);
+  };
+
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredAndSortedProducts = [...products]
+    .filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => (sortOrder === 'asc' ? a.price - b.price : b.price - a.price));
+
+
+
+
   return (
     <div className="flex min-h-screen">
       {isSidebarOpen && (
@@ -140,7 +162,8 @@ const ShopPage = () => {
         </div>
       )}
 
-      <div className="absolute top-100 left-17 mb-4">
+      <div className="absolute top-100 mb-4 flex justify-between w-full">
+        {/* Categories Button */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="flex items-center space-x-2 bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-400 transition"
@@ -156,7 +179,28 @@ const ShopPage = () => {
           </svg>
           <span>Categories</span>
         </button>
+
+
+        <div className="flex flex-1 items-center space-x-2 ml-20">
+          <select
+            onChange={handleSortChange}
+            className="px-7 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition focus:outline-none focus:border-gray-500 focus:ring-0"
+          >
+            <option value="asc" className="text-black bg-gray-300">Price: Low to High</option>
+            <option value="desc" className="text-black bg-gray-300">Price: High to Low</option>
+          </select>
+
+
+          <input
+            type="text"
+            placeholder="Search products"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition focus:border-gray-500 focus:ring-0"
+          />
+        </div>
       </div>
+
 
       <main className="container mx-auto px-4 py-8 flex-1 mt-16">
         {loadingCategories && <div>Loading categories...</div>}
@@ -169,7 +213,7 @@ const ShopPage = () => {
               isSidebarOpen ? 'grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3' : 'grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4'
             }`}
           >
-            {products.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <CardDemo
                 key={product.id}
                 id={product.id}

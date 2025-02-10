@@ -3,11 +3,22 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
+
+interface UserDetails {
+  profileImage: string | null;
+  email: string;
+  name: string;
+  id: string;
+  address: string;
+}
+
+
 export default function UserDetails() {
   const { data: session } = useSession();
+  console.log("session", session);
   const userId = session?.user?.id;
   const token = session?.user?.token;
-  const [userDetails, setUserDetails] = useState<any>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,13 +31,13 @@ export default function UserDetails() {
             Authorization: `Bearer ${token}`,
           },
         });
-
+        console.log("response", response);
         if (!response.ok) {
           throw new Error("Failed to fetch user details");
         }
 
         const data = await response.json();
-        setUserDetails(data);
+        setUserDetails(data.data);
       } catch (err: any) {
         setError(err.message);
       }
@@ -46,6 +57,8 @@ export default function UserDetails() {
   if (!userDetails) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
+  console.log("Name:", userDetails.name);
+
 
   return (
     <div className="w-full bg-brand-bright">

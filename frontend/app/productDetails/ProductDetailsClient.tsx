@@ -1,23 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
-import { CakeSlice, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast, Toaster } from 'sonner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import React, { useEffect, useState } from "react";
+import { CakeSlice, Heart, Star } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Toaster, toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { QuickBid } from '@/components/QuickBid';
-import { z } from 'zod';
+import { z } from "zod";
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+
 
 
 interface ProductDetailsProps {
   productDetails: {
     id: string;
-    name: string;
+    title: string;
     description: string;
     images: Array<{ imagePath: string }>;
     price: number;
@@ -34,30 +35,60 @@ interface ProductDetailsProps {
     };
   };
   biddingCount: number | null;
-  biddingDetails: Array<{
-    id: number;
-    productId: number;
-    amount: number;
-    currency: string;
-    status: string;
-    createdAt: string | null
-  }>;
+  biddingDetails: Array<{ id: number; productId: number; amount: number; currency: string; status: string; createdAt: string | null }>;
+  sellerRating: number;
+  sellerLocation: string;
+  // prevBidding: number;
+
 }
 
 
-export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails }: ProductDetailsProps) {
+export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation }: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [previousBid, setPreviousBid] = useState<number | null>(null);
 
   const { data: session, status } = useSession();
   const bidSchema = z.string().regex(/^\d+$/, 'Bid amount must be a number');
   const router = useRouter();
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const token = session?.user?.token;
-  console.log(token);
+
+
+  useEffect(() => {
+    const fetchPreviousBid = async () => {
+      if (!session || !productDetails.id) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/bid/user/product/${productDetails.id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched previous bid:", data);
+          if (data.success && data.data?.amount) {
+            setPreviousBid(data.data.amount);
+          } else {
+            console.error("No bid amount returned in the response", data);
+          }
+        } else {
+          console.error("Failed to fetch previous bid, Response Status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching previous bid:", error);
+      }
+    };
+
+    fetchPreviousBid();
+  }, [session, productDetails.id, token]);
+
 
 
   const Checkbox = ({ checked, onChange }) => (
@@ -68,40 +99,82 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     />
   );
 
-  const handleClick = async () => {
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!token || !productDetails.id) return;
 
-    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist/contains?productId=${productDetails.id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
 
-      console.log('Response Status:', response.status);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Parsed bid response:', responseData);
-
-        if (responseData.success) {
-          toast.success('Added to wishlist successfully!');
-          window.location.reload();
-
-        } else {
-          toast.error(responseData.message || 'Failed to add to wishlist.');
+        if (response.ok) {
+          const data = await response.json();
+          setIsWishlisted(data?.success);
         }
-      } else {
-        toast.error('Received an invalid response from the server.');
+      } catch (error) {
+        console.error("Error fetching wishlist status:", error);
       }
-    } catch (error) {
-      console.error('Error adding to wishlist:', error);
-      toast.error('An error occurred while adding to wishlist.');
+    };
+
+    checkWishlistStatus();
+  }, [productDetails.id, token]);
+
+  const toggleWishlist = async () => {
+    if (!token) {
+      toast.error("You need to be logged in to use the wishlist.");
+      return;
     }
-    // toast.success('Product has been added to cart!');
+
+    if (isWishlisted) {
+      try {
+        const response = await fetch("http://localhost:8080/api/v2/user/watchlist", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify([parseInt(productDetails.id)]),
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Removed from wishlist.");
+          setIsWishlisted(false);
+        } else {
+          toast.error(responseData.message || "Failed to remove from wishlist.");
+        }
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
+        toast.error("An error occurred while removing from wishlist.");
+      }
+    } else {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Added to wishlist.");
+          setIsWishlisted(true);
+        } else {
+          toast.error(responseData.message || "Failed to add to wishlist.");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        toast.error("An error occurred while adding to wishlist.");
+      }
+    }
   };
+
 
   const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -116,9 +189,15 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     const result = bidSchema.safeParse(value);
 
     if (result.success) {
-      setError('');
+      const bidValue = Number(value);
+      if (previousBid !== null && bidValue <= previousBid) {
+        setError(`Bid must be higher than your previous bid (৳${previousBid})`);
+        setIsButtonEnabled(false);
+      } else {
+        setError("");
+        setIsButtonEnabled(bidValue > 0);
+      }
       setBidAmount(value);
-      setIsButtonEnabled(Number(value) > 0);
     } else {
       setError(result.error.errors[0].message);
     }
@@ -134,42 +213,41 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     const requestBody = {
       productId: productDetails.id,
       amount: parseFloat(bidAmount),
-      currency: 'BDT',
+      currency: "BDT",
     };
 
-    const token = session?.user?.token;
-    console.log(token);
     try {
       const response = await fetch(`http://localhost:8080/api/v2/bid`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
 
-      console.log('Response Status:', response.status);
+      console.log("Response Status:", response.status);
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log('Parsed bid response:', responseData);
+        console.log("Parsed bid response:", responseData);
 
         if (responseData.success) {
-          toast.success('Bid placed successfully!');
-          setBidAmount('');
+          toast.success("Bid placed successfully!");
+          setBidAmount("");
           setIsButtonEnabled(false);
           window.location.reload();
 
         } else {
-          toast.error(responseData.message || 'Failed to place bid.');
+          toast.error(responseData.message || "Failed to place bid.");
         }
-      } else {
-        toast.error('Received an invalid response from the server.');
+      }
+      else {
+        toast.error("Received an invalid response from the server.");
       }
     } catch (error) {
-      console.error('Error submitting bid:', error);
-      toast.error('An error occurred while placing your bid.');
+      console.error("Error submitting bid:", error);
+      toast.error("An error occurred while placing your bid.");
     }
   };
 
@@ -184,7 +262,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   return (
     <div className="flex flex-col bg-brand-bright">
-      <Toaster position="top-right" />
       <div className="flex flex-row ml-40 mr-40 pb-12 pt-1    setIsButtonVisible(false);
 2">
         <div className="flex flex-row">
@@ -196,8 +273,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                   alt={`Product Image ${index + 1}`}
                   className={`h-24 w-28 object-fill cursor-pointer ${
                     selectedIndex === index
-                      ? 'border-4 border-brand-dark'
-                      : 'border border-gray-200'
+                      ? "border-4 border-brand-dark"
+                      : "border border-gray-200"
                   }`}
                   onClick={() => setSelectedIndex(index)}
                 />
@@ -223,7 +300,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         <div className="w-4/12 mx-auto">
           <div className="pt-16 pl-12">
-            <p className="text-4xl">{productDetails.name}</p>
+            <p className="text-4xl">{productDetails.title}</p>
             <p className="pt-2 italic">{productDetails.status}</p>
             <span className="inline-flex pt-4">
               <CakeSlice />
@@ -259,7 +336,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                         START BIDDING
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="w-[460px] h-[450px] bg-white border border-gray-300 rounded-lg p-6">
+                    <DialogContent className="w-[460px] bg-white border border-gray-300 rounded-lg p-6">
                       <DialogHeader>
                         <DialogTitle className="text-xl font-bold mb-2">Place Your Bid</DialogTitle>
                         <div className="text-gray-700">
@@ -336,31 +413,42 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
 
             <div className="pt-2">
-              <Button variant="custom" className="w-full font-bold" onClick={handleClick}>
-                ADD TO WISHLISTS
+              <Button variant="custom" className="w-full font-bold" onClick={toggleWishlist}>
+                {isWishlisted ?  <Star className="w-5 h-5  text-black" fill="black"/> : <Star />}
+                Add to Watchlist
               </Button>
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
-              <Link href={`/sellerPage/${productDetails.seller.id}`}>
-                <div className="pl-2 italic cursor-pointer hover:underline">
-                  {productDetails.seller.name.toUpperCase()}
+              <Link href={`/seller-page/${productDetails.seller.id}`}>
+                <div className="pl-2 italic cursor-pointer hover:underline flex items-center space-x-1">
+                  <span>{productDetails.seller.name.toUpperCase()}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-brand-dark"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10H21v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h8v2H5v11h14v-6.172l-4.414 4.414a1 1 0 01-1.414-1.414L19.172 10h-5.344z" />
+                  </svg>
                 </div>
               </Link>
+
             </div>
             <br />
             <div className="pt-2 font-bold inline-flex">
               <div className="w-40">SELLER RATING:</div>
               <div className="flex space-x-1 text-yellow-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} />
+                  <Star key={i} className={i < sellerRating ? "text-yellow-500" : "text-gray-300"} />
                 ))}
               </div>
             </div>
             <br />
             <div className="pt-2 inline-flex">
               <div className="font-bold w-40">DELIVERY FROM:</div>
-              <div className="pl-2 italic">DHAKA</div>
+              <div className="pl-2 italic">{sellerLocation}</div>
             </div>
             <br />
             <div className="pt-2 inline-flex">
@@ -389,7 +477,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
           <div className="flex flex-col w-1/4">
             <div className="text-xl font-bold pt-4">BIDS</div>
-            <div className="pt-4">{biddingCount !== null ? biddingCount : 'Loading...'}</div>
+            <div className="pt-4">{biddingCount !== null ? biddingCount : "Loading..."}</div>
 
             <div className="text-xl font-bold pt-4 pb-4">Dimensions</div>
             <div className="">Height: 6.1 inches / 15.5 cm</div>
@@ -398,7 +486,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
           </div>
         </div>
       </div>
-      <QuickBid title={'SIMILAR PRODUCTS'} />
+      <QuickBid title={"SIMILAR PRODUCTS"} />
     </div>
   );
 }
