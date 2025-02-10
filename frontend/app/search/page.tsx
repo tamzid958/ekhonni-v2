@@ -56,7 +56,7 @@ export default function Search() {
   const allProductsItems = products || [];
 
   const handleFilter = (newValue: [number, number]) => {
-    console.log('Filtered values:', newValue);
+    //console.log('Filtered values:', newValue);
     setValue(newValue);
   };
 
