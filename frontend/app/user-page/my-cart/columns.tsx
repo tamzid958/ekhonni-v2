@@ -90,12 +90,16 @@ export function getColumns(token: string) {
 async function handleProceedToPayment(bidId: number, token: string) {
   const newTab = window.open('', '_blank'); // Open empty tab first (prevents popup blocking)
   try {
-    const response = await fetch(`http://localhost:8080/api/v2/payment/initiate/${bidId}`, {
+    const response = await fetch(`http://localhost:8080/api/v2/payment/initiate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({
+        bidId: bidId,
+        paymentMethod: 'SSLCOMMERZ',
+      }),
     });
 
     if (!response.ok) {
