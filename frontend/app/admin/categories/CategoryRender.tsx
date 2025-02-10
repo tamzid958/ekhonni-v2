@@ -22,7 +22,8 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'; // Import ShadCN toast
+} from '@/components/ui/breadcrumb';
+import { useSession } from 'next-auth/react'; // Import ShadCN toast
 
 interface CategoryNode {
   name: string;
@@ -36,8 +37,11 @@ interface Props {
 }
 
 export default function CategoryRender({ category, categories }: Props) {
+  const { data: session, status } = useSession();
+  const userToken = session?.user?.token;
+
   const [newCategory, setNewCategory] = useState('');
-  const handleSubmit = async () => {
+  const handleSubmit = async (token: string) => {
     if (newCategory.trim() === '') {
       toast('Category name cannot be empty', {
           description: 'Please enter a valid category name.',
@@ -46,12 +50,15 @@ export default function CategoryRender({ category, categories }: Props) {
       return;
     }
 
-    const url = 'http://localhost:8080/api/v2/category';
+    const url = 'http://localhost:8080/api/v2/admin/category';
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: newCategory,
           parentCategory: category === 'All' ? null : category,
@@ -71,9 +78,9 @@ export default function CategoryRender({ category, categories }: Props) {
           description: 'Your new category has been added.',
         },// Show success toast
       );
-      setTimeout(() => {
-        window.location.reload(); // Reload after 3 seconds
-      }, 3000);
+      // setTimeout(() => {
+      //   window.location.reload(); // Reload after 3 seconds
+      // }, 3000);
     } catch (error) {
       console.error('Error adding category:', error);
     }
@@ -82,14 +89,15 @@ export default function CategoryRender({ category, categories }: Props) {
   function handleEdit(category: string) {
   }
 
-  const handleDelete = async (name: string) => {
-    const url = `http://localhost:8080/api/v2/category/${encodeURIComponent(name)}`;
+  const handleDelete = async (name: string, token: string) => {
+    const url = `http://localhost:8080/api/v2/admin/category/${encodeURIComponent(name)}`;
 
     try {
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
       const responseData = await response.json();
@@ -107,9 +115,9 @@ export default function CategoryRender({ category, categories }: Props) {
         },// Show success toast
       );
 
-      setTimeout(() => {
-        window.location.reload(); // Reload after 3 seconds
-      }, 3000);
+      // setTimeout(() => {
+      //   window.location.reload(); // Reload after 3 seconds
+      // }, 3000);
     } catch (error) {
       console.error('Error deleting category:', error);
     }
@@ -175,7 +183,7 @@ export default function CategoryRender({ category, categories }: Props) {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(cat.name)}
+                      onClick={() => handleDelete(cat.name, userToken)}
                       className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
                     >
                       Delete
@@ -208,7 +216,7 @@ export default function CategoryRender({ category, categories }: Props) {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(subCat)}
+                      onClick={() => handleDelete(subCat, userToken)}
                       className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-100 rounded-lg hover:bg-red-200"
                     >
                       Delete
@@ -249,7 +257,9 @@ export default function CategoryRender({ category, categories }: Props) {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="submit" onClick={handleSubmit}>
+                <Button type="submit" onClick={() => {
+                  handleSubmit(userToken);
+                }}>
                   Save changes
                 </Button>
               </DialogClose>

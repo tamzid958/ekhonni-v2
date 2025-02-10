@@ -4,14 +4,23 @@ interface CategoryNode {
   chainCategories: string[];
 }
 
-export async function fetchCategories(category: string = 'All'): Promise<CategoryNode[]> {
+export async function fetchCategories(category: string = 'All', token: string): Promise<CategoryNode[]> {
   const url =
     category === 'All'
       ? 'http://localhost:8080/api/v2/category/all'
       : `http://localhost:8080/api/v2/category/${encodeURIComponent(category)}/subcategories`;
 
   try {
-    const response = await fetch(url, { cache: 'no-store' });
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    console.log(response.body);
 
     if (!response.ok) {
       throw new Error('Failed to fetch categories');

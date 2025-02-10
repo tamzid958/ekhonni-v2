@@ -37,9 +37,10 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem })
     sellerProfile,
   } = watchlistItem;
 
+  let showBidSection;
+  let showCheckBox;
   return (
     <Card className="flex items-center gap-4 mb-4">
-      {/* Checkbox */}
       <div className="ml-4">
         {showCheckBox = true && (
           <Checkbox />

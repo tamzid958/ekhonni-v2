@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CakeSlice, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
@@ -18,7 +18,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 interface ProductDetailsProps {
   productDetails: {
     id: string;
-    name: string;
+    title: string;
     description: string;
     images: Array<{ imagePath: string }>;
     price: number;
@@ -36,19 +36,57 @@ interface ProductDetailsProps {
   };
   biddingCount: number | null;
   biddingDetails: Array<{ id: number; productId: number; amount: number; currency: string; status: string; createdAt: string | null }>;
+  sellerRating: number;
+  sellerLocation: string;
+  // prevBidding: number;
+
 }
 
 
-export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails }: ProductDetailsProps) {
+export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation }: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [bidAmount, setBidAmount] = useState("");
-  const [error, setError] = useState("");
+  const [bidAmount, setBidAmount] = useState('');
+  const [error, setError] = useState('');
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [previousBid, setPreviousBid] = useState<number | null>(null);
 
-  const {data: session, status} = useSession();
-  const bidSchema = z.string().regex(/^\d+$/, "Bid amount must be a number");
+  const { data: session, status } = useSession();
+  const bidSchema = z.string().regex(/^\d+$/, 'Bid amount must be a number');
   const router = useRouter();
+
+  const token = session?.user?.token;
+
+
+  useEffect(() => {
+    const fetchPreviousBid = async () => {
+      if (!session || !productDetails.id) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/bid/user/product/${productDetails.id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Fetched previous bid:", data);
+          if (data.success && data.data?.amount) {
+            setPreviousBid(data.data.amount);
+          } else {
+            console.error("No bid amount returned in the response", data);
+          }
+        } else {
+          console.error("Failed to fetch previous bid, Response Status:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching previous bid:", error);
+      }
+    };
+
+    fetchPreviousBid();
+  }, [session, productDetails.id, token]);
 
 
 
@@ -60,16 +98,47 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     />
   );
 
-  const handleClick = () => {
-    toast.success("Product has been added to cart!");
+  const handleClick = async () => {
+
+    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${productDetails.id}`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      console.log('Response Status:', response.status);
+
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('Parsed bid response:', responseData);
+
+        if (responseData.success) {
+          toast.success('Added to wishlist successfully!');
+          window.location.reload();
+
+        } else {
+          toast.error(responseData.message || 'Failed to add to wishlist.');
+        }
+      } else {
+        toast.error('Received an invalid response from the server.');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      toast.error('An error occurred while adding to wishlist.');
+    }
+    // toast.success('Product has been added to cart!');
   };
 
   const handleBidChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    if (value === "") {
+    if (value === '') {
       setBidAmount(value);
-      setError("");
+      setError('');
       setIsButtonEnabled(false);
       return;
     }
@@ -77,9 +146,15 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
     const result = bidSchema.safeParse(value);
 
     if (result.success) {
-      setError("");
+      const bidValue = Number(value);
+      if (previousBid !== null && bidValue <= previousBid) {
+        setError(`Bid must be higher than your previous bid (৳${previousBid})`);
+        setIsButtonEnabled(false);
+      } else {
+        setError("");
+        setIsButtonEnabled(bidValue > 0);
+      }
       setBidAmount(value);
-      setIsButtonEnabled(Number(value) > 0);
     } else {
       setError(result.error.errors[0].message);
     }
@@ -88,7 +163,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   const handleBidSubmit = async () => {
     if (!bidAmount || !isCheckboxChecked) {
-      toast.error("Please enter a valid bid amount and agree to the terms.");
+      toast.error('Please enter a valid bid amount and agree to the terms.');
       return;
     }
 
@@ -135,8 +210,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   };
 
 
-
-
   const handleCheckboxChange = (event) => {
     setIsCheckboxChecked(event.target.checked);
   };
@@ -147,7 +220,6 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   return (
     <div className="flex flex-col bg-brand-bright">
-      <Toaster position="top-right" />
       <div className="flex flex-row ml-40 mr-40 pb-12 pt-1    setIsButtonVisible(false);
 2">
         <div className="flex flex-row">
@@ -186,7 +258,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         <div className="w-4/12 mx-auto">
           <div className="pt-16 pl-12">
-            <p className="text-4xl">{productDetails.name}</p>
+            <p className="text-4xl">{productDetails.title}</p>
             <p className="pt-2 italic">{productDetails.status}</p>
             <span className="inline-flex pt-4">
               <CakeSlice />
@@ -222,7 +294,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                         START BIDDING
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="w-[460px] h-[450px] bg-white border border-gray-300 rounded-lg p-6">
+                    <DialogContent className="w-[460px] bg-white border border-gray-300 rounded-lg p-6">
                       <DialogHeader>
                         <DialogTitle className="text-xl font-bold mb-2">Place Your Bid</DialogTitle>
                         <div className="text-gray-700">
@@ -240,7 +312,8 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                                       .map((bid, index) => (
                                         <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                                           <div className="p-1">
-                                            <div className="flex items-center justify-center p-2 border rounded-lg border-black aspect-auto text-sm">
+                                            <div
+                                              className="flex items-center justify-center p-2 border rounded-lg border-black aspect-auto text-sm">
                                               <span className="text-l font-bold">৳ {bid.amount}</span>
                                             </div>
                                           </div>
@@ -260,14 +333,14 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
                                   onChange={handleBidChange}
                                   disabled={!isCheckboxChecked}
                                   className={`flex-grow border border-black rounded-md p-2 text-gray-700 ${
-                                    isCheckboxChecked ? "bg-white" : "bg-gray-200 cursor-not-allowed"
+                                    isCheckboxChecked ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                   }`}
                                 />
                                 <button
                                   className={`px-4 py-2 rounded-md ${
                                     isButtonEnabled
-                                      ? "bg-blue-400 text-white font-bold"
-                                      : "bg-gray-300 text-gray-500"
+                                      ? 'bg-blue-400 text-white font-bold'
+                                      : 'bg-gray-300 text-gray-500'
                                   }`}
                                   onClick={handleBidSubmit}
                                   disabled={!isButtonEnabled || !isCheckboxChecked}
@@ -299,30 +372,40 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
             <div className="pt-2">
               <Button variant="custom" className="w-full font-bold" onClick={handleClick}>
-                ADD TO  WISHLISTS
+                ADD TO WISHLISTS
               </Button>
             </div>
             <div className="pt-4 inline-flex">
               <div className="font-bold w-40">SELLER NAME:</div>
-              <Link href={`/sellerPage/${productDetails.seller.id}`}>
-                <div className="pl-2 italic cursor-pointer hover:underline">
-                  {productDetails.seller.name.toUpperCase()}
+              <Link href={`/seller-page/${productDetails.seller.id}`}>
+                <div className="pl-2 italic cursor-pointer hover:underline flex items-center space-x-1">
+                  <span>{productDetails.seller.name.toUpperCase()}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-brand-dark"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10H21v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h8v2H5v11h14v-6.172l-4.414 4.414a1 1 0 01-1.414-1.414L19.172 10h-5.344z" />
+                  </svg>
                 </div>
               </Link>
+
             </div>
             <br />
             <div className="pt-2 font-bold inline-flex">
               <div className="w-40">SELLER RATING:</div>
               <div className="flex space-x-1 text-yellow-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} />
+                  <Star key={i} className={i < sellerRating ? "text-yellow-500" : "text-gray-300"} />
                 ))}
               </div>
             </div>
             <br />
             <div className="pt-2 inline-flex">
               <div className="font-bold w-40">DELIVERY FROM:</div>
-              <div className="pl-2 italic">DHAKA</div>
+              <div className="pl-2 italic">{sellerLocation}</div>
             </div>
             <br />
             <div className="pt-2 inline-flex">

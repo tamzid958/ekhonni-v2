@@ -7,7 +7,11 @@ import { TopCAtegory } from '@/components/TopCategory';
 import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
-import SessionWrapper from './wrapper/client/SessionWrapper';
+import SessionWrapper from './wrapper/client/SessionWrapper'
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '@/components/ErrorFallback';
+import { Toaster } from 'sonner';
+import { ProductProvider } from '@/context/ProductContext';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -36,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
     <RootLayoutWrapper>
       <CustomErrorBoundary>
+        <Toaster />
         <SessionWrapper>
           <div className="w-full">
             <NavBar placeholder="What are you looking for?" />
