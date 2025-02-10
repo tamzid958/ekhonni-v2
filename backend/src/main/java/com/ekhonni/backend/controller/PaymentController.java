@@ -44,8 +44,8 @@ public class PaymentController {
     }
 
     @GetMapping("/methods")
-    public ResponseEntity<List<PaymentMethod>> getAllPaymentMethods() {
-        return ResponseEntity.ok(Arrays.asList(PaymentMethod.values()));
+    public ResponseEntity<?> getAllPaymentMethods() {
+        return ResponseUtil.createResponse(HTTPStatus.OK, Arrays.asList(PaymentMethod.values()));
     }
 
     @PostMapping("/success")
