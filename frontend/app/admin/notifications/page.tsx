@@ -9,6 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input';
 import { useSession } from 'next-auth/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import NotificationsList from '../components/NotificationList';
 
 const conditions = [
   'OFFER',
@@ -34,12 +35,6 @@ export default function NotificationPage() {
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
 
-  // Fetch available notification types using SWR
-  // const { data: notificationTypes, error: notificationTypesError } = useSWR(
-  //   userId ? `/api/v2/admin/${userId}/notifications/types` : null,
-  //   fetcher,
-  // );
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -51,15 +46,12 @@ export default function NotificationPage() {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     const currentTime = new Date().toLocaleString();
-
     const notificationData = {
       type: data.type || null,
       message: data.username,
       redirectUrl: data.RedirectURL || null,
     };
-
     try {
-      // Post data to the API
       const response = await fetch(
         `http://localhost:8080/api/v2/admin/${userId}/notifications/create`,
         {
@@ -91,20 +83,15 @@ export default function NotificationPage() {
     }
   };
 
-  // if (notificationTypesError) {
-  //   return <div>Error loading notification types.</div>;
-  // }
-
   return (
     <>
       <Toaster position="bottom-right" richColors />
-
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col justify-center items-center pt-20 h-[50%] w-[90vw] space-y-4"
+          className="flex flex-col justify-center items-center pt-20  w-[90vw] space-y-4"
         >
-          {/* Username Field */}
+          <h1 className="flex items-center justify-center text-2xl font-bold mb-4">Create User Notifications</h1>
           <FormField
             control={form.control}
             name="username"
@@ -122,7 +109,6 @@ export default function NotificationPage() {
             )}
           />
 
-          {/* Redirect URL Field */}
           <FormField
             control={form.control}
             name="RedirectURL"
@@ -132,9 +118,9 @@ export default function NotificationPage() {
                 <FormControl>
                   <Input className={'text-lg py-3 px-4 w-96'} placeholder="URL" {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is a public URL.
-                </FormDescription>
+                {/*<FormDescription>*/}
+                {/*  This is a public URL.*/}
+                {/*</FormDescription>*/}
                 <FormMessage />
               </FormItem>
             )}
@@ -167,38 +153,13 @@ export default function NotificationPage() {
             )}
           />
 
-          {/*/!* Notification Type Field *!/*/}
-          {/*<FormField*/}
-          {/*  control={form.control}*/}
-          {/*  name="type"*/}
-          {/*  render={({ field }) => (*/}
-          {/*    <FormItem>*/}
-          {/*      <FormLabel>Notification Type</FormLabel>*/}
-          {/*      <FormControl>*/}
-          {/*        <select*/}
-          {/*          className="text-lg py-3 px-4 w-96"*/}
-          {/*          {...field}*/}
-          {/*          defaultValue=""*/}
-          {/*        >*/}
-          {/*          <option value="" disabled>Select Type</option>*/}
-          {/*          {notificationTypes?.map((type: string) => (*/}
-          {/*            <option key={type} value={type}>*/}
-          {/*              {type}*/}
-          {/*            </option>*/}
-          {/*          ))}*/}
-          {/*        </select>*/}
-          {/*      </FormControl>*/}
-          {/*      <FormDescription>*/}
-          {/*        Select the type of notification.*/}
-          {/*      </FormDescription>*/}
-          {/*      <FormMessage />*/}
-          {/*    </FormItem>*/}
-          {/*  )}*/}
-          {/*/>*/}
-
           <Button type="submit">Create Notification</Button>
         </form>
       </Form>
+
+      <hr className="mt-8" />
+
+      <NotificationsList />
     </>
   );
 }

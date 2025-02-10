@@ -131,7 +131,7 @@ export function NavBar({ placeholder }: Props) {
               <div
                 className="max-h-80 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
                 {notifications.length > 0 ? (
-                  notifications.map((item, index) => (
+                  notifications.slice().reverse().map((item, index) => (
                     <Link key={item.id} href={item.redirectUrl || '#'}>
                       <div
                         className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">

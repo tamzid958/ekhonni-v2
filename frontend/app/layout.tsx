@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
 
-          <main>{children}</main>
+          <main className="flex-grow overflow-auto">{children}</main>
 
 
           <div className="bg-gray-800 text-white">
