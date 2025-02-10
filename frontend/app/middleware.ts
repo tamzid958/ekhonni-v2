@@ -35,7 +35,6 @@ const checkAccess = (pathname, userRole) => {
   if (!foundRoute) {
     return false;
   }
-
   return foundRoute.access.includes(userRole);
 };
 

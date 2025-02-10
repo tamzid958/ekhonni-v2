@@ -58,9 +58,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         toast.error(result.error || "Invalid email or password");
         return;
       }
-
       toast.success("Login successful!");
+      window.location.href = '/';
       router.push("/");
+
     } catch (err: any) {
       console.error("Login error:", err);
 

@@ -1,12 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { ColumnDef } from "@tanstack/react-table"
-import { Ban, Hourglass, LogOut, MoreHorizontal, ShieldCheck, ShieldIcon, Trash2, UserIcon } from 'lucide-react';
+import { Ban, Hourglass, MoreHorizontal, ShieldCheck, ShieldIcon, Trash2, UserIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,11 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
-import { axiosInstance } from '@/data/services/fetcher';
-import { Toast } from '@/components/ui/toast';
-import { toast, Toaster } from 'sonner';
-import { handleBlcokUser, handleUnblcokUser } from '../components/useHandleBlock';
-import { handleChangeUserRole, openDialog } from '../components/useHandleRole';
+import { Toaster } from 'sonner';
+import { handleBlockUser, handleUnblockUser } from '../components/useHandleBlock';
+import { handleChangeUserRole } from '../components/useHandleRole';
 import {
   Dialog,
   DialogContent,
@@ -29,12 +25,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
-
+import { useRouter } from "next/navigation";
 
 export type User = {
   id: string
@@ -46,8 +40,22 @@ export type User = {
   CreatedAt: string
   UpdatedAt: string
   address: string
-
 }
+export type blockedUser = {
+  id: string
+  name: string
+  email: string
+  address: string
+  blockedBy: string
+  blockedReason:string
+  unblockAt: string
+  roleName: "ADMIN" | "USER" | "SUPER_ADMIN"
+  image: string
+  status: "ACTIVE" | "UNVERIFIED" | "DELETED" | "BLOCKED"
+  CreatedAt: string
+  UpdatedAt: string
+}
+
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -74,7 +82,18 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+           Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
   },
   {
     accessorKey: "email",
@@ -104,9 +123,9 @@ export const columns: ColumnDef<User>[] = [
 
 
       const roleColor =
-        User.roleName === "ADMIN"
+        User.roleName === "SUPER_ADMIN"
           ? "bg-red-500"
-          : User.roleName === "SUPER_ADMIN"
+          : User.roleName === "ADMIN"
             ? "bg-purple-500"
             : "bg-blue-500";
 
@@ -156,50 +175,71 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       const formatted = date.toDateString()
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     }
   },
   {
     accessorKey: "updatedAt",
-    header: "Updated At",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
     cell: ({ row }) => {
       const date = new Date(row.getValue("updatedAt"))
       const formatted = date.toDateString()
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-center font-medium">{formatted}</div>
     }
   },
   {
     id: "actions",
     cell: ({ row }) => {
-
-
-      const User = row.original
-
+      const User = row.original;
+      const router = useRouter();
       const { data: session } = useSession();
       const userToken = session?.user?.token;
-      const [isblocked , setIsBlocked] = useState(false);
-      const [isDialogOpen, setIsDialogOpen] = useState(false);
+      const [isBlocked, setIsBlocked] = useState(false);
       const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+      const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
+      const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+
       const [selectedRole, setSelectedRole] = useState<number>(
         reverseRoleMapping[User.roleName] || 0
       );
+      const [blockReason, setBlockReason] = useState('');
+      const [blockDuration, setBlockDuration] = useState<string>('TEMPORARY_7_DAYS');
+      const blockDurations = ["TEMPORARY_7_DAYS", "TEMPORARY_30_DAYS"];
 
       useEffect(() => {
         setIsBlocked(User.status === "BLOCKED");
       }, [User.status]);
+
       return (
         <div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-            setIsDialogOpen(open);
-            if(!open)
-            {
-              setTimeout(() => {setIsMenuOpen(false)}, 100);
-            }
-          }}>
+          {/* Change Role Dialog */}
+          <Dialog open={isRoleDialogOpen} onOpenChange={setIsRoleDialogOpen}>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Change Role</DialogTitle>
@@ -225,71 +265,284 @@ export const columns: ColumnDef<User>[] = [
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                <Button onClick={() => setIsRoleDialogOpen(false)}>Cancel</Button>
                 <Button onClick={() => {
-                  setIsDialogOpen(false);
-                  handleChangeUserRole(User.id, selectedRole, userToken)}}
-                  type="submit">
+                  setIsRoleDialogOpen(false);
+                  handleChangeUserRole(User.id, selectedRole, userToken)
+                }} type="submit">
                   Save changes
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
 
+          {/* Block User Dialog */}
+          <Dialog open={isBlockDialogOpen} onOpenChange={setIsBlockDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Block User</DialogTitle>
+                <DialogDescription>
+                  Block {User.name}. Please provide the reason and time period.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {/* Reason Input */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="blockReason" className="text-right">Reason</Label>
+                  <input
+                    type="text"
+                    id="blockReason"
+                    className="col-span-3 border rounded p-2"
+                    value={blockReason}
+                    onChange={(e) => setBlockReason(e.target.value)}
+                  />
+                </div>
 
-        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(User.id)}
-            >
-             Copy User ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => alert(`Viewing user ${User.name}`)}
-            >View User Public Details </DropdownMenuItem>
+                {/* Duration Dropdown */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="blockDuration" className="text-right">Duration</Label>
+                  <select
+                    id="blockDuration"
+                    className="col-span-3 border rounded p-2"
+                    value={blockDuration}
+                    onChange={(e) => setBlockDuration(e.target.value)}
+                  >
+                    {blockDurations.map((duration) => (
+                      <option key={duration} value={duration}>
+                        {duration}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => setIsBlockDialogOpen(false)}>Cancel</Button>
+                <Button onClick={() => {
+                  setIsBlockDialogOpen(false);
+                  handleBlockUser(User.id, blockReason, blockDuration, userToken);
+                }} type="submit">
+                  Block User
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-            <DropdownMenuSeparator />
+          {/* Dropdown Menu */}
+          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(User.id)}
+              >
+                Copy User ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => router.push(`/admin/user/${User.id}`)}
+              >
+                View User Public Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+                setIsRoleDialogOpen(true);
+                setIsMenuOpen(false);
+              }}>
+                Change Role
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {!isBlocked && (
+                <DropdownMenuItem onClick={() => {
+                  setIsBlockDialogOpen(true);
+                  setIsMenuOpen(false);
+                }}>
+                  Block User
+                </DropdownMenuItem>
+              )}
+              {isBlocked && (
+                <DropdownMenuItem onClick={() => handleUnblockUser(User.id, userToken)}>
+                  Unblock User
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            <DropdownMenuItem onClick = {() =>
-            {
-              setIsDialogOpen(true)
-              setIsMenuOpen(false);
-            }}>
-              Change Role
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            {!isblocked && (<DropdownMenuItem
-              onClick = {() => handleBlcokUser(User.id, userToken)}
-            >
-              Block User
-
-            </DropdownMenuItem>)}
-
-            {isblocked && (<DropdownMenuItem
-            onClick = {() => handleUnblcokUser(User.id, userToken)}
-            >
-            Unblock User
-
-          </DropdownMenuItem>)}
-
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-
-        </DropdownMenu>
-          <Toaster/>
+          <Toaster />
         </div>
       )
     },
-  },
+  }
 
 ]
+
+
+export const blockedUserColumns: ColumnDef<>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
+  },
+  {
+    accessorKey: "blockedAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Blocked At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("blockedAt"))
+      const formatted = date.toDateString()
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+  {
+    accessorKey: "blockedBy",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Blocked By
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const User = row.original;
+      const formatted = User.blockedBy;
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+
+  {
+    accessorKey: "blockedReason",
+    header: "Block Reason",
+  },
+  {
+    accessorKey: "unblockAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+         Unblock At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("unblockAt"))
+      const formatted = date.toDateString()
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const User = row.original;
+      const { data: session } = useSession();
+      const userToken = session?.user?.token;
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      return (
+        <div>
+          {/* Dropdown Menu */}
+          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(User.id)}
+              >
+                Copy User ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => alert(`Viewing user ${User.name}`)}
+              >
+                View User Public Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleUnblockUser(User.id, userToken)}>
+                  Unblock User
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Toaster />
+        </div>
+      )
+    },
+  }
+
+]
+
+
