@@ -1,13 +1,17 @@
-package com.ekhonni.backend.service;
+package com.ekhonni.backend.service.payment.provider.sslcommrez;
 
-import com.ekhonni.backend.config.SSLCommerzConfig;
+import com.ekhonni.backend.config.payment.SSLCommerzConfig;
 import com.ekhonni.backend.dto.transaction.TransactionQueryDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.*;
+import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.payment.sslcommerz.*;
+import com.ekhonni.backend.service.AccountService;
+import com.ekhonni.backend.service.BidService;
+import com.ekhonni.backend.service.TransactionService;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.*;
 import com.ekhonni.backend.util.HashUtil;
 import com.ekhonni.backend.util.HttpUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
@@ -16,32 +20,34 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * Author: Asif Iqbal
- * Date: 12/15/24
+ * Date: 2/10/25
  */
-
-@Service
+@Component
 @AllArgsConstructor
 @Slf4j
-public class PaymentService {
+public class SSLCommerzApiClient {
 
     private final TransactionService transactionService;
+    private final AccountService accountService;
     private final BidService bidService;
     private final SslcommerzUtil sslcommerzUtil;
     private final SSLCommerzConfig sslCommerzConfig;
@@ -67,6 +73,7 @@ public class PaymentService {
         verifyInitialResponse(response);
 
         transactionService.updateSessionKey(transaction, response.getSessionkey());
+        transactionService.updateStatus(transaction, TransactionStatus.PROCESSING);
         return new InitiatePaymentResponse(response.getGatewayPageURL());
     }
 
@@ -119,6 +126,8 @@ public class PaymentService {
                 .body(InitialResponse.class);
     }
 
+    @Modifying
+    @Transactional
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
 
 //        String protocol = request.getHeader("x-forwarded-proto");
@@ -150,7 +159,7 @@ public class PaymentService {
             throw new InvalidTransactionException();
         }
 
-        String status = response.getStatus() == null ? "NO_STATUS" : response.getStatus();
+        String status = response.getStatus() == null ? "PROCESSING" : response.getStatus();
         if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
             transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
             log.warn("Unsuccessful transaction: {}, status: {}", transaction.getId(), status);
@@ -190,12 +199,41 @@ public class PaymentService {
         Transaction transaction = getDBTransactionFromResponse(response.getTranId());
         if (!matchTransactionParameters(transaction, response)) {
             transactionService.updateStatus(transaction, TransactionStatus.PARAMETERS_MISMATCH);
-            transactionService.updateTransaction(transaction, response);
+            updateTransaction(transaction, response);
             log.warn("Validation response parameters don't match for transaction: {}", response.getTranId());
             return false;
         }
-        transactionService.updateValidatedTransaction(transaction, response);
+        updateValidatedTransaction(transaction, response);
         return true;
+    }
+
+    @Modifying
+    @Transactional
+    public void updateValidatedTransaction(Transaction transaction, PaymentResponse response) {
+        TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
+        if ("1".equals(response.getRiskLevel())) {
+            status = TransactionStatus.VALID_WITH_RISK;
+        }
+        transaction.setStatus(status);
+        updateTransaction(transaction, response);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateTransaction(Transaction transaction, PaymentResponse response) {
+        transaction.setStoreAmount(Double.parseDouble(response.getAmount()));
+        transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
+        transaction.setValidationId(response.getValId());
+        transaction.setBankTransactionId(response.getBankTranId());
+        transaction.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        transaction.getBid().setStatus(BidStatus.PAID);
+
+        Account sellerAccount = accountService.getByUserId(transaction.getSeller().getId());
+        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() + transaction.getBdtAmount());
+
+        Account superAdminAccount = accountService.getSuperAdminAccount();
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + transaction.getBdtAmount());
     }
 
     private Transaction getDBTransactionFromResponse(String trxId) {
@@ -212,9 +250,9 @@ public class PaymentService {
 
     private boolean hasNullInRequiredParameters(PaymentResponse response) {
         return response.getCurrencyRate() == null ||
-            response.getCurrencyAmount() == null ||
-            response.getAmount() == null ||
-            response.getCurrencyType() == null;
+                response.getCurrencyAmount() == null ||
+                response.getAmount() == null ||
+                response.getCurrencyType() == null;
     }
 
     private boolean matchTransactionParameters(Transaction transaction, PaymentResponse response) {
@@ -237,7 +275,47 @@ public class PaymentService {
         }
     }
 
-    public TransactionQueryDTO initiateTransactionQuery(Long transactionId) {
+    @Scheduled(fixedRate = 300000) // Runs every 5 minutes
+    @Transactional
+    public void checkPendingTransactions() {
+        log.info("Starting processing transaction status check");
+        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+
+        final int BATCH_SIZE = 100;
+        int pageNumber = 0;
+        boolean hasMorePages = true;
+        Sort sort = Sort.by("createdAt").ascending()
+                .and(Sort.by("id").ascending());
+
+        while (hasMorePages) {
+            PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
+            Page<Transaction> transactionPage = transactionService
+                    .findPendingTransactionsOlderThan(TransactionStatus.PROCESSING, thirtyMinutesAgo, pageRequest);
+
+            processPendingTransactions(transactionPage.getContent());
+
+            hasMorePages = transactionPage.hasNext();
+            pageNumber++;
+        }
+    }
+
+    @Modifying
+    @Transactional
+    private void processPendingTransactions(List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
+            String status = response.getStatus() == null ? "PROCESSING" : response.getStatus();
+            if (status.equals("PENDING")) {
+                status = "PROCESSING";
+            }
+            transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
+            if ("VALID".equals(status) || "VALIDATED".equals(status)) {
+                updateValidatedTransaction(transaction, response);
+            }
+        }
+    }
+
+    public void initiateTransactionQuery(Long transactionId) {
         Transaction transaction = transactionService.get(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
 
@@ -251,7 +329,6 @@ public class PaymentService {
             throw new ApiConnectionException("Api connection error");
         }
         log.info("Transaction id: {}, status: {}", transaction.getId(), response.getStatus());
-        return new TransactionQueryDTO(transaction.getId(), transaction.getBdtAmount(), response.getStatus());
     }
 
     private TransactionQueryResponse sendTransactionQueryRequest(Transaction transaction) {

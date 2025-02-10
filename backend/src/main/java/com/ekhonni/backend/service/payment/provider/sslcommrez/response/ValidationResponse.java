@@ -1,4 +1,4 @@
-package com.ekhonni.backend.payment.sslcommerz;
+package com.ekhonni.backend.service.payment.provider.sslcommrez.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,17 +8,28 @@ import lombok.ToString;
 
 /**
  * Author: Asif Iqbal
- * Date: 1/22/25
+ * Date: 12/26/24
  */
-
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TransactionQueryResponse extends PaymentResponse {
+public class ValidationResponse extends PaymentResponse {
 
-    @JsonProperty("sessionkey")
-    private String sessionKey;
+    @JsonProperty("emi_instalment")
+    private String emiInstalment;
+
+    @JsonProperty("emi_amount")
+    private String emiAmount;
+
+    @JsonProperty("emi_description")
+    private String emiDescription;
+
+    @JsonProperty("emi_issuer")
+    private String emiIssuer;
+
+    @JsonProperty("account_details")
+    private String accountDetails;
 
     @JsonProperty("APIConnect")
     private String apiConnect;

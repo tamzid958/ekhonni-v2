@@ -2,9 +2,9 @@ package com.ekhonni.backend.util;
 
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.payment.sslcommerz.InitialResponse;
-import com.ekhonni.backend.payment.sslcommerz.IpnResponse;
-import com.ekhonni.backend.payment.sslcommerz.PaymentRequest;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitialResponse;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.IpnResponse;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.request.PaymentRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

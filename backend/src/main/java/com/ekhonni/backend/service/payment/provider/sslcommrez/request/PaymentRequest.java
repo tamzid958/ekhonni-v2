@@ -1,11 +1,9 @@
-package com.ekhonni.backend.payment.sslcommerz;
+package com.ekhonni.backend.service.payment.provider.sslcommrez.request;
 
-import com.ekhonni.backend.config.SSLCommerzConfig;
+import com.ekhonni.backend.config.payment.SSLCommerzConfig;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**

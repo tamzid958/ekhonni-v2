@@ -35,4 +35,7 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
     <P> Page<P> findByBidBidderIdAndStatus(UUID userId, TransactionStatus status, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
+
+    Page<Transaction> findByStatusEqualsAndCreatedAtLessThanEqual(TransactionStatus status, LocalDateTime timestamp, Pageable pageable);
+
 }

@@ -44,7 +44,7 @@ public class PayoutService {
 
         PayoutProviderFactory factory = getPayoutProviderFactory(payoutCategory, payoutMethod);
 
-        PayoutProvider payoutProvider = factory.createPayoutProvider();
+        PayoutProvider payoutProvider = factory.getPayoutProvider();
         payoutProvider.processPayout(withdraw);
 
         if (withdraw.getStatus().equals(WithdrawStatus.COMPLETED)) {

@@ -1,24 +1,21 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
-import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
 import com.ekhonni.backend.model.Transaction;
-import com.ekhonni.backend.payment.sslcommerz.PaymentResponse;
 import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.repository.TransactionRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,35 +69,6 @@ public class TransactionService extends BaseService<Transaction, Long> {
         transaction.setStatus(status);
     }
 
-    @Modifying
-    @Transactional
-    public void updateValidatedTransaction(Transaction transaction, PaymentResponse response) {
-        TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
-        if ("1".equals(response.getRiskLevel())) {
-            status = TransactionStatus.VALID_WITH_RISK;
-        }
-        transaction.setStatus(status);
-        updateTransaction(transaction, response);
-    }
-
-    @Modifying
-    @Transactional
-    public void updateTransaction(Transaction transaction, PaymentResponse response) {
-        transaction.setStoreAmount(Double.parseDouble(response.getAmount()));
-        transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
-        transaction.setValidationId(response.getValId());
-        transaction.setBankTransactionId(response.getBankTranId());
-        transaction.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        transaction.getBid().setStatus(BidStatus.PAID);
-
-        Account sellerAccount = accountService.getByUserId(transaction.getSeller().getId());
-        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() + transaction.getBdtAmount());
-
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + transaction.getBdtAmount());
-    }
-
     public boolean existsByBidId(Long bidId) {
         return transactionRepository.existsByBidIdAndDeletedAtIsNull(bidId);
     }
@@ -143,5 +111,9 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     public Page<TransactionProjection> getUserTransactionsByStatusAdmin(UUID userId, TransactionStatus status, Pageable pageable) {
         return transactionRepository.findByBidBidderIdAndStatus(userId, status, TransactionProjection.class, pageable);
+    }
+
+    public Page<Transaction> findPendingTransactionsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
+        return transactionRepository.findByStatusEqualsAndCreatedAtLessThanEqual(status, timestamp, pageable);
     }
 }

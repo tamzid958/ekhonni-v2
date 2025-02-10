@@ -1,4 +1,4 @@
-package com.ekhonni.backend.payment.sslcommerz;
+package com.ekhonni.backend.service.payment.provider.sslcommrez.response;
 
 import lombok.Getter;
 import lombok.Setter;

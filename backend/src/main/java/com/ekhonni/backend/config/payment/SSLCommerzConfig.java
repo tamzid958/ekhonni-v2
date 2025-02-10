@@ -1,4 +1,4 @@
-package com.ekhonni.backend.config;
+package com.ekhonni.backend.config.payment;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

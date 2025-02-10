@@ -1,4 +1,4 @@
-package com.ekhonni.backend.payment.sslcommerz.refund;
+package com.ekhonni.backend.service.payment.provider.sslcommrez.refund;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

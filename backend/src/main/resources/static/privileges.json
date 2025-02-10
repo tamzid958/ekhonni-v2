@@ -420,7 +420,13 @@
     "name": "Initiate Payment",
     "description": "Allows a user to initiate a payment for a bid",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/initiate/{id}"
+    "endpoint": "/api/v2/payment/initiate"
+  },
+  {
+    "name": "Get Payment Methods",
+    "description": "Get all payment/cash in methods",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/payment/methods"
   },
   {
     "name": "Payment Success",
@@ -444,7 +450,7 @@
     "name": "Instant Payment Notification",
     "description": "Handles IPN requests from the payment gateway",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/ipn"
+    "endpoint": "/api/v2/payment/sslcommerz/ipn"
   },
   {
     "name": "Create Seller Review",
