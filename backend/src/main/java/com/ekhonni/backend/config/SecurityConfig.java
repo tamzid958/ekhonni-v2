@@ -60,17 +60,20 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request ->
                         request
+
                                 .requestMatchers(HttpMethod.POST, AUTH_URLS).permitAll()
-                                .requestMatchers(PUBLIC_URLS).permitAll() // allow only get in future
+                                .requestMatchers(PUBLIC_URLS).permitAll()
+
+                                .requestMatchers("/ws-chat/**").permitAll()
+
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(customAccessDeniedHandler)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider());
-
 
         return http.build();
     }
@@ -78,10 +81,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
         provider.setUserDetailsService(userDetailsServiceImpl);
         provider.setPasswordEncoder(passwordEncoder());
-
         return provider;
     }
 

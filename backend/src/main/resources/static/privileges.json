@@ -877,5 +877,29 @@
     "description": "Removes multiple products from the user's watchlist",
     "httpMethod": "DELETE",
     "endpoint": "/api/v2/user/watchlist"
+  },
+  {
+    "name": "Send Message",
+    "description": "Allows users to send chat messages",
+    "httpMethod": "SEND",
+    "endpoint": "/app/message"
+  },
+  {
+    "name": "Receive Messages",
+    "description": "Allows users to receive chat messages",
+    "httpMethod": "SUBSCRIBE",
+    "endpoint": "/topic/messages"
+  },
+  {
+    "name": "Receive Messages Hisotry",
+    "description": "Allows users to receive chat messages",
+    "httpMethod": "GET",
+    "endpoint": "/chat/history/{id}"
+  },
+  {
+    "name": "Receive Messages Hisotry",
+    "description": "Allows users to receive chat messages",
+    "httpMethod": "GET",
+    "endpoint": "/chat/gg"
   }
 ]

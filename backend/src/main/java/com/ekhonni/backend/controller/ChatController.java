@@ -1,56 +1,63 @@
-///**
-// * Author: Rifat Shariar Sakil
-// * Time: 4:20 PM
-// * Date: 2/9/25
-// * Project Name: ekhonni-v2
-// */
-//
-//package com.ekhonni.backend.controller;
-//
-//import com.ekhonni.backend.model.Chat;
-//import com.ekhonni.backend.model.User;
-//import com.ekhonni.backend.service.ChatService;
-//import com.ekhonni.backend.util.AuthUtil;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.messaging.Message;
-//import org.springframework.messaging.handler.annotation.Header;
-//import org.springframework.messaging.handler.annotation.MessageMapping;
-//import org.springframework.messaging.simp.SimpMessagingTemplate;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import java.util.List;
-//import java.util.UUID;
-//
-//@RestController
-//@RequestMapping("/api/v2/chat")
-//public class ChatController {
-//
-//    @Autowired
-//    private ChatService chatService;
-//
-//    @Autowired
-//    private SimpMessagingTemplate messagingTemplate;
-//
-//    @GetMapping("/history")
-//    public ResponseEntity<List<Chat>> getChatHistory(@RequestParam UUID otherUserId) {
-//        User authenticatedUser = AuthUtil.getAuthenticatedUser();
-//        User otherUser = new User();
-//        otherUser.setId(otherUserId);
-//
-//        List<Chat> chats = chatService.getChatHistory(authenticatedUser, otherUser);
-//        return ResponseEntity.ok(chats);
-//    }
-//
-//    @MessageMapping("/chat.sendMessage")
-//    public void sendMessage(Chat chat, @Header("simpUser") User sender) {
-//        chat.setSender(sender);
-//        chat.setTimestamp(java.time.LocalDateTime.now());
-//        messagingTemplate.convertAndSendToUser(
-//                chat.getReceiver().getId().toString(), "/queue/messages", chat);
-//    }
-//}
+/**
+ * Author: Rifat Shariar Sakil
+ * Time: 4:20 PM
+ * Date: 2/9/25
+ * Project Name: ekhonni-v2
+ */
+
+package com.ekhonni.backend.controller;
+
+import com.ekhonni.backend.dto.ChatMessage;
+import com.ekhonni.backend.model.Chat;
+import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.service.ChatService;
+import com.ekhonni.backend.util.AuthUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+public class ChatController {
+
+    private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate) {
+        this.chatService = chatService;
+        this.messagingTemplate = messagingTemplate;
+    }
+
+
+    @MessageMapping("/chat.send")
+    public void sendMessage(@Payload ChatMessage chatMessage) {
+        System.out.println("hello");
+
+        User sender = AuthUtil.getAuthenticatedUser();
+
+
+        Chat chat = chatService.sendMessage(sender, UUID.fromString(chatMessage.getReceiverId()), chatMessage.getContent());
+
+        messagingTemplate.convertAndSendToUser(
+                chat.getReceiver().getUsername(),
+                "/queue/messages",
+                chat
+        );
+    }
+
+
+    @GetMapping("/chat/history/{receiverId}")
+    public List<Chat> getChatHistory(@PathVariable UUID receiverId) {
+        User currentUser = AuthUtil.getAuthenticatedUser();
+        return chatService.getChatHistory(currentUser, receiverId);
+    }
+    @GetMapping("/chat/gg")
+    public String gg(){
+        return "hello";
+    }
+}

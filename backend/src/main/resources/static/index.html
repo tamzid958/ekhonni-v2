@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STOMP WebSocket Client</title>
+    <!-- Include the STOMP client library from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+<h1>STOMP WebSocket Client</h1>
+<button onclick="sendMessage()">Send Message</button>
+<div id="messages">
+    <h2>Received Messages</h2>
+</div>
+
+<script>
+    // Replace with your actual access token received from your sign-in endpoint
+    const accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzaGFyaWFyc2FraWwxMDFAZ21haWwuY29tIiwiaWF0IjoxNzM5MTg3NDUxLCJleHAiOjE3MzkxOTM0NTF9.wgHW8JIEk50RMs7UREeUkgKaO4RC2W3Zt-xrM-fJgT8";
+
+    // Create a new STOMP client instance with the token attached in the connect headers.
+    const client = new StompJs.Client({
+      // Set the WebSocket URL (your native endpoint)
+      brokerURL: 'ws://localhost:8080/ws-chat',
+
+      // Attach the JWT token in the connection headers so that your JWTFilter can process it.
+      connectHeaders: {
+        Authorization: `Bearer ${accessToken}`
+      },
+
+      // Optionally, set a reconnect delay in case of connection loss
+      reconnectDelay: 5000,
+
+      // Called after a successful connection
+      onConnect: (frame) => {
+        console.log('Connected: ' + frame);
+
+        // Subscribe to messages for this user.
+        // According to your config, messages are sent to /user/queue/messages.
+        client.subscribe('/user/queue/messages', (message) => {
+          console.log("Received message: " + message.body);
+          const msgDiv = document.getElementById('messages');
+          msgDiv.innerHTML += `<p>${message.body}</p>`;
+        });
+      },
+
+      // Error callback
+      onStompError: (frame) => {
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Details: ' + frame.body);
+      }
+    });
+
+    // Activate the STOMP client (this connects to the WebSocket endpoint)
+    client.activate();
+
+    // Function to send a message to the /app/chat.send destination
+    function sendMessage() {
+      // Create the payload. Adjust receiverId and content as needed.
+      const payload = {
+        receiverId: "550e8400-e29b-41d4-a716-446655440006",
+        content: "Hello from HTML client!"
+      };
+
+      // Publish the message.
+      // The destination is composed using the application prefix: /app/chat.send.
+      client.publish({
+        destination: '/app/chat.send',
+        body: JSON.stringify(payload)
+      });
+
+      console.log("Message sent:", payload);
+    }
+</script>
+</body>
+</html>
