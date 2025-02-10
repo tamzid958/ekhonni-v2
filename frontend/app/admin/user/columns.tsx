@@ -16,7 +16,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
 import { Toaster } from 'sonner';
-import { handleBlcokUser, handleBlockUser, handleUnblcokUser, handleUnblockUser } from '../components/useHandleBlock';
+import { handleBlockUser, handleUnblockUser } from '../components/useHandleBlock';
 import { handleChangeUserRole } from '../components/useHandleRole';
 import {
   Dialog,
@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
+import { useRouter } from "next/navigation";
 
 export type User = {
   id: string
@@ -39,8 +40,22 @@ export type User = {
   CreatedAt: string
   UpdatedAt: string
   address: string
-
 }
+export type blockedUser = {
+  id: string
+  name: string
+  email: string
+  address: string
+  blockedBy: string
+  blockedReason:string
+  unblockAt: string
+  roleName: "ADMIN" | "USER" | "SUPER_ADMIN"
+  image: string
+  status: "ACTIVE" | "UNVERIFIED" | "DELETED" | "BLOCKED"
+  CreatedAt: string
+  UpdatedAt: string
+}
+
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -201,6 +216,7 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     cell: ({ row }) => {
       const User = row.original;
+      const router = useRouter();
       const { data: session } = useSession();
       const userToken = session?.user?.token;
       const [isBlocked, setIsBlocked] = useState(false);
@@ -328,7 +344,7 @@ export const columns: ColumnDef<User>[] = [
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => alert(`Viewing user ${User.name}`)}
+                onClick={() => router.push(`/admin/user/${User.id}`)}
               >
                 View User Public Details
               </DropdownMenuItem>
@@ -364,3 +380,169 @@ export const columns: ColumnDef<User>[] = [
   }
 
 ]
+
+
+export const blockedUserColumns: ColumnDef<>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: true,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+  },
+  {
+    accessorKey: "address",
+    header: "Address",
+  },
+  {
+    accessorKey: "blockedAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Blocked At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("blockedAt"))
+      const formatted = date.toDateString()
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+  {
+    accessorKey: "blockedBy",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Blocked By
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const User = row.original;
+      const formatted = User.blockedBy;
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+
+  {
+    accessorKey: "blockedReason",
+    header: "Block Reason",
+  },
+  {
+    accessorKey: "unblockAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+         Unblock At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("unblockAt"))
+      const formatted = date.toDateString()
+      return <div className="text-center font-medium">{formatted}</div>
+    }
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const User = row.original;
+      const { data: session } = useSession();
+      const userToken = session?.user?.token;
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      return (
+        <div>
+          {/* Dropdown Menu */}
+          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(User.id)}
+              >
+                Copy User ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => alert(`Viewing user ${User.name}`)}
+              >
+                View User Public Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleUnblockUser(User.id, userToken)}>
+                  Unblock User
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Toaster />
+        </div>
+      )
+    },
+  }
+
+]
+
+

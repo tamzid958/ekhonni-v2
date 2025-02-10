@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FaArrowUp } from 'react-icons/fa';
 import { Separator } from "@/components/ui/separator"
-import { User , columns } from "./columns"
+import { User,blockedUser, columns, blockedUserColumns } from './columns';
 import { DataTable } from "../components/data-table"
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
@@ -20,24 +20,8 @@ import { inviteUser } from '../utility/inviteUserViaEmail';
 import {getUserStats } from '../utility/filterUserByDate';
 import { Select, SelectContent, SelectItem } from '@radix-ui/react-select';
 import { SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useUsers } from '../hooks/useUser';
 
-const processUsers = (users: any[]) : User[] => {
-  return users.map(user => {
-    let status = "ACTIVE";
-
-     if (!user.verified) {
-      status = "UNVERIFIED";
-    } else if (user.deletedAt) {
-      status = "DELETED";
-    } else if (user.isBlocked) {
-       status = "BLOCKED";
-     }
-    return {
-      ...user,
-      status,
-    };
-  });
-};
 const timePeriodLabels = {
   all: "All Time",
   week: "This Week",
@@ -51,19 +35,12 @@ export default  function User  () {
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
 
-  const { allRolesList, isLoading: isLoadingRole , error: roleError} = useRoles(userId, userToken);
+  const { allRolesList, isLoading: isLoadingRole , error: roleError } = useRoles(userId, userToken);
 
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<"all" | "week" | "month" | "year">("all");
   const [stats, setStats] = useState({ userCount: 0, growthPercentage: "0.00" });
 
-  const { data: allUsers, error: allError, isLoading: isLoading } = useSWR(
-    userId ? `/api/v2/admin/user` : null,
-    async (url) => {
-      const fetchedData = await fetcher(url, userToken);
-      fetchedData.content = fetchedData.content.sort((a, b) => a.id - b.id);
-      return fetchedData;
-    }
-  );
+  const { allUsers, isLoading, allUserError,  processUsers } = useUsers(userId, userToken);
 
   const { data: activeUsers, error: activeError , isLoading: isLoadingActive } = useSWR(
     userId ? `/api/v2/admin/user/active` : null,
@@ -73,6 +50,7 @@ export default  function User  () {
       return fetchedData;
     }
   );
+
   const { data: deletedUsers, error: deletedError, isLoading:isLoadingDelete } = useSWR(
     userId ? `/api/v2/admin/user/delete` : null,
     async (url) => {
@@ -89,7 +67,6 @@ export default  function User  () {
       return fetchedData;
     }
   );
-
   const adminRoleId = allRolesList?.find((role) => role.name === "ADMIN")?.id;
 
   const { data: admin, error: adminError, isLoading: isLoadingAdmin } = useSWR(
@@ -103,8 +80,7 @@ export default  function User  () {
 
   const totalAdmins = admin?.content?.length ?? 0;
 
-  const processedUsers: User[] = allUsers ? processUsers(allUsers.content) : [];
-  const totalUsers = processedUsers.length;
+  const processedUsers  = allUsers ?? [];
 
   function createTestUser(createdAt) {
     return {
@@ -114,7 +90,7 @@ export default  function User  () {
       deletedAt: null,
       profileImage: "https://example.com/profile.jpg",
       createdAt: new Date(createdAt).toISOString(),
-      blockedAt: new Date(createdAt).toISOString(),
+      isBlocked : true,
       email: `user${Math.floor(Math.random() * 1000)}@example.com`,
       name: `Test User ${Math.floor(Math.random() * 1000)}`,
       id: crypto.randomUUID(), // Generates a random UUID
@@ -155,14 +131,16 @@ export default  function User  () {
     // Older than last week
   ];
 
-  processedUsers.push(...test);
+  const processedTestUser = processUsers(test);
 
+  processedUsers.push(...processedTestUser);
+  const totalUsers = processedUsers.length;
   useEffect(() => {
     setStats(getUserStats(processedUsers, selectedTimePeriod));
   }, [selectedTimePeriod]);
 
 
-  if (status === "loading" || isLoading || isLoadingActive || isLoadingDelete || isLoadingBlock || isLoadingAdmin || isLoadingRole) {
+  if (status === "loading" || isLoading || isLoadingAdmin || isLoadingRole) {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
           <div className="flex justify-center flex-col items-center h-screen">
@@ -181,7 +159,7 @@ export default  function User  () {
       </div>
     );
   }
-  else if(activeError || allError || deletedError || blockedError || adminError || roleError)
+  else if(  allUserError  || adminError || roleError)
   {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col items-center  bg-white ">
@@ -193,12 +171,11 @@ export default  function User  () {
     );
   }
   return (
+    <div className="flex">
     <div className="flex w-[1220px] h-[1250px] flex-col  bg-white ">
 
-      {/* Top section */}
       <div className="flex flex-col md:flex-row w-full">
 
-        {/* Top left bar */}
         <div className="flex flex-col w-full md:w-1/2  p-4">
           <h1 className="text-black font-sans font-bold text-3xl">
             Users
@@ -208,12 +185,11 @@ export default  function User  () {
           </h2>
         </div>
 
-        {/* Top right bar (button) */}
         <div className="flex items-center gap-2.5 justify-end w-full md:w-1/2  p-4">
           <Button
             variant="outline"
             className="bg-black text-white flex items-center justify-center gap-2"
-            onClick={() => exportUserDataToCSV(allUsers.content)}
+            onClick={() => exportUserDataToCSV(allUsers)}
             aria-label="Export to CSV"
           >
             <FaFileCsv className="text-xl" />
@@ -243,7 +219,6 @@ export default  function User  () {
                 <CardTitle className="flex text-gray-500 mb-2 text-xl">
                   Total Users ({timePeriodLabels[selectedTimePeriod]})
                 </CardTitle>
-
                 <h1 className="text-4xl font-bold">{stats.userCount}</h1>
               </div>
               <div className="flex flex-col gap-2.5 items-end">
@@ -318,7 +293,6 @@ export default  function User  () {
       <div className="w-full  h-36 mt-2">
         <section className=" flex">
           <div className="flex flex-col justify-start items-start">
-            {/*<h1 className="text-2xl mb-4 font-bold">All Users(12,000)</h1>*/}
             <Tabs defaultValue="all" className="w-[400px] pl-4">
               <TabsList>
                 <TabsTrigger value="all" >All Users({processedUsers.length} )</TabsTrigger>
@@ -332,8 +306,8 @@ export default  function User  () {
               <TabsContent value="active" className = "flex w-[1220px] min-h[400px] ">
                   <DataTable key={activeUsers?.content?.length ?? 0} columns={columns} data={activeUsers?.content ?? []} />
               </TabsContent>
-              <TabsContent key={blockedUsers?.content?.length ?? 0}  value="blocked" className = "flex min-w-[1220px] min-h[400px] ">
-                  <DataTable  columns={columns} data={blockedUsers?.content ?? []} />
+              <TabsContent  value="blocked" className = "flex min-w-[1220px] min-h[400px] ">
+                  <DataTable  key={blockedUsers?.content?.length ?? 0}  columns={blockedUserColumns} data={blockedUsers?.content ?? []} />
               </TabsContent>
               <TabsContent value="deleted" className = "flex min-w-[1220px] min-h[400px] ">
                 <DataTable  key={deletedUsers?.content?.length ?? 0} columns={columns} data={deletedUsers?.content ?? []} />
@@ -342,6 +316,7 @@ export default  function User  () {
           </div>
         </section>
       </div>
+    </div>
     </div>
   );
 }
