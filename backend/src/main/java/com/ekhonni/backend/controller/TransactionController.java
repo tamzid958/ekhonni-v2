@@ -35,7 +35,7 @@ public class TransactionController {
 
     @GetMapping("/user")
     public ResponseEntity<ApiResponse<Page<TransactionProjection>>> getAllForUser(Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, transactionService.getAllForUser(pageable));
+        return ResponseUtil.createResponse(HTTPStatus.OK, transactionService.getAllForAuthenticatedUser(pageable));
     }
 
     @GetMapping("/user/status/{status}")

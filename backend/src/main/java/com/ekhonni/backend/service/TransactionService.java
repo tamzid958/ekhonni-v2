@@ -79,11 +79,10 @@ public class TransactionService extends BaseService<Transaction, Long> {
         transactionRepository.deleteByBidId(bidId);
     }
 
-    public Page<TransactionProjection> getAllForUser(Pageable pageable) {
+    public Page<TransactionProjection> getAllForAuthenticatedUser(Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
-        var received =  transactionRepository.findByBidBidderIdAndDeletedAtIsNull(userId, TransactionProjection.class, pageable);
-        var sent = transactionRepository.findByBidProductSellerIdAndDeletedAtIsNull(userId, TransactionProjection.class, pageable);
-        return null;
+        return transactionRepository.findByDeletedAtIsNullAndBidBidderIdOrBidProductSellerId(
+                userId, userId, TransactionProjection.class, pageable);
     }
 
     public Page<TransactionProjection> getAllByStatus(TransactionStatus status, Pageable pageable) {

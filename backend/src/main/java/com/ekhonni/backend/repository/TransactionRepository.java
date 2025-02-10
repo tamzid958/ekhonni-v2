@@ -32,6 +32,11 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
 
     <P> Page<P> findByBidProductSellerIdAndDeletedAtIsNull(UUID sellerId, Class<P> projection, Pageable pageable);
 
+    <P> Page<P> findByDeletedAtIsNullAndBidBidderIdOrBidProductSellerId(
+            UUID bidderId, UUID sellerId,
+            Class<P> projection, Pageable pageable
+    );
+
     <P> Page<P> findByStatus(TransactionStatus status, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByBidBidderIdAndStatus(UUID userId, TransactionStatus status, Class<P> projection, Pageable pageable);
