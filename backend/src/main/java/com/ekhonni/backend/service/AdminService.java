@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.UserBlockDTO;
+import com.ekhonni.backend.exception.UserBlockedException;
 import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.BlockInfo;
 import com.ekhonni.backend.model.User;
@@ -47,6 +48,9 @@ public class AdminService extends BaseService<User, UUID> {
     @Modifying
     public void block(UserBlockDTO userBlockDTO) {
         User user = adminRepository.findById(userBlockDTO.id()).orElseThrow(() -> new UserNotFoundException("User not found with id " + userBlockDTO.id()));
+
+        if (user.isBlocked()) throw new UserBlockedException("User already Blocked");
+
         BlockInfo blockInfo = new BlockInfo(
                 user,
                 AuthUtil.getAuthenticatedUser(),
@@ -63,7 +67,10 @@ public class AdminService extends BaseService<User, UUID> {
     @Modifying
     public void unblock(UUID id) {
         User user = adminRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id " + id));
-        BlockInfo blockInfo = blockInfoRepository.findByUserAndDeletedAtIsNull(user).orElseThrow(() -> new RuntimeException("User not blocked by"+ id));
+
+        if (!user.isBlocked()) throw new UserBlockedException("User Not blocked");
+
+        BlockInfo blockInfo = blockInfoRepository.findByUserAndDeletedAtIsNull(user).orElseThrow(() -> new RuntimeException("User not blocked by" + id));
         blockInfo.setUnblockAt(LocalDateTime.now());
         blockInfoRepository.softDelete(blockInfo.getId());
         user.setBlocked(false);
