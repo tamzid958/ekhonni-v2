@@ -11,20 +11,14 @@ const AdminIntroPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
-
-      {/* Welcome Message */}
       <header className="space-y-4 text-center">
         <h1 className="text-4xl font-bold">Welcome to the Admin Dashboard</h1>
         <p className="text-gray-600 text-lg">
           Manage categories, products, users, and much more from one centralized location.
         </p>
       </header>
-
       <Separator />
-
-      {/* Quick Links Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {/* Categories Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Categories</CardTitle>
@@ -40,7 +34,6 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
-        {/* Products Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Products</CardTitle>
@@ -56,7 +49,6 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
-        {/* Users Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Users</CardTitle>
@@ -65,14 +57,13 @@ const AdminIntroPage = () => {
             <p className="text-gray-700">Manage user accounts, roles, and permissions.</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => router.push('/admin/users')}
+              onClick={() => router.push('/admin/user')}
             >
               Go to Users
             </Button>
           </CardContent>
         </Card>
 
-        {/* Notifications Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Notifications</CardTitle>

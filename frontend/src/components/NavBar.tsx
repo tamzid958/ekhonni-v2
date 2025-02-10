@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/
 import { cn } from '@/lib/utils';
 import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
 
 
@@ -85,9 +85,18 @@ export function NavBar({ placeholder }: Props) {
 
   return (
     <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40">
-      <div className="font-bold ml-16 mt-2">
+      {/*<div className="font-bold ml-16 mt-2">*/}
+      {/*  <Link href="/">*/}
+      {/*    <img src="frame.png" alt="logo" className="h-[75px]" />*/}
+      {/*  </Link>*/}
+      {/*</div>*/}
+      <div className="font-bold ml-4 md:ml-8 lg:ml-16 mt-2">
         <Link href="/">
-          <img src="frame.png" alt="logo" className="h-[75px]" />
+          <img
+            src="frame.png"
+            alt="logo"
+            className="h-12 md:h-16 lg:h-20 xl:h-24 w-auto object-contain"
+          />
         </Link>
       </div>
       <div className="w-[680px] flex justify-center items-center">
@@ -151,7 +160,6 @@ export function NavBar({ placeholder }: Props) {
             </SelectGroup>
           </SelectContent>
         </Select>
-
 
 
         {session ? (
