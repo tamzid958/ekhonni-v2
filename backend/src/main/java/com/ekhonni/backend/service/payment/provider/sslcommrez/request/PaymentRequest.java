@@ -1,9 +1,7 @@
 package com.ekhonni.backend.service.payment.provider.sslcommrez.request;
 
 import com.ekhonni.backend.config.payment.SSLCommerzConfig;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,10 +9,7 @@ import org.springframework.stereotype.Component;
  * Date: 12/15/24
  */
 
-@Component
-@Getter
-@Setter
-@ToString
+@Data
 public class PaymentRequest {
     private String store_id;
     private String store_passwd;

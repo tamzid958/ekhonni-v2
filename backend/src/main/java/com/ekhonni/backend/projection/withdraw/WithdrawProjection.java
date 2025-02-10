@@ -13,17 +13,27 @@ import java.time.LocalDateTime;
  * Date: 12/9/24
  */
 public interface WithdrawProjection {
+
     Long getId();
+
     WithdrawStatus getStatus();
+
     Long getPayoutAccountId();
+
     @JsonProperty("payoutAccountNumber")
     String getPayoutAccountPayoutAccountNumber();
+
     @JsonProperty("payoutCategory")
     PayoutCategory getPayoutAccountCategory();
+
     @JsonProperty("payoutMethod")
     PayoutMethod getPayoutAccountMethod();
+
     String getBankTransactionId();
+
     Double getAmount();
+
     String getCurrency();
+
     LocalDateTime getCreatedAt();
 }

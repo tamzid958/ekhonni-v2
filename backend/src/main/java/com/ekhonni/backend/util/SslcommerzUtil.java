@@ -1,5 +1,6 @@
 package com.ekhonni.backend.util;
 
+import com.ekhonni.backend.config.payment.SSLCommerzConfig;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitialResponse;
@@ -12,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class SslcommerzUtil {
 
-    private final PaymentRequest paymentRequest;
+    private final SSLCommerzConfig sslCommerzConfig;
 
     public InitialResponse extractInitResponse(Map<String, String> response) {
         ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +36,8 @@ public class SslcommerzUtil {
         return mapper.convertValue(response, IpnResponse.class);
     }
 
-    public void constructRequestParameters(Transaction transaction) {
+    public PaymentRequest constructPaymentRequestParameters(Transaction transaction) {
+        PaymentRequest paymentRequest = new PaymentRequest(sslCommerzConfig);
         User buyer = transaction.getBuyer();
         paymentRequest.setTran_id(String.valueOf(transaction.getId()));
         paymentRequest.setTotal_amount(String.valueOf(transaction.getAmount()));
@@ -53,10 +54,11 @@ public class SslcommerzUtil {
         paymentRequest.setProduct_name(transaction.getProduct().getTitle());
         paymentRequest.setProduct_category("General");
         paymentRequest.setProduct_profile("General");
+        return paymentRequest;
     }
 
-    public String getParamsString(Transaction transaction, boolean urlEncode) throws UnsupportedEncodingException {
-        constructRequestParameters(transaction);
+    public String getParamsString(Transaction transaction, boolean urlEncode) {
+        PaymentRequest paymentRequest = constructPaymentRequestParameters(transaction);
         StringBuilder result = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
 
