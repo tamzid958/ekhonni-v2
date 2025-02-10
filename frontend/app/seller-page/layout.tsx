@@ -54,7 +54,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen min-w-screen bg-gray-100">
       <header className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           {/* Seller Info */}
