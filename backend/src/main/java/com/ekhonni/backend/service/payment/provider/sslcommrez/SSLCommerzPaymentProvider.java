@@ -22,6 +22,6 @@ public class SSLCommerzPaymentProvider implements PaymentProvider  {
 
     @Override
     public InitiatePaymentResponse processCashIn(Double amount) throws Exception {
-        return sslCommerzApiClient.initiatePayment(0L);
+        return sslCommerzApiClient.initiateCashIn(amount);
     }
 }

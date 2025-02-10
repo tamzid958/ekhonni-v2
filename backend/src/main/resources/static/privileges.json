@@ -423,6 +423,12 @@
     "endpoint": "/api/v2/payment/initiate"
   },
   {
+    "name": "Initiate cash-in",
+    "description": "Allows a user to initiate a cash in",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cash-in"
+  },
+  {
     "name": "Get Payment Methods",
     "description": "Get all payment/cash in methods",
     "httpMethod": "GET",
@@ -697,6 +703,54 @@
     "description": "Fetches all transactions within a specified date range (Admin only)",
     "httpMethod": "GET",
     "endpoint": "/api/v2/transaction/date-range"
+  },
+  {
+    "name": "Get CashIn by ID",
+    "description": "Retrieves a specific cash-in transaction by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/{id}"
+  },
+  {
+    "name": "Get User CashIns",
+    "description": "Retrieves all cash-ins for the authenticated user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user"
+  },
+  {
+    "name": "Get User CashIns by Status",
+    "description": "Retrieves user's cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/status/{status}"
+  },
+  {
+    "name": "Get User CashIns (Admin)",
+    "description": "Admin endpoint to retrieve cash-ins for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/{user_id}"
+  },
+  {
+    "name": "Get User CashIns by Status (Admin)",
+    "description": "Admin endpoint to retrieve user's cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/{user_id}/status/{status}"
+  },
+  {
+    "name": "Get All CashIns",
+    "description": "Admin endpoint to retrieve all cash-ins",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in"
+  },
+  {
+    "name": "Get CashIns by Status",
+    "description": "Admin endpoint to retrieve all cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/status/{status}"
+  },
+  {
+    "name": "Get CashIns by Date Range",
+    "description": "Admin endpoint to retrieve cash-ins within a date range",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/date-range"
   },
   {
     "name": "Get Withdraw by ID",

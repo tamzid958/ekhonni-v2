@@ -3,9 +3,11 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.payment.PaymentRequest;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.PaymentMethod;
+import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.payment.PaymentService;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.SSLCommerzApiClient;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitiatePaymentResponse;
 import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,8 +41,13 @@ public class PaymentController {
 
     @PostMapping("/initiate")
     @PreAuthorize("@bidService.getBidderId(#paymentRequest.bidId) == authentication.principal.id")
-    public ResponseEntity<?> initiatePayment(@Valid @RequestBody PaymentRequest paymentRequest) throws Exception {
+    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiatePayment(@Valid @RequestBody PaymentRequest paymentRequest) throws Exception {
         return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.processPayment(paymentRequest));
+    }
+
+    @PostMapping("/cash-in")
+    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiateCashIn(@RequestParam double amount) throws Exception {
+        return ResponseUtil.createResponse(HTTPStatus.OK, sslCommerzApiClient.initiateCashIn(amount));
     }
 
     @GetMapping("/methods")

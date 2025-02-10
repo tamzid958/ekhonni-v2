@@ -65,4 +65,5 @@ public class Transaction extends BaseEntity<Long> {
                 ", updatedAt=" + getUpdatedAt() +
                 "}";
     }
+
 }

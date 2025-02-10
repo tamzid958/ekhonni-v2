@@ -1,11 +1,12 @@
 package com.ekhonni.backend.util;
 
 import com.ekhonni.backend.config.payment.SSLCommerzConfig;
+import com.ekhonni.backend.model.CashIn;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.request.SSLCommerzPaymentRequest;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitialResponse;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.response.IpnResponse;
-import com.ekhonni.backend.service.payment.provider.sslcommrez.request.PaymentRequest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +37,10 @@ public class SslcommerzUtil {
         return mapper.convertValue(response, IpnResponse.class);
     }
 
-    public PaymentRequest constructPaymentRequestParameters(Transaction transaction) {
-        PaymentRequest paymentRequest = new PaymentRequest(sslCommerzConfig);
+    private SSLCommerzPaymentRequest constructPaymentRequestParameters(Transaction transaction) {
+        SSLCommerzPaymentRequest paymentRequest = new SSLCommerzPaymentRequest(
+                sslCommerzConfig, sslCommerzConfig.getPaymentIpnUrl());
+
         User buyer = transaction.getBuyer();
         paymentRequest.setTran_id(String.valueOf(transaction.getId()));
         paymentRequest.setTotal_amount(String.valueOf(transaction.getAmount()));
@@ -57,31 +60,68 @@ public class SslcommerzUtil {
         return paymentRequest;
     }
 
-    public String getParamsString(Transaction transaction, boolean urlEncode) {
-        PaymentRequest paymentRequest = constructPaymentRequestParameters(transaction);
-        StringBuilder result = new StringBuilder();
-        ObjectMapper objectMapper = new ObjectMapper();
+    private SSLCommerzPaymentRequest constructCashInRequestParameters(CashIn cashIn) {
+        SSLCommerzPaymentRequest cashInRequest = new SSLCommerzPaymentRequest(
+                sslCommerzConfig, sslCommerzConfig.getCashInIpnUrl());
 
-        Map<String, Object> fieldMap = objectMapper.convertValue(paymentRequest, new TypeReference<>() {});
+        User user = cashIn.getAccount().getUser();
+        cashInRequest.setTran_id(String.valueOf(cashIn.getId()));
+        cashInRequest.setTotal_amount(String.valueOf(cashIn.getAmount()));
+        cashInRequest.setCurrency(cashIn.getCurrency());
+
+        cashInRequest.setCus_name(user.getName());
+        cashInRequest.setCus_email(user.getEmail());
+        cashInRequest.setCus_phone(user.getPhone());
+        cashInRequest.setCus_add1(user.getAddress());
+        cashInRequest.setCus_city("Dhaka");
+        cashInRequest.setCus_country("Bangladesh");
+
+        cashInRequest.setShipping_method("NO");
+        cashInRequest.setProduct_name("cashIn");
+        cashInRequest.setProduct_category("General");
+        cashInRequest.setProduct_profile("General");
+        return cashInRequest;
+    }
+
+    public String getParamsString(Transaction transaction, boolean urlEncode) {
+        SSLCommerzPaymentRequest sslCommerzPaymentRequest = constructPaymentRequestParameters(transaction);
+        Map<String, Object> fieldMap = convertToMap(sslCommerzPaymentRequest);
+        return buildParameterString(fieldMap, urlEncode);
+    }
+
+    public String getParamsString(CashIn cashIn, boolean urlEncode) {
+        SSLCommerzPaymentRequest cashInRequest = constructCashInRequestParameters(cashIn);
+        Map<String, Object> fieldMap = convertToMap(cashInRequest);
+        return buildParameterString(fieldMap, urlEncode);
+    }
+
+    private Map<String, Object> convertToMap(SSLCommerzPaymentRequest request) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.convertValue(request, new TypeReference<>() {});
+    }
+
+    private String buildParameterString(Map<String, Object> fieldMap, boolean urlEncode) {
+        StringBuilder result = new StringBuilder();
+
         for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             if (value != null) {
-                if (urlEncode) {
-                    result.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
-                    result.append("=");
-                    result.append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
-                } else {
-                    result.append(key);
-                    result.append("=");
-                    result.append(value);
+                if (!result.isEmpty()) {
+                    result.append("&");
                 }
-                result.append("&");
+                if (urlEncode) {
+                    result.append(URLEncoder.encode(key, StandardCharsets.UTF_8))
+                            .append("=")
+                            .append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
+                } else {
+                    result.append(key)
+                            .append("=")
+                            .append(value);
+                }
             }
         }
-
-        String resultString = result.toString();
-        return !resultString.isEmpty() ? resultString.substring(0, resultString.length() - 1) : resultString;
+        return result.toString();
     }
 }

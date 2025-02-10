@@ -1,17 +1,19 @@
 package com.ekhonni.backend.service.payment.provider.sslcommrez;
 
 import com.ekhonni.backend.config.payment.SSLCommerzConfig;
-import com.ekhonni.backend.dto.transaction.TransactionQueryDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.*;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Bid;
+import com.ekhonni.backend.model.CashIn;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.service.AccountService;
 import com.ekhonni.backend.service.BidService;
+import com.ekhonni.backend.service.CashInService;
 import com.ekhonni.backend.service.TransactionService;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.response.*;
+import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.HashUtil;
 import com.ekhonni.backend.util.HttpUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
@@ -47,6 +49,7 @@ import java.util.TreeMap;
 public class SSLCommerzApiClient {
 
     private final TransactionService transactionService;
+    private final CashInService cashInService;
     private final AccountService accountService;
     private final BidService bidService;
     private final SslcommerzUtil sslcommerzUtil;
@@ -113,7 +116,7 @@ public class SSLCommerzApiClient {
         }
     }
 
-    private String prepareRequestBody(Transaction transaction) throws UnsupportedEncodingException {
+    private String prepareRequestBody(Transaction transaction) {
         return sslcommerzUtil.getParamsString(transaction, true);
     }
 
@@ -341,6 +344,140 @@ public class SSLCommerzApiClient {
                 .uri(transactionQueryUrl)
                 .retrieve()
                 .body(TransactionQueryResponse.class);
+    }
+
+    @Modifying
+    @Transactional
+    public InitiatePaymentResponse initiateCashIn(double amount) throws Exception {
+        Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
+
+        CashIn cashIn = cashInService.create(account, amount);
+
+        String requestBody = prepareCashInRequestBody(cashIn);
+        InitialResponse response = sendPaymentRequest(requestBody);
+        verifyInitialResponse(response);
+
+        cashInService.updateSessionKey(cashIn, response.getSessionkey());
+        cashInService.updateStatus(cashIn, TransactionStatus.PROCESSING);
+        return new InitiatePaymentResponse(response.getGatewayPageURL());
+    }
+
+    private String prepareCashInRequestBody(CashIn cashIn) throws UnsupportedEncodingException {
+        return sslcommerzUtil.getParamsString(cashIn, true);
+    }
+
+    /**
+     * Verify CashIn transaction from IPN response
+     */
+    @Modifying
+    @Transactional
+    public void verifyCashInTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
+
+        String gatewayIpAddress = HttpUtil.getIpAddress(request);
+        if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
+            log.warn("CashIn ipn from unknown ip: {}", gatewayIpAddress);
+            throw new InvalidTransactionException();
+        }
+
+        IpnResponse response = sslcommerzUtil.extractIpnResponse(ipnResponse);
+        CashIn cashIn = getDBCashInFromResponse(response.getTranId());
+
+        if (!ipnHashVerify(ipnResponse)) {
+            cashInService.updateStatus(cashIn, TransactionStatus.SIGNATURE_MISMATCH);
+            log.warn("IPN signature verification failed for CashIn : {}", response.getTranId());
+            throw new InvalidTransactionException();
+        }
+
+        String status = response.getStatus() == null ? "PROCESSING" : response.getStatus();
+        if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
+            cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
+            log.warn("Unsuccessful CashIn: {}, status: {}", cashIn.getId(), status);
+            return;
+        }
+
+        if (!matchCashInParameters(cashIn, response)) {
+            log.warn("Response parameters don't match for CashIn: {}", cashIn.getId());
+        }
+
+        if (!validateCashInTransaction(response.getValId())) {
+            log.warn("Validation failed for CashIn: {}", cashIn.getId());
+            throw new InvalidTransactionException();
+        }
+    }
+
+    @Modifying
+    @Transactional
+    private boolean validateCashInTransaction(String validationId) {
+        ValidationResponse response = sendValidationRequest(validationId);
+        if (response == null) {
+            return false;
+        }
+        CashIn cashIn = getDBCashInFromResponse(response.getTranId());
+        if (!matchCashInParameters(cashIn, response)) {
+            cashInService.updateStatus(cashIn, TransactionStatus.PARAMETERS_MISMATCH);
+            updateCashIn(cashIn, response);
+            log.warn("Validation response parameters don't match for CashIn: {}", response.getTranId());
+            return false;
+        }
+        updateValidatedCashIn(cashIn, response);
+        return true;
+    }
+
+    @Modifying
+    @Transactional
+    public void updateValidatedCashIn(CashIn cashIn, PaymentResponse response) {
+        TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
+        if ("1".equals(response.getRiskLevel())) {
+            status = TransactionStatus.VALID_WITH_RISK;
+        }
+        cashIn.setStatus(status);
+        updateCashIn(cashIn, response);
+    }
+
+    @Modifying
+    @Transactional
+    public void updateCashIn(CashIn cashIn, PaymentResponse response) {
+        cashIn.setStoreAmount(Double.parseDouble(response.getAmount()));
+        cashIn.setBdtAmount(Double.parseDouble(response.getAmount()));
+        cashIn.setValidationId(response.getValId());
+        cashIn.setBankTransactionId(response.getBankTranId());
+        cashIn.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        Account account = cashIn.getAccount();
+        account.setTotalEarnings(account.getTotalEarnings() + cashIn.getBdtAmount());
+    }
+
+    private CashIn getDBCashInFromResponse(String trxId) {
+        long cashInId;
+        try {
+            cashInId = Long.parseLong(trxId);
+        } catch (NumberFormatException e) {
+            log.error(e.getMessage());
+            throw new InvalidTransactionException();
+        }
+        return cashInService.get(cashInId)
+                .orElseThrow(InvalidTransactionException::new);
+    }
+
+    private boolean matchCashInParameters(CashIn cashIn, PaymentResponse response) {
+        if (hasNullInRequiredParameters(response)) {
+            log.warn("Null value in required parameters of payment response for CashIn : {}", cashIn.getId());
+            return false;
+        }
+        try {
+            double storeAmount = Double.parseDouble(response.getStoreAmount());
+            double currencyRate = Double.parseDouble(response.getCurrencyRate());
+            double responseAmount = Double.parseDouble(response.getCurrencyAmount());
+            double responseBdtAmount = Double.parseDouble(response.getAmount());
+            double expectedBdtAmount = cashIn.getAmount() * currencyRate;
+            return response.getCurrencyType().equals(cashIn.getCurrency())
+                    && responseAmount == cashIn.getAmount()
+                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= CURRENCY_CONVERSION_TOLERANCE);
+        } catch (NumberFormatException e) {
+            log.warn("Invalid number format in CashIn: {}", e.getMessage());
+            return false;
+        }
     }
 
     private boolean ipnHashVerify(final Map<String, String> response) {

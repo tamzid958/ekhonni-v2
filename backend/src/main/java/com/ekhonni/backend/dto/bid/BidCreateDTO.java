@@ -27,8 +27,7 @@ public record BidCreateDTO(
                 minimum = "0.01"
         )
         @NotNull(message = "Amount cannot be null")
-        @Digits(integer = 10, fraction = 2,
-                message = "Amount must have up to 10 integer digits and 2 decimal places")
+        @Digits(integer = 10, fraction = 2, message = "Amount must have up to 10 integer digits and 2 decimal places")
         @Positive
         Double amount)
 

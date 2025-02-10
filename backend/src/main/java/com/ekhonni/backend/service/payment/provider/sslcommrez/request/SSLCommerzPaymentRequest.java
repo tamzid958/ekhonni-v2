@@ -9,7 +9,8 @@ import lombok.*;
  */
 
 @Data
-public class PaymentRequest {
+@NoArgsConstructor
+public class SSLCommerzPaymentRequest {
     private String store_id;
     private String store_passwd;
 
@@ -34,13 +35,14 @@ public class PaymentRequest {
     private String product_category;
     private String product_profile;
 
-    public PaymentRequest(SSLCommerzConfig config) {
+    public SSLCommerzPaymentRequest(SSLCommerzConfig config, String ipn_url) {
         this.store_id = config.getStoreId();
         this.store_passwd = config.getStorePassword();
         this.success_url = config.getSuccessUrl();
         this.fail_url = config.getFailUrl();
         this.cancel_url = config.getCancelUrl();
-        this.ipn_url = config.getPaymentIpnUrl();
+        this.ipn_url = ipn_url;
     }
+
 }
 

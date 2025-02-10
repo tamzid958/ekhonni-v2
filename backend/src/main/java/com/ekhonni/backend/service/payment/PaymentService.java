@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service.payment;
 
+import com.ekhonni.backend.dto.cashin.CashInRequest;
 import com.ekhonni.backend.dto.payment.PaymentRequest;
 import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.factory.payment.PaymentProviderFactory;
@@ -26,6 +27,12 @@ public class PaymentService {
         PaymentProviderFactory factory = getPaymentProviderFactory(paymentRequest.paymentMethod());
         PaymentProvider provider = factory.getPaymentProvider();
         return provider.processPayment(paymentRequest.bidId());
+    }
+
+    public InitiatePaymentResponse processCashIn(CashInRequest cashInRequest) throws Exception {
+        PaymentProviderFactory factory = getPaymentProviderFactory(cashInRequest.paymentMethod());
+        PaymentProvider provider = factory.getPaymentProvider();
+        return provider.processCashIn(cashInRequest.amount());
     }
 
     private PaymentProviderFactory getPaymentProviderFactory(PaymentMethod paymentMethod) {
