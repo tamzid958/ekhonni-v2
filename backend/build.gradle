@@ -76,6 +76,24 @@ dependencies {
     //image
     implementation 'com.cloudinary:cloudinary-http44:1.31.0'
 
+    // https://mvnrepository.com/artifact/org.springframework/spring-websocket
+    implementation group: 'org.springframework', name: 'spring-websocket', version: '7.0.0-M1'
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-messaging
+    implementation group: 'org.springframework', name: 'spring-messaging', version: '7.0.0-M1'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.2'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.2'
+
+    // https://mvnrepository.com/artifact/org.webjars/stomp-websocket
+    implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.4'
+
+
+
+
 
 }
 
