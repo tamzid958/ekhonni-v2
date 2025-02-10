@@ -10,7 +10,6 @@ import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -28,12 +27,10 @@ import java.util.UUID;
 public class TransactionService extends BaseService<Transaction, Long> {
 
     private final TransactionRepository transactionRepository;
-    private final AccountService accountService;
 
-    public TransactionService(TransactionRepository transactionRepository, BidService bidService, AccountService accountService) {
+    public TransactionService(TransactionRepository transactionRepository) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
-        this.accountService = accountService;
     }
 
     public UUID getSellerId(Long id) {
@@ -84,7 +81,9 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     public Page<TransactionProjection> getAllForUser(Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
-        return transactionRepository.findByBidBidderId(userId, TransactionProjection.class, pageable);
+        var received =  transactionRepository.findByBidBidderIdAndDeletedAtIsNull(userId, TransactionProjection.class, pageable);
+        var sent = transactionRepository.findByBidProductSellerIdAndDeletedAtIsNull(userId, TransactionProjection.class, pageable);
+        return null;
     }
 
     public Page<TransactionProjection> getAllByStatus(TransactionStatus status, Pageable pageable) {
@@ -106,7 +105,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
     }
 
     public Page<TransactionProjection> getAllForUserAdmin(UUID userId, Pageable pageable) {
-        return transactionRepository.findByBidBidderId(userId, TransactionProjection.class, pageable);
+        return transactionRepository.findByBidBidderIdAndDeletedAtIsNull(userId, TransactionProjection.class, pageable);
     }
 
     public Page<TransactionProjection> getUserTransactionsByStatusAdmin(UUID userId, TransactionStatus status, Pageable pageable) {

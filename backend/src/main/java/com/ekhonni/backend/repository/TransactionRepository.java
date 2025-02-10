@@ -28,7 +28,9 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
     @Query("UPDATE Transaction SET sessionKey = :sessionKey, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
     void updateSessionKeyById(Long id, String sessionKey);
 
-    <P> Page<P> findByBidBidderId(UUID userId, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByBidBidderIdAndDeletedAtIsNull(UUID bidderId, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByBidProductSellerIdAndDeletedAtIsNull(UUID sellerId, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByStatus(TransactionStatus status, Class<P> projection, Pageable pageable);
 
