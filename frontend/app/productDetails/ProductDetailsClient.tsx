@@ -101,10 +101,10 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   useEffect(() => {
     const checkWishlistStatus = async () => {
-      if (!token) return;
+      if (!token || !productDetails.id) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist`, {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist/contains?productId=${productDetails.id}`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -113,8 +113,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         if (response.ok) {
           const data = await response.json();
-          const isAlreadyWishlisted = data?.data?.content?.some((item) => item.id === parseInt(productDetails.id));
-          setIsWishlisted(isAlreadyWishlisted);
+          setIsWishlisted(data?.success);
         }
       } catch (error) {
         console.error("Error fetching wishlist status:", error);
