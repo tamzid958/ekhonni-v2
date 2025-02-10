@@ -22,7 +22,8 @@ public class SSLCommerzConfig {
     private String successUrl;
     private String failUrl;
     private String cancelUrl;
-    private String ipnUrl;
+    private String paymentIpnUrl;
+    private String cashInIpnUrl;
     private String validationApiUrl;
     private String merchantTransIdValidationApiUrl;
     private String domain;

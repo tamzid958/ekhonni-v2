@@ -447,10 +447,16 @@
     "endpoint": "/api/v2/payment/cancel"
   },
   {
-    "name": "Instant Payment Notification",
-    "description": "Handles IPN requests from the payment gateway",
+    "name": "Instant Payment Notification Payment",
+    "description": "Handles IPN requests from the payment gateway for payment",
     "httpMethod": "POST",
     "endpoint": "/api/v2/payment/sslcommerz/ipn"
+  },
+  {
+    "name": "Instant Payment Notification CashIn",
+    "description": "Handles IPN requests from the payment gateway for cash in",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cash-in/sslcommerz/ipn"
   },
   {
     "name": "Create Seller Review",

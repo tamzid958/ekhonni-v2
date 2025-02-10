@@ -1,15 +1,15 @@
 package com.ekhonni.backend.service.payment.provider.sslcommrez.request;
 
 import com.ekhonni.backend.config.payment.SSLCommerzConfig;
-import lombok.*;
+import lombok.Data;
 
 /**
  * Author: Asif Iqbal
- * Date: 12/15/24
+ * Date: 2/10/25
  */
-
 @Data
-public class PaymentRequest {
+public class CashInRequest {
+
     private String store_id;
     private String store_passwd;
 
@@ -34,13 +34,12 @@ public class PaymentRequest {
     private String product_category;
     private String product_profile;
 
-    public PaymentRequest(SSLCommerzConfig config) {
+    public CashInRequest(SSLCommerzConfig config) {
         this.store_id = config.getStoreId();
         this.store_passwd = config.getStorePassword();
         this.success_url = config.getSuccessUrl();
         this.fail_url = config.getFailUrl();
         this.cancel_url = config.getCancelUrl();
-        this.ipn_url = config.getPaymentIpnUrl();
+        this.ipn_url = config.getCashInIpnUrl();
     }
 }
-

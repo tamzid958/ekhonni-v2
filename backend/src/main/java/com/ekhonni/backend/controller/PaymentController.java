@@ -67,8 +67,15 @@ public class PaymentController {
     }
 
     @PostMapping("/sslcommerz/ipn")
-    public ResponseEntity<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
-                                       @NotNull HttpServletRequest request) {
+    public ResponseEntity<?> handlePaymentIpn(
+            @NotNull @RequestParam Map<String, String> ipnResponse, @NotNull HttpServletRequest request) {
+        sslCommerzApiClient.verifyTransaction(ipnResponse, request);
+        return ResponseUtil.createResponse(HTTPStatus.OK);
+    }
+
+    @PostMapping("/cash-in/sslcommerz/ipn")
+    public ResponseEntity<?> handleCashInIpn(
+            @NotNull @RequestParam Map<String, String> ipnResponse, @NotNull HttpServletRequest request) {
         sslCommerzApiClient.verifyTransaction(ipnResponse, request);
         return ResponseUtil.createResponse(HTTPStatus.OK);
     }
