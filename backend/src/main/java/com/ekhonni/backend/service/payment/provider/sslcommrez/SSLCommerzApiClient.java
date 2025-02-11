@@ -427,8 +427,11 @@ public class SSLCommerzApiClient {
         cashIn.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-        Account account = cashIn.getAccount();
-        account.setTotalEarnings(account.getTotalEarnings() + cashIn.getBdtAmount());
+        Account userAccount = cashIn.getAccount();
+        userAccount.setTotalEarnings(userAccount.getTotalEarnings() + cashIn.getBdtAmount());
+
+        Account superAdminAccount = accountService.getSuperAdminAccount();
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + cashIn.getBdtAmount());
     }
 
     private CashIn getDBCashInFromResponse(String trxId) {
