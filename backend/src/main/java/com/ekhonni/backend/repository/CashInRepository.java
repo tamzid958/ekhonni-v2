@@ -30,6 +30,6 @@ public interface CashInRepository extends BaseRepository<CashIn, Long> {
             LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(
-            TransactionStatus status, LocalDateTime timestamp, Class<P> projection, Pageable pageable);
+            TransactionStatus status, LocalDateTime timestamp, Pageable pageable);
 
 }

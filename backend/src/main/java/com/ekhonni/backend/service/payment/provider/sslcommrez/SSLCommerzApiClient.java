@@ -279,19 +279,17 @@ public class SSLCommerzApiClient {
     @Transactional
     @Scheduled(fixedRate = 300000)
     public void checkPendingTransactions() {
-        log.info("Starting processing transaction status check");
-        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+        log.info("Starting processing of pending transactions");
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(45);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
         boolean hasMorePages = true;
-        Sort sort = Sort.by("createdAt").ascending()
-                .and(Sort.by("id").ascending());
-
+        Sort sort = Sort.by("id").ascending();
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Transaction> transactionPage = transactionService
-                    .getPendingTransactionsOlderThan(TransactionStatus.PENDING, thirtyMinutesAgo, pageRequest);
+                    .getPendingTransactionsOlderThan(TransactionStatus.PENDING, timestamp, pageRequest);
 
             processPendingTransactions(transactionPage.getContent());
 
@@ -305,6 +303,7 @@ public class SSLCommerzApiClient {
     private void processPendingTransactions(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
             TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
+            log.info("Transaction id: {}, status: {}", transaction.getId(), response.getStatus());
             String status = response.getStatus() == null ? "PENDING" : response.getStatus();
             transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
             if ("VALID".equals(status) || "VALIDATED".equals(status)) {
@@ -341,8 +340,6 @@ public class SSLCommerzApiClient {
                 .body(TransactionQueryResponse.class);
     }
 
-    @Modifying
-    @Transactional
     public InitiatePaymentResponse initiateCashIn(double amount) {
         CashIn cashIn = cashInService.create(amount);
         String requestBody = prepareCashInRequestBody(cashIn);
@@ -357,9 +354,6 @@ public class SSLCommerzApiClient {
         return sslcommerzUtil.getParamsString(cashIn, true);
     }
 
-    /**
-     * Verify CashIn transaction from IPN response
-     */
     @Modifying
     @Transactional
     public void verifyCashIn(Map<String, String> ipnResponse, HttpServletRequest request) {
@@ -471,25 +465,20 @@ public class SSLCommerzApiClient {
         }
     }
 
-    /**
-     * Scheduled method to check pending CashIn transactions
-     */
     @Scheduled(fixedRate = 300000) // Runs every 5 minutes
     @Transactional
     public void checkPendingCashIns() {
-        log.info("Starting processing of pending CashIn transactions");
-        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+        log.info("Starting processing of pending cash ins");
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(45);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
         boolean hasMorePages = true;
-        Sort sort = Sort.by("createdAt").ascending()
-                .and(Sort.by("id").ascending());
-
+        Sort sort = Sort.by("id").ascending();
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<CashIn> cashInPage = cashInService
-                    .findPendingCashInsOlderThan(TransactionStatus.PENDING, thirtyMinutesAgo, pageRequest);
+                    .getPendingCashInsOlderThan(TransactionStatus.PENDING, timestamp, pageRequest);
 
             processPendingCashIns(cashInPage.getContent());
 
@@ -498,11 +487,13 @@ public class SSLCommerzApiClient {
         }
     }
 
+    @Modifying
     @Transactional
     private void processPendingCashIns(List<CashIn> cashIns) {
         for (CashIn cashIn : cashIns) {
             TransactionQueryResponse response = sendCashInTransactionQueryRequest(cashIn);
             String status = response.getStatus() == null ? "PENDING" : response.getStatus();
+            log.info("Cash in id: {}, status: {}", cashIn.getId(), response.getStatus());
             cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
             if ("VALID".equals(status) || "VALIDATED".equals(status)) {
                 updateValidatedCashIn(cashIn, response);

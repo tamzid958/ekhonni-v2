@@ -93,7 +93,7 @@ public class CashInService extends BaseService<CashIn, Long> {
         return cashInRepository.findByAccountUserIdAndStatusAndDeletedAtIsNull(userId, status, CashInProjection.class, pageable);
     }
 
-    public Page<CashInProjection> findPendingCashInsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
-        return cashInRepository.findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(status, timestamp, CashInProjection.class, pageable);
+    public Page<CashIn> getPendingCashInsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
+        return cashInRepository.findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(status, timestamp, pageable);
     }
 }
