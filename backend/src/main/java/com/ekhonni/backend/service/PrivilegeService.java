@@ -56,6 +56,7 @@ public class PrivilegeService {
                     generateUniqueId(),
                     privilegeDTO.name(),
                     privilegeDTO.description(),
+                    privilegeDTO.type(),
                     privilegeDTO.httpMethod(),
                     privilegeDTO.endpoint()
             );
