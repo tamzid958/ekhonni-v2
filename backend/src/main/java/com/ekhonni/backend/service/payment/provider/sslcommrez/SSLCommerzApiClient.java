@@ -24,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.reposito
-        ;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -36,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -218,8 +217,8 @@ public class SSLCommerzApiClient {
 
     @Transactional
     public void updateTransaction(Transaction transaction, PaymentResponse response) {
-        transaction.setStoreAmount(Double.parseDouble(response.getAmount()));
-        transaction.setBdtAmount(Double.parseDouble(response.getAmount()));
+        transaction.setStoreAmount(response.getStoreAmount());
+        transaction.setBdtAmount(response.getAmount());
         transaction.setValidationId(response.getValId());
         transaction.setBankTransactionId(response.getBankTranId());
         transaction.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
@@ -257,19 +256,10 @@ public class SSLCommerzApiClient {
             log.warn("Null value in required parameters of payment response for transaction : {}", transaction.getId());
             return false;
         }
-        try {
-            double storeAmount = Double.parseDouble(response.getStoreAmount());
-            double currencyRate = Double.parseDouble(response.getCurrencyRate());
-            double responseAmount = Double.parseDouble(response.getCurrencyAmount());
-            double responseBdtAmount = Double.parseDouble(response.getAmount());
-            double expectedBdtAmount = transaction.getAmount() * currencyRate;
-            return response.getCurrencyType().equals(transaction.getCurrency())
-                    && responseAmount == transaction.getAmount()
-                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= CURRENCY_CONVERSION_TOLERANCE);
-        } catch (NumberFormatException e) {
-            log.warn("Invalid number format in transaction: {}", e.getMessage());
-            return false;
-        }
+        double expectedBdtAmount = transaction.getAmount() * response.getCurrencyRate();
+        return response.getCurrencyType().equals(transaction.getCurrency())
+                && Objects.equals(response.getCurrencyAmount(), transaction.getAmount())
+                && (Math.abs(expectedBdtAmount - response.getAmount()) <= CURRENCY_CONVERSION_TOLERANCE);
     }
 
     @Transactional
@@ -411,8 +401,8 @@ public class SSLCommerzApiClient {
 
     @Transactional
     public void updateCashIn(CashIn cashIn, PaymentResponse response) {
-        cashIn.setStoreAmount(Double.parseDouble(response.getAmount()));
-        cashIn.setBdtAmount(Double.parseDouble(response.getAmount()));
+        cashIn.setStoreAmount(response.getStoreAmount());
+        cashIn.setBdtAmount(response.getAmount());
         cashIn.setValidationId(response.getValId());
         cashIn.setBankTransactionId(response.getBankTranId());
         cashIn.setProcessedAt(LocalDateTime.parse(response.getTranDate(),
@@ -442,23 +432,13 @@ public class SSLCommerzApiClient {
             log.warn("Null value in required parameters of payment response for CashIn : {}", cashIn.getId());
             return false;
         }
-        try {
-            double storeAmount = Double.parseDouble(response.getStoreAmount());
-            double currencyRate = Double.parseDouble(response.getCurrencyRate());
-            double responseAmount = Double.parseDouble(response.getCurrencyAmount());
-            double responseBdtAmount = Double.parseDouble(response.getAmount());
-            double expectedBdtAmount = cashIn.getAmount() * currencyRate;
-            return response.getCurrencyType().equals(cashIn.getCurrency())
-                    && responseAmount == cashIn.getAmount()
-                    && (Math.abs(expectedBdtAmount - responseBdtAmount) <= CURRENCY_CONVERSION_TOLERANCE);
-        } catch (NumberFormatException e) {
-            log.warn("Invalid number format in CashIn: {}", e.getMessage());
-            return false;
-        }
+        double expectedBdtAmount = cashIn.getAmount() * response.getCurrencyRate();
+        return response.getCurrencyType().equals(cashIn.getCurrency())
+                && Objects.equals(response.getCurrencyAmount(), cashIn.getAmount())
+                && (Math.abs(expectedBdtAmount - response.getAmount()) <= CURRENCY_CONVERSION_TOLERANCE);
     }
 
-    @Scheduled(fixedRate = 300000
-
+    @Scheduled(fixedRate = 300000)
     @Transactional
     public void checkPendingCashIns() {
         log.info("Starting processing of pending cash ins");

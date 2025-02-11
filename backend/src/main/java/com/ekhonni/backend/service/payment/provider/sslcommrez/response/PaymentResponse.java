@@ -17,10 +17,10 @@ public class PaymentResponse {
     private String valId;
 
     /** Amount in SSL Commerz's transaction processing currency */
-    private String amount;
+    private Double amount;
 
     @JsonProperty("store_amount")
-    private String storeAmount;
+    private Double storeAmount;
 
     /** SSL Commerz's transaction processing currency */
     private String currency;
@@ -55,14 +55,14 @@ public class PaymentResponse {
 
     /** The original amount sent in payment request currency */
     @JsonProperty("currency_amount")
-    private String currencyAmount;
+    private Double currencyAmount;
 
     /** Conversion rate of original currency sent in payment request to SSL Commerz's transaction processing currency */
     @JsonProperty("currency_rate")
-    private String currencyRate;
+    private Double currencyRate;
 
     @JsonProperty("base_fair")
-    private String baseFair;
+    private Double baseFair;
 
     @JsonProperty("value_a")
     private String valueA;
