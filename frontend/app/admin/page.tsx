@@ -72,21 +72,39 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
-        {/* Notifications Card */}
+        {/* Roles Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
-            <CardTitle>Notifications</CardTitle>
+            <CardTitle>Roles</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700">Send notifications to your users.</p>
+            <p className="text-gray-700">Manage roles of your users.</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => router.push('/admin/notifications')}
+              onClick={() => router.push('/admin/roles')}
             >
-              Go to Notifications
+              Go to Roles
             </Button>
           </CardContent>
         </Card>
+
+        {/* Transaction Card */}
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage transactions of your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/transaction')}
+            >
+              Go to Transactions
+            </Button>
+          </CardContent>
+        </Card>
+        
       </section>
 
       {/* Additional Info Section */}
