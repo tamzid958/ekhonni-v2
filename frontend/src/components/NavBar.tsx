@@ -6,12 +6,11 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
 import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
-
+import { cn } from '@/lib/utils';
 
 type Props = {
   placeholder?: string;
@@ -34,11 +33,9 @@ export function NavBar({ placeholder }: Props) {
   const linkRef = useRef<HTMLAnchorElement | null>(null);
   const router = useRouter(); // Access the router
 
-
   const handleLoginRedirect = () => {
-    router.push('/'); // Redirect to home page
+    router.push('/');
   };
-
 
   useEffect(() => {
     console.log('Session Data:', session);
@@ -84,12 +81,7 @@ export function NavBar({ placeholder }: Props) {
 
 
   return (
-    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40">
-      {/*<div className="font-bold ml-16 mt-2">*/}
-      {/*  <Link href="/">*/}
-      {/*    <img src="frame.png" alt="logo" className="h-[75px]" />*/}
-      {/*  </Link>*/}
-      {/*</div>*/}
+    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40 overflow-visible">
       <div className="font-bold ml-4 md:ml-8 lg:ml-16 mt-2">
         <Link href="/">
           <img
@@ -99,6 +91,10 @@ export function NavBar({ placeholder }: Props) {
           />
         </Link>
       </div>
+      {/*<div className="relative w-[50%]">*/}
+      {/*  <CommandDemo />*/}
+      {/*</div>*/}
+
       <div className="w-[680px] flex justify-center items-center">
         <div className="w-full relative">
           <input
@@ -125,6 +121,7 @@ export function NavBar({ placeholder }: Props) {
           </div>
         </div>
       </div>
+
       <div className="flex gap-4 mr-28 mt-4">
         <Link href="/cart">
           <Button variant="custom" size="icon2" className="rounded-full">
