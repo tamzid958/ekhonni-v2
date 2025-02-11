@@ -20,7 +20,7 @@ public class HashUtil {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
-            throw new RuntimeException("Error processing transaction.");
+            throw new RuntimeException("Error processing hash");
         }
         byte[] theDigest = md.digest(bytesOfMessage);
         StringBuilder sb = new StringBuilder();

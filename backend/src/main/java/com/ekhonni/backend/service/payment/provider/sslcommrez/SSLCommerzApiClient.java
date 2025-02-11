@@ -476,7 +476,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-
     private boolean ipnHashVerify(final Map<String, String> response) {
         if (response.containsKey("verify_sign") && response.containsKey("verify_key")) {
             String verifySign = response.get("verify_sign");
