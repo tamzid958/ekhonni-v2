@@ -86,12 +86,12 @@ public class TransactionService extends BaseService<Transaction, Long> {
     }
 
     public Page<TransactionProjection> getAllByStatus(TransactionStatus status, Pageable pageable) {
-        return transactionRepository.findByStatus(status, TransactionProjection.class, pageable);
+        return transactionRepository.findByStatusAndDeletedAtIsNull(status, TransactionProjection.class, pageable);
     }
 
     public Page<TransactionProjection> getUserTransactionsByStatus(TransactionStatus status, Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
-        return transactionRepository.findByBidBidderIdAndStatus(userId, status, TransactionProjection.class, pageable);
+        return transactionRepository.findByBidBidderIdAndStatusAndDeletedAtIsNull(userId, status, TransactionProjection.class, pageable);
     }
 
     public Page<TransactionProjection> getAllTransactions(Pageable pageable) {
@@ -100,7 +100,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
 
     public Page<TransactionProjection> getTransactionsByDateRange(
             LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return transactionRepository.findByCreatedAtBetween(startDate, endDate, TransactionProjection.class, pageable);
+        return transactionRepository.findByCreatedAtBetweenAndDeletedAtIsNull(startDate, endDate, TransactionProjection.class, pageable);
     }
 
     public Page<TransactionProjection> getAllForUserAdmin(UUID userId, Pageable pageable) {
@@ -108,10 +108,10 @@ public class TransactionService extends BaseService<Transaction, Long> {
     }
 
     public Page<TransactionProjection> getUserTransactionsByStatusAdmin(UUID userId, TransactionStatus status, Pageable pageable) {
-        return transactionRepository.findByBidBidderIdAndStatus(userId, status, TransactionProjection.class, pageable);
+        return transactionRepository.findByBidBidderIdAndStatusAndDeletedAtIsNull(userId, status, TransactionProjection.class, pageable);
     }
 
-    public Page<Transaction> findPendingTransactionsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
-        return transactionRepository.findByStatusEqualsAndCreatedAtLessThanEqual(status, timestamp, pageable);
+    public Page<Transaction> getPendingTransactionsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
+        return transactionRepository.findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(status, timestamp, pageable);
     }
 }

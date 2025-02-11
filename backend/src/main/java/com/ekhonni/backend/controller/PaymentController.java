@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.cashin.CashInRequest;
 import com.ekhonni.backend.dto.payment.PaymentRequest;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.PaymentMethod;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.List;
 
 /**
  * Author: Asif Iqbal
@@ -46,8 +46,9 @@ public class PaymentController {
     }
 
     @PostMapping("/cash-in")
-    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiateCashIn(@RequestParam double amount) throws Exception {
-        return ResponseUtil.createResponse(HTTPStatus.OK, sslCommerzApiClient.initiateCashIn(amount));
+    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiateCashIn(
+            @Valid @RequestBody CashInRequest cashInRequest) throws Exception {
+        return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.processCashIn(cashInRequest));
     }
 
     @GetMapping("/methods")
@@ -83,7 +84,7 @@ public class PaymentController {
     @PostMapping("/cash-in/sslcommerz/ipn")
     public ResponseEntity<?> handleCashInIpn(
             @NotNull @RequestParam Map<String, String> ipnResponse, @NotNull HttpServletRequest request) {
-        sslCommerzApiClient.verifyTransaction(ipnResponse, request);
+        sslCommerzApiClient.verifyCashIn(ipnResponse, request);
         return ResponseUtil.createResponse(HTTPStatus.OK);
     }
 

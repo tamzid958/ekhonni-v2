@@ -13,7 +13,6 @@ import com.ekhonni.backend.service.BidService;
 import com.ekhonni.backend.service.CashInService;
 import com.ekhonni.backend.service.TransactionService;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.response.*;
-import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.HashUtil;
 import com.ekhonni.backend.util.HttpUtil;
 import com.ekhonni.backend.util.SslcommerzUtil;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -76,7 +74,6 @@ public class SSLCommerzApiClient {
         verifyInitialResponse(response);
 
         transactionService.updateSessionKey(transaction, response.getSessionkey());
-        transactionService.updateStatus(transaction, TransactionStatus.PROCESSING);
         return new InitiatePaymentResponse(response.getGatewayPageURL());
     }
 
@@ -278,8 +275,9 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Scheduled(fixedRate = 300000) // Runs every 5 minutes
+    @Modifying
     @Transactional
+    @Scheduled(fixedRate = 300000)
     public void checkPendingTransactions() {
         log.info("Starting processing transaction status check");
         LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
@@ -293,7 +291,7 @@ public class SSLCommerzApiClient {
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Transaction> transactionPage = transactionService
-                    .findPendingTransactionsOlderThan(TransactionStatus.PROCESSING, thirtyMinutesAgo, pageRequest);
+                    .getPendingTransactionsOlderThan(TransactionStatus.PENDING, thirtyMinutesAgo, pageRequest);
 
             processPendingTransactions(transactionPage.getContent());
 
@@ -307,10 +305,7 @@ public class SSLCommerzApiClient {
     private void processPendingTransactions(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
             TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
-            String status = response.getStatus() == null ? "PROCESSING" : response.getStatus();
-            if (status.equals("PENDING")) {
-                status = "PROCESSING";
-            }
+            String status = response.getStatus() == null ? "PENDING" : response.getStatus();
             transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
             if ("VALID".equals(status) || "VALIDATED".equals(status)) {
                 updateValidatedTransaction(transaction, response);
@@ -348,21 +343,17 @@ public class SSLCommerzApiClient {
 
     @Modifying
     @Transactional
-    public InitiatePaymentResponse initiateCashIn(double amount) throws Exception {
-        Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
-
-        CashIn cashIn = cashInService.create(account, amount);
-
+    public InitiatePaymentResponse initiateCashIn(double amount) {
+        CashIn cashIn = cashInService.create(amount);
         String requestBody = prepareCashInRequestBody(cashIn);
         InitialResponse response = sendPaymentRequest(requestBody);
         verifyInitialResponse(response);
 
         cashInService.updateSessionKey(cashIn, response.getSessionkey());
-        cashInService.updateStatus(cashIn, TransactionStatus.PROCESSING);
         return new InitiatePaymentResponse(response.getGatewayPageURL());
     }
 
-    private String prepareCashInRequestBody(CashIn cashIn) throws UnsupportedEncodingException {
+    private String prepareCashInRequestBody(CashIn cashIn) {
         return sslcommerzUtil.getParamsString(cashIn, true);
     }
 
@@ -371,7 +362,7 @@ public class SSLCommerzApiClient {
      */
     @Modifying
     @Transactional
-    public void verifyCashInTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
+    public void verifyCashIn(Map<String, String> ipnResponse, HttpServletRequest request) {
 
         String gatewayIpAddress = HttpUtil.getIpAddress(request);
         if (!sslCommerzConfig.getAllowedIps().contains(gatewayIpAddress)) {
@@ -388,7 +379,7 @@ public class SSLCommerzApiClient {
             throw new InvalidTransactionException();
         }
 
-        String status = response.getStatus() == null ? "PROCESSING" : response.getStatus();
+        String status = response.getStatus() == null ? "PENDING" : response.getStatus();
         if (!("VALID".equals(status) || "VALIDATED".equals(status))) {
             cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
             log.warn("Unsuccessful CashIn: {}, status: {}", cashIn.getId(), status);
@@ -399,7 +390,7 @@ public class SSLCommerzApiClient {
             log.warn("Response parameters don't match for CashIn: {}", cashIn.getId());
         }
 
-        if (!validateCashInTransaction(response.getValId())) {
+        if (!validateCashIn(response.getValId())) {
             log.warn("Validation failed for CashIn: {}", cashIn.getId());
             throw new InvalidTransactionException();
         }
@@ -407,7 +398,7 @@ public class SSLCommerzApiClient {
 
     @Modifying
     @Transactional
-    private boolean validateCashInTransaction(String validationId) {
+    private boolean validateCashIn(String validationId) {
         ValidationResponse response = sendValidationRequest(validationId);
         if (response == null) {
             return false;
@@ -478,6 +469,57 @@ public class SSLCommerzApiClient {
             log.warn("Invalid number format in CashIn: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Scheduled method to check pending CashIn transactions
+     */
+    @Scheduled(fixedRate = 300000) // Runs every 5 minutes
+    @Transactional
+    public void checkPendingCashIns() {
+        log.info("Starting processing of pending CashIn transactions");
+        LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+
+        final int BATCH_SIZE = 100;
+        int pageNumber = 0;
+        boolean hasMorePages = true;
+        Sort sort = Sort.by("createdAt").ascending()
+                .and(Sort.by("id").ascending());
+
+        while (hasMorePages) {
+            PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
+            Page<CashIn> cashInPage = cashInService
+                    .findPendingCashInsOlderThan(TransactionStatus.PENDING, thirtyMinutesAgo, pageRequest);
+
+            processPendingCashIns(cashInPage.getContent());
+
+            hasMorePages = cashInPage.hasNext();
+            pageNumber++;
+        }
+    }
+
+    @Transactional
+    private void processPendingCashIns(List<CashIn> cashIns) {
+        for (CashIn cashIn : cashIns) {
+            TransactionQueryResponse response = sendCashInTransactionQueryRequest(cashIn);
+            String status = response.getStatus() == null ? "PENDING" : response.getStatus();
+            cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
+            if ("VALID".equals(status) || "VALIDATED".equals(status)) {
+                updateValidatedCashIn(cashIn, response);
+            }
+        }
+    }
+
+    private TransactionQueryResponse sendCashInTransactionQueryRequest(CashIn cashIn) {
+        String transactionQueryUrl = sslCommerzConfig.getMerchantTransIdValidationApiUrl()
+                + "?sessionkey=" + cashIn.getSessionKey()
+                + "&store_id=" + sslCommerzConfig.getStoreId()
+                + "&store_passwd=" + sslCommerzConfig.getStorePassword();
+
+        return restClient.get()
+                .uri(transactionQueryUrl)
+                .retrieve()
+                .body(TransactionQueryResponse.class);
     }
 
     private boolean ipnHashVerify(final Map<String, String> response) {

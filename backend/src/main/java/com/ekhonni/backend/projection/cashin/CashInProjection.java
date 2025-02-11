@@ -16,5 +16,5 @@ public interface CashInProjection {
     TransactionStatus getStatus();
     String getBankTransactionId();
     LocalDateTime getCreatedAt();
-    LocalDateTime geProcessedAt();
+    LocalDateTime getProcessedAt();
 }

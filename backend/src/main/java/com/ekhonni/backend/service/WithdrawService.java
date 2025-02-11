@@ -68,16 +68,16 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
     }
 
     public Page<WithdrawProjection> getAllForUser(Pageable pageable) {
-        return withdrawRepository.findByAccountUserId(AuthUtil.getAuthenticatedUser().getId(), WithdrawProjection.class, pageable);
+        return withdrawRepository.findByAccountUserIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), WithdrawProjection.class, pageable);
     }
 
     public Page<WithdrawProjection> getAllByStatus(WithdrawStatus status, Pageable pageable) {
-        return withdrawRepository.findByStatus(status, WithdrawProjection.class, pageable);
+        return withdrawRepository.findByStatusAndDeletedAtIsNull(status, WithdrawProjection.class, pageable);
     }
 
     public Page<WithdrawProjection> getUserWithdrawsByStatus(WithdrawStatus status, Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
-        return withdrawRepository.findByAccountUserIdAndStatus(userId, status, WithdrawProjection.class, pageable);
+        return withdrawRepository.findByAccountUserIdAndStatusAndDeletedAtIsNull(userId, status, WithdrawProjection.class, pageable);
     }
 
     public Page<WithdrawProjection> getAllWithdraws(Pageable pageable) {
@@ -97,15 +97,15 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
     }
 
     public Page<WithdrawProjection> getWithdrawsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return withdrawRepository.findByCreatedAtBetween(startDate, endDate, WithdrawProjection.class, pageable);
+        return withdrawRepository.findByCreatedAtBetweenAndDeletedAtIsNull(startDate, endDate, WithdrawProjection.class, pageable);
     }
 
     public Page<WithdrawProjection> getAllForUserAdmin(UUID userId, Pageable pageable) {
-        return withdrawRepository.findByAccountUserId(userId, WithdrawProjection.class, pageable);
+        return withdrawRepository.findByAccountUserIdAndDeletedAtIsNull(userId, WithdrawProjection.class, pageable);
     }
 
     public Page<WithdrawProjection> getUserTransactionsByStatusAdmin(UUID userId, WithdrawStatus status, Pageable pageable) {
-        return withdrawRepository.findByAccountUserIdAndStatus(userId, status, WithdrawProjection.class, pageable);
+        return withdrawRepository.findByAccountUserIdAndStatusAndDeletedAtIsNull(userId, status, WithdrawProjection.class, pageable);
     }
 
 }

@@ -40,6 +40,7 @@ public interface TransactionProjection {
     TransactionStatus getStatus();
 
     LocalDateTime getCreatedAt();
+    LocalDateTime getProcessedAt();
 
     @JsonProperty("type")
     default String getTransactionType() {

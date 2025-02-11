@@ -14,7 +14,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -26,14 +25,17 @@ import java.util.UUID;
 public class CashInService extends BaseService<CashIn, Long> {
 
     private final CashInRepository cashInRepository;
+    private final AccountService accountService;
 
-    public CashInService(CashInRepository cashInRepository) {
+    public CashInService(CashInRepository cashInRepository, AccountService accountService) {
         super(cashInRepository);
         this.cashInRepository = cashInRepository;
+        this.accountService = accountService;
     }
 
     @Transactional
-    public CashIn create(Account account, Double amount) {
+    public CashIn create(Double amount) {
+        Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
         CashIn cashIn = new CashIn();
         cashIn.setAccount(account);
         cashIn.setAmount(amount);
@@ -59,10 +61,6 @@ public class CashInService extends BaseService<CashIn, Long> {
         return cashInRepository.existsByAccountIdAndDeletedAtIsNull(accountId);
     }
 
-    public Optional<CashIn> findByAccountId(Long accountId) {
-        return cashInRepository.findByAccountId(accountId);
-    }
-
     public Page<CashInProjection> getAllForAuthenticatedUser(Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
         return cashInRepository.findByAccountUserIdAndDeletedAtIsNull(
@@ -70,12 +68,12 @@ public class CashInService extends BaseService<CashIn, Long> {
     }
 
     public Page<CashInProjection> getAllByStatus(TransactionStatus status, Pageable pageable) {
-        return cashInRepository.findByStatus(status, CashInProjection.class, pageable);
+        return cashInRepository.findByStatusAndDeletedAtIsNull(status, CashInProjection.class, pageable);
     }
 
     public Page<CashInProjection> getUserCashInsByStatus(TransactionStatus status, Pageable pageable) {
         UUID userId = AuthUtil.getAuthenticatedUser().getId();
-        return cashInRepository.findByAccountUserIdAndStatus(userId, status, CashInProjection.class, pageable);
+        return cashInRepository.findByAccountUserIdAndStatusAndDeletedAtIsNull(userId, status, CashInProjection.class, pageable);
     }
 
     public Page<CashInProjection> getAllCashIns(Pageable pageable) {
@@ -84,7 +82,7 @@ public class CashInService extends BaseService<CashIn, Long> {
 
     public Page<CashInProjection> getCashInsByDateRange(
             LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return cashInRepository.findByCreatedAtBetween(startDate, endDate, CashInProjection.class, pageable);
+        return cashInRepository.findByCreatedAtBetweenAndDeletedAtIsNull(startDate, endDate, CashInProjection.class, pageable);
     }
 
     public Page<CashInProjection> getAllForUserAdmin(UUID userId, Pageable pageable) {
@@ -92,10 +90,10 @@ public class CashInService extends BaseService<CashIn, Long> {
     }
 
     public Page<CashInProjection> getUserCashInsByStatusAdmin(UUID userId, TransactionStatus status, Pageable pageable) {
-        return cashInRepository.findByAccountUserIdAndStatus(userId, status, CashInProjection.class, pageable);
+        return cashInRepository.findByAccountUserIdAndStatusAndDeletedAtIsNull(userId, status, CashInProjection.class, pageable);
     }
 
-    public Page<CashIn> findPendingCashInsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
-        return cashInRepository.findByStatusEqualsAndCreatedAtLessThanEqual(status, timestamp, pageable);
+    public Page<CashInProjection> findPendingCashInsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
+        return cashInRepository.findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(status, timestamp, CashInProjection.class, pageable);
     }
 }

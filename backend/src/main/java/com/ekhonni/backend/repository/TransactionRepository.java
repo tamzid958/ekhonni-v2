@@ -24,10 +24,6 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
 
     boolean existsByBidIdAndDeletedAtIsNull(Long bidId);
 
-    @Modifying
-    @Query("UPDATE Transaction SET sessionKey = :sessionKey, updatedAt = CURRENT_TIMESTAMP WHERE id = :id")
-    void updateSessionKeyById(Long id, String sessionKey);
-
     <P> Page<P> findByBidBidderIdAndDeletedAtIsNull(UUID bidderId, Class<P> projection, Pageable pageable);
 
     <P> Page<P> findByBidProductSellerIdAndDeletedAtIsNull(UUID sellerId, Class<P> projection, Pageable pageable);
@@ -37,12 +33,12 @@ public interface TransactionRepository extends BaseRepository<Transaction, Long>
             Class<P> projection, Pageable pageable
     );
 
-    <P> Page<P> findByStatus(TransactionStatus status, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByStatusAndDeletedAtIsNull(TransactionStatus status, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findByBidBidderIdAndStatus(UUID userId, TransactionStatus status, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByBidBidderIdAndStatusAndDeletedAtIsNull(UUID userId, TransactionStatus status, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByCreatedAtBetweenAndDeletedAtIsNull(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
 
-    Page<Transaction> findByStatusEqualsAndCreatedAtLessThanEqual(TransactionStatus status, LocalDateTime timestamp, Pageable pageable);
+    Page<Transaction> findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(TransactionStatus status, LocalDateTime timestamp, Pageable pageable);
 
 }
