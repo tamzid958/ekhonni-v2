@@ -1,6 +1,9 @@
+import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
+import { FaArrowDown, FaArrowUp, FaExchangeAlt } from 'react-icons/fa';
+import { Badge } from '@/components/ui/badge';
 
-// Define the BidData interface
+// Define the TransactionItem interface
 export interface TransactionItem {
   createdAt: string;
   id: number;
@@ -18,9 +21,32 @@ export interface TransactionItem {
 // Create column helper for the table
 const columnHelper = createColumnHelper<TransactionItem>();
 
-// This function will be used to get the columns for the table
+// Status Badge Colors
+const getStatusBadge = (status: string) => {
+  const statusMap: Record<string, string> = {
+    Success: 'bg-green-100 text-green-700',
+    Pending: 'bg-yellow-100 text-yellow-700',
+    Failed: 'bg-red-100 text-red-700',
+  };
+  return <Badge className={`${statusMap[status] || 'bg-gray-100 text-gray-700'}`}>{status}</Badge>;
+};
+
+// Transaction Type Icon
+const getTransactionIcon = (type: string) => {
+  switch (type) {
+    case 'SENT':
+      return <FaArrowUp className="text-red-500" />;
+    case 'RECEIVED':
+      return <FaArrowDown className="text-green-500" />;
+    case 'Exchange':
+      return <FaExchangeAlt className="text-blue-500" />;
+    default:
+      return null;
+  }
+};
+
 export function getColumns() {
-  const columns = [
+  return [
     columnHelper.accessor('id', {
       header: 'Transaction ID',
     }),
@@ -28,35 +54,38 @@ export function getColumns() {
       header: 'Product ID',
     }),
     columnHelper.accessor('buyerName', {
-      header: 'Buyer Name',
+      header: 'Buyer',
     }),
     columnHelper.accessor('sellerName', {
-      header: 'Seller Name',
+      header: 'Seller',
     }),
     columnHelper.accessor('type', {
-      header: 'Transaction Type',
+      header: 'Type',
+      cell: (info) => (
+        <div className="flex items-center space-x-2">
+          {getTransactionIcon(info.getValue())}
+          <span>{info.getValue()}</span>
+        </div>
+      ),
     }),
     columnHelper.accessor('amount', {
       header: 'Amount',
-      cell: (info) => `$${info.getValue().toFixed(2)}`, // formatting amount
+      cell: (info) => (
+        <span className={`font-semibold ${info.getValue() < 0 ? 'text-red-500' : 'text-green-500'}`}>
+          ${info.getValue().toFixed(2)}
+        </span>
+      ),
     }),
     columnHelper.accessor('currency', {
       header: 'Currency',
     }),
     columnHelper.accessor('status', {
       header: 'Status',
+      cell: (info) => getStatusBadge(info.getValue()),
     }),
     columnHelper.accessor('createdAt', {
-      header: 'Transaction Time',
-      cell: (info) => new Date(info.getValue()).toLocaleString(), // formatting date
+      header: 'Date',
+      cell: (info) => new Date(info.getValue()).toLocaleString(),
     }),
-    // columnHelper.accessor('buyerId', {
-    //   header: 'Buyer ID',
-    // }),
-    // columnHelper.accessor('sellerId', {
-    //   header: 'Seller ID',
-    // }),
   ];
-
-  return columns;
 }
