@@ -2,6 +2,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // Define the BidData interface
 export interface BidList {
@@ -73,13 +75,27 @@ export function getColumns(token: string) {
       header: () => <span>Payment Option</span>,
       cell: (info) => {
         const row = info.row.original;
-        return row.status === 'ACCEPTED' ? (
-          <button onClick={() => handleProceedToPayment(row.id, token)}>
-            <Badge className="cursor-pointer hover:bg-gray-200 hover:text-gray-700">
-              Proceed to Payment
-            </Badge>
-          </button>
-        ) : null;
+        return (
+          <div className="flex space-x-2">
+            {row.status === 'ACCEPTED' && (
+              <button onClick={() => handleProceedToPayment(row.id, token)}>
+                <Badge className="cursor-pointer hover:bg-gray-200 hover:text-gray-700">
+                  Proceed to Payment
+                </Badge>
+              </button>
+            )}
+
+            {row.status === 'PAID' && (
+              <Link href={`/leave-review-page-link`}>
+                <Button
+                  variant="outline"
+                >
+                  Leave a Review
+                </Button>
+              </Link>
+            )}
+          </div>
+        );
       },
     }),
 
