@@ -280,7 +280,7 @@ public class SSLCommerzApiClient {
     @Scheduled(fixedRate = 300000)
     public void checkPendingTransactions() {
         log.info("Starting processing of pending transactions");
-        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(45);
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
@@ -290,9 +290,7 @@ public class SSLCommerzApiClient {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Transaction> transactionPage = transactionService
                     .getPendingTransactionsOlderThan(TransactionStatus.PENDING, timestamp, pageRequest);
-
             processPendingTransactions(transactionPage.getContent());
-
             hasMorePages = transactionPage.hasNext();
             pageNumber++;
         }
@@ -302,35 +300,35 @@ public class SSLCommerzApiClient {
     @Transactional
     private void processPendingTransactions(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
-            TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
-            log.info("Transaction id: {}, status: {}", transaction.getId(), response.getStatus());
-            String status = response.getStatus() == null ? "PENDING" : response.getStatus();
-            transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
-            if ("VALID".equals(status) || "VALIDATED".equals(status)) {
-                updateValidatedTransaction(transaction, response);
+            try {
+                TransactionQueryResponse response = initiateTransactionQuery(transaction.getSessionKey());
+                log.info("Transaction id: {}, status: {}", transaction.getId(), response.getStatus());
+
+                String status = response.getStatus() == null ? "PENDING" : response.getStatus();
+                transactionService.updateStatus(transaction, TransactionStatus.valueOf(status));
+                if ("VALID".equals(status) || "VALIDATED".equals(status)) {
+                    updateValidatedTransaction(transaction, response);
+                }
+            } catch (Exception e) {
+                log.info(e.getMessage());
             }
         }
     }
 
-    public void initiateTransactionQuery(Long transactionId) {
-        Transaction transaction = transactionService.get(transactionId)
-                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found"));
-
-        TransactionQueryResponse response = sendTransactionQueryRequest(transaction);
+    public TransactionQueryResponse initiateTransactionQuery(String sessionKey) {
+        TransactionQueryResponse response = sendTransactionQueryRequest(sessionKey);
         if (response == null) {
-            log.warn("No response for query refund request: {}", transaction.getId());
             throw new NoResponseException("No response");
         }
         if (!"DONE".equals(response.getApiConnect())) {
-            log.warn("Api connection status: {} for transaction query request: {}", response.getApiConnect(), transaction.getId());
             throw new ApiConnectionException("Api connection error");
         }
-        log.info("Transaction id: {}, status: {}", transaction.getId(), response.getStatus());
+        return response;
     }
 
-    private TransactionQueryResponse sendTransactionQueryRequest(Transaction transaction) {
+    private TransactionQueryResponse sendTransactionQueryRequest(String sessionKey) {
         String transactionQueryUrl = sslCommerzConfig.getMerchantTransIdValidationApiUrl()
-                + "?sessionkey=" + transaction.getSessionKey()
+                + "?sessionkey=" + sessionKey
                 + "&store_id=" + sslCommerzConfig.getStoreId()
                 + "&store_passwd=" + sslCommerzConfig.getStorePassword();
 
@@ -465,11 +463,11 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Scheduled(fixedRate = 300000) // Runs every 5 minutes
+    @Scheduled(fixedRate = 300000)
     @Transactional
     public void checkPendingCashIns() {
         log.info("Starting processing of pending cash ins");
-        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(45);
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
@@ -479,9 +477,7 @@ public class SSLCommerzApiClient {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<CashIn> cashInPage = cashInService
                     .getPendingCashInsOlderThan(TransactionStatus.PENDING, timestamp, pageRequest);
-
             processPendingCashIns(cashInPage.getContent());
-
             hasMorePages = cashInPage.hasNext();
             pageNumber++;
         }
@@ -491,27 +487,21 @@ public class SSLCommerzApiClient {
     @Transactional
     private void processPendingCashIns(List<CashIn> cashIns) {
         for (CashIn cashIn : cashIns) {
-            TransactionQueryResponse response = sendCashInTransactionQueryRequest(cashIn);
-            String status = response.getStatus() == null ? "PENDING" : response.getStatus();
-            log.info("Cash in id: {}, status: {}", cashIn.getId(), response.getStatus());
-            cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
-            if ("VALID".equals(status) || "VALIDATED".equals(status)) {
-                updateValidatedCashIn(cashIn, response);
+            try {
+                TransactionQueryResponse response = initiateTransactionQuery(cashIn.getSessionKey());
+                String status = response.getStatus() == null ? "PENDING" : response.getStatus();
+
+                log.info("Cash in id: {}, status: {}", cashIn.getId(), response.getStatus());
+                cashInService.updateStatus(cashIn, TransactionStatus.valueOf(status));
+                if ("VALID".equals(status) || "VALIDATED".equals(status)) {
+                    updateValidatedCashIn(cashIn, response);
+                }
+            } catch (Exception e) {
+                log.info(e.getMessage());
             }
         }
     }
 
-    private TransactionQueryResponse sendCashInTransactionQueryRequest(CashIn cashIn) {
-        String transactionQueryUrl = sslCommerzConfig.getMerchantTransIdValidationApiUrl()
-                + "?sessionkey=" + cashIn.getSessionKey()
-                + "&store_id=" + sslCommerzConfig.getStoreId()
-                + "&store_passwd=" + sslCommerzConfig.getStorePassword();
-
-        return restClient.get()
-                .uri(transactionQueryUrl)
-                .retrieve()
-                .body(TransactionQueryResponse.class);
-    }
 
     private boolean ipnHashVerify(final Map<String, String> response) {
         if (response.containsKey("verify_sign") && response.containsKey("verify_key")) {
