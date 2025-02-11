@@ -8,26 +8,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 export default function DataTable({ data }: { data: TransactionItem[] }) {
   const { data: session } = useSession();
-  const token = session?.user?.token; // Get the session token
+  const token = session?.user?.token;
 
-  const columns = getColumns(); // Pass token to getColumns
+  const columns = getColumns();
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), // Enables sorting
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
-    <div className="rounded-md border">
-      <Table className="bg-white">
+    <div className="rounded-md border bg-white shadow-md">
+      <Table className="w-full">
         {/* Table Header */}
-        <TableHeader>
+        <TableHeader className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="px-4 py-2 text-left text-gray-700 font-semibold">
                   {header.isPlaceholder
                     ? null
                     : typeof header.column.columnDef.header === 'function'
@@ -42,12 +42,15 @@ export default function DataTable({ data }: { data: TransactionItem[] }) {
         {/* Table Body */}
         <TableBody>
           {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+            table.getRowModel().rows.map((row, index) => (
+              <TableRow
+                key={row.id}
+                className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-200 transition`}
+              >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="px-4 py-2">
                     {typeof cell.column.columnDef.cell === 'function'
-                      ? cell.column.columnDef.cell(cell.getContext()) // Safely call cell render function
+                      ? cell.column.columnDef.cell(cell.getContext())
                       : (cell.renderValue() as React.ReactNode)}
                   </TableCell>
                 ))}
@@ -56,7 +59,7 @@ export default function DataTable({ data }: { data: TransactionItem[] }) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="text-center py-4">
-                No data available
+                No transactions available
               </TableCell>
             </TableRow>
           )}
