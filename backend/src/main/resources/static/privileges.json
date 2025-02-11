@@ -1026,14 +1026,21 @@
     "description": "Get all the notifications of a specific user",
     "httpMethod": "GET",
     "endpoint": "/api/v2/user/{id}/notifications",
-    "type": "User"
+    "type": "Notification"
   },
   {
     "name": "Admin create notifications",
     "description": "Create notification for specific or all users",
     "httpMethod": "POST",
     "endpoint": "/api/v2/user/{id}/notifications/create",
-    "type": "User"
+    "type": "Notification"
+  },
+  {
+    "name": "Admin get notifications",
+    "description": "Get all notification made by admin",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/{id}/notifications",
+    "type": "Notification"
   },
   {
     "name": "Add Product to Watchlist",
