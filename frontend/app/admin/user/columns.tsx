@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
+import { allRolesList, reverseRoleMapping } from '@/hooks/useRoles';
 import { useRouter } from "next/navigation";
 
 export type User = {

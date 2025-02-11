@@ -14,7 +14,7 @@ import useSWR from 'swr';
 import Loading from '@/components/Loading';
 import fetcher from '@/data/services/fetcher';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useRoles } from '../hooks/useRoles';
+import { useRoles } from '@/hooks/useRoles';
 import { exportUserDataToCSV } from '../utility/exportUserDataToCSV';
 import { inviteUser } from '../utility/inviteUserViaEmail';
 import {getUserStats } from '../utility/filterUserByDate';

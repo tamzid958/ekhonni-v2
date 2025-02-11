@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRoles } from '../hooks/useRoles';
+import { useRoles } from '@/hooks/useRoles';
 import { useSession } from 'next-auth/react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
