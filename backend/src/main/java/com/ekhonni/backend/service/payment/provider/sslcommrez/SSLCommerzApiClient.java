@@ -24,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.reposito
+        ;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -126,7 +127,6 @@ public class SSLCommerzApiClient {
                 .body(InitialResponse.class);
     }
 
-    @Modifying
     @Transactional
     public void verifyTransaction(Map<String, String> ipnResponse, HttpServletRequest request) {
 
@@ -189,7 +189,6 @@ public class SSLCommerzApiClient {
                 .body(ValidationResponse.class);
     }
 
-    @Modifying
     @Transactional
     private boolean validateTransaction(String validationId) {
         ValidationResponse response = sendValidationRequest(validationId);
@@ -207,7 +206,6 @@ public class SSLCommerzApiClient {
         return true;
     }
 
-    @Modifying
     @Transactional
     public void updateValidatedTransaction(Transaction transaction, PaymentResponse response) {
         TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
@@ -218,7 +216,6 @@ public class SSLCommerzApiClient {
         updateTransaction(transaction, response);
     }
 
-    @Modifying
     @Transactional
     public void updateTransaction(Transaction transaction, PaymentResponse response) {
         transaction.setStoreAmount(Double.parseDouble(response.getAmount()));
@@ -275,7 +272,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Modifying
     @Transactional
     @Scheduled(fixedRate = 300000)
     public void checkPendingTransactions() {
@@ -296,7 +292,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Modifying
     @Transactional
     private void processPendingTransactions(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
@@ -352,7 +347,6 @@ public class SSLCommerzApiClient {
         return sslcommerzUtil.getParamsString(cashIn, true);
     }
 
-    @Modifying
     @Transactional
     public void verifyCashIn(Map<String, String> ipnResponse, HttpServletRequest request) {
 
@@ -388,7 +382,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Modifying
     @Transactional
     private boolean validateCashIn(String validationId) {
         ValidationResponse response = sendValidationRequest(validationId);
@@ -406,7 +399,6 @@ public class SSLCommerzApiClient {
         return true;
     }
 
-    @Modifying
     @Transactional
     public void updateValidatedCashIn(CashIn cashIn, PaymentResponse response) {
         TransactionStatus status = TransactionStatus.valueOf(response.getStatus());
@@ -417,7 +409,6 @@ public class SSLCommerzApiClient {
         updateCashIn(cashIn, response);
     }
 
-    @Modifying
     @Transactional
     public void updateCashIn(CashIn cashIn, PaymentResponse response) {
         cashIn.setStoreAmount(Double.parseDouble(response.getAmount()));
@@ -466,7 +457,8 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 300000
+
     @Transactional
     public void checkPendingCashIns() {
         log.info("Starting processing of pending cash ins");
@@ -486,7 +478,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Modifying
     @Transactional
     private void processPendingCashIns(List<CashIn> cashIns) {
         for (CashIn cashIn : cashIns) {
