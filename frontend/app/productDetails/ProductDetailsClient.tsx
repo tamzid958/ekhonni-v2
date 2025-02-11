@@ -113,7 +113,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
         if (response.ok) {
           const data = await response.json();
-          setIsWishlisted(data?.success);
+          setIsWishlisted(data?.data);
         }
       } catch (error) {
         console.error("Error fetching wishlist status:", error);
