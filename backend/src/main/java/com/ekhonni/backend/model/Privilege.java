@@ -17,6 +17,7 @@ public class Privilege {
     private Long id;
     private String name;
     private String description;
+    private String type;
     private String httpMethod;
     private String endpoint;
 }

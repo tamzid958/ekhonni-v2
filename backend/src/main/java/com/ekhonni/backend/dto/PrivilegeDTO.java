@@ -13,6 +13,9 @@ public record PrivilegeDTO(@NotNull(message = "name cannot be null")
                            @NotNull(message = "description cannot be null")
                            @NotBlank(message = "description cannot be blank")
                            String description,
+                           @NotNull(message = "type cannot be null")
+                           @NotBlank(message = "type cannot be blank")
+                           String type,
                            @NotNull(message = "httpMethod cannot be null")
                            @NotBlank(message = "httpMethod cannot be blank")
                            String httpMethod,
