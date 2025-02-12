@@ -127,14 +127,17 @@ public abstract class BaseService<T, ID> {
      * Soft Delete
      * ==========================
      */
+    @Transactional
     public void softDelete(ID id) {
         repository.softDelete(id);
     }
 
+    @Transactional
     public void softDelete(List<ID> ids) {
         repository.softDeleteSelected(ids);
     }
 
+    @Transactional
     public void deletePermanently(ID id) {
         repository.deleteById(id);
     }
@@ -145,14 +148,17 @@ public abstract class BaseService<T, ID> {
      * =============================================
      * Non parameterized method is for restoring all
      */
+    @Transactional
     public void restore(ID id) {
         repository.restore(id);
     }
 
+    @Transactional
     public void restore(List<ID> ids) {
         repository.restoreSelected(ids);
     }
 
+    @Transactional
     public void restoreAll() {
         repository.restoreAll();
     }
@@ -162,13 +168,11 @@ public abstract class BaseService<T, ID> {
      * Update
      * =====================
      */
-    @Modifying
     @Transactional
     public <D> D update(ID id, D dto) {
         T entity = repository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
         BeanUtils.copyProperties(dto, entity, BeanUtilHelper.getBlankPropertyNames(dto));
-        repository.save(entity);
         return dto;
     }
 

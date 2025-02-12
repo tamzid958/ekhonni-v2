@@ -44,13 +44,11 @@ public class CashInService extends BaseService<CashIn, Long> {
         return cashInRepository.save(cashIn);
     }
 
-    @Modifying
     @Transactional
     public void updateSessionKey(CashIn cashIn, String sessionKey) {
         cashIn.setSessionKey(sessionKey);
     }
 
-    @Modifying
     @Transactional
     public void updateStatus(CashIn cashIn, TransactionStatus status) {
         cashIn.setStatus(status);

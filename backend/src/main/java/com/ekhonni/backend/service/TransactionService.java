@@ -53,13 +53,11 @@ public class TransactionService extends BaseService<Transaction, Long> {
         return transactionRepository.save(transaction);
     }
 
-    @Modifying
     @Transactional
     public void updateSessionKey(Transaction transaction, String sessionKey) {
         transaction.setSessionKey(sessionKey);
     }
 
-    @Modifying
     @Transactional
     public void updateStatus(Transaction transaction, TransactionStatus status) {
         transaction.setStatus(status);

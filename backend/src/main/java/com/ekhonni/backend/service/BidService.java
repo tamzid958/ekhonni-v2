@@ -41,7 +41,6 @@ public class BidService extends BaseService<Bid, Long> {
         this.watchlistService =  watchlistService;
     }
 
-    @Modifying
     @Transactional
     public void create(BidCreateDTO bidCreateDTO) {
         Product product = productService.get(bidCreateDTO.productId())
@@ -61,7 +60,6 @@ public class BidService extends BaseService<Bid, Long> {
         notificationService.createForNewBid(product, bidCreateDTO);
     }
 
-    @Modifying
     @Transactional
     public void handlePreviousBid(BidCreateDTO bidCreateDTO) {
         if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bidCreateDTO.productId(), BidStatus.ACCEPTED)) {
@@ -78,7 +76,6 @@ public class BidService extends BaseService<Bid, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     public void updateBid(Long id, BidUpdateDTO bidUpdateDTO) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
@@ -98,7 +95,6 @@ public class BidService extends BaseService<Bid, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     public void accept(Long id) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
@@ -111,7 +107,6 @@ public class BidService extends BaseService<Bid, Long> {
         notificationService.createForBidAccepted(bid);
     }
 
-    @Modifying
     @Transactional
     public void updateStatus(Long id, BidStatus status) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
