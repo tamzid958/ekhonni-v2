@@ -1,24 +1,23 @@
 'use client';
 
-import { HorizontalCard } from '@/components/HorizontalCard';
 import React from 'react';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
 import Loading from '@/components/Loading';
+import WatchlistTable from './WatchlistTable';
 
 // Define the WatchlistItem type for TypeScript
 interface WatchlistItem {
   id: number;
   title: string;
-  img: string;
   price: number;
-  yourBid?: number;
-  shipping: number;
-  timeLeft: string;
   condition: string;
-  bidsAmount: number;
-  sellerProfile: string;
+  status: string;
+  createdAt: string;
+  seller: { name: string };
+  category: { name: string };
+  images: { imagePath: string }[];
 }
 
 export default function WatchlistPage() {
@@ -49,15 +48,9 @@ export default function WatchlistPage() {
   }
 
   return (
-    <div className="bg-[#FAF7F0]">
-      <div className="p-6 max-w-4xl mx-auto min-h-screen">
-        <h1 className="text-2xl font-bold">My Watchlist</h1>
-        <div className="space-y-6">
-          {watchlistItems.map((item) => (
-            <HorizontalCard key={item.id} watchlistItem={item} />
-          ))}
-        </div>
-      </div>
+    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold mb-4">My Watchlist</h1>
+      <WatchlistTable watchlistItems={watchlistItems} />
     </div>
 
   );

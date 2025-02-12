@@ -5,18 +5,32 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import * as React from 'react';
 
+// New data format
+interface Seller {
+  id: string;
+  name: string;
+}
+
+interface Image {
+  imagePath: string;
+}
 
 interface WatchlistItem {
   id: number;
   title: string;
-  img: string;
+  subTitle: string;
+  description: string;
   price: number;
-  yourBid?: number;
-  shipping: number;
-  timeLeft: string;
   condition: string;
-  bidsAmount: number;
-  sellerProfile: string;
+  conditionDetails: string;
+  timeLeft?: string; // Time left can be optional as it's not present in the new format
+  bidsAmount?: number; // Bids may not be available
+  seller: Seller;
+  category: {
+    id: number;
+    name: string;
+  };
+  images: Image[];
 }
 
 // Props type for the component
@@ -27,30 +41,26 @@ interface HorizontalCardProps {
 export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem }) => {
   const {
     title,
-    img,
+    subTitle,
+    description,
     price,
-    yourBid,
-    shipping,
-    timeLeft,
     condition,
-    bidsAmount,
-    sellerProfile,
+    conditionDetails,
+    seller,
+    images,
   } = watchlistItem;
 
-  let showBidSection;
-  let showCheckBox;
   return (
-    <Card className="flex items-center gap-4 mb-4">
-      <div className="ml-4">
-        {showCheckBox = true && (
-          <Checkbox />
-        )}
+    <Card className="flex items-center gap-4 p-4 mb-4 bg-white shadow-md rounded-lg">
+      {/* Checkbox */}
+      <div className="ml-2">
+        <Checkbox />
       </div>
 
       {/* Product Image */}
-      <CardContent className="w-24 h-24 relative">
+      <CardContent className="w-16 h-16 relative">
         <Image
-          src={img}
+          src={images[0]?.imagePath || '/default.jpg'} // Fallback if no image is provided
           alt={title}
           layout="fill"
           className="rounded-md object-cover"
@@ -58,7 +68,7 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem })
       </CardContent>
 
       {/* Product Details */}
-      <CardContent className="p-3 flex-1 flex flex-col space-y-2">
+      <CardContent className="flex-1 flex flex-col space-y-2">
         {/* Title */}
         <CardContent className="p-6 text-gray-600">
           <CardTitle>{title}</CardTitle>
@@ -68,7 +78,7 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem })
         <ul className="flex flex-wrap px-6 md:justify-start text-sm gap-4 sm:justify-start">
           <li>
             <div className="pr-2">
-              <p className="text-gray-600">Bids: {bidsAmount}</p>
+              <p className="text-gray-600">Price:</p>
               <CardTitle className="py-0.5">US ${price}</CardTitle>
             </div>
           </li>
@@ -76,33 +86,19 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem })
             <Separator orientation="vertical" className="h-full bg-gray-300" />
           </li>
 
-          {showBidSection = true && (
-            <>
-              <li>
-                <div className="pr-2">
-                  <p className="text-gray-600">Your Bid: {bidsAmount}</p>
-                  <CardTitle className="py-0.5">US ${yourBid}</CardTitle>
-                </div>
-              </li>
-              <li>
-                <Separator orientation="vertical" className="h-full bg-gray-300" />
-              </li>
-            </>
-          )}
-
-          <li>
-            <div className="px-4">
-              <p className="text-gray-600">TIME ENDS:</p>
-              <p className="text-lg font-bold text-red-500">{timeLeft}</p>
-            </div>
-          </li>
-          <li>
-            <Separator orientation="vertical" className="h-full bg-gray-300" />
-          </li>
+          {/*<li>*/}
+          {/*  <div className="px-4">*/}
+          {/*    <p className="text-gray-600">Condition Details:</p>*/}
+          {/*    <p>{conditionDetails}</p>*/}
+          {/*  </div>*/}
+          {/*</li>*/}
+          {/*<li>*/}
+          {/*  <Separator orientation="vertical" className="h-full bg-gray-300" />*/}
+          {/*</li>*/}
           <li>
             <div className="px-4">
               <p>Seller:</p>
-              <p className="text-lg font-bold text-gray-800 py-1">{sellerProfile}</p>
+              <p className="text-lg font-bold text-gray-800 py-1">{seller.name}</p>
             </div>
           </li>
         </ul>
@@ -111,7 +107,7 @@ export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem })
         <div className="flex flex-col mt-10 space-y-2">
           <Button>Bid now</Button>
           <Button variant="secondary">View seller&#39;s other items</Button>
-          <Button variant="link">More Action</Button>
+          {/*<Button variant="link">More Action</Button>*/}
         </div>
       </CardFooter>
     </Card>

@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -128,9 +128,7 @@ export default function CategoryRender({ category, categories }: Props) {
     <div className="min-h-screen flex flex-col items-center space-y-6 mx-auto px-4 w-full overflow-hidden">
 
       {/* Title Left-Aligned */}
-      <h1 className="text-5xl font-bold m-8 text-left w-full pl-4">Category Management</h1>
-      <Toaster position="top-right" />
-
+      <h1 className="relative text-5xl justify-start font-bold m-8 pl-4">Category Management</h1>
       {/* Breadcrumbs */}
       <div className="w-full max-w-4xl">
         <Breadcrumb>
