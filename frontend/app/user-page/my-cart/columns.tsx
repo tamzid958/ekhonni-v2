@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ReviewDialog } from '@/components/Review-Dialog';
 
 // Define the BidData interface
 export interface BidList {
@@ -86,14 +87,9 @@ export function getColumns(token: string) {
             )}
 
             {row.status === 'PAID' && (
-              <Link href={`/leave-review-page-link`}>
-                <Button
-                  variant="outline"
-                >
-                  Leave a Review
-                </Button>
-              </Link>
+              <ReviewDialog bidId={row.id} productId={row.productId} />
             )}
+
           </div>
         );
       },
