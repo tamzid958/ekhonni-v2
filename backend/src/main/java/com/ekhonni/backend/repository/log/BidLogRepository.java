@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
  */
 public interface BidLogRepository extends BaseRepository<BidLog, Long> {
 
-    <P> Page<P> findByProductId(Long productId, Pageable pageable);
+    <P> Page<P> findByProductIdAndDeletedAtIsNull(Long productId, Pageable pageable);
 
-    <P> Page<P> findByProductId(Long productId, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByProductIdAndDeletedAtIsNull(Long productId, Class<P> projection, Pageable pageable);
 
-    <P> Page<P> findByBidId(Long bidId, Pageable pageable);
+    <P> Page<P> findByBidIdAndDeletedAtIsNull(Long bidId, Pageable pageable);
 
-    <P> Page<P> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    <P> Page<P> findByCreatedAtBetweenAndDeletedAtIsNull(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
-    <P> Page<P> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
+    <P> Page<P> findByCreatedAtBetweenAndDeletedAtIsNull(LocalDateTime startDate, LocalDateTime endDate, Class<P> projection, Pageable pageable);
 
 }

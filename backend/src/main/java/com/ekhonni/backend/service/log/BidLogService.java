@@ -83,14 +83,15 @@ public class BidLogService extends BaseService<BidLog, Long> {
     }
 
     public Page<BidLog> getByProductId(Long productId, Pageable pageable) {
-        return bidLogRepository.findByProductId(productId, pageable);
+        return bidLogRepository.findByProductIdAndDeletedAtIsNull(productId, pageable);
     }
 
     public Page<BidLog> getByBidId(Long bidId, Pageable pageable) {
-        return bidLogRepository.findByBidId(bidId, pageable);
+        return bidLogRepository.findByBidIdAndDeletedAtIsNull(bidId, pageable);
     }
 
     public Page<BidLog> getByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return bidLogRepository.findByCreatedAtBetween(startDate, endDate, pageable);
+        return bidLogRepository.findByCreatedAtBetweenAndDeletedAtIsNull(startDate, endDate, pageable);
     }
+
 }
