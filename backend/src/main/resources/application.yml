@@ -82,6 +82,12 @@ spring:
     ansi:
       enabled: ALWAYS
 
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  allowed-methods: ${CORS_ALLOWED_METHODS}
+  allowed-headers: ${CORS_ALLOWED_HEADERS}
+  exposed-headers: ${CORS_EXPOSED_HEADERS}
+
 server:
   address: ${SERVER_ADDRESS}
   port: ${SERVER_PORT}

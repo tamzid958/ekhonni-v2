@@ -58,20 +58,20 @@ public class PaymentController {
 
     @PostMapping("/success")
     public ResponseEntity<?> success(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Success Response: {}", validatorResponse);
-        return ResponseUtil.createResponse(HTTPStatus.OK, validatorResponse);
+        log.info("Transaction successful");
+        return ResponseUtil.createResponse(HTTPStatus.OK, "Payment successful");
     }
 
     @PostMapping("/fail")
     public ResponseEntity<?> fail(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Fail Response: {}", validatorResponse);
-        return ResponseUtil.createResponse(HTTPStatus.BAD_REQUEST, validatorResponse);
+        log.info("Transaction failed");
+        return ResponseUtil.createResponse(HTTPStatus.BAD_REQUEST, "Payment failed");
     }
 
     @PostMapping("/cancel")
     public ResponseEntity<?> cancel(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Cancel Response: {}", validatorResponse);
-        return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, validatorResponse);
+        log.info("Transaction canceled");
+        return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, "Payment canceled");
     }
 
     @PostMapping("/sslcommerz/ipn")
