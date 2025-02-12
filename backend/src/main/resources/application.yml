@@ -125,11 +125,6 @@ bkash:
   intra-account-transfer-url: ${BKASH_INTRA_ACCOUNT_TRANSFER_URL}
   search-transaction-details-url: ${BKASH_SEARCH_TRANSACTION_DETAILS_URL}
 
-refund:
-  processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}
-  query-interval: ${REFUND_QUERY_INTERVAL:1800000}
-  batch-size: ${REFUND_BATCH_SIZE}
-
 notification:
   product-redirect-url: ${PRODUCT_REDIRECT_URL}
 
