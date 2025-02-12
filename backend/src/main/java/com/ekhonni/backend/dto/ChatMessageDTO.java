@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public record ChatMessageDTO(
         UUID senderId,
-        UUID receiverId,
         String content
 ) {
 }

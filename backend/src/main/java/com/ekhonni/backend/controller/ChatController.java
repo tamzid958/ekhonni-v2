@@ -19,7 +19,7 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat/send")
+    @MessageMapping("/chat")
     @SendTo("/topic/messages")
     public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO) {
         System.out.println(chatMessageDTO);
