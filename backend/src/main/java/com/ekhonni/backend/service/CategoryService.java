@@ -101,8 +101,7 @@ public class CategoryService extends BaseService<Category, Long> {
         if (!children.isEmpty()) {
             throw new CategoryNotFoundException("sub category exists");
         }
-        System.out.println(category);
-        System.out.println(category.getId());
+
         categoryRepository.deleteCategoryById(category.getId());
     }
 

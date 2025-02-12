@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,9 +23,9 @@ public interface UserRepository extends BaseRepository<User, UUID> {
 
     boolean existsByRole(Role role);
 
-    boolean existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(UUID id);
+    boolean existsByIdAndDeletedAtIsNullAndIsBlockedIsFalse(UUID id);
 
-    boolean existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(String email);
+    boolean existsByEmailAndDeletedAtIsNullAndIsBlockedIsFalse(String email);
 
     Page<UserProjection> getAllByRole(Role role, Class<UserProjection> userProjectionClass, Pageable pageable);
 

@@ -1,5 +1,7 @@
 package com.ekhonni.backend.projection.bid;
 
+import com.ekhonni.backend.enums.BidStatus;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,7 +16,7 @@ public interface SellerBidProjection {
     String getBidderName();
     String getBidderAddress();
     Double getAmount();
-    String getStatus();
+    BidStatus getStatus();
     String getCurrency();
     LocalDateTime getCreatedAt();
 }

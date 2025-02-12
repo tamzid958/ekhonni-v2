@@ -73,7 +73,7 @@ public class EmailVerificationService {
     }
 
 
-    public ApiResponse<?> verify(String token) {
+    public String verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -93,6 +93,6 @@ public class EmailVerificationService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Email verified successfully!";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }

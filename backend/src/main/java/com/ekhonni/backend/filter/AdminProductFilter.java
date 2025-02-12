@@ -13,6 +13,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class AdminProductFilter extends ProductFilter{
-    private ProductStatus productStatus;
+public class AdminProductFilter extends UserProductFilter{
+
 }

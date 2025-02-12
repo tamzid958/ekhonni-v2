@@ -72,7 +72,7 @@ public class EmailChangeService {
     }
 
 
-    public ApiResponse<?> verifyAndUpdate(String token) {
+    public String verifyAndUpdate(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -97,6 +97,6 @@ public class EmailChangeService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Email updated successfully!";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }

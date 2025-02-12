@@ -1,13 +1,14 @@
 package com.ekhonni.backend.config;
 
+import com.ekhonni.backend.exception.CustomAccessDeniedHandler;
 import com.ekhonni.backend.filter.ExceptionHandlerFilter;
 import com.ekhonni.backend.filter.JWTFilter;
-import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,10 +42,13 @@ public class SecurityConfig {
     private final JWTFilter jwtFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final AuthorizationManager<RequestAuthorizationContext> dynamicAuthorizationManager;
-    private final RoleRepository roleRepository;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Value("${spring.constant.public.urls}")
     private String[] PUBLIC_URLS;
+
+    @Value("${spring.constant.auth.urls}")
+    private String[] AUTH_URLS;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -56,8 +60,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request ->
                         request
-                                .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers(HttpMethod.POST, AUTH_URLS).permitAll()
+                                .requestMatchers(PUBLIC_URLS).permitAll() // allow only get in future
                                 .anyRequest().access(dynamicAuthorizationManager)
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

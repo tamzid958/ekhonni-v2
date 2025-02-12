@@ -13,6 +13,7 @@ import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
@@ -21,14 +22,21 @@ import com.ekhonni.backend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/v2/product")
-public record ProductController(ProductService productService, BidService bidService) {
+@AllArgsConstructor
+public class ProductController {
+    ProductService productService;
+    BidService bidService;
 
+
+    @PostMapping
     @Operation(
             summary = "Create a new product",
             description = "Creates a new product using the provided details, including images",
@@ -36,7 +44,6 @@ public record ProductController(ProductService productService, BidService bidSer
                     description = "Product creation form with images and details"
             )
     )
-    @PostMapping
     public ApiResponse<?> create(
             @Parameter(description = "Product details for creation")
             @Valid @ModelAttribute ProductCreateDTO productCreateDTO) {
@@ -53,6 +60,8 @@ public record ProductController(ProductService productService, BidService bidSer
     }
 
 
+    @PatchMapping("/{id}")
+    @PreAuthorize("@productService.getSellerId(#id) == authentication.principal.id")
     @Operation(
             summary = "Update a product",
             description = "Updates a product using the provided details",
@@ -60,13 +69,13 @@ public record ProductController(ProductService productService, BidService bidSer
                     description = "Product update form with images and details"
             )
     )
-    @PatchMapping("/{id}")
     public ApiResponse<?> updateOne(@PathVariable Long id, @Valid @ModelAttribute ProductUpdateDTO dto) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.updateOne(id, dto));
     }
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@productService.getSellerId(#id) == authentication.principal.id")
     public ApiResponse<?> deleteOne(@PathVariable("id") Long id) {
         productService.softDelete(id);
         return new ApiResponse<>(HTTPStatus.DELETED, null);
@@ -80,8 +89,14 @@ public record ProductController(ProductService productService, BidService bidSer
 
 
     @GetMapping("/user/filter")
+    @PreAuthorize("#filter.userId == authentication.principal.id")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
+    }
+
+    @GetMapping("/seller/filter")
+    public ApiResponse<?> getFilteredForSeller(@ModelAttribute SellerProductFilter filter) {
+        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForSeller(filter));
     }
 
 

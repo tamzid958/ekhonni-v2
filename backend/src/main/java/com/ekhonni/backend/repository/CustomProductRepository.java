@@ -8,6 +8,7 @@
 package com.ekhonni.backend.repository;
 
 import com.ekhonni.backend.model.Product;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,6 @@ import java.util.List;
 @Repository
 public interface CustomProductRepository {
 
-    List<Long> findAllFiltered(Specification<Product> spec, Pageable pageable);
+   Page<Long> findAllFiltered(Specification<Product> spec, Pageable pageable);
 
 }

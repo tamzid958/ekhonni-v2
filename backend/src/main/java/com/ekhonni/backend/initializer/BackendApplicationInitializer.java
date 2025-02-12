@@ -1,10 +1,8 @@
 package com.ekhonni.backend.initializer;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
-import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.RoleRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.service.AccountService;
@@ -67,7 +65,7 @@ public class BackendApplicationInitializer implements CommandLineRunner {
                         superAdmin,
                         null,
                         null,
-                        null,
+                        false,
                         true
                 );
 

@@ -3,9 +3,9 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.EmailTaskDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.enums.VerificationTokenType;
-import com.ekhonni.backend.exception.EmailNotVerifiedException;
 import com.ekhonni.backend.exception.InvalidVerificationTokenException;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.user.EmailNotVerifiedException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.UserRepository;
@@ -40,7 +40,7 @@ public class PasswordResetService {
     @Value("${spring.constant.password-reset-url}")
     private String passwordResetUrl;
 
-    public ApiResponse<?> requestReset(String email) {
+    public String requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
 
@@ -61,7 +61,7 @@ public class PasswordResetService {
         emailProducerService.send(emailTaskDTO);
 
         String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 
     private EmailTaskDTO getEmailTaskDTO(String email, VerificationToken verificationToken) {
@@ -84,7 +84,7 @@ public class PasswordResetService {
     }
 
 
-    public ApiResponse<?> reset(String token, String newPassword) {
+    public String reset(String token, String newPassword) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -101,6 +101,6 @@ public class PasswordResetService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Password Reset Successful";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }

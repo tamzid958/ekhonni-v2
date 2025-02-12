@@ -7,8 +7,10 @@
 
 package com.ekhonni.backend.filter;
 
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductSort;
+import com.ekhonni.backend.enums.ProductStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +24,8 @@ public class ProductFilter{
     private ProductCondition condition;
     private String searchTerm;
     private ProductSort sortBy;
+    private final ProductStatus status = ProductStatus.APPROVED;
+    private Division division;
     private int page=1;
     private int size=10;
 }

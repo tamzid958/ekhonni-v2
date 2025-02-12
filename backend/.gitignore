@@ -3,13 +3,17 @@ HELP.md.gradle
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-#Docker
+# Docker
 Dockerfile
 docker-compose.yml
 .dockerignore
 .tar
 /backend-app-image/
 
+# env
+.env.example
+.env
+export-env.sh
 
 # Ignore folders
 .idea/
@@ -89,3 +93,6 @@ nbdist/
 # Ignore backups and caches
 *.bak
 *.cache.env.example
+
+
+

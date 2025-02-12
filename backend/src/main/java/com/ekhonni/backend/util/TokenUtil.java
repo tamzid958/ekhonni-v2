@@ -1,10 +1,8 @@
 package com.ekhonni.backend.util;
 
-import com.ekhonni.backend.exception.InvalidVerificationTokenException;
-import com.ekhonni.backend.exception.RefreshTokenNotFoundException;
+import com.ekhonni.backend.exception.user.RefreshTokenNotFoundException;
 import com.ekhonni.backend.model.RefreshToken;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.model.VerificationToken;
 import com.ekhonni.backend.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,8 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
-import javax.crypto.Cipher;
-
 
 /**
  * Author: Md Jahid Hasan
@@ -46,7 +42,6 @@ public class TokenUtil {
 
     @Value("${spring.security.jwt.secret}")
     private String secret;
-
 
     public TokenUtil(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;

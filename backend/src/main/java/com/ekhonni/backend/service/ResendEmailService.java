@@ -2,7 +2,8 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
-import com.ekhonni.backend.exception.UserNotFoundException;
+
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.response.ApiResponse;
@@ -20,7 +21,7 @@ public class ResendEmailService {
     private final UserRepository userRepository;
     private final EmailVerificationService emailVerificationService;
 
-    public ApiResponse<?> reSend(EmailDTO emailDTO) {
+    public String reSend(EmailDTO emailDTO) {
         User user = userRepository.findByEmail(emailDTO.email());
         if (user == null) {
             throw new UserNotFoundException("User not found");
@@ -30,6 +31,6 @@ public class ResendEmailService {
         }
         emailVerificationService.request(user);
         String responseMessage =  "A verification link has been sent to your email. Please verify your email to sign in.";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }

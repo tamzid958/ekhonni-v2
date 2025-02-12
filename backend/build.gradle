@@ -50,6 +50,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+
 //    implementation 'org.liquibase:liquibase-core'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -74,6 +75,11 @@ dependencies {
 
     //image
     implementation 'com.cloudinary:cloudinary-http44:1.31.0'
+//    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.4.2'
+//    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+//    implementation 'org.webjars:stomp-websocket:2.3.4'
+
+
 
 
 }

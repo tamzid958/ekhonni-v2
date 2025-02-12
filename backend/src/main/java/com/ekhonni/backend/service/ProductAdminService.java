@@ -45,10 +45,10 @@ public class ProductAdminService {
         return productRepository.findAllByStatus(ProductStatus.PENDING_APPROVAL, pageable);
     }
 
-    public ProductProjection getOne(Long id) {
+    public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
         if (projection == null) throw new ProductNotFoundException("product doesn't exist");
-        return projection;
+        return ProductProjectionConverter.convert(projection);
     }
 
     @Transactional
@@ -120,13 +120,13 @@ public class ProductAdminService {
 
 
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 }

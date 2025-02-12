@@ -65,14 +65,12 @@ public class ReviewService extends BaseService<Review, Long> {
         notificationService.createForBuyerReview(bid);
     }
 
-    @Modifying
     @Transactional
     private void handlePreviousReview(Long bidId, ReviewType type) {
         reviewRepository.findFirstByBidIdAndTypeAndDeletedAtIsNull(bidId, type)
                 .ifPresent(previousReview -> softDelete(previousReview.getId()));
     }
 
-    @Modifying
     @Transactional
     public void updateSellerReview(Long id, ReviewUpdateDTO dto) {
         Review previousReview = get(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
@@ -81,7 +79,6 @@ public class ReviewService extends BaseService<Review, Long> {
         reviewRepository.save(review);
     }
 
-    @Modifying
     @Transactional
     public void updateBuyerReview(Long id, ReviewUpdateDTO dto) {
         Review previousReview = get(id).orElseThrow(() -> new ReviewNotFoundException("Review not found"));
