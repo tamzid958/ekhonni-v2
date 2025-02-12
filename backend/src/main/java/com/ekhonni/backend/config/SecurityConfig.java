@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(HttpMethod.POST, AUTH_URLS).permitAll()
-                                .requestMatchers(PUBLIC_URLS).permitAll() // allow only get in future
+                                .requestMatchers(HttpMethod.GET, PUBLIC_URLS).permitAll() // allow only get in future
                                 .anyRequest().access(dynamicAuthorizationManager)
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
