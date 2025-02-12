@@ -40,7 +40,7 @@ public class PasswordResetService {
     @Value("${spring.constant.password-reset-url}")
     private String passwordResetUrl;
 
-    public String requestReset(String email) {
+    public ApiResponse<?> requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
 
@@ -61,7 +61,7 @@ public class PasswordResetService {
         emailProducerService.send(emailTaskDTO);
 
         String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
-        return responseMessage;
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
     private EmailTaskDTO getEmailTaskDTO(String email, VerificationToken verificationToken) {
@@ -84,7 +84,7 @@ public class PasswordResetService {
     }
 
 
-    public String reset(String token, String newPassword) {
+    public ApiResponse<?> reset(String token, String newPassword) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -101,6 +101,6 @@ public class PasswordResetService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Password Reset Successful";
-        return responseMessage;
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 }

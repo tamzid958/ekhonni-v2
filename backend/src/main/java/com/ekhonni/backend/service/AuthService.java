@@ -43,7 +43,7 @@ public class AuthService {
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public String create(UserDTO userDTO) {
+    public ApiResponse<?> create(UserDTO userDTO) {
         if (userRepository.findByEmail(userDTO.email()) != null) throw new UserAlreadyExistsException();
 
         Role userRole = roleRepository.findByName("USER").orElseThrow(() -> new RoleNotFoundException("Role not found while creating"));
@@ -67,7 +67,7 @@ public class AuthService {
         emailVerificationService.request(user);
 
         String responseMessage = "Sign up successful! Please verify your email to sign in";
-        return responseMessage;
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 
 

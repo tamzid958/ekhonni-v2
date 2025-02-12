@@ -21,7 +21,7 @@ public class ResendEmailService {
     private final UserRepository userRepository;
     private final EmailVerificationService emailVerificationService;
 
-    public String reSend(EmailDTO emailDTO) {
+    public ApiResponse<?> reSend(EmailDTO emailDTO) {
         User user = userRepository.findByEmail(emailDTO.email());
         if (user == null) {
             throw new UserNotFoundException("User not found");
@@ -31,6 +31,6 @@ public class ResendEmailService {
         }
         emailVerificationService.request(user);
         String responseMessage =  "A verification link has been sent to your email. Please verify your email to sign in.";
-        return responseMessage;
+        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
     }
 }
