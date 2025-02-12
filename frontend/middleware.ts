@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { allRolesList } from "@/hooks/useRoles";
+type Route = string;
+type Role = 'SUPER_ADMIN' | 'ADMIN' | 'USER' | 'GUEST';
 
-console.log("🛡️ Middleware Loaded"); // Check if middleware is running
-
-const publicRoutes = [
+const PUBLIC_ROUTES: Route[] = [
   "/",
   "/auth/register",
-  "/auth/login",
   "/auth/forget-password",
   "/auth/reset-password",
   "/auth/reset-password/update",
@@ -16,73 +14,105 @@ const publicRoutes = [
   "/productDetails",
   "/search",
   "/seller-page",
-];
+] as const;
 
-// ✅ Fix: Allow all roles to access their pages dynamically
-const accessList = {
-  USER: ["/profile", "/bids", "/guest-page", "/seller-profile"],
-  ADMIN: ["/admin", "/profile", "/guest-page", "/seller-profile"],
-  GUEST: ["/guest-page", "/seller-profile"],
-  SUPER_ADMIN: ["*"], // ✅ Fix: SUPER_ADMIN should access all pages
+const AUTH_ROUTES = [
+  "/auth/login",
+  "/auth/logout",
+] as const;
+
+const ACCESS_LIST: Record<Role, Route[]> = {
+  SUPER_ADMIN: ["*"],
+  ADMIN: ["/admin"],
+  USER: [
+    "/myProducts",
+    "/myProducts/bidList",
+    "/productDetails",
+    "/seller-page",
+    "/user-page"
+  ],
+  GUEST: PUBLIC_ROUTES,
 };
 
-// ✅ Normalize roles
-const normalizedAccessList = allRolesList.reduce((acc, role) => {
-  acc[role] = accessList[role] || [];
-  return acc;
-}, {});
+const isPublicRoute = (pathname: string): boolean => {
+  return PUBLIC_ROUTES.includes(pathname as Route);
+};
+
+const hasAccess = (allowedPaths: Route[], pathname: string): boolean => {
+  return (
+    allowedPaths.includes(pathname as Route) ||
+    allowedPaths.includes("*") ||
+    allowedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+  );
+};
+
+const getSession = async (request: NextRequest) => {
+  try {
+    const response = await fetch(`${request.nextUrl.origin}/api/auth/session`, {
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Session fetch error:", error);
+    return null;
+  }
+};
 
 export async function middleware(request: NextRequest) {
-  console.log("🛡️ Middleware function triggered for:", request.nextUrl.pathname);
-
   const pathname = request.nextUrl.pathname;
+  const origin = request.nextUrl.origin;
 
-  // ✅ Allow public routes
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    console.log("✅ Public route:", pathname);
+  if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // ✅ Fetch user session with error handling
-  let session = null;
-  try {
-    const response = await fetch(`${request.nextUrl.origin}/api/auth/session`, {
-      headers: { cookie: request.headers.get("cookie") || "" },
-    });
-
-    if (response.ok) {
-      session = await response.json();
-    } else {
-      console.warn("⚠️ Failed to fetch session:", response.status);
-    }
-  } catch (error) {
-    console.error("❌ Error fetching session:", error);
-  }
-  console.log("Middleware session", session)
-
+  const session = await getSession(request);
   const userRole = session?.user?.role || "GUEST";
-  console.log("Detected Role:", userRole);
+  const allowedPaths = ACCESS_LIST[userRole as Role] || [];
 
-  const allowedPaths = normalizedAccessList[userRole] || [];
+  if (pathname === "/auth/login") {
+    return session ?
+      NextResponse.redirect(`${origin}/`) :
+      NextResponse.next();
+  }
 
-  switch (true) {
-    case userRole === "SUPER_ADMIN":
-      console.log("✅ SUPER_ADMIN Access Granted!");
+  if (!session || !session.user || !session.user.role) {
+    return NextResponse.redirect(`${origin}/auth/login`);
+  }
+
+  switch (userRole) {
+    case "SUPER_ADMIN":
       return NextResponse.next();
 
-    case allowedPaths.includes("*") || allowedPaths.some((path) => pathname.startsWith(path)):
-      console.log("✅ Access Granted for:", userRole);
-      return NextResponse.next();
+    case "ADMIN":
+      return hasAccess(allowedPaths, pathname) ?
+        NextResponse.next() :
+        NextResponse.redirect(`${origin}/admin`);
+
+    case "USER":
+      return hasAccess(allowedPaths, pathname) ?
+        NextResponse.next() :
+        NextResponse.redirect(`${origin}/`);
+
+    case "GUEST":
+      return hasAccess(allowedPaths, pathname) ?
+        NextResponse.next() :
+        NextResponse.redirect(`${origin}/auth/login`);
 
     default:
-      console.log("❌ Unauthorized. Redirecting...");
-      return NextResponse.redirect(new URL(allowedPaths[0] || "/login", request.url));
+      return NextResponse.redirect(`${origin}/`);
   }
 }
 
-// ✅ Fix: Ensure middleware does not block public routes & images
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|public/|auth/|categoryProducts|labeledCategory|productDetails|search|seller-page).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|auth/login|auth/logout|not-found).*)",
   ],
 };

@@ -14,6 +14,8 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
+
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -59,9 +61,25 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         return;
       }
       toast.success("Login successful!");
-      window.location.href = '/';
-      router.push("/");
 
+      await  new Promise((resolve) => setTimeout(resolve, 1000));
+      const updatedSession = await getSession();
+      const userRole = updatedSession?.user?.role || "GUEST";
+
+      switch (userRole)
+      {
+        case "SUPER_ADMIN":
+          window.location.href = '/';
+          break;
+        case "ADMIN":
+          window.location.href = '/admin';
+          break;
+        case "USER":
+          window.location.href = '/';
+          break;
+        default:
+          window.location.href = '/';
+      }
     } catch (err: any) {
       console.error("Login error:", err);
 
