@@ -129,13 +129,11 @@ const options: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      session.user = {
-        token: token.accessToken,
-        id: token.id,
-        role: token.role,
-      };
+      session.user.id = token.id;
+      session.user.role = token.role;
+      session.user.token = token.accessToken;
       return session;
-    },
+    }
   },
 };
 
