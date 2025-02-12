@@ -113,9 +113,7 @@ public class RefundService extends BaseService<Refund, Long> {
 
         int pageNumber = 0;
         boolean hasMorePages = true;
-        Sort sort = Sort.by("createdAt").ascending()
-                .and(Sort.by("id").ascending());
-
+        Sort sort = Sort.by("id").ascending();
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Refund> refundPage = refundRepository.findByStatusIn(toBeProcessedStatuses, pageRequest);
@@ -181,8 +179,7 @@ public class RefundService extends BaseService<Refund, Long> {
 
         int pageNumber = 0;
         boolean hasMorePages = true;
-        Sort sort = Sort.by("createdAt").ascending()
-                .and(Sort.by("id").ascending());
+        Sort sort = Sort.by("id").ascending();
 
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);

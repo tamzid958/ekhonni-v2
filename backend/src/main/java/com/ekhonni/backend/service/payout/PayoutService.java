@@ -33,7 +33,6 @@ public class PayoutService {
     private final WithdrawService withdrawService;
     private final AccountService accountService;
 
-    @Modifying
     @Transactional
     public void processPayout(WithdrawRequest withdrawRequest) throws PayoutProcessingException {
 
@@ -62,13 +61,12 @@ public class PayoutService {
                                 category, method)));
     }
 
-    @Modifying
     @Transactional
     private void updateAccountBalance(Withdraw withdraw) {
         Account userAccount = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
-        userAccount.setTotalWithdrawals(userAccount.getTotalWithdrawals() + withdraw.getAmount());
+        userAccount.setTotalWithdrawals(userAccount.getTotalWithdrawals() + withdraw.getBdtAmount());
 
         Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals() + withdraw.getAmount() + withdraw.getPayoutFee());
+        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals() + withdraw.getBdtAmount());
     }
 }
