@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.config.payment.SSLCommerzConfig;
 import com.ekhonni.backend.dto.cashin.CashInRequest;
 import com.ekhonni.backend.dto.payment.PaymentRequest;
 import com.ekhonni.backend.enums.HTTPStatus;
@@ -12,6 +13,7 @@ import com.ekhonni.backend.service.payment.provider.sslcommrez.response.Initiate
 import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -38,6 +41,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final SSLCommerzApiClient sslCommerzApiClient;
     private final BidService bidService;
+    private final SSLCommerzConfig sslCommerzConfig;
 
     @PostMapping("/initiate")
     @PreAuthorize("@bidService.getBidderId(#paymentRequest.bidId) == authentication.principal.id")
@@ -56,22 +60,22 @@ public class PaymentController {
         return ResponseUtil.createResponse(HTTPStatus.OK, Arrays.asList(PaymentMethod.values()));
     }
 
-    @PostMapping("/success")
-    public ResponseEntity<?> success(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Transaction successful");
-        return ResponseUtil.createResponse(HTTPStatus.OK, "Payment successful");
+    @PostMapping("/sslcommerz/success")
+    public void success(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Payment successful");
+        response.sendRedirect(sslCommerzConfig.getSuccessRedirectUrl());
     }
 
-    @PostMapping("/fail")
-    public ResponseEntity<?> fail(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Transaction failed");
-        return ResponseUtil.createResponse(HTTPStatus.BAD_REQUEST, "Payment failed");
+    @PostMapping("/sslcommerz/fail")
+    public void fail(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Payment failed");
+        response.sendRedirect(sslCommerzConfig.getFailRedirectUrl());
     }
 
-    @PostMapping("/cancel")
-    public ResponseEntity<?> cancel(@RequestParam Map<String, String> validatorResponse) {
-        log.info("Transaction canceled");
-        return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, "Payment canceled");
+    @PostMapping("/sslcommerz/cancel")
+    public void cancel(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info("Payment canceled");
+        response.sendRedirect(sslCommerzConfig.getCancelRedirectUrl());
     }
 
     @PostMapping("/sslcommerz/ipn")
