@@ -308,6 +308,83 @@
     "type": "Bid"
   },
   {
+    "name": "Get BidLog by ID",
+    "description": "Fetches a specific bid log by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get All BidLogs",
+    "description": "Fetches all bid logs with pagination support",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get BidLogs by Product ID",
+    "description": "Fetches bid logs related to a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/product/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get BidLogs by Bid ID",
+    "description": "Fetches bid logs for a specific bid",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/bid/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get BidLogs by Date Range",
+    "description": "Fetches bid logs within a specific date range",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/date-range",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore BidLog by ID",
+    "description": "Restores a specific bid log by its ID",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/{id}/restore",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore Multiple BidLogs",
+    "description": "Restores multiple bid logs by their IDs",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/restore",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore All BidLogs",
+    "description": "Restores all bid logs",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/restore-all",
+    "type": "BidLog"
+  },
+  {
+    "name": "Soft Delete BidLog by ID",
+    "description": "Soft deletes a specific bid log by its ID",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid-log/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Soft Delete Multiple BidLogs",
+    "description": "Soft deletes multiple bid logs by their IDs",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid-log",
+    "type": "BidLog"
+  },
+  {
+    "name": "Permanently Delete BidLog by ID",
+    "description": "Permanently deletes a specific bid log by its ID",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/bid-log/{id}/permanent",
+    "type": "BidLog"
+  },
+  {
     "name": "Get CashIn by ID",
     "description": "Retrieves a specific cash-in transaction by its ID",
     "httpMethod": "GET",
@@ -325,21 +402,21 @@
     "name": "Get User CashIns by Status",
     "description": "Retrieves user's cash-ins filtered by status",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/cash-in/user/status/{status}",
+    "endpoint": "/api/v2/cash-in/user/status/{id}",
     "type": "Cash-in"
   },
   {
     "name": "Get User CashIns (Admin)",
     "description": "Admin endpoint to retrieve cash-ins for a specific user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/cash-in/user/{user_id}",
+    "endpoint": "/api/v2/cash-in/user/{id}",
     "type": "Cash-in"
   },
   {
     "name": "Get User CashIns by Status (Admin)",
     "description": "Admin endpoint to retrieve user's cash-ins filtered by status",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/cash-in/user/{user_id}/status/{status}",
+    "endpoint": "/api/v2/cash-in/user/{id}/status/{id}",
     "type": "Cash-in"
   },
   {
@@ -353,7 +430,7 @@
     "name": "Get CashIns by Status",
     "description": "Admin endpoint to retrieve all cash-ins filtered by status",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/cash-in/status/{status}",
+    "endpoint": "/api/v2/cash-in/status/{id}",
     "type": "Cash-in"
   },
   {
@@ -381,21 +458,21 @@
     "name": "Get Subcategories",
     "description": "Retrieves subcategories of a specific category",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/category/{name}/subcategories",
+    "endpoint": "/api/v2/admin/category/{id}/subcategories",
     "type": "Category"
   },
   {
     "name": "Delete Category",
     "description": "Deletes a category by name",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/admin/category/{name}",
+    "endpoint": "/api/v2/admin/category/{id}",
     "type": "Category"
   },
   {
     "name": "Update Category",
     "description": "Updates an existing category",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/admin/category/{name}",
+    "endpoint": "/api/v2/admin/category/{id}",
     "type": "Category"
   },
   {
@@ -409,21 +486,21 @@
     "name": "Get Subcategories",
     "description": "Retrieves subcategories of a category by its name",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/{name}/subcategories",
+    "endpoint": "/api/v2/category/{id}/subcategories",
     "type": "Category"
   },
   {
     "name": "Get User Category Tree",
     "description": "Retrieves the category tree for a specific user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/tree/{user_id}",
+    "endpoint": "/api/v2/category/tree/{id}",
     "type": "Category"
   },
   {
     "name": "Get Categories by User",
     "description": "Retrieves root categories for a specific user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/all/{user_id}",
+    "endpoint": "/api/v2/category/all/{id}",
     "type": "Category"
   },
   {

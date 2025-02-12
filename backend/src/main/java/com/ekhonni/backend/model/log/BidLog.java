@@ -20,7 +20,10 @@ import lombok.Setter;
 public class BidLog extends BaseEntity<Long> {
 
     @Column(nullable = false)
-    private Long originalBidId;
+    private Long bidId;
+
+    @Column(nullable = false)
+    private Long productId;
 
     @Column(columnDefinition = "text", nullable = false)
     private String bidData;
