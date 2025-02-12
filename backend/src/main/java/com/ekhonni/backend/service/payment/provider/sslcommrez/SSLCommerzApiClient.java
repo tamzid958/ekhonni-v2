@@ -262,7 +262,6 @@ public class SSLCommerzApiClient {
                 && (Math.abs(expectedBdtAmount - response.getAmount()) <= CURRENCY_CONVERSION_TOLERANCE);
     }
 
-    @Transactional
     @Scheduled(fixedRate = 300000)
     public void checkPendingTransactions() {
         log.info("Starting processing of pending transactions");
@@ -282,7 +281,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Transactional
     private void processPendingTransactions(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
             try {
@@ -439,7 +437,6 @@ public class SSLCommerzApiClient {
     }
 
     @Scheduled(fixedRate = 300000)
-    @Transactional
     public void checkPendingCashIns() {
         log.info("Starting processing of pending cash ins");
         LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
@@ -458,7 +455,6 @@ public class SSLCommerzApiClient {
         }
     }
 
-    @Transactional
     private void processPendingCashIns(List<CashIn> cashIns) {
         for (CashIn cashIn : cashIns) {
             try {

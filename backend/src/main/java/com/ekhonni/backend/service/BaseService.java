@@ -18,7 +18,6 @@ import java.util.Optional;
  * Date: 12/16/24
  */
 
-
 @NoArgsConstructor
 public abstract class BaseService<T, ID> {
 
@@ -32,7 +31,6 @@ public abstract class BaseService<T, ID> {
      * ==================================================
      * Non soft-deleted (Default)
      * ==================================================
-     * Entity, Projection, Pageable Entity and Projection
      */
     public Optional<T> get(ID id) {
         return repository.findByIdAndDeletedAtIsNull(id);
@@ -145,8 +143,8 @@ public abstract class BaseService<T, ID> {
     /**
      * =============================================
      * Restore soft deleted data
-     * =============================================
      * Non parameterized method is for restoring all
+     * =============================================
      */
     @Transactional
     public void restore(ID id) {

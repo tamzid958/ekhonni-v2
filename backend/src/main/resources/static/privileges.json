@@ -259,20 +259,6 @@
     "type": "Bid"
   },
   {
-    "name": "Get Product Bid Audit",
-    "description": "Allows viewing bid audit for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/audit",
-    "type": "Bid"
-  },
-  {
-    "name": "Get Product Bid Audit Count",
-    "description": "Allows viewing bid audit count for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/audit-count",
-    "type": "Bid"
-  },
-  {
     "name": "Update Bid Status",
     "description": "Allows admin to update bid status",
     "httpMethod": "PATCH",

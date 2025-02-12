@@ -145,18 +145,6 @@ public class BidController {
                 bidService.getAllForProduct(productId, AdminBidProjection.class, pageable));
     }
 
-    @GetMapping("/product/{product_id}/audit")
-    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAuditForProduct(
-            @PathVariable("product_id") Long productId, Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK,
-                bidService.getAuditForProduct(productId, AdminBidProjection.class, pageable));
-    }
-
-    @GetMapping("/product/{product_id}/audit-count")
-    public ResponseEntity<ApiResponse<Long>> getAuditCountForProduct(@PathVariable("product_id") Long productId) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAuditCountForProduct(productId));
-    }
-
     @PatchMapping("/{id}/update-status")
     public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable Long id, @Valid @RequestBody BidStatus status) {
         bidService.updateStatus(id, status);

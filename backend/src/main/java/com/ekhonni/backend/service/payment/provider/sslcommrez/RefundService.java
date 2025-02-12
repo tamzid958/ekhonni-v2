@@ -80,7 +80,6 @@ public class RefundService extends BaseService<Refund, Long> {
         refundRepository.save(refund);
     }
 
-    @Modifying
     @Transactional
     public void approve(Long id, RefundApproveDTO refundApproveDTO) {
         Refund refund = refundRepository.findById(id)
@@ -89,7 +88,6 @@ public class RefundService extends BaseService<Refund, Long> {
         refund.setApprovedBy(AuthUtil.getAuthenticatedUser());
     }
 
-    @Modifying
     @Transactional
     private void updateSuccessfulRefund(Refund refund, RefundQueryResponse response) {
         Account sellerAccount = accountService.getByUserId(refund.getTransaction().getSeller().getId());
@@ -133,7 +131,6 @@ public class RefundService extends BaseService<Refund, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     private void initiateRefundRequest(Refund refund) {
         RefundResponse response = sendRefundRequest(refund);
@@ -202,7 +199,6 @@ public class RefundService extends BaseService<Refund, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     private void initiateQueryRefundRequest(Refund refund) {
         RefundQueryResponse response = sendQueryRefundRequest(refund);

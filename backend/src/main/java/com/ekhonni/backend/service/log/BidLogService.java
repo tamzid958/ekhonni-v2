@@ -40,7 +40,6 @@ public class BidLogService extends BaseService<BidLog, Long> {
         this.objectMapper = objectMapper;
     }
 
-
     @Scheduled(cron = "0 0 0 * * *")
     public void archiveDeletedBids() {
         log.info("Starting archiving soft deleted bids");
@@ -56,27 +55,24 @@ public class BidLogService extends BaseService<BidLog, Long> {
         }
     }
 
-    @Modifying
-    @Transactional
     private void processBatch(List<Bid> bidsToArchive) {
-        try {
-            for (Bid bid : bidsToArchive) {
-                try {
-                    BidLog bidLog = new BidLog();
-                    bidLog.setOriginalBidId(bid.getId());
-                    bidLog.setBidData(convertBidToJson(bid));
-
-                    bidLogRepository.save(bidLog);
-                    log.info("Successfully archived bid: {}", bid.getId());
-
-                    bidService.deletePermanently(bid.getId());
-                } catch (Exception e) {
-                    log.error("Error archiving bid {}: {}", bid.getId(), e.getMessage());
-                }
+        for (Bid bid : bidsToArchive) {
+            try {
+                archiveSingleBid(bid);
+            } catch (Exception e) {
+                log.error("Error archiving bid {}: {}", bid.getId(), e.getMessage());
             }
-        } catch (Exception e) {
-            log.error("Error in bid archival process: {}", e.getMessage());
         }
+    }
+
+    @Transactional
+    public void archiveSingleBid(Bid bid) throws Exception {
+        BidLog bidLog = new BidLog();
+        bidLog.setOriginalBidId(bid.getId());
+        bidLog.setBidData(convertBidToJson(bid));
+
+        bidLogRepository.save(bidLog);
+        bidService.deletePermanently(bid.getId());
     }
 
     private String convertBidToJson(Bid bid) throws Exception {
