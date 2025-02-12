@@ -38,7 +38,6 @@ export default function MyCartPage() {
   }
   return (
     <div className="space-y-6 h-screen container mx-12 p-4">
-      <Toaster position="top-right" />
       <div className="flex flex-col justify-between mt-4">
         <div className="flex justify-center">
           <h1 className="text-3xl font-semibold mb-6 text-gray-700">Bids List</h1>
