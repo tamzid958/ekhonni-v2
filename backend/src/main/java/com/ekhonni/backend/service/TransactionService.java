@@ -50,8 +50,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
         Transaction transaction = new Transaction();
         transaction.setBid(bid);
         transaction.setStatus(TransactionStatus.PENDING);
-        transactionRepository.save(transaction);
-        return transaction;
+        return transactionRepository.save(transaction);
     }
 
     @Modifying

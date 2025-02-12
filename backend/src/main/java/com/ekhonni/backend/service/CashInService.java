@@ -41,8 +41,7 @@ public class CashInService extends BaseService<CashIn, Long> {
         cashIn.setAmount(amount);
         cashIn.setCurrency("BDT");
         cashIn.setStatus(TransactionStatus.PENDING);
-        cashInRepository.save(cashIn);
-        return cashIn;
+        return cashInRepository.save(cashIn);
     }
 
     @Modifying
