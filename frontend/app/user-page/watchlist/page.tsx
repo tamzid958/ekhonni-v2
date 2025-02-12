@@ -5,20 +5,8 @@ import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
 import Loading from '@/components/Loading';
-import WatchlistTable from './WatchlistTable';
+import { HorizontalCard } from '@/components/HorizontalCard';
 
-// Define the WatchlistItem type for TypeScript
-interface WatchlistItem {
-  id: number;
-  title: string;
-  price: number;
-  condition: string;
-  status: string;
-  createdAt: string;
-  seller: { name: string };
-  category: { name: string };
-  images: { imagePath: string }[];
-}
 
 export default function WatchlistPage() {
   const { data: session, status } = useSession();
@@ -28,7 +16,7 @@ export default function WatchlistPage() {
   const { data, error, isLoading } = useSWR(userToken ? [url, userToken] : null, ([url, token]) => fetcher(url, token));
   console.log(data?.data);
 
-  const watchlistItems: WatchlistItem[] = data?.data?.content || [];
+  const watchlistItems = data?.data?.content || [];
 
   if (status === 'loading' || isLoading) {
     return (
@@ -48,9 +36,15 @@ export default function WatchlistPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto min-h-screen bg-white shadow-lg rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">My Watchlist</h1>
-      <WatchlistTable watchlistItems={watchlistItems} />
+    <div className="min-h-screen p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">My Watchlist</h1>
+      <div className="space-y-6 ">
+        {watchlistItems.length > 0 ? (
+          watchlistItems.map((item) => <HorizontalCard key={item.id} watchlistItem={item} token={userToken} />)
+        ) : (
+          <p className="text-gray-500">No items in your watchlist.</p>
+        )}
+      </div>
     </div>
 
   );
