@@ -65,7 +65,7 @@ const AdminIntroPage = () => {
             <p className="text-gray-700">Manage user accounts, roles, and permissions.</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => router.push('/admin/users')}
+              onClick={() => router.push('/admin/user')}
             >
               Go to Users
             </Button>
@@ -104,7 +104,7 @@ const AdminIntroPage = () => {
             </Button>
           </CardContent>
         </Card>
-        
+
       </section>
 
       {/* Additional Info Section */}
