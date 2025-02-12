@@ -8,6 +8,7 @@
 package com.ekhonni.backend.controller;
 
 
+import com.ekhonni.backend.dto.product.ProductBoostDTO;
 import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
@@ -18,6 +19,7 @@ import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
+import com.ekhonni.backend.service.ProductBoostService;
 import com.ekhonni.backend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     ProductService productService;
     BidService bidService;
+    ProductBoostService productBoostService;
 
 
     @PostMapping
@@ -104,6 +107,14 @@ public class ProductController {
     public ApiResponse<?> getAllBidsForProduct(@PathVariable("id") Long id, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
                 bidService.getAllForProduct(id, BuyerBidProjection.class, pageable));
+    }
+
+
+    // boost product
+    @PostMapping("/boost")
+    public ApiResponse<?> boostProduct(@RequestBody ProductBoostDTO boostDTO){
+        productBoostService.boostProduct(boostDTO);
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
     }
 
 

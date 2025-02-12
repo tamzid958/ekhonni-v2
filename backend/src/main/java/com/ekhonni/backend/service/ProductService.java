@@ -8,9 +8,11 @@
 package com.ekhonni.backend.service;
 
 
+import com.ekhonni.backend.dto.product.ProductBoostDTO;
 import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
+import com.ekhonni.backend.enums.BoostType;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
@@ -19,12 +21,10 @@ import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
-import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.model.ProductImage;
-import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.*;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
+import com.ekhonni.backend.repository.ProductBoostRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specification.SpecificationResult;
@@ -45,8 +45,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -56,18 +58,26 @@ public class ProductService extends BaseService<Product, Long> {
     CategoryRepository categoryRepository;
     UserRepository userRepository;
     CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
+    ProductBoostRepository productBoostRepository;
+    AccountService accountService;
 
     @Value("${product.upload.dir}")
     String PRODUCT_UPLOAD_DIR;
 
 
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, CategoryRepository categoryRepository, UserRepository userRepository, CloudinaryImageUploadUtil cloudinaryImageUploadUtil) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService,
+                          CategoryRepository categoryRepository, UserRepository userRepository,
+                          CloudinaryImageUploadUtil cloudinaryImageUploadUtil, ProductBoostRepository productBoostRepository,
+                          AccountService accountService
+    ) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
+        this.productBoostRepository = productBoostRepository;
+        this.accountService = accountService;
     }
 
 
@@ -246,6 +256,8 @@ public class ProductService extends BaseService<Product, Long> {
         long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
+
+
 
 
 }

@@ -43,16 +43,18 @@ public class CommonProductSpecificationBuilder {
         if(filter.getDivision() != null){
             spec = spec.and(ProductSpecification.belongsToDivision(filter.getDivision()));
         }
-//        if (filter.getSortBy() != null) {
-//            System.out.println("sort");
-//            spec = spec.and(ProductSpecification.applySorting(filter.getSortBy()));
-//            hasConditions = true;
-//        }
+
 
         if (filter.getStatus() != null) {
             spec = spec.and(ProductSpecification.hasStatus(filter.getStatus()));
             hasConditions = true;
         }
+
+        if (filter.getProductBoosted() != null) {
+            spec = spec.and(ProductSpecification.isBoosted(filter.getProductBoosted()));
+            hasConditions = true;
+        }
+
 
         if(!hasConditions)
         {

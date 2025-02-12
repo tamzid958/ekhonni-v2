@@ -13,6 +13,9 @@ import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.ProductBoost;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -47,6 +50,20 @@ public class ProductSpecification {
     }
     public static Specification<Product> belongsToDivision(Division division) {
         return (product, cq, cb) -> cb.equal(product.get("division"), division);
+    }
+
+    public static Specification<Product> isBoosted(Boolean productBoosted) {
+        return (product, cq, cb) -> {
+            if (Boolean.TRUE.equals(productBoosted)) {
+                assert cq != null;
+                Subquery<Long> subquery = cq.subquery(Long.class);
+                Root<ProductBoost> productBoostRoot = subquery.from(ProductBoost.class);
+                subquery.select(productBoostRoot.get("product").get("id"))
+                        .where(cb.equal(productBoostRoot.get("product").get("id"), product.get("id")));
+                return cb.exists(subquery);
+            }
+            return cb.conjunction();
+        };
     }
 
 

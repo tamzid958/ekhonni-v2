@@ -26,6 +26,7 @@ public class ProductFilter{
     private ProductSort sortBy;
     private final ProductStatus status = ProductStatus.APPROVED;
     private Division division;
+    private Boolean productBoosted;
     private int page=1;
     private int size=10;
 }

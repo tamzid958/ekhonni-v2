@@ -30,7 +30,7 @@ INSERT INTO account (id, total_earnings, total_withdrawals, status, user_id, cre
 (104, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
 (105, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
 (106, 100000.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(107, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440006'::uuid, NOW(), NOW());
+(107, 500, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440006'::uuid, NOW(), NOW());
 
 INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
 (10000, 'Travel & Nature', true, null, NOW(), NOW()),
