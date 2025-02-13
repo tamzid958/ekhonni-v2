@@ -49,7 +49,7 @@ public class AccountService extends BaseService<Account, Long> {
 
     @Transactional
     public void withdraw(Account account, double amount) {
-        validateMinimumWithdrawalAmount(account, amount);
+        validateMinimumWithdrawalAmount(amount);
         validateMinimumBalance(account, amount);
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
         Account superAdminAccount = getSuperAdminAccount();
@@ -62,7 +62,14 @@ public class AccountService extends BaseService<Account, Long> {
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
     }
 
-    private void validateMinimumWithdrawalAmount(Account account, double amount) {
+    @Transactional
+    public void deposit(Account account, double amount) {
+        account.setTotalEarnings(account.getTotalEarnings() + amount);
+        Account superAdminAccount = getSuperAdminAccount();
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + amount);
+    }
+
+    private void validateMinimumWithdrawalAmount(double amount) {
         if (amount < MINIMUM_WITHDRAW_AMOUNT) {
             throw new IllegalArgumentException(String.format("Minimum withdrawal amount is: %s", MINIMUM_WITHDRAW_AMOUNT));
         }
@@ -75,13 +82,6 @@ public class AccountService extends BaseService<Account, Long> {
                             amount, MINIMUM_BALANCE)
             );
         }
-    }
-
-    @Transactional
-    public void deposit(Account account, double amount) {
-        account.setTotalEarnings(account.getTotalEarnings() + amount);
-        Account superAdminAccount = getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + amount);
     }
 
     public UserProjection getUser(Long id) {
@@ -102,7 +102,6 @@ public class AccountService extends BaseService<Account, Long> {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         return account.getBalance();
     }
-
 
     public Double getAuthenticatedUserBalance() {
         return getByUserId(AuthUtil.getAuthenticatedUser().getId()).getBalance();
