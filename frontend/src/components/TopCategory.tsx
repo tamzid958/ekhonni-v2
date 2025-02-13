@@ -1,109 +1,84 @@
 'use client';
-
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import React from 'react';
+import { ChevronsRight } from 'lucide-react';
 import Link from 'next/link';
 
+const fetcher = async (url, token) => {
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to fetch');
+  return res.json();
+};
+
 export function TopCAtegory() {
+  const { data: session, status } = useSession();
+  const [token, setToken] = React.useState(null);
+
+  React.useEffect(() => {
+    if (session?.user?.token) {
+      setToken(session.user.token);
+    }
+  }, [session]);
+
+  const { data, error } = useSWR(
+    token ? ['http://localhost:8080/api/v2/admin/category/all', token] : null,
+    ([url, token]) => fetcher(url, token),
+    { suspense: false },
+  );
+
+  if (error) return <div className="text-red-500">Failed to load categories</div>;
+  if (!data) return <div></div>;
+
   return (
-    <div className="bg-brand-mid h-12 flex justify-center">
-      <NavigationMenu>
-        <NavigationMenuList className="space-x-2">
-          <NavigationMenuItem>
+    <div className="bg-brand-mid relative h-10 flex justify-center">
+      <NavigationMenu className="w-full max-w-5xl">
+        <NavigationMenuList className="flex justify-center space-x-1">
+          {data.data.slice(0, 10).map((category) => (
+            <NavigationMenuItem key={category.name} className="relative group">
+              <NavigationMenuTrigger
+                className="peer flex items-center text-xs px-2 font-semibold text-gray-700 border-transparent hover:underline">
+                <Link
+                  href={`/categoryProducts?category=${encodeURIComponent(category.name)}`}
+                  passHref
+                  className="">
+                  {category.name}
+                </Link>
+              </NavigationMenuTrigger>
 
-            <NavigationMenuTrigger
-              className="flex items-center text-xs px-1 font-semibold text-gray-700 border-transparent hover:underline">ALL
-              CATEGORIES</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="text-b grid m-2 md:w-[200px] lg:w-[300px]">
-                <ListItem href="/docs" title="Electronics">
-                  Wide range of tech products and accessories.
-                </ListItem>
-                <ListItem href="/docs/installation" title="Fashion">
-                  Latest trends in clothing and accessories.
-                </ListItem>
-                <ListItem href="/docs" title="Books and Movies">
-                  Must-read books and top-rated movies.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem className="relative">
-            <NavigationMenuTrigger
-              className="flex items-center text-xs px-1 font-semibold text-gray-700 border-transparent hover:underline">ALL
-              CATEGORIES</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="text-b grid m-2 md:w-[200px] lg:w-[300px]">
-                <ListItem href="/docs" title="Electronics">
-                  Wide range of tech products and accessories.
-                </ListItem>
-                <ListItem href="/docs/installation" title="Fashion">
-                  Latest trends in clothing and accessories.
-                </ListItem>
-                <ListItem href="/docs" title="Books and Movies">
-                  Must-read books and top-rated movies.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <Link href="/docs" legacyBehavior passHref>
-            <div
-              className="flex items-center text-xs px-1 font-semibold text-gray-700 border-transparent hover:underline">
-              GARDEN
-            </div>
-          </Link>
-          <Link href="/docs" legacyBehavior passHref>
-            <div
-              className="flex items-center text-xs px-1 font-semibold text-gray-700 border-transparent hover:underline">
-              GARDEN
-            </div>
-          </Link>
-          <Link href="/docs" legacyBehavior passHref>
-            <div
-              className="flex items-center text-xs px-1 font-semibold text-gray-700 border-transparent hover:underline">
-              GARDEN
-            </div>
-          </Link>
-
-
+              <div
+                className="absolute left-0 top-full bg-brand-bright shadow-lg border rounded-md opacity-0 invisible peer-hover:opacity-100 peer-hover:visible hover:opacity-100 hover:visible transition-opacity duration-200 pointer-events-none peer-hover:pointer-events-auto hover:pointer-events-auto">
+                <ul className="text-xs font-semibold grid m-2 md:w-[200px] lg:w-[300px]">
+                  {category.subCategories.map((sub, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center p-2 rounded-md hover:bg-brand-mid group">
+                      <Link
+                        href={`/categoryProducts?category=${encodeURIComponent(sub)}`}
+                        passHref
+                        className="flex items-center w-full">
+                        <ChevronsRight
+                          className="mr-2 opacity-0 hover:opacity-100 transition-opacity duration-200"
+                          size={16}
+                        />
+                        <span>{sub}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </NavigationMenuItem>
+          ))}
         </NavigationMenuList>
       </NavigationMenu>
     </div>
   );
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<'a'>,
-  React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            'block select-none space-y-1 rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-brand-mid hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
-            className,
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = 'ListItem';
