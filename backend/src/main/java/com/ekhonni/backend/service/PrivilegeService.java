@@ -97,7 +97,7 @@ public class PrivilegeService {
     public String assignMultiple(long roleId, PrivilegeIdsDTO privilegeIdsDTO) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
 
-        for (long privilegeId : privilegeIdsDTO.privilegeId()) {
+        for (long privilegeId : privilegeIdsDTO.privilegeIds()) {
             Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found"));
 
             if (!rolePrivilegeAssignmentRepository.existsByRoleAndPrivilegeId(role, privilegeId)) {
@@ -149,7 +149,7 @@ public class PrivilegeService {
 
     public String removeMultiple(long roleId, PrivilegeIdsDTO privilegeIdsDTO) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when removing"));
-        for (long privilegeId : privilegeIdsDTO.privilegeId()) {
+        for (long privilegeId : privilegeIdsDTO.privilegeIds()) {
             this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
 
             RolePrivilegeAssignment rolePrivilegeAssignment = rolePrivilegeAssignmentRepository.findByRoleAndPrivilegeId(role, privilegeId).orElseThrow(() -> new RuntimeException("Privilege not assigned by " + privilegeId));

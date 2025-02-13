@@ -1,5 +1,7 @@
 package com.ekhonni.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  * Date: 2/13/25
  */
 public record PrivilegeIdsDTO(
-        List<Long> privilegeId
+        @NotNull
+        List<Long> privilegeIds
 ) {
 }
