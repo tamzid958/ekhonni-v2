@@ -60,7 +60,7 @@ export function getColumns(token: string) {
             )}
 
             {row.status === 'PAID' && (
-              <ReviewDialog bidId={row.id} productId={row.productId} />
+              <ReviewDialog bidId={row.id} productId={row.productId} ruleFor={'seller'}/>
             )}
 
           </div>
