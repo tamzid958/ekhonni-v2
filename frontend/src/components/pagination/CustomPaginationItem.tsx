@@ -10,13 +10,14 @@ interface PaginationItemProps {
   currentPage: number;
 }
 
-export default function PaginationItem({ page, currentPage }: PaginationItemProps) {
+export default function CustomPaginationItem({ page, currentPage }: PaginationItemProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
   // Clone existing query parameters
   const params = new URLSearchParams(searchParams.toString());
-  params.set('currentPage', page.toString()); // Update only `currentPage`
+  params.set('page', page.toString());
+  params.delete('currentPage'); // ✅ Remove `currentPage` from the URL
 
   return (
     <Link href={`${pathname}?${params.toString()}`} passHref>
