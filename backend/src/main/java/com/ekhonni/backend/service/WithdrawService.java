@@ -11,6 +11,7 @@ import com.ekhonni.backend.projection.withdraw.WithdrawProjection;
 import com.ekhonni.backend.repository.WithdrawRepository;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,11 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
     private final AccountService accountService;
     private final PayoutAccountService payoutAccountService;
 
-    private final double MINIMUM_BALANCE = 50;
+    @Value("${account.minimum-balance}")
+    private double MINIMUM_BALANCE;
+
+    @Value("${account.minimum-withdraw-amount}")
+    private double MINIMUM_WITHDRAW_AMOUNT;
 
     public WithdrawService(WithdrawRepository withdrawRepository, AccountService accountService, PayoutAccountService payoutAccountService) {
         super(withdrawRepository);
@@ -58,11 +63,14 @@ public class WithdrawService extends BaseService<Withdraw, Long> {
         return withdrawRepository.save(withdraw);
     }
 
-    private void validateWithdrawalAmount(Account account, double withdrawAmount) {
-        if (account.getBalance() - withdrawAmount < MINIMUM_BALANCE) {
+    private void validateWithdrawalAmount(Account account, double amount) {
+        if (amount < MINIMUM_WITHDRAW_AMOUNT) {
+            throw new IllegalArgumentException(String.format("Minimum withdrawal amount is: %s", MINIMUM_WITHDRAW_AMOUNT));
+        }
+        if (account.getBalance() - amount < MINIMUM_BALANCE) {
             throw new InsufficientBalanceException(
                     String.format("Withdrawal of %.2f would leave balance below minimum required balance of %.2f",
-                            withdrawAmount, MINIMUM_BALANCE)
+                            amount, MINIMUM_BALANCE)
             );
         }
     }

@@ -226,10 +226,7 @@ public class SSLCommerzApiClient {
         transaction.getBid().setStatus(BidStatus.PAID);
 
         Account sellerAccount = accountService.getByUserId(transaction.getSeller().getId());
-        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() + transaction.getBdtAmount());
-
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + transaction.getBdtAmount());
+        accountService.deposit(sellerAccount, transaction.getBdtAmount());
     }
 
     private Transaction getDBTransactionFromResponse(String trxId) {
@@ -407,10 +404,7 @@ public class SSLCommerzApiClient {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         Account userAccount = cashIn.getAccount();
-        userAccount.setTotalEarnings(userAccount.getTotalEarnings() + cashIn.getBdtAmount());
-
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + cashIn.getBdtAmount());
+        accountService.deposit(userAccount, cashIn.getBdtAmount());
     }
 
     private CashIn getDBCashInFromResponse(String trxId) {

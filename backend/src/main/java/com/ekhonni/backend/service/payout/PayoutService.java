@@ -47,7 +47,7 @@ public class PayoutService {
         payoutProvider.processPayout(withdraw);
 
         if (withdraw.getStatus().equals(WithdrawStatus.COMPLETED)) {
-            updateAccountBalance(withdraw);
+            accountService.withdraw(withdraw.getAccount(), withdraw.getAmount());
         }
     }
 
@@ -61,12 +61,4 @@ public class PayoutService {
                                 category, method)));
     }
 
-    @Transactional
-    private void updateAccountBalance(Withdraw withdraw) {
-        Account userAccount = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
-        userAccount.setTotalWithdrawals(userAccount.getTotalWithdrawals() + withdraw.getBdtAmount());
-
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals() + withdraw.getBdtAmount());
-    }
 }

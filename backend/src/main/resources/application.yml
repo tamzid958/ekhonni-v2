@@ -92,6 +92,10 @@ server:
   address: ${SERVER_ADDRESS}
   port: ${SERVER_PORT}
 
+account:
+  minimum-balance: ${ACCOUNT_MINIMUM_BALANCE:50}
+  minimum-withdraw-amount: ${ACCOUNT_MINIMUM_WITHDRAW_AMOUNT:50}
+
 sslcommerz:
   domain: ${SSLCOMMERZ_DOMAIN}
   store-id: ${SSLCOMMERZ_STORE_ID}
