@@ -62,6 +62,8 @@ spring:
       urls: ${PUBLIC_URLS}
     email-verification-url: ${EMAIL_VERIFICATION_URL}
     password-reset-url: ${PASSWORD_RESET_URL}
+    auth:
+      urls: ${AUTH_URLS}
 
   mail:
     host: ${SMTP_MAIL_HOST}
@@ -82,21 +84,37 @@ spring:
 
 server:
   address: ${SERVER_ADDRESS}
+  port: ${SERVER_PORT}
 
 sslcommerz:
   domain: ${SSLCOMMERZ_DOMAIN}
   store-id: ${SSLCOMMERZ_STORE_ID}
   store-password: ${SSLCOMMERZ_STORE_PASSWORD}
-  success-url: ${BASE_PAYMENT_URL}/success
-  fail-url: ${BASE_PAYMENT_URL}/fail
-  cancel-url: ${BASE_PAYMENT_URL}/cancel
-  ipn-url: ${SSLCOMMERZ_IPN_URL}
+  success-url: ${SSLCOMMERZ_SUCCESS_URL}
+  fail-url: ${SSLCOMMERZ_FAIL_URL}
+  cancel-url: ${SSLCOMMERZ_CANCEL_URL}
+  payment-ipn-url: ${SSLCOMMERZ_PAYMENT_IPN_URL}
+  cashin-ipn-url: ${SSLCOMMERZ_CASHIN_IPN_URL}
   api-url: ${SSLCOMMERZ_API_URL}
   validation-api-url: ${SSLCOMMERZ_VALIDATION_API_URL}
   merchant-trans-id-validation-api-url: ${SSLCOMMERZ_MERCHANT_TRANS_ID_VALIDATION_API_URL}
   connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
   read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
   allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
+
+bkash:
+  username: ${BKASH_USERNAME}
+  password: ${BKASH_PASSWORD}
+  app-key: ${BKASH_APP_KEY}
+  app-secret: ${BKASH_APP_SECRET}
+  x-app-key: ${BKASH_X_APP_KEY}
+  merchant-invoice-number: ${BKASH_MERCHANT_INVOICE_NUMBER}
+  disbursement-url: ${BKASH_DISBURSEMENT_URL}
+  grant-token-url: ${BKASH_GRANT_TOKEN_URL}
+  refresh-token-url: ${BKASH_REFRESH_TOKEN_URL}
+  query-balance-url: ${BKASH_QUERY_BALANCE_URL}
+  intra-account-transfer-url: ${BKASH_INTRA_ACCOUNT_TRANSFER_URL}
+  search-transaction-details-url: ${BKASH_SEARCH_TRANSACTION_DETAILS_URL}
 
 refund:
   processing-interval: ${REFUND_PROCESSING_INTERVAL:3600000}

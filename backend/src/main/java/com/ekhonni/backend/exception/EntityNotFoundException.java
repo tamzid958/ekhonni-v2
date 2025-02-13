@@ -7,6 +7,6 @@ package com.ekhonni.backend.exception;
 public class EntityNotFoundException extends RuntimeException {
     @Override
     public String getMessage() {
-        return "Not found.";
+        return "Not found";
     }
 }

@@ -20,7 +20,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"account_id", "category", "method"})})
 public class PayoutAccount extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,7 +36,7 @@ public class PayoutAccount extends BaseEntity<Long> {
 
     @NotBlank
     @Column(nullable = false)
-    private String accountNumber;
+    private String payoutAccountNumber;
 
     private String bankName;
     private String branchName;

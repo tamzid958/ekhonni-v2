@@ -30,13 +30,18 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
 
     ProductProjection findProjectionById(Long id);
 
-    List<ProductProjection> findByIdIn(List<Long> productIds);
+    List<ProductProjection> findByIdIn(List<Long> productIds, Pageable pageable);
+
+
 
     //admin site
     Page<ProductProjection> findAllByStatus(ProductStatus status, Pageable pageable);
 
     @Query("SELECT DISTINCT p.category FROM Product p WHERE p.seller.id = :id and p.status=APPROVED")
     List<Category> findCategoriesBySeller(@Param("id") UUID id);
+
+
+    Long countByIdInAndStatus(List<Long> ids, ProductStatus status);
 
 
 }

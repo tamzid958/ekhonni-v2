@@ -6,11 +6,14 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.enums.AccountStatus;
 import com.ekhonni.backend.exception.AccountNotFoundException;
-import com.ekhonni.backend.exception.UserNotFoundException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.projection.account.UserAccountProjection;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.util.AuthUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +31,16 @@ public class AccountService extends BaseService<Account, Long> {
         this.userRepository = userRepository;
     }
 
-    public User getUser(Long id) {
-        return accountRepository.findUserById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+    @Transactional
+    public void create(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Account account = new Account(user, 0.0, 0.0, AccountStatus.ACTIVE);
+        accountRepository.save(account);
+    }
+
+    public UserProjection getUser(Long id) {
+        return accountRepository.findUserById(id, UserProjection.class).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public Account getByUserId(UUID userId) {
@@ -41,14 +52,6 @@ public class AccountService extends BaseService<Account, Long> {
                 .orElseThrow(() -> new AccountNotFoundException("Super admins account not found"));
     }
 
-    @Transactional
-    public void create(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Account account = new Account(user, 0.0, 0.0, AccountStatus.ACTIVE);
-        accountRepository.save(account);
-    }
-
     public double getBalance(Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
@@ -56,4 +59,12 @@ public class AccountService extends BaseService<Account, Long> {
     }
 
 
+    public Double getAuthenticatedUserBalance() {
+        return getByUserId(AuthUtil.getAuthenticatedUser().getId()).getBalance();
+    }
+
+    public UserAccountProjection getAuthenticatedUserAccount() {
+        return accountRepository.findByUserId(AuthUtil.getAuthenticatedUser().getId(), UserAccountProjection.class)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+    }
 }

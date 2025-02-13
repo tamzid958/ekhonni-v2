@@ -1,15 +1,16 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.ekhonni.backend.enums.WithdrawStatus;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 /**
  * Author: Asif Iqbal
@@ -26,5 +27,24 @@ public class Withdraw extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
-    private double amount;
+
+    @ManyToOne
+    @JoinColumn(name = "payout_account_id")
+    private PayoutAccount payoutAccount;
+
+    @Min(value = 50)
+    @Column(nullable = false)
+    private Double amount;
+    private String currency = "BDT";
+
+    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private WithdrawStatus status;
+
+    private Double bdtAmount;
+
+    private Double payoutFee = 0.0;
+    private String bankTransactionId;
+    private LocalDateTime processedAt;
+
 }

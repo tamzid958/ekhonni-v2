@@ -1,16 +1,21 @@
 package com.ekhonni.backend.controller;
 
-import com.ekhonni.backend.dto.*;
+import com.ekhonni.backend.dto.EmailDTO;
+import com.ekhonni.backend.dto.user.AuthDTO;
+import com.ekhonni.backend.dto.user.PasswordResetRequestDTO;
+import com.ekhonni.backend.dto.user.ResetPasswordDTO;
+import com.ekhonni.backend.dto.user.UserDTO;
+import com.ekhonni.backend.model.AuthClaim;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.AuthService;
 import com.ekhonni.backend.service.EmailVerificationService;
 import com.ekhonni.backend.service.PasswordResetService;
 import com.ekhonni.backend.service.ResendEmailService;
+import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,20 +37,15 @@ public class AuthController {
     ResendEmailService resendEmailService;
 
     @PostMapping("/sign-in")
-    @PreAuthorize("@userService.isActive(#authDTO.email())")
     public ResponseEntity<?> signInUser(@RequestBody AuthDTO authDTO) {
-
 
         return ResponseEntity.ok(authService.signIn(authDTO));
 
     }
 
-
     @PostMapping("/sign-up")
     public ApiResponse<?> createUser(@RequestBody UserDTO userDTO) {
-
         return authService.create(userDTO);
-
     }
 
 

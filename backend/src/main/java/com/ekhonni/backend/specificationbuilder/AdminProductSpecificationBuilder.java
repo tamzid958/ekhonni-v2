@@ -18,14 +18,14 @@ import java.util.List;
 
 public class AdminProductSpecificationBuilder {
     public static Specification<Product> build(AdminProductFilter filter, List<Long> categoryIds) {
-        SpecificationResult result = CommonProductSpecificationBuilder.build(filter, categoryIds);
+        SpecificationResult result = UserProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = result.getSpec();
         boolean hasConditions = result.isHasConditions();
 
-        if (filter.getProductStatus() != null) {
-            spec = spec.and(ProductSpecification.hasStatus(filter.getProductStatus()));
-            hasConditions = true;
-        }
+//        if (filter.getProductStatus() != null) {
+//            spec = spec.and(ProductSpecification.hasStatus(filter.getProductStatus()));
+//            hasConditions = true;
+//        }
 
         if (!hasConditions) {
             spec = spec.and(ProductSpecification.defaultSpec());

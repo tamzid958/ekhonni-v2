@@ -1,9 +1,13 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.UserBlockDTO;
+import com.ekhonni.backend.dto.user.UserUnblockDTO;
+import com.ekhonni.backend.projection.BlockedUserProjection;
 import com.ekhonni.backend.projection.DetailedUserProjection;
-import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.AdminService;
+import com.ekhonni.backend.service.BlockInfoService;
 import com.ekhonni.backend.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,30 +27,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final RoleService roleService;
-
-//    @PostMapping("/add-admin")
-//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-//    public ResponseEntity<?> add(@RequestBody EmailDTO emailDTO) {
-//        adminService.add(emailDTO.email());
-//        return ResponseEntity.ok("admin added");
-//    }
-//
-//    @PostMapping("/remove-admin")
-//    @PreAuthorize("hasAuthority('SUPER_ADMIN') && @userService.isActive(emailDTO.email())")
-//    public ResponseEntity<?> remove(@RequestBody EmailDTO emailDTO) {
-//        adminService.remove(emailDTO.email());
-//        return ResponseEntity.ok("admin removed");
-//    }
-
-
-    @GetMapping("/users")
-    public Page<DetailedUserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
-        if (name != null || email != null) {
-            return adminService.getAllUserByNameOrEmail(DetailedUserProjection.class, pageable, name, email);
-        } else {
-            return adminService.getAllUser(DetailedUserProjection.class, pageable);
-        }
-    }
+    private final BlockInfoService blockInfoService;
 
 
     @PostMapping("user/{userId}/assign/role/{roleId}")
@@ -61,20 +42,40 @@ public class AdminController {
         return roleService.remove(userId);
     }
 
-    @GetMapping("/users/deleted/")
-    public Page<UserProjection> getAllDeletedUser(Pageable pageable) {
-        return adminService.getAllDeleted(UserProjection.class, pageable);
+
+    @GetMapping("/user")
+    public Page<DetailedUserProjection> getAllUserByNameOrEmail(Pageable pageable, @RequestParam(required = false) String name, String email) {
+        if (name != null || email != null) {
+            return adminService.getAllUserByNameOrEmail(DetailedUserProjection.class, pageable, name, email);
+        } else {
+            return adminService.getAllIncludingDeleted(DetailedUserProjection.class, pageable);
+        }
     }
 
-    @PostMapping("/user/{id}/block")
-    @PreAuthorize("@userService.isActive(#id)")
-    public void block(@PathVariable UUID id) {
-        adminService.block(id);
+    @GetMapping("/user/delete")
+    public Page<DetailedUserProjection> getAllDeletedUser(Pageable pageable) {
+        return adminService.getAllDeleted(DetailedUserProjection.class, pageable);
     }
 
-    @GetMapping("/users/blocked/")
-    public Page<DetailedUserProjection> getAllBlockedUser(Pageable pageable) {
-        return adminService.getAllBlocked(DetailedUserProjection.class, pageable);
+    @GetMapping("/user/block")
+    public Page<BlockedUserProjection> getAllBlockedUser(Pageable pageable) {
+        return blockInfoService.getAllBlocked(BlockedUserProjection.class, pageable);
+    }
+
+    @GetMapping("/user/active")
+    public Page<DetailedUserProjection> getAllActiveUser(Pageable pageable) {
+        return adminService.getAllActive(DetailedUserProjection.class, pageable);
+    }
+
+    @PostMapping("/user/block")
+    @PreAuthorize("!@userService.isSuperAdmin(#userBlockDTO.id)")
+    public void block(@Valid @RequestBody UserBlockDTO userBlockDTO) {
+        adminService.block(userBlockDTO);
+    }
+
+    @PostMapping("/user/unblock")
+    public void unblock(@RequestBody UserUnblockDTO userUnblockDTO) {
+        adminService.unblock(userUnblockDTO.id());
     }
 
 

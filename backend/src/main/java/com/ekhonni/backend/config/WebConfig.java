@@ -18,7 +18,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "http://127.0.0.1:3000",
-                        "http://host.docker.internal:3000"
+                        "http://host.docker.internal:3000",
+                        "sslcommerz.com"
                 )
                 .allowedMethods(
                         "GET",
@@ -42,13 +43,5 @@ public class WebConfig implements WebMvcConfigurer {
                 )
                 .allowCredentials(true)
                 .maxAge(3600);
-
-        registry.addMapping("/api/v2/payment/ipn")
-                .allowedOriginPatterns("developer.sslcommerz.com")
-                .allowedMethods("GET", "POST")
-                .allowedHeaders("Authorization", "Content-Type")
-                .exposedHeaders("Access-Control-Allow-Origin")
-                .allowCredentials(false)
-                .maxAge(1800);
     }
 }

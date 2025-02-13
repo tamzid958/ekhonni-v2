@@ -8,6 +8,7 @@
 package com.ekhonni.backend.specification;
 
 
+import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.enums.ProductStatus;
@@ -44,31 +45,36 @@ public class ProductSpecification {
     public static Specification<Product> hasStatus(ProductStatus status) {
         return (product, cq, cb) -> cb.equal(product.get("status"), status);
     }
-
-
-    // sorting
-    public static Specification<Product> applySorting(ProductSort sortBy) {
-        return (product, cq, cb) -> {
-            switch (sortBy) {
-                case priceLowToHigh:
-                    cq.orderBy(cb.asc(product.get("price")));
-                    break;
-                case priceHighToLow:
-                    cq.orderBy(cb.desc(product.get("price")));
-                    break;
-                case newlyListed:
-                    cq.orderBy(cb.desc(product.get("createdAt")));
-            }
-            return cb.conjunction();
-        };
+    public static Specification<Product> belongsToDivision(Division division) {
+        return (product, cq, cb) -> cb.equal(product.get("division"), division);
     }
+
+
+
+//    // sorting
+//    public static Specification<Product> applySorting(ProductSort sortBy) {
+//        return (product, cq, cb) -> {
+//            switch (sortBy) {
+//                case priceLowToHigh:
+//                    cq.orderBy(cb.asc(product.get("price")));
+//                    break;
+//                case priceHighToLow:
+//                    cq.orderBy(cb.desc(product.get("price")));
+//                    break;
+//                case newlyListed:
+//                    cq.orderBy(cb.desc(product.get("createdAt")));
+//            }
+//            return cb.conjunction();
+//        };
+//    }
 
     // searching
     public static Specification<Product> hasTerm(String searchTerm) {
         return (product, cq, cb) -> {
             String searchTermLower = "%" + searchTerm.toLowerCase() + "%";
             return cb.or(
-                    cb.like(cb.lower(product.get("name")), searchTermLower),
+                    cb.like(cb.lower(product.get("title")), searchTermLower),
+                    cb.like(cb.lower(product.get("subTitle")), searchTermLower),
                     cb.like(cb.lower(product.get("category").get("name")), searchTermLower),
                     cb.like(cb.lower(product.get("description")), searchTermLower)
             );

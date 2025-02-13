@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 public class Transaction extends BaseEntity<Long> {
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
@@ -35,7 +36,7 @@ public class Transaction extends BaseEntity<Long> {
     private String bankTransactionId;
     private LocalDateTime processedAt;
 
-    public double getAmount() {
+    public Double getAmount() {
         return bid.getAmount();
     }
 
@@ -64,4 +65,5 @@ public class Transaction extends BaseEntity<Long> {
                 ", updatedAt=" + getUpdatedAt() +
                 "}";
     }
+
 }

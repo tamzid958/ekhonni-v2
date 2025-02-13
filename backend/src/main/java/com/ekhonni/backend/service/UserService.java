@@ -1,14 +1,12 @@
 package com.ekhonni.backend.service;
 
-import com.cloudinary.Api;
 import com.ekhonni.backend.dto.EmailDTO;
-import com.ekhonni.backend.dto.PasswordDTO;
-import com.ekhonni.backend.dto.ProfileImageDTO;
-import com.ekhonni.backend.dto.RefreshTokenDTO;
+import com.ekhonni.backend.dto.user.PasswordChangeDTO;
+import com.ekhonni.backend.dto.user.ProfileImageDTO;
+import com.ekhonni.backend.dto.user.RefreshTokenDTO;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.EmailAlreadyExistsException;
-import com.ekhonni.backend.exception.UserAlreadyExistsException;
-import com.ekhonni.backend.exception.UserNotFoundException;
 import com.ekhonni.backend.model.AuthToken;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
@@ -58,7 +56,7 @@ public class UserService extends BaseService<User, UUID> {
         this.emailChangeService = emailChangeService;
     }
 
-    public ApiResponse<?> updateEmailRequest(UUID id, EmailDTO emailDTO){
+    public String updateEmailRequest(UUID id, EmailDTO emailDTO){
         User existingUser = userRepository.findByEmail(emailDTO.email());
         if(existingUser != null){
             throw new EmailAlreadyExistsException("The email is already in user");
@@ -69,29 +67,29 @@ public class UserService extends BaseService<User, UUID> {
         emailChangeService.request(user, emailDTO);
         String responseMessage = "A verification email has been sent to " + emailDTO.email() +
                 ". Please check your inbox to verify your new email address.";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 
     @Transactional
-    public ApiResponse<?> updateEmail(String token) {
+    public String updateEmail(String token) {
         return emailChangeService.verifyAndUpdate(token);
     }
 
     @Transactional
     @Modifying
-    public String updatePassword(UUID id, PasswordDTO passwordDTO) {
+    public String updatePassword(UUID id, PasswordChangeDTO passwordChangeDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found when updating password"));
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordDTO.currentPassword());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), passwordChangeDTO.currentPassword());
 
         Authentication authenticatedUser = authenticationManager.authenticate(authentication);
 
-        user.setPassword(passwordEncoder.encode(passwordDTO.newPassword()));
+        user.setPassword(passwordEncoder.encode(passwordChangeDTO.newPassword()));
         return "Password Updated";
     }
 
     public boolean isActive(UUID id) {
-        return userRepository.existsByIdAndDeletedAtIsNullAndBlockedAtIsNull(id);
+        return userRepository.existsByIdAndDeletedAtIsNullAndIsBlockedIsFalse(id);
     }
 
     public boolean isSuperAdmin(UUID id) {
@@ -101,7 +99,7 @@ public class UserService extends BaseService<User, UUID> {
     }
 
     public boolean isActive(String email) {
-        return userRepository.existsByEmailAndDeletedAtIsNullAndBlockedAtIsNull(email);
+        return userRepository.existsByEmailAndDeletedAtIsNullAndIsBlockedIsFalse(email);
     }
 
     public AuthToken getNewAccessToken(RefreshTokenDTO refreshTokenDTO) {

@@ -1,12 +1,18 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.cashin.CashInRequest;
+import com.ekhonni.backend.dto.payment.PaymentRequest;
 import com.ekhonni.backend.enums.HTTPStatus;
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
-import com.ekhonni.backend.service.PaymentService;
+import com.ekhonni.backend.service.payment.PaymentService;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.SSLCommerzApiClient;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitiatePaymentResponse;
 import com.ekhonni.backend.util.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -28,13 +35,25 @@ import java.util.Map;
 @Tag(name = "Payment", description = "Manage payment operations")
 public class PaymentController {
 
-    PaymentService paymentService;
-    BidService bidService;
+    private final PaymentService paymentService;
+    private final SSLCommerzApiClient sslCommerzApiClient;
+    private final BidService bidService;
 
-    @PostMapping("/initiate/{bid_id}")
-    @PreAuthorize("@bidService.getBidderId(#bidId) == authentication.principal.id")
-    public ResponseEntity<?> initiatePayment(@PathVariable("bid_id") Long bidId) throws Exception {
-        return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.initiatePayment(bidId));
+    @PostMapping("/initiate")
+    @PreAuthorize("@bidService.getBidderId(#paymentRequest.bidId) == authentication.principal.id")
+    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiatePayment(@Valid @RequestBody PaymentRequest paymentRequest) throws Exception {
+        return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.processPayment(paymentRequest));
+    }
+
+    @PostMapping("/cash-in")
+    public ResponseEntity<ApiResponse<InitiatePaymentResponse>> initiateCashIn(
+            @Valid @RequestBody CashInRequest cashInRequest) throws Exception {
+        return ResponseUtil.createResponse(HTTPStatus.OK, paymentService.processCashIn(cashInRequest));
+    }
+
+    @GetMapping("/methods")
+    public ResponseEntity<?> getAllPaymentMethods() {
+        return ResponseUtil.createResponse(HTTPStatus.OK, Arrays.asList(PaymentMethod.values()));
     }
 
     @PostMapping("/success")
@@ -55,10 +74,17 @@ public class PaymentController {
         return ResponseUtil.createResponse(HTTPStatus.PAYMENT_REQUIRED, validatorResponse);
     }
 
-    @PostMapping("/ipn")
-    public ResponseEntity<?> handleIpn(@NotNull @RequestParam Map<String, String> ipnResponse,
-                                       @NotNull HttpServletRequest request) {
-        paymentService.verifyTransaction(ipnResponse, request);
+    @PostMapping("/sslcommerz/ipn")
+    public ResponseEntity<?> handlePaymentIpn(
+            @NotNull @RequestParam Map<String, String> ipnResponse, @NotNull HttpServletRequest request) {
+        sslCommerzApiClient.verifyTransaction(ipnResponse, request);
+        return ResponseUtil.createResponse(HTTPStatus.OK);
+    }
+
+    @PostMapping("/cash-in/sslcommerz/ipn")
+    public ResponseEntity<?> handleCashInIpn(
+            @NotNull @RequestParam Map<String, String> ipnResponse, @NotNull HttpServletRequest request) {
+        sslCommerzApiClient.verifyCashIn(ipnResponse, request);
         return ResponseUtil.createResponse(HTTPStatus.OK);
     }
 

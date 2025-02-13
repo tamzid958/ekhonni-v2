@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 
 public class UserProductSpecificationBuilder {
-    public static Specification<Product> build(UserProductFilter filter, List<Long> categoryIds) {
+    public static SpecificationResult build(UserProductFilter filter, List<Long> categoryIds) {
         SpecificationResult result = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = result.getSpec();
         boolean hasConditions = result.isHasConditions();
@@ -27,14 +27,14 @@ public class UserProductSpecificationBuilder {
             hasConditions = true;
         }
 
-        if (filter.getProductStatus() != null) {
-            spec = spec.and(ProductSpecification.hasStatus(filter.getProductStatus()));
+        if (filter.getStatus() != null) {
+            spec = spec.and(ProductSpecification.hasStatus(filter.getStatus()));
             hasConditions = true;
         }
 
         if (!hasConditions) {
             spec = spec.and(ProductSpecification.defaultSpec());
         }
-        return spec;
+        return new SpecificationResult(spec, hasConditions);
     }
 }

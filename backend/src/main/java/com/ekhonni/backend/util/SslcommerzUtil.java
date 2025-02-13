@@ -1,10 +1,12 @@
 package com.ekhonni.backend.util;
 
+import com.ekhonni.backend.config.payment.SSLCommerzConfig;
+import com.ekhonni.backend.model.CashIn;
 import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.payment.sslcommerz.InitialResponse;
-import com.ekhonni.backend.payment.sslcommerz.IpnResponse;
-import com.ekhonni.backend.payment.sslcommerz.PaymentRequest;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.request.SSLCommerzPaymentRequest;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.InitialResponse;
+import com.ekhonni.backend.service.payment.provider.sslcommrez.response.IpnResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Slf4j
 public class SslcommerzUtil {
 
-    private final PaymentRequest paymentRequest;
+    private final SSLCommerzConfig sslCommerzConfig;
 
     public InitialResponse extractInitResponse(Map<String, String> response) {
         ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +37,10 @@ public class SslcommerzUtil {
         return mapper.convertValue(response, IpnResponse.class);
     }
 
-    public void constructRequestParameters(Transaction transaction) {
+    private SSLCommerzPaymentRequest constructPaymentRequestParameters(Transaction transaction) {
+        SSLCommerzPaymentRequest paymentRequest = new SSLCommerzPaymentRequest(
+                sslCommerzConfig, sslCommerzConfig.getPaymentIpnUrl());
+
         User buyer = transaction.getBuyer();
         paymentRequest.setTran_id(String.valueOf(transaction.getId()));
         paymentRequest.setTotal_amount(String.valueOf(transaction.getAmount()));
@@ -53,34 +57,71 @@ public class SslcommerzUtil {
         paymentRequest.setProduct_name(transaction.getProduct().getTitle());
         paymentRequest.setProduct_category("General");
         paymentRequest.setProduct_profile("General");
+        return paymentRequest;
     }
 
-    public String getParamsString(Transaction transaction, boolean urlEncode) throws UnsupportedEncodingException {
-        constructRequestParameters(transaction);
-        log.info("Payment request parameters: {}", paymentRequest.toString());
-        StringBuilder result = new StringBuilder();
-        ObjectMapper objectMapper = new ObjectMapper();
+    private SSLCommerzPaymentRequest constructCashInRequestParameters(CashIn cashIn) {
+        SSLCommerzPaymentRequest cashInRequest = new SSLCommerzPaymentRequest(
+                sslCommerzConfig, sslCommerzConfig.getCashInIpnUrl());
 
-        Map<String, Object> fieldMap = objectMapper.convertValue(paymentRequest, new TypeReference<>() {});
+        User user = cashIn.getAccount().getUser();
+        cashInRequest.setTran_id(String.valueOf(cashIn.getId()));
+        cashInRequest.setTotal_amount(String.valueOf(cashIn.getAmount()));
+        cashInRequest.setCurrency(cashIn.getCurrency());
+
+        cashInRequest.setCus_name(user.getName());
+        cashInRequest.setCus_email(user.getEmail());
+        cashInRequest.setCus_phone(user.getPhone());
+        cashInRequest.setCus_add1(user.getAddress());
+        cashInRequest.setCus_city("Dhaka");
+        cashInRequest.setCus_country("Bangladesh");
+
+        cashInRequest.setShipping_method("NO");
+        cashInRequest.setProduct_name("cashIn");
+        cashInRequest.setProduct_category("General");
+        cashInRequest.setProduct_profile("General");
+        return cashInRequest;
+    }
+
+    public String getParamsString(Transaction transaction, boolean urlEncode) {
+        SSLCommerzPaymentRequest sslCommerzPaymentRequest = constructPaymentRequestParameters(transaction);
+        Map<String, Object> fieldMap = convertToMap(sslCommerzPaymentRequest);
+        return buildParameterString(fieldMap, urlEncode);
+    }
+
+    public String getParamsString(CashIn cashIn, boolean urlEncode) {
+        SSLCommerzPaymentRequest cashInRequest = constructCashInRequestParameters(cashIn);
+        Map<String, Object> fieldMap = convertToMap(cashInRequest);
+        return buildParameterString(fieldMap, urlEncode);
+    }
+
+    private Map<String, Object> convertToMap(SSLCommerzPaymentRequest request) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.convertValue(request, new TypeReference<>() {});
+    }
+
+    private String buildParameterString(Map<String, Object> fieldMap, boolean urlEncode) {
+        StringBuilder result = new StringBuilder();
+
         for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             if (value != null) {
-                if (urlEncode) {
-                    result.append(URLEncoder.encode(key, StandardCharsets.UTF_8));
-                    result.append("=");
-                    result.append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
-                } else {
-                    result.append(key);
-                    result.append("=");
-                    result.append(value);
+                if (!result.isEmpty()) {
+                    result.append("&");
                 }
-                result.append("&");
+                if (urlEncode) {
+                    result.append(URLEncoder.encode(key, StandardCharsets.UTF_8))
+                            .append("=")
+                            .append(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8));
+                } else {
+                    result.append(key)
+                            .append("=")
+                            .append(value);
+                }
             }
         }
-
-        String resultString = result.toString();
-        return !resultString.isEmpty() ? resultString.substring(0, resultString.length() - 1) : resultString;
+        return result.toString();
     }
 }

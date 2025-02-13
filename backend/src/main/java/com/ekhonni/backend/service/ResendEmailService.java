@@ -2,7 +2,8 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.EmailDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
-import com.ekhonni.backend.exception.UserNotFoundException;
+
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.response.ApiResponse;

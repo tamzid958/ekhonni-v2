@@ -17,6 +17,7 @@ import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
+import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -28,10 +29,11 @@ import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
+import com.ekhonni.backend.specificationbuilder.SellerProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
-import com.ekhonni.backend.util.ImageUtil;
+import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -118,21 +120,43 @@ public class ProductService extends BaseService<Product, Long> {
 
         SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+//        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
+
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
 
 
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
+        if (projection == null) throw new ProductNotFoundException("Product doesn't exist");
+
+        User seller = null;
+        try {
+            seller = AuthUtil.getAuthenticatedUser();
+        } catch (Exception ignored) {
+
+        }
+        if (seller == null) {
+            if (projection.getStatus() != ProductStatus.APPROVED) {
+                throw new ProductNotFoundException("Unauthorized to view this product");
+            }
+        } else {
+            if (!seller.getId().equals(projection.getSellerDTO().getId()) && projection.getStatus() != ProductStatus.APPROVED) {
+                throw new ProductNotFoundException("User Not Matched To View This product");
+            }
+        }
+
         return ProductProjectionConverter.convert(projection);
     }
+
 
 
     @Modifying
@@ -147,14 +171,16 @@ public class ProductService extends BaseService<Product, Long> {
             if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
 
-            List<String> imagePaths = ImageUtil.saveImage(PRODUCT_UPLOAD_DIR, dto.images());
-            List<ProductImage> newImages = new ArrayList<>();
+            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages(dto.images());
+            List<ProductImage> images = new ArrayList<>();
             for (String imagePath : imagePaths) {
-                newImages.add(new ProductImage(imagePath));
+                ProductImage image = new ProductImage(imagePath);
+                images.add(image);
             }
 
             product.getImages().clear();
-            product.getImages().addAll(newImages);
+            product.getImages().addAll(images);
+
             product.setTitle(dto.title());
             product.setSubTitle(dto.subTitle());
             product.setDescription(dto.description());
@@ -187,14 +213,39 @@ public class ProductService extends BaseService<Product, Long> {
         }
 
 
-        Specification<Product> spec = UserProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        List<Long> productIds = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+        SpecificationResult specificationResult = UserProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = specificationResult.getSpec();
+        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
         List<ProductResponseDTO> products = projections.stream()
                 .map(ProductProjectionConverter::convert)
                 .toList();
-        long totalElements = 0;
+        long totalElements = page.getTotalElements();
         return new PageImpl<>(products, pageable, totalElements);
     }
+
+
+    public Page<ProductResponseDTO> getAllFilteredForSeller(SellerProductFilter filter) {
+        User user = userRepository.findById(filter.getUserId()).orElseThrow(() -> new ProductNotFoundException("user not found"));
+
+        List<Long> categoryIds = new ArrayList<>();
+        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
+            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
+        }
+
+
+        SpecificationResult specificationResult = SellerProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = specificationResult.getSpec();
+        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
+        List<ProductResponseDTO> products = projections.stream()
+                .map(ProductProjectionConverter::convert)
+                .toList();
+        long totalElements = page.getTotalElements();
+        return new PageImpl<>(products, pageable, totalElements);
+    }
+
+
 }

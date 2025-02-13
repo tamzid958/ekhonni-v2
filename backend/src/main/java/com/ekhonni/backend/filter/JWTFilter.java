@@ -1,6 +1,6 @@
 package com.ekhonni.backend.filter;
 
-import com.ekhonni.backend.exception.InvalidJwtTokenException;
+import com.ekhonni.backend.exception.user.InvalidJwtTokenException;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import com.ekhonni.backend.util.TokenUtil;
 import jakarta.servlet.FilterChain;

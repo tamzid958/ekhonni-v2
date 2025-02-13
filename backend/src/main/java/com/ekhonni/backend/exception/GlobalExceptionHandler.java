@@ -2,10 +2,22 @@ package com.ekhonni.backend.exception;
 
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.bid.*;
+import com.ekhonni.backend.exception.cashin.CashInNotFoundException;
 import com.ekhonni.backend.exception.payment.*;
+import com.ekhonni.backend.exception.payout.UnsupportedPayoutMethodException;
+import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
+import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
+import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.review.InvalidReviewTypeException;
 import com.ekhonni.backend.exception.review.ReviewAlreadyExistsException;
 import com.ekhonni.backend.exception.review.ReviewNotFoundException;
+import com.ekhonni.backend.exception.role.RoleAlreadyExistsException;
+import com.ekhonni.backend.exception.role.RoleCannotBeDeletedException;
+import com.ekhonni.backend.exception.role.RoleNotFoundException;
+import com.ekhonni.backend.exception.user.EmailNotVerifiedException;
+import com.ekhonni.backend.exception.user.RefreshTokenNotFoundException;
+import com.ekhonni.backend.exception.user.UserAlreadyExistsException;
+import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +43,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        ErrorResponse response = new ErrorResponse("Body cannot be empty", LocalDateTime.now().toString());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(400));
+        ErrorResponse response = new ErrorResponse("Invalid request format", LocalDateTime.now().toString());
+        return ResponseEntity.status(400).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -121,7 +133,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Bid Exceptions
+     * Bid Exceptions
      * =================================================================
      */
 
@@ -204,7 +216,36 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Review Exceptions
+     *                      CashIn Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(CashInNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCashInNotFoundException(CashInNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    /**
+     * =================================================================
+     *                    Payout account Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(PayoutAccountNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePayoutAccountNotFoundException(PayoutAccountNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    @ExceptionHandler(UnsupportedPayoutMethodException.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedPayoutMethodException(UnsupportedPayoutMethodException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+
+    /**
+     * =================================================================
+     *                       Review Exceptions
      * =================================================================
      */
     @ExceptionHandler(ReviewNotFoundException.class)
@@ -251,6 +292,7 @@ public class GlobalExceptionHandler {
         var response = new ApiResponse<>(HTTPStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleProductNotFoundException(ProductNotFoundException ex) {
         var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
@@ -281,7 +323,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                             Common
+     * Common
      * =================================================================
      */
 

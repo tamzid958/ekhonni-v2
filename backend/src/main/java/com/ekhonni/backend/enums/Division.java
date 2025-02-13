@@ -14,5 +14,6 @@ public enum Division{
     BARISHAL,
     CHITTAGONG,
     SYLHET,
-    MYMENSINGH
+    MYMENSINGH,
+    KHULNA
 }
