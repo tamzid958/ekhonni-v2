@@ -44,7 +44,7 @@ public class RoleService extends BaseService<Role, Long> {
         if (Objects.equals(role.getName(), "SUPER_ADMIN") || Objects.equals(role.getName(), "USER")) {
             throw new RoleCannotBeDeletedException();
         }
-        roleRepository.deleteById(id);
+        roleRepository.softDelete(id);
     }
 
     @Transactional

@@ -57,7 +57,7 @@ public class RoleController {
     }
 
     @PostMapping("/{roleId}/assign/privilege")
-    public String assignMultiplePrivilege(@PathVariable("roleId") long roleId, @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
+    public String assignMultiplePrivilege(@PathVariable("roleId") long roleId, @Validated @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
         return privilegeService.assignMultiple(roleId, privilegeIdsDTO);
     }
 
@@ -67,7 +67,7 @@ public class RoleController {
     }
 
     @PostMapping("/{roleId}/remove/privilege")
-    public String removeMultiplePrivilege(@PathVariable("roleId") long roleId, @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
+    public String removeMultiplePrivilege(@PathVariable("roleId") long roleId, @Validated @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
         return privilegeService.removeMultiple(roleId, privilegeIdsDTO);
     }
 
