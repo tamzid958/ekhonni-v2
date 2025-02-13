@@ -111,16 +111,11 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
               .map((product) => (
                 <div key={product.id} className="relative flex flex-col">
                   <span className="absolute top-2 left-2 z-10">{getStatusBadge(product.status)}</span>
-                  <CardDemo
-                    id={product.id}
-                    title={product.title}
-                    description={product.description}
-                    img={product.images[0].imagePath}
-                    price={product.price}
+                  <CardDemo {...product}
                   />
                   {(filter === 'APPROVED' || 'SOLD') && <Button
                     variant="link"
-                    className="absolute right-4 bottom-4"
+                    className="absolute right-8 bottom-2"
                     onClick={() => {
                       // setProduct(product); // Store product in context
                       router.push(`/myProducts/bidList?id=${product.id}`);
