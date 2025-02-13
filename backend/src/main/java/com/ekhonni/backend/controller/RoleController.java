@@ -1,5 +1,6 @@
 package com.ekhonni.backend.controller;
 
+import com.ekhonni.backend.dto.PrivilegeIdsDTO;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
@@ -55,9 +56,19 @@ public class RoleController {
         return privilegeService.assign(roleId, privilegeId);
     }
 
+    @PostMapping("/{roleId}/assign/privilege")
+    public String assignMultiplePrivilege(@PathVariable("roleId") long roleId, @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
+        return privilegeService.assignMultiple(roleId, privilegeIdsDTO);
+    }
+
     @PostMapping("/{roleId}/remove/privilege/{privilegeId}")
     public String removePrivilege(@PathVariable("roleId") long roleId, @PathVariable("privilegeId") long privilegeId) {
         return privilegeService.remove(roleId, privilegeId);
+    }
+
+    @PostMapping("/{roleId}/remove/privilege")
+    public String removeMultiplePrivilege(@PathVariable("roleId") long roleId, @RequestBody PrivilegeIdsDTO privilegeIdsDTO) {
+        return privilegeService.removeMultiple(roleId, privilegeIdsDTO);
     }
 
     @GetMapping("/{roleId}/privilege/")
