@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v2/bid-log")
 @AllArgsConstructor
-@Tag(name = "BidLog", description = "Manage read operations of bid logs")
+@Tag(name = "BidLog", description = "Manage operations of bid logs")
 public class BidLogController {
 
     private final BidLogService bidLogService;
