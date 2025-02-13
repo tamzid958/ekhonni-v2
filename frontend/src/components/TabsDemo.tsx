@@ -22,9 +22,8 @@ import {
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
-import { z } from 'zod';
-
-
+import useSWR, { mutate } from 'swr';
+import fetcher from '@/data/services/fetcher';
 
 export function TabsDemo() {
   const { data: session } = useSession();
@@ -35,7 +34,6 @@ export function TabsDemo() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [location, setLocation] = useState('');
-  const [profile, setProfile] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -43,23 +41,12 @@ export function TabsDemo() {
 
   const router = useRouter();
 
-  const nameSchema = z.string().regex(/^[a-zA-Z\s]*$/, 'Name must contain only alphabets');
-  const emailSchema = z.string().email('Invalid email address');
-  const phoneSchema = z.string().regex(/^01[0-9]{9}$/, 'Phone number must start with 01 and contain 11 digits');
-  const addressSchema = z.string().min(5, 'Address must be at least 5 characters long');
-  const passwordSchema = z
-    .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/\d/, 'Password must contain at least one number')
-    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+  const { data, error, isLoading } = useSWR(
+    userId ? `/api/v2/user/${userId}` : null,
+    (url) => fetcher(url, token)
+  );
 
-  const imageSchema = z.instanceof(File).optional(); // Optional image file validation
-
-  // ✅ Check if email or password form is filled for validation
   const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
-  const isEmailFormValid = email.trim() !== '';
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -72,9 +59,9 @@ export function TabsDemo() {
       return;
     }
 
-    const profileUpdateUrl = `http://localhost:8080/api/v2/user/${userId}`;
-    const emailUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-email`;
-    const imageUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/image`;
+    const profileUpdateUrl = `/api/v2/user/${userId}`;
+    const emailUpdateUrl = `/api/v2/user/${userId}/change-email`;
+    const imageUpdateUrl = `/api/v2/user/${userId}/image`;
 
     const updatedProfile = {
       name: name.trim() || "",
@@ -95,6 +82,8 @@ export function TabsDemo() {
 
         if (!profileResponse.ok) throw new Error("Failed to update profile");
 
+        mutate(profileUpdateUrl); // SWR revalidation
+
         toast.success("Profile updated successfully!");
         setName('');
         setPhone('');
@@ -113,7 +102,7 @@ export function TabsDemo() {
 
         if (!emailResponse.ok) throw new Error("Failed to update email");
 
-          setEmail('');
+        setEmail('');
 
         toast.success("Email updated successfully! You'll be logged out.");
         await signOut({ redirect: false });
@@ -135,6 +124,7 @@ export function TabsDemo() {
         if (!imageResponse.ok) throw new Error("Failed to update profile image");
         setProfileImage(null);
         toast.success("Profile image updated successfully!");
+        mutate(imageUpdateUrl); // SWR revalidation
       }
 
     } catch (error) {
@@ -149,7 +139,7 @@ export function TabsDemo() {
       return;
     }
 
-    const passwordUpdateUrl = `http://localhost:8080/api/v2/user/${userId}/change-password`;
+    const passwordUpdateUrl = `/api/v2/user/${userId}/change-password`;
     const passwordData = { currentPassword, newPassword };
 
     try {
@@ -163,6 +153,7 @@ export function TabsDemo() {
       });
 
       if (!response.ok) throw new Error("Failed to update password");
+
       setCurrentPassword('');
       setNewPassword('');
 
