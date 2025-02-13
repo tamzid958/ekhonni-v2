@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import fetcher from '@/data/services/fetcher';
 import Loading from '@/components/Loading';
 import DataTable from '../Components/bidding-table';
-import { Toaster } from 'sonner';
+import PaginationComponent from '@/components/pagination/Pagination';
 
 export default function BidsShowPage() {
   const searchParams = useSearchParams();
@@ -16,7 +16,11 @@ export default function BidsShowPage() {
   const { data: session } = useSession();
   const userToken = session?.user?.token;
 
-  const url = `/api/v2/bid/seller/product/${productId}`;
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const apiPage = currentPage - 1;
+  console.log(currentPage);
+
+  const url = `/api/v2/bid/seller/product/${productId}?page=${apiPage}&size=20`;
   const url2 = `/api/v2/product/${productId}`;
 
   const {
@@ -24,13 +28,19 @@ export default function BidsShowPage() {
     error,
     isLoading,
   } = useSWR(userToken ? [url, userToken] : null, ([url, token]) => fetcher(url, token));
-  const bidList = bids?.data?.content || [];
+
   const {
     data: products,
     error: error2,
     isLoading: isLoading2,
   } = useSWR(userToken ? [url2, userToken] : null, ([url2, token]) => fetcher(url2, token));
+
+  const bidList = bids?.data?.content || [];
   const product = products?.data;
+  const totalPages = bids?.data?.page?.totalPages;
+  const total = bids?.data?.page?.totalElements;
+  console.log('total pages ' + totalPages);
+  console.log('total ' + total);
   console.log(bidList);
 
   if (isLoading || isLoading2) {
@@ -51,7 +61,6 @@ export default function BidsShowPage() {
   }
   return (
     <div className="space-y-6 h-screen container mx-12 p-4">
-      <Toaster position="top-right" />
       <div className="flex flex-col justify-between mt-4">
         {/* Show Product Details */}
         {product ? (
@@ -78,6 +87,9 @@ export default function BidsShowPage() {
         </div>
         <div className="w-full">
           <DataTable data={bidList} productStatus={product?.status} />
+          <div className="p-2 m-2">
+            <PaginationComponent totalPages={totalPages} currentPage={currentPage} />
+          </div>
         </div>
       </div>
     </div>

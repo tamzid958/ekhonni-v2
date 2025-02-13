@@ -58,7 +58,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
     console.error('Error fetching products:', error);
   }
 
-  const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
+  // const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
 
   return (
     <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">

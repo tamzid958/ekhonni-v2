@@ -6,8 +6,9 @@ import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
 import Loading from '@/components/Loading';
 import DataTable from './transaction-table';
-import { Toaster } from 'sonner';
 import { useUsers } from '../../admin/hooks/useUser';
+import PaginationComponent from '@/components/pagination/Pagination';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function MyAccountPage() {
   const { data: session } = useSession();
@@ -15,8 +16,14 @@ export default function MyAccountPage() {
   const userId = session?.user?.id;
   const { getUserById, isLoading: userLoading, allUserError } = useUsers(userId, userToken);
   const user = getUserById(userId);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const transactionUrl = `/api/v2/transaction/user`;
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const apiPage = currentPage - 1;
+
+
+  const transactionUrl = `/api/v2/transaction/user?page=${apiPage}&size=20`;
   const balanceUrl = `/api/v2/account/user/balance`;
 
   const { data, error, isLoading: transactionLoading } = useSWR(
@@ -30,7 +37,12 @@ export default function MyAccountPage() {
   );
 
   const transactions = data?.data?.content || [];
+  const totalPages = data?.data?.page?.totalPages;
+  const totalElement = data?.data?.page?.totalElements;
   const balance = balanceData?.data ?? 'Loading...';
+
+  console.log('total pages ' + totalPages);
+  console.log('total ' + totalElement);
 
   if (userLoading || transactionLoading || balanceLoading) {
     return (
@@ -51,8 +63,6 @@ export default function MyAccountPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6 h-screen bg-gray-100 rounded-lg shadow-md">
-      <Toaster position="top-right" />
-
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-gray-700 mb-4">Account Overview</h1>
         <div className="flex justify-between">
@@ -78,6 +88,9 @@ export default function MyAccountPage() {
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-gray-700 mb-4">Transaction History</h2>
         <DataTable data={transactions} />
+        <div className="p-2 m-2">
+          <PaginationComponent totalPages={totalPages} currentPage={currentPage} />
+        </div>
       </div>
     </div>
   );
