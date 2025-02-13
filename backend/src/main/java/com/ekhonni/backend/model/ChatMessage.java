@@ -27,7 +27,7 @@ public class ChatMessage extends BaseEntity<UUID> {
             @JoinColumn(name = "chat_user1", referencedColumnName = "user1_id", nullable = false),
             @JoinColumn(name = "chat_user2", referencedColumnName = "user2_id", nullable = false)
     })
-    private Chat chat;
+    private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)

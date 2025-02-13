@@ -1,7 +1,7 @@
 package com.ekhonni.backend.model;
 
 
-import com.ekhonni.backend.compositekey.ChatId;
+import com.ekhonni.backend.compositekey.ChatRoomId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,14 +23,16 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(ChatId.class)
-public class Chat {
+@IdClass(ChatRoomId.class)
+public class ChatRoom {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user1_id" , nullable = false)
     private UUID user1;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user2_id", nullable = false)
     private UUID user2;
 
