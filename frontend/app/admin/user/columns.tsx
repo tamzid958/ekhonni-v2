@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { allRolesList, reverseRoleMapping } from '@/hooks/useRoles';
+import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
 import { useRouter } from "next/navigation";
 
 export type User = {
@@ -256,7 +256,7 @@ export const columns: ColumnDef<User>[] = [
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(Number(e.target.value))}
                   >
-                    {allRolesList.map((role) => (
+                    {allRolesList?.map((role) => (
                       <option key={role.id} value={role.id}>
                         {role.name}
                       </option>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { axiosInstance } from '@/data/services/fetcher';
 import { toast } from 'sonner';
-import {roleMapping} from '@/hooks/useRoles';
+import {roleMapping} from '../hooks/useRoles';
 
 export const handleChangeUserRole = async (userId: string, newRoleId:number, userToken: string | undefined) => {
 

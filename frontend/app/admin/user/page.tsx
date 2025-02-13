@@ -14,7 +14,7 @@ import useSWR from 'swr';
 import Loading from '@/components/Loading';
 import fetcher from '@/data/services/fetcher';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useRoles } from '@/hooks/useRoles';
+import { useRoles } from '../hooks/useRoles';
 import { exportUserDataToCSV } from '../utility/exportUserDataToCSV';
 import { inviteUser } from '../utility/inviteUserViaEmail';
 import {getUserStats } from '../utility/filterUserByDate';
@@ -35,7 +35,7 @@ export default  function User  () {
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
 
-  const { allRolesList, isLoading: isLoadingRole , error: roleError } = useRoles(userId, userToken);
+  const { totalAdmins, isLoading: isLoadingRole , error: roleError } = useRoles(userId, userToken);
 
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<"all" | "week" | "month" | "year">("all");
   const [stats, setStats] = useState({ userCount: 0, growthPercentage: "0.00" });
@@ -67,18 +67,7 @@ export default  function User  () {
       return fetchedData;
     }
   );
-  const adminRoleId = allRolesList?.find((role) => role.name === "ADMIN")?.id;
 
-  const { data: admin, error: adminError, isLoading: isLoadingAdmin } = useSWR(
-    userId  && adminRoleId ? `/api/v2/role/${adminRoleId}/users/` : null,
-    async (url) => {
-      const fetchedData = await fetcher(url, userToken);
-      fetchedData.content = fetchedData.content.sort((a, b) => a.id - b.id);
-      return fetchedData;
-    }
-  );
-
-  const totalAdmins = admin?.content?.length ?? 0;
 
   const processedUsers  = allUsers ?? [];
 
@@ -243,7 +232,7 @@ export default  function User  () {
                 </div>
                 <Badge
                   className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 ${
-                    stats.growthPercentage >= 0 ? 'bg-green-500' : 'bg-red-500'
+                    stats.growthPercentage >= 0.00 ? 'bg-green-500' : 'bg-red-500'
                   }`}
                 >
                   {stats.growthPercentage >= 0 ? <FaArrowUp /> : <FaArrowDown />}
@@ -253,6 +242,7 @@ export default  function User  () {
             </div>
           </Card>
         </div>
+
         <div className="flex-1 p-1">
           <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
             <div className="flex items-start justify-between">

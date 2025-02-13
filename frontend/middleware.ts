@@ -57,7 +57,6 @@ const getSession = async (request: NextRequest) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     return await response.json();
   } catch (error) {
     console.error("Session fetch error:", error);

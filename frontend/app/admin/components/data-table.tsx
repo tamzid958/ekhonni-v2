@@ -38,7 +38,7 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-
+  userType?: string
 }
 
 
@@ -46,7 +46,7 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
                                            columns,
                                            data,
-
+                                           userType,
                                          }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -76,45 +76,64 @@ export function DataTable<TData, TValue>({
     },
   })
 
-
   return (
-    <div className="pr-6">
+    <div className="flex-col align-middle pl-4">
       <div className="flex items-center py-4 mr-2">
-        <Input
-          placeholder="Filter name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm w-28 mr-2"
-        />
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm w-28 mr-2"
-        />
-        {/*<Input*/}
-        {/*  placeholder="Filter roles..."*/}
-        {/*  value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}*/}
-        {/*  onChange={(event) => {*/}
-        {/*    const roleName = event.target.value;*/}
-        {/*    console.log('Seletecd RolName' , roleName)*/}
-        {/*    table.getColumn("role")?.setFilterValue(roleName);*/}
-        {/*  }}*/}
-        {/*  className="max-w-sm w-28 mr-2"*/}
-        {/*/>*/}
+        { userType === "role"?
+          (<div className="flex">
+                    <Input
+                    placeholder="Filter Ids..."
+                    value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) =>
+                      table.getColumn("id")?.setFilterValue(event.target.value)
+                    }
+                    className="max-w-sm w-28 mr-2"
+                  />
+                    <Input
+                      placeholder="Filter name..."
+                      value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("name")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                    <Input
+                      placeholder="Filter status..."
+                      value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("status")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    /> </div>):
 
-        <Input
-          placeholder="Filter status..."
-          value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("status")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm w-28 mr-2"
-        />
+          (<div className="flex">
+                    <Input
+                      placeholder="Filter name..."
+                      value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("name")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                    <Input
+                      placeholder="Filter emails..."
+                      value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("email")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                    <Input
+                      placeholder="Filter status..."
+                      value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("status")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+          </div>)
+
+        }
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -145,7 +164,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border ">
+      <div className="rounded-md w-full border ">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
