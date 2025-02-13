@@ -5,13 +5,12 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
+import { Toggle } from '@/components/ui/toggle';
 import { useRouter } from 'next/navigation';
-import { ShoppingCart } from 'lucide-react';
-import {  Toaster, toast } from "sonner";
+import { Heart, HeartOff, Star } from 'lucide-react';
+import { Toaster, toast } from "sonner";
 import { useSession } from 'next-auth/react';
-const { data: session, status } = useSession();
-
-
+import { useEffect, useState } from 'react';
 
 interface CardDemoProps {
   id: string;
@@ -48,47 +47,89 @@ export function CardDemo({
                            bids,
                          }: CardDemoProps) {
   const router = useRouter();
-
+  const { data: session } = useSession();
   const token = session?.user?.token;
 
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleBidNow = () => {
     router.push(`/productDetails?id=${id}`);
   };
 
-  const handleClick = async () => {
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!token || !id) return;
 
-    const url = `http://localhost:8080/api/v2/user/watchlist?productId=${id}`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist/contains?productId=${id}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
 
-      console.log('Response Status:', response.status);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Parsed bid response:', responseData);
-
-        if (responseData.success) {
-          toast.success('Added to wishlist successfully!');
-          window.location.reload();
-
-        } else {
-          toast.error(responseData.message || 'Failed to add to wishlist.');
+        if (response.ok) {
+          const data = await response.json();
+          setIsWishlisted(data?.data);
         }
-      } else {
-        toast.error('Received an invalid response from the server.');
+      } catch (error) {
+        console.error("Error fetching wishlist status:", error);
       }
-    } catch (error) {
-      console.error('Error adding to wishlist:', error);
-      toast.error('An error occurred while adding to wishlist.');
+    };
+
+    checkWishlistStatus();
+  }, [id, token]);
+
+  const toggleWishlist = async () => {
+    if (!token) {
+      toast.error("You need to be logged in to use the wishlist.");
+      return;
     }
-    // toast.success('Product has been added to cart!');
+
+    if (isWishlisted) {
+      try {
+        const response = await fetch("http://localhost:8080/api/v2/user/watchlist", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify([parseInt(id)]),
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Removed from wishlist.");
+          setIsWishlisted(false);
+        } else {
+          toast.error(responseData.message || "Failed to remove from wishlist.");
+        }
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
+        toast.error("An error occurred while removing from wishlist.");
+      }
+    } else {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v2/user/watchlist?productId=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+
+        const responseData = await response.json();
+        if (response.ok && responseData.success) {
+          toast.success("Added to wishlist.");
+          setIsWishlisted(true);
+        } else {
+          toast.error(responseData.message || "Failed to add to wishlist.");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        toast.error("An error occurred while adding to wishlist.");
+      }
+    }
   };
 
 
@@ -117,13 +158,14 @@ export function CardDemo({
           {title}
         </CardTitle>
         <CardTitle className="text-2xl">{`৳ ${price}`}</CardTitle>
-        <Button
+
+        <Toggle
           className="absolute mb-48 ml-44 mt-2 px-4 py-2 rounded shadow"
-          variant="default"
-          onClick={handleClick}
+          pressed={isWishlisted}
+          onPressedChange={toggleWishlist}
         >
-          <ShoppingCart />
-        </Button>
+          {isWishlisted ? <Star className="w-5 h-5  text-black" fill="black"/> : <Star />}
+        </Toggle>
       </CardFooter>
     </Card>
   );

@@ -2,7 +2,6 @@
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
 import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
@@ -10,8 +9,9 @@ import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
+import { AppSidebar } from '@/components/userSheet';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import { useFilterProducts } from '@/hooks/useFilterProducts';
-//import FilteredProducts from '@/components/FilteredProducts';
 
 type Props = {
   placeholder?: string;
@@ -36,6 +36,9 @@ export function NavBar({ placeholder }: Props) {
 
   const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
 
+  const handleLoginRedirect = () => {
+    router.push('/'); // Redirect to home page
+  };
   const filteredProducts = products || [];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -88,7 +91,7 @@ export function NavBar({ placeholder }: Props) {
     fetchNotifications(lastFetchTime);
   }, [session]);
   const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
+    setSidebarOpen((prev) => !prev);
   };
 
 
@@ -177,12 +180,16 @@ export function NavBar({ placeholder }: Props) {
 
 
         {session ? (
-          <SidebarProvider>
-            <Button variant="custom" size="icon" onClick={toggleSidebar}>
-              <User className="h-6 w-6" />
-            </Button>
-            {isSidebarOpen && <AppSidebar />}
-          </SidebarProvider>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="custom" size="icon" onClick={toggleSidebar}>
+                <User className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+
+            {/* The Sidebar content */}
+            <AppSidebar />
+          </Sheet>
         ) : (
           <Popover>
             <PopoverTrigger asChild>

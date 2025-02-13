@@ -11,14 +11,20 @@ const AdminIntroPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
+
+      {/* Welcome Message */}
       <header className="space-y-4 text-center">
         <h1 className="text-4xl font-bold">Welcome to the Admin Dashboard</h1>
         <p className="text-gray-600 text-lg">
           Manage categories, products, users, and much more from one centralized location.
         </p>
       </header>
+
       <Separator />
+
+      {/* Quick Links Section */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* Categories Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Categories</CardTitle>
@@ -34,6 +40,7 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
+        {/* Products Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Products</CardTitle>
@@ -49,6 +56,7 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
+        {/* Users Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Users</CardTitle>
@@ -64,6 +72,7 @@ const AdminIntroPage = () => {
           </CardContent>
         </Card>
 
+        {/* Notifications Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
@@ -78,6 +87,40 @@ const AdminIntroPage = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Roles Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Roles</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage roles of your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/roles')}
+            >
+              Go to Roles
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Transaction Card */}
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage transactions of your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/transaction')}
+            >
+              Go to Transactions
+            </Button>
+          </CardContent>
+        </Card>
+
       </section>
 
       {/* Additional Info Section */}

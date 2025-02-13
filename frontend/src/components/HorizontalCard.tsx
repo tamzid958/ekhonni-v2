@@ -1,118 +1,220 @@
+// import { Separator } from '@/components/ui/separator';
+// import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
+// import { Checkbox } from '@/components/ui/checkbox';
+// import Image from 'next/image';
+// import { Button } from '@/components/ui/button';
+// import * as React from 'react';
+//
+// // Data format
+// interface Seller {
+//   id: string;
+//   name: string;
+// }
+//
+// interface ImageType {
+//   imagePath: string;
+// }
+//
+// interface Category {
+//   id: number;
+//   name: string;
+// }
+//
+// interface WatchlistItem {
+//   id: number;
+//   title: string;
+//   subTitle: string;
+//   price: number;
+//   condition: string;
+//   seller: Seller;
+//   category: Category;
+//   images: ImageType[];
+// }
+//
+// // Component Props
+// interface HorizontalCardProps {
+//   watchlistItem: WatchlistItem;
+// }
+//
+// export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem }) => {
+//   const { title, subTitle, price, condition, seller, images } = watchlistItem;
+//
+//   return (
+//     <Card
+//       className="flex items-center justify-between p-4 bg-white shadow-lg rounded-xl w-full max-w-4xl border border-gray-200">
+//       {/* Left Side - Checkbox & Image */}
+//       <div className="flex items-center gap-3">
+//         {/* Checkbox */}
+//         <Checkbox className="mr-2" />
+//
+//         {/* Product Image */}
+//         <div className="relative w-24 h-24">
+//           <Image
+//             src={images[0]?.imagePath || '/default.jpg'}
+//             alt={title}
+//             layout="fill"
+//             className="rounded-md object-cover border"
+//           />
+//         </div>
+//       </div>
+//
+//       {/* Middle Section - Product Details */}
+//       <CardContent className="flex-1 flex flex-col gap-1 px-4">
+//         <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+//         <p className="text-sm text-gray-600">{subTitle}</p>
+//         <p className="text-sm text-gray-500">Condition: <span className="font-medium">{condition}</span></p>
+//
+//         {/* Price & Seller Info */}
+//         <div className="flex items-center gap-3 mt-2">
+//           <span className="text-sm text-gray-600">Price:</span>
+//           <span className="text-xl font-bold text-gray-900">US ${price.toFixed(2)}</span>
+//           <Separator orientation="vertical" className="h-5 bg-gray-300" />
+//           <span className="text-sm text-gray-700">Seller: <span className="font-medium">{seller.name}</span></span>
+//         </div>
+//       </CardContent>
+//
+//       {/* Right Side - Buttons */}
+//       <CardFooter className="flex flex-col gap-2">
+//         <Button className="w-40">Bid Now</Button>
+//         <Button variant="secondary" className="w-40">View Seller’s Items</Button>
+//         <Button variant="outline" className="w-40">More Actions</Button>
+//       </CardFooter>
+//     </Card>
+//   );
+// };
+
+
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import * as React from 'react';
+import Link from 'next/link';
+import { toast } from 'sonner';
 
+// Data format
+interface Seller {
+  id: string;
+  name: string;
+}
+
+interface ImageType {
+  imagePath: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 interface WatchlistItem {
   id: number;
   title: string;
-  img: string;
+  subTitle: string;
   price: number;
-  yourBid?: number;
-  shipping: number;
-  timeLeft: string;
   condition: string;
-  bidsAmount: number;
-  sellerProfile: string;
+  seller: Seller;
+  category: Category;
+  images: ImageType[];
 }
 
-// Props type for the component
+// Component Props
 interface HorizontalCardProps {
   watchlistItem: WatchlistItem;
+  token: string;
 }
 
-export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem }) => {
-  const {
-    title,
-    img,
-    price,
-    yourBid,
-    shipping,
-    timeLeft,
-    condition,
-    bidsAmount,
-    sellerProfile,
-  } = watchlistItem;
+export const HorizontalCard: React.FC<HorizontalCardProps> = ({ watchlistItem, token }) => {
+  const { title, subTitle, price, condition, seller, images } = watchlistItem;
 
-  let showBidSection;
-  let showCheckBox;
+  async function handleRemove(id: number) {
+    try {
+      const response = await fetch('http://localhost:8080/api/v2/user/watchlist', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify([id]),
+      });
+
+      const responseData = await response.json();
+      if (response.ok && responseData.success) {
+        toast.success('Removed from wishlist.');
+      } else {
+        toast.error(responseData.message || 'Failed to remove from wishlist.');
+      }
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      toast.error('An error occurred while removing from wishlist.');
+    }
+  }
+
   return (
-    <Card className="flex items-center gap-4 mb-4">
-      <div className="ml-4">
-        {showCheckBox = true && (
-          <Checkbox />
-        )}
+    <Card
+      className="flex items-center justify-between p-4 bg-white shadow-md rounded-xl w-full max-w-6xl border border-gray-200 hover:shadow-lg transition-shadow duration-200">
+      {/* Left Side - Checkbox & Image */}
+      <div className="flex items-center gap-4">
+        {/* Checkbox */}
+        <Checkbox className="mr-2" />
+
+        {/* Product Image */}
+        <div className="relative w-28 h-28 border border-gray-300 rounded-lg overflow-hidden">
+          <Image
+            src={images[0]?.imagePath || '/default.jpg'}
+            alt={title}
+            layout="fill"
+            className="object-cover"
+          />
+        </div>
       </div>
 
-      {/* Product Image */}
-      <CardContent className="w-24 h-24 relative">
-        <Image
-          src={img}
-          alt={title}
-          layout="fill"
-          className="rounded-md object-cover"
-        />
-      </CardContent>
+      {/* Middle Section - Product Details */}
+      <CardContent className="flex-1 flex flex-col gap-1 px-4">
+        <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+        {/*<p className="text-sm text-gray-600">{subTitle}</p>*/}
+        <p className="text-sm text-gray-500">Condition: <span className="font-medium">{condition}</span></p>
 
-      {/* Product Details */}
-      <CardContent className="p-3 flex-1 flex flex-col space-y-2">
-        {/* Title */}
-        <CardContent className="p-6 text-gray-600">
-          <CardTitle>{title}</CardTitle>
-          <CardDescription className="pt-2">Condition: {condition}</CardDescription>
-        </CardContent>
-        {/* Details */}
-        <ul className="flex flex-wrap px-6 md:justify-start text-sm gap-4 sm:justify-start">
-          <li>
-            <div className="pr-2">
-              <p className="text-gray-600">Bids: {bidsAmount}</p>
-              <CardTitle className="py-0.5">US ${price}</CardTitle>
-            </div>
-          </li>
-          <li>
-            <Separator orientation="vertical" className="h-full bg-gray-300" />
-          </li>
-
-          {showBidSection = true && (
-            <>
-              <li>
-                <div className="pr-2">
-                  <p className="text-gray-600">Your Bid: {bidsAmount}</p>
-                  <CardTitle className="py-0.5">US ${yourBid}</CardTitle>
-                </div>
-              </li>
-              <li>
-                <Separator orientation="vertical" className="h-full bg-gray-300" />
-              </li>
-            </>
-          )}
-
-          <li>
-            <div className="px-4">
-              <p className="text-gray-600">TIME ENDS:</p>
-              <p className="text-lg font-bold text-red-500">{timeLeft}</p>
-            </div>
-          </li>
-          <li>
-            <Separator orientation="vertical" className="h-full bg-gray-300" />
-          </li>
-          <li>
-            <div className="px-4">
-              <p>Seller:</p>
-              <p className="text-lg font-bold text-gray-800 py-1">{sellerProfile}</p>
-            </div>
-          </li>
-        </ul>
-      </CardContent>
-      <CardFooter>
-        <div className="flex flex-col mt-10 space-y-2">
-          <Button>Bid now</Button>
-          <Button variant="secondary">View seller&#39;s other items</Button>
-          <Button variant="link">More Action</Button>
+        {/* Price & Seller Info */}
+        <div className="flex items-center gap-6 mt-2">
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-600">Price:</span>
+            <span className="text-xl font-bold text-gray-900">US ${price.toFixed(2)}</span>
+          </div>
+          <Separator orientation="vertical" className="h-10 gap-5 bg-gray-600" />
+          <div className="flex flex-col items-start">
+            <span className="text-sm text-gray-700">Seller:</span>
+            <Link
+              href={`/seller-page/${watchlistItem.seller.id}`}
+              className="font-medium text-gray-800 hover:text-blue-600 hover:font-bold hover:underline transition-colors duration-200"
+            >
+              {seller.name}
+            </Link>
+          </div>
         </div>
+      </CardContent>
+
+      {/* Right Side - Buttons & Call-to-Actions */}
+      <CardFooter className="flex flex-col items-end gap-2 p-2">
+        {/* Bid Now Button */}
+        <Link href={`/productDetails?id=${watchlistItem.id}`} passHref>
+          <Button className="w-44 text-sm font-medium">Bid Now</Button>
+        </Link>
+
+        {/* View Seller Profile Button */}
+        <Link href={`/seller-page/${watchlistItem.seller.id}`} passHref>
+          <Button variant="secondary" className="w-44 text-sm font-medium">View Seller Profile</Button>
+        </Link>
+
+        {/* Remove Button */}
+        <Button
+          variant="destructive"
+          className="w-44 text-sm font-medium"
+          onClick={() => handleRemove(watchlistItem.id)}
+        >
+          Remove
+        </Button>
       </CardFooter>
     </Card>
   );

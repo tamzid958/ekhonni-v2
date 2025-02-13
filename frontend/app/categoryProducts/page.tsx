@@ -22,13 +22,24 @@ interface Data {
   label: string;
 }
 
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  images: { imagePath: string }[];
+}
+
 interface Props {
   searchParams: { category?: string };
 }
 
 export default async function CategoryProductPage({ searchParams }: Props) {
   const selectedCategory = searchParams.category || 'All';
-  
+
   const url = selectedCategory === 'All' ?
     `http://localhost:8080/api/v2/product/filter`
     : `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(selectedCategory)}`;
@@ -47,7 +58,7 @@ export default async function CategoryProductPage({ searchParams }: Props) {
     console.error('Error fetching products:', error);
   }
 
-  const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
+  // const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
 
   return (
     <div className="space-y-6 container mx-auto px-4 w-full overflow-hidden">

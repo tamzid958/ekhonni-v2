@@ -78,8 +78,8 @@ export function DataTable<TData, TValue>({
 
 
   return (
-    <div>
-      <div className="flex items-center py-4">
+    <div className="pr-6">
+      <div className="flex items-center py-4 mr-2">
         <Input
           placeholder="Filter name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -93,6 +93,25 @@ export function DataTable<TData, TValue>({
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("email")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm w-28 mr-2"
+        />
+        {/*<Input*/}
+        {/*  placeholder="Filter roles..."*/}
+        {/*  value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}*/}
+        {/*  onChange={(event) => {*/}
+        {/*    const roleName = event.target.value;*/}
+        {/*    console.log('Seletecd RolName' , roleName)*/}
+        {/*    table.getColumn("role")?.setFilterValue(roleName);*/}
+        {/*  }}*/}
+        {/*  className="max-w-sm w-28 mr-2"*/}
+        {/*/>*/}
+
+        <Input
+          placeholder="Filter status..."
+          value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("status")?.setFilterValue(event.target.value)
           }
           className="max-w-sm w-28 mr-2"
         />

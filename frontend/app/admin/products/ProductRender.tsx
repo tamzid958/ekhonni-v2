@@ -42,7 +42,7 @@ export default function ProductRenderer({ products, totalPages, currentPage, fil
   }, [searchParams]);
 
   return (
-    <div className="space-y-6 container mx-12 p-4">
+    <div className="space-y-6 container h-screen mx-12 p-4">
       <div className="flex flex-col justify-between mt-4">
         <h1 className="text-3xl font-semibold mb-6 text-gray-700">Products</h1>
         <Toaster position="top-right" />

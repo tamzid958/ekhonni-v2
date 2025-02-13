@@ -38,6 +38,10 @@ export default function ResetPasswordPage (){
   const router = useRouter();
   const token = useSearchParams().get("token");
 
+  if(!token)
+  {
+    router.push("/auth/reset-password");
+  }
 
   const onSubmit: SubmitHandler<ResetPasswordFormValues> = async(data) => {
     try{

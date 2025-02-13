@@ -62,8 +62,8 @@ export function AppSidebar() {
   };
 
   const handleButtonClick = (url) => {
-    setActiveButton(url); // Set the active button to the clicked item's URL
-    router.push(url); // Navigate to the new URL
+    setActiveButton(url);
+    router.push(url);
   };
 
   return (

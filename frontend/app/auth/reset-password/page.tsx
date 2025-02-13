@@ -140,7 +140,7 @@ const VerifyEmail = () => {
       </div>
 
     ) : (
-      <div className="flex flex-col bg-brand-bright items-center min-h-screen mt-20 p-10 text-5xl font-sans">
+      <div className="flex flex-col bg-brand-bright items-center min-h-screen  p-56 text-5xl font-sans">
         <p> Please Sign Up with an email first :( </p>
 
       </div>

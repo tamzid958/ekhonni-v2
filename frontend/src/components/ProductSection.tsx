@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CardDemo } from '@/components/Card';
 import React from 'react';
+import { Button } from '@/components/ui/button';
 
 interface Data {
   id: number;
@@ -21,7 +21,6 @@ interface Data {
   label: string;
 }
 
-
 interface ProductSectionProps {
   title: string;
   products: Data[];
@@ -31,36 +30,34 @@ interface ProductSectionProps {
 export function ProductSection({ title, products, selectedCategory }: ProductSectionProps) {
   return (
     <div className="w-full mb-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-semibold py-4">{title}</h2>
-        <span>
-                  <Link href={{
-                    pathname: '/labeledCategory',
-                    query: { category: selectedCategory },
-                  }}
-                        className="text-xl"
-                  > See All </Link> </span>
-      </div>
-      <ScrollArea className="w-full overflow-x-auto">
-        {products.length === 0 ? (
-          <p className="text-center text-gray-500">No products found in this label.</p>
-        ) : (
-          <div className="flex w-[1000px] space-x-4 py-4">
-            {products.map((product) => (
-              <Link key={product.id} href={`/productDetails?id=${product.id}`} className="cursor-pointer">
-                <CardDemo
-                  id={product.id}
-                  title={product.title}
-                  description={product.description}
-                  img={product.images[0].imagePath}
-                  price={product.price}
-                />
-              </Link>
-            ))}
-          </div>
-        )}
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      {products.length === 0 ? (
+        <p className="text-center text-gray-500">No products found.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
+          {products.map((product) => (
+            <Link key={product.id} href={`/productDetails?id=${product.id}`} className="cursor-pointer">
+              <CardDemo {...product} />
+            </Link>
+          ))}
+        </div>
+      )}
+      {products.length !== 0 && (
+        <div className="flex justify-center m-8">
+          <Link
+            href={{
+              pathname: '/labeledCategory',
+              query: { category: selectedCategory },
+            }}
+          >
+            <Button
+              variant="secondary" size="lg"
+              className="px-6 py-3 font-bold text-xl hover:bg-gray-200 text-gray-700 transition-all shadow-md hover:shadow-lg"
+            >
+              See More Products
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
