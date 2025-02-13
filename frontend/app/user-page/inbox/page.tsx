@@ -1,15 +1,11 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
-import {useSession} from "next-auth/react";
-import Loading from "@/components/Loading";
+import { useSession } from "next-auth/react";
 
 export default function Chat() {
-
-
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
@@ -17,10 +13,9 @@ export default function Chat() {
 
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [connected, setConnected] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [from, setFrom] = useState('');
+  const [messages, setMessages] = useState<{ senderId: string; content: string }[]>([]);
   const [text, setText] = useState('');
-
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -30,16 +25,22 @@ export default function Chat() {
     };
   }, [stompClient]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const connect = () => {
     const socket = new SockJS('http://localhost:8080/chat');
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
-      onConnect: (frame) => {
+      onConnect: () => {
         setConnected(true);
-        console.log('Connected: ' + frame);
+        console.log('Connected to WebSocket');
+
         client.subscribe('/topic/messages', (messageOutput) => {
-          setMessages((prev) => [...prev, JSON.parse(messageOutput.body)]);
+          const newMessage = JSON.parse(messageOutput.body);
+          setMessages((prev) => [...prev, newMessage]);
         });
       },
       onDisconnect: () => {
@@ -56,67 +57,76 @@ export default function Chat() {
     if (stompClient) {
       stompClient.deactivate();
     }
+    setConnected(false);
   };
 
   const sendMessage = () => {
-    if (stompClient && from && text) {
-      stompClient.publish({
-        destination: '/app/chat',
-        body: JSON.stringify({ from, text }),
-      });
-      setText('');
-    }
+    if (!stompClient || !text.trim() || !userId) return;
+
+    const message = { senderId: userId, content: text }; // Correct structure
+    stompClient.publish({
+      destination: '/app/chat',
+      body: JSON.stringify(message),
+    });
+
+    setText('');
   };
 
   return (
-      <div className="p-4 max-w-lg mx-auto">
-        <input
-            type="text"
-            placeholder="Choose a nickname"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="p-2 border rounded w-full mb-2"
-        />
-        <div className="flex gap-2 mb-4">
-          <button
-              onClick={connect}
-              disabled={connected}
-              className="p-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
-          >
-            Connect
-          </button>
-          <button
-              onClick={disconnect}
-              disabled={!connected}
-              className="p-2 bg-red-500 text-white rounded disabled:bg-gray-400"
-          >
-            Disconnect
-          </button>
-        </div>
-        {connected && (
-            <div>
-              <input
-                  type="text"
-                  placeholder="Write a message..."
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="p-2 border rounded w-full mb-2"
-              />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bright p-6">
+        <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Ekhonni Chat</h2>
+            <div className="flex gap-3">
               <button
-                  onClick={sendMessage}
-                  className="p-2 bg-green-500 text-white rounded"
+                  onClick={connect}
+                  disabled={connected}
+                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400"
               >
-                Send
+                Connect
               </button>
-              <div className="mt-4 border p-2 rounded">
-                {messages.map((msg, index) => (
-                    <p key={index} className="break-words">
-                      <strong>{msg.from}:</strong> {msg.text}
-                    </p>
-                ))}
-              </div>
+              <button
+                  onClick={disconnect}
+                  disabled={!connected}
+                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:bg-gray-400"
+              >
+                Disconnect
+              </button>
             </div>
-        )}
+          </div>
+
+          {/* Chat Messages */}
+          <div className="h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+            {messages.map((msg, index) => (
+                <div key={index} className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'} mb-3`}>
+                  <div className={`p-2 max-w-md text-sm rounded-xl shadow ${msg.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                    <strong>{msg.senderId === userId ? 'You' : msg.senderId}:</strong> {msg.content}
+                  </div>
+                </div>
+            ))}
+            <div ref={messagesEndRef}></div>
+          </div>
+
+          {/* Chat Input */}
+          {connected && (
+              <div className="mt-4 flex gap-3">
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    className="flex-1 p-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                    onClick={sendMessage}
+                    className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                >
+                  Send
+                </button>
+              </div>
+          )}
+        </div>
       </div>
   );
 }
