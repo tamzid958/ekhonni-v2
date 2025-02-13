@@ -2,8 +2,6 @@
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
 import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -11,6 +9,8 @@ import { NotificationGetter } from '@/components/Notification';
 import { useSession } from 'next-auth/react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
+import { AppSidebar } from '@/components/userSheet';
+import { SheetTrigger, Sheet } from '@/components/ui/sheet';
 
 
 type Props = {
@@ -78,9 +78,12 @@ export function NavBar({ placeholder }: Props) {
 
     fetchNotifications(lastFetchTime);
   }, [session]);
+
+
   const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
+    setSidebarOpen((prev) => !prev);
   };
+
 
 
   return (
@@ -155,12 +158,16 @@ export function NavBar({ placeholder }: Props) {
 
 
         {session ? (
-          <SidebarProvider>
-            <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
-              <User />
-            </Button>
-            {isSidebarOpen && <AppSidebar />}
-          </SidebarProvider>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="custom" size="icon2" className="rounded-full">
+                <User />
+              </Button>
+            </SheetTrigger>
+
+            {/* The Sidebar content */}
+            <AppSidebar />
+          </Sheet>
         ) : (
           <Popover>
             <PopoverTrigger asChild>
