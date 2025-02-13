@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.hibernate.tool.schema.spi.SchemaTruncator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -60,10 +61,22 @@ public class UserController {
         return ResponseUtil.createResponse(HTTPStatus.OK, userService.update(id, userUpdateDTO));
     }
 
+    @PostMapping("/{id}/request-change-email")
+    @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
+    public ResponseEntity<ApiResponse<String>> updateEmailRequest(
+            @PathVariable UUID id,
+            @Valid @RequestBody EmailDTO emailDTO
+    ){
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updateEmailRequest(id, emailDTO));
+    }
+
     @PatchMapping("/{id}/change-email")
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
-    public ResponseEntity<ApiResponse<String>> updateEmail(@PathVariable UUID id, @Valid @RequestBody EmailDTO emailDTO) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updateEmail(id, emailDTO));
+    public ResponseEntity<ApiResponse<String>> updateEmail(
+            @PathVariable("id") UUID id,
+            @RequestParam("token") String token
+    ) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.updateEmail(token));
     }
 
     @PatchMapping("/{id}/change-password")

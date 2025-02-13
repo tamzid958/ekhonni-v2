@@ -1,6 +1,5 @@
 package com.ekhonni.backend.repository;
 
-import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.model.VerificationToken;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +23,7 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
     Optional<VerificationToken> findByToken(String token);
 
-    VerificationToken findByUser(User user);
+    VerificationToken findByUserId(UUID userId);
 
 
 

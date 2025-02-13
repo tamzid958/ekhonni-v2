@@ -132,6 +132,15 @@ bkash:
 notification:
   product-redirect-url: ${PRODUCT_REDIRECT_URL}
 
+email-change-url: ${EMAIL_CHANGE_URL}
+
+upload:
+  dir: ${UPLOAD_DIR}
+
+product:
+  upload:
+    dir: ${UPLOAD_DIR}
+
 rabbitmq-custom:
   email-configuration:
     queue: ${RABBITMQ_EMAIL_QUEUE_NAME}

@@ -147,6 +147,12 @@
     "type": "Auth"
   },
   {
+    "name": "Admin create notifications",
+    "description": "Create notification for specific or all users",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/notifications/create"
+  },
+  {
     "name": "Get Bid Details",
     "description": "Allows bidder to view their own bid details",
     "httpMethod": "GET",
@@ -851,6 +857,27 @@
     "description": "Assign particular Privilege to a Role",
     "httpMethod": "POST",
     "endpoint": "/api/v2/role/{id}/assign/privilege/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Assign Multiple Privilege",
+    "description": "Assign Multiple Privilege to a Role at once",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/assign/privilege",
+    "type": "Role"
+  },
+  {
+    "name": "Remove Privilege",
+    "description": "Remove particular Privilege from a Role",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/remove/privilege/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Remove Multiple Privilege",
+    "description": "Remove Multiple Privilege from a Role at once",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/remove/privilege",
     "type": "Role"
   },
   {
