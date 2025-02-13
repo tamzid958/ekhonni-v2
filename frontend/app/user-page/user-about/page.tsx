@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import useSWR from 'swr';
+import fetcher from '@/data/services/fetcher';
 
 
 interface UserDetails {
@@ -15,36 +17,12 @@ interface UserDetails {
 
 export default function UserDetails() {
   const { data: session } = useSession();
-  console.log("session", session);
   const userId = session?.user?.id;
   const token = session?.user?.token;
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!userId || !token) return;
+  const url = userId ? `http://localhost:8080/api/v2/user/${userId}` : null;
 
-    async function fetchUserDetails() {
-      try {
-        const response = await fetch(`http://localhost:8080/api/v2/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("response", response);
-        if (!response.ok) {
-          throw new Error("Failed to fetch user details");
-        }
-
-        const data = await response.json();
-        setUserDetails(data.data);
-      } catch (err: any) {
-        setError(err.message);
-      }
-    }
-
-    fetchUserDetails();
-  }, [userId, token]);
+  const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, token));
 
   if (!userId) {
     return <div className="text-center text-red-500">User Not Found</div>;
@@ -54,10 +32,11 @@ export default function UserDetails() {
     return <div className="text-center text-red-500">Error: {error}</div>;
   }
 
-  if (!userDetails) {
+  if (isLoading || !data) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
-  console.log("Name:", userDetails.name);
+  const userDetails: UserDetails = data.data;
+
 
 
   return (
