@@ -22,7 +22,10 @@ import java.util.Optional;
 public interface ProductBoostRepository extends JpaRepository<ProductBoost, Long> {
 
 
-    ProductBoost findByProductId(Long productId);
+    Optional<ProductBoost> findByProductId(Long productId);
+
+
+    List<ProductBoost> findAllByExpiresAtBefore(LocalDateTime now);
 
     // Find all active boosts (boosts that have not expired)
     List<ProductBoost> findByExpiresAtAfter(LocalDateTime now);
@@ -45,8 +48,9 @@ public interface ProductBoostRepository extends JpaRepository<ProductBoost, Long
     List<ProductBoost> findByBoostTypeAndProductId(BoostType boostType, Long productId);
 
 
-
     // Find the active boost for a product (if any)
     @Query("SELECT pb FROM ProductBoost pb WHERE pb.product.id = :productId AND pb.expiresAt > :now")
     Optional<ProductBoost> findActiveBoostByProductId(@Param("productId") Long productId, @Param("now") LocalDateTime now);
+
+
 }

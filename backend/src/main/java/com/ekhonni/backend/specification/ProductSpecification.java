@@ -10,7 +10,6 @@ package com.ekhonni.backend.specification;
 
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
-import com.ekhonni.backend.enums.ProductSort;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductBoost;
@@ -48,13 +47,14 @@ public class ProductSpecification {
     public static Specification<Product> hasStatus(ProductStatus status) {
         return (product, cq, cb) -> cb.equal(product.get("status"), status);
     }
+
     public static Specification<Product> belongsToDivision(Division division) {
         return (product, cq, cb) -> cb.equal(product.get("division"), division);
     }
 
-    public static Specification<Product> isBoosted(Boolean productBoosted) {
+    public static Specification<Product> isBoosted(Boolean applyBoost) {
         return (product, cq, cb) -> {
-            if (Boolean.TRUE.equals(productBoosted)) {
+            if (Boolean.TRUE.equals(applyBoost)) {
                 assert cq != null;
                 Subquery<Long> subquery = cq.subquery(Long.class);
                 Root<ProductBoost> productBoostRoot = subquery.from(ProductBoost.class);
@@ -66,24 +66,6 @@ public class ProductSpecification {
         };
     }
 
-
-
-//    // sorting
-//    public static Specification<Product> applySorting(ProductSort sortBy) {
-//        return (product, cq, cb) -> {
-//            switch (sortBy) {
-//                case priceLowToHigh:
-//                    cq.orderBy(cb.asc(product.get("price")));
-//                    break;
-//                case priceHighToLow:
-//                    cq.orderBy(cb.desc(product.get("price")));
-//                    break;
-//                case newlyListed:
-//                    cq.orderBy(cb.desc(product.get("createdAt")));
-//            }
-//            return cb.conjunction();
-//        };
-//    }
 
     // searching
     public static Specification<Product> hasTerm(String searchTerm) {
@@ -101,6 +83,6 @@ public class ProductSpecification {
 
     // default specification (returns all products without any filters)
     public static Specification<Product> defaultSpec() {
-        return (product, cq, cb) -> cb.conjunction();  // Returns all products (no filter applied)
+        return (product, cq, cb) -> cb.conjunction();
     }
 }

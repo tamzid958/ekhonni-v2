@@ -8,11 +8,10 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.product.ProductBoostDTO;
+import com.ekhonni.backend.dto.product.ProductBoostResponseDTO;
 import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
-import com.ekhonni.backend.enums.BoostType;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
@@ -21,7 +20,10 @@ import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
-import com.ekhonni.backend.model.*;
+import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.ProductImage;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductBoostRepository;
@@ -39,17 +41,13 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
@@ -121,29 +119,6 @@ public class ProductService extends BaseService<Product, Long> {
     }
 
 
-    public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
-        List<Long> categoryIds = new ArrayList<>();
-        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
-            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
-        }
-
-
-        SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
-        Specification<Product> spec = specificationResult.getSpec();
-//        Pageable pageable = PageRequest.of(filter.getPage()-1, filter.getSize());
-        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
-        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
-
-        List<ProductResponseDTO> products = projections.stream()
-                .map(ProductProjectionConverter::convert)
-                .toList();
-        long totalElements = page.getTotalElements();
-        return new PageImpl<>(products, pageable, totalElements);
-    }
-
-
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
         if (projection == null) throw new ProductNotFoundException("Product doesn't exist");
@@ -166,7 +141,6 @@ public class ProductService extends BaseService<Product, Long> {
 
         return ProductProjectionConverter.convert(projection);
     }
-
 
 
     @Modifying
@@ -216,48 +190,82 @@ public class ProductService extends BaseService<Product, Long> {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
     }
 
-    public Page<ProductResponseDTO> getAllFilteredForUser(UserProductFilter filter) {
-        List<Long> categoryIds = new ArrayList<>();
-        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
-            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
-        }
 
-
-        SpecificationResult specificationResult = UserProductSpecificationBuilder.build(filter, categoryIds);
+    public Page<ProductResponseDTO> getAllFiltered(ProductFilter filter) {
+        List<Long> categoryIds = extractCategoryIds(filter.getCategoryName());
+        SpecificationResult specificationResult = CommonProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
-        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
-        List<ProductResponseDTO> products = projections.stream()
-                .map(ProductProjectionConverter::convert)
-                .toList();
-        long totalElements = page.getTotalElements();
-        return new PageImpl<>(products, pageable, totalElements);
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+
+        return getProductsResponsePage(spec, pageable);
     }
 
+    public Page<ProductResponseDTO> getAllFilteredForUser(UserProductFilter filter) {
+        List<Long> categoryIds = extractCategoryIds(filter.getCategoryName());
+        SpecificationResult specificationResult = UserProductSpecificationBuilder.build(filter, categoryIds);
+        Specification<Product> spec = specificationResult.getSpec();
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+
+        return getProductsResponsePage(spec, pageable);
+    }
 
     public Page<ProductResponseDTO> getAllFilteredForSeller(SellerProductFilter filter) {
         User user = userRepository.findById(filter.getUserId()).orElseThrow(() -> new ProductNotFoundException("user not found"));
-
-        List<Long> categoryIds = new ArrayList<>();
-        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
-            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
-        }
-
-
+        List<Long> categoryIds = extractCategoryIds(filter.getCategoryName());
         SpecificationResult specificationResult = SellerProductSpecificationBuilder.build(filter, categoryIds);
         Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
-        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
-        List<ProductResponseDTO> products = projections.stream()
-                .map(ProductProjectionConverter::convert)
-                .toList();
-        long totalElements = page.getTotalElements();
-        return new PageImpl<>(products, pageable, totalElements);
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+
+        return getProductsResponsePage(spec, pageable);
     }
 
+    /**
+     * Extracts category IDs based on the provided category name.
+     */
+    public List<Long> extractCategoryIds(String categoryName) {
+        if (categoryName != null && !categoryName.isEmpty()) {
+            return categoryService.getRelatedActiveIds(categoryName);
+        }
+        return new ArrayList<>();
+    }
 
+    /**
+     * Executes the common query logic: fetches paged product IDs based on a specification,
+     * retrieves the corresponding projections, sorts them in the order of the given IDs,
+     * and maps them to the final DTOs.
+     */
+    public Page<ProductResponseDTO> getProductsResponsePage(Specification<Product> spec, Pageable pageable) {
+        // Fetch paged product IDs based on the specification
+        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
+        List<Long> productIds = page.getContent();
+
+        // Retrieve product projections for the fetched IDs
+        List<ProductProjection> projections = productRepository.findByIdIn(productIds, pageable);
+
+        // Sort projections to match the order of productIds
+        Map<Long, Integer> idOrderMap = new HashMap<>();
+        for (int i = 0; i < productIds.size(); i++) {
+            idOrderMap.put(productIds.get(i), i);
+        }
+        projections.sort(Comparator.comparing(p -> idOrderMap.getOrDefault(p.getId(), Integer.MAX_VALUE)));
+
+        // Convert each projection to a response DTO and add boost data if available
+        List<ProductResponseDTO> products = projections.stream()
+                .map(projection -> {
+                    ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
+                    productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
+                            dto.setBoostData(new ProductBoostResponseDTO(
+                                    boost.getBoostType(),
+                                    boost.getBoostedAt(),
+                                    boost.getExpiresAt()))
+                    );
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        // Return the final paged result
+        return new PageImpl<>(products, pageable, page.getTotalElements());
+    }
 
 
 }

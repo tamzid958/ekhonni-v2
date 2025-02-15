@@ -17,16 +17,16 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ProductFilter{
+public class ProductFilter {
+    private final ProductStatus status = ProductStatus.APPROVED;
     private String categoryName;
     private Double minPrice;
     private Double maxPrice;
     private ProductCondition condition;
     private String searchTerm;
     private ProductSort sortBy;
-    private final ProductStatus status = ProductStatus.APPROVED;
     private Division division;
-    private Boolean productBoosted;
-    private int page=1;
-    private int size=10;
+    private Boolean applyBoosted;
+    private int page = 1;
+    private int size = 10;
 }

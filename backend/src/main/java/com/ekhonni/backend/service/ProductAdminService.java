@@ -15,16 +15,14 @@ import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.specificationbuilder.AdminProductSpecificationBuilder;
+import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,11 +31,16 @@ public class ProductAdminService {
     ProductRepository productRepository;
     CategoryService categoryService;
     NotificationService notificationService;
+    ProductService productService;
 
-    public ProductAdminService(ProductRepository productRepository, CategoryService categoryService, NotificationService notificationService) {
+    public ProductAdminService(ProductRepository productRepository,
+                               CategoryService categoryService,
+                               NotificationService notificationService,
+                               ProductService productService) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.notificationService = notificationService;
+        this.productService = productService;
     }
 
 
@@ -113,20 +116,9 @@ public class ProductAdminService {
 
 
     public Page<ProductResponseDTO> getAllFilteredForAdmin(AdminProductFilter filter) {
-        List<Long> categoryIds = new ArrayList<>();
-        if (filter.getCategoryName() != null && !filter.getCategoryName().isEmpty()) {
-            categoryIds = categoryService.getRelatedActiveIds(filter.getCategoryName());
-        }
-
-
+        List<Long> categoryIds = productService.extractCategoryIds(filter.getCategoryName());
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PageRequest.of(filter.getPage() - 1, filter.getSize());
-        Page<Long> page = productRepository.findAllFiltered(spec, pageable);
-        List<ProductProjection> projections = productRepository.findByIdIn(page.getContent(), pageable);
-        List<ProductResponseDTO> products = projections.stream()
-                .map(ProductProjectionConverter::convert)
-                .toList();
-        long totalElements = page.getTotalElements();
-        return new PageImpl<>(products, pageable, totalElements);
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+        return productService.getProductsResponsePage(spec, pageable);
     }
 }

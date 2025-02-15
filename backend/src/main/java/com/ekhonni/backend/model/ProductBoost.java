@@ -11,7 +11,10 @@ package com.ekhonni.backend.model;
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.enums.BoostType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -40,5 +43,13 @@ public class ProductBoost extends BaseEntity<Long> {
     public void calculateExpiration() {
         this.boostedAt = LocalDateTime.now();
         this.expiresAt = this.boostedAt.plus(this.boostType.getDuration(), this.boostType.getUnit());
+
+        int hour = this.expiresAt.getHour();
+
+        if (hour <= 12) {
+            this.expiresAt = this.expiresAt.plusDays(1).withHour(12).withMinute(0).withSecond(0).withNano(0);
+        } else {
+            this.expiresAt = this.expiresAt.plusDays(2).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        }
     }
 }

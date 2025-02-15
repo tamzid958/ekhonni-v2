@@ -149,10 +149,10 @@ INSERT INTO product (id, title, sub_title, description, price, division, address
 (105, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
 (106, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 (107, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(108, 'Sony WH-1000XM4 Headphones', 'Noise-canceling headphones', 'Top-notch sound quality', 350.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
-(109, 'Nike Air Max', 'Brand new running shoes', 'Comfortable and stylish', 120.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'In original box', 10033, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(110, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(111, 'Canon EOS Rebel T7', 'Digital SLR Camera', 'Perfect for photography enthusiasts', 450.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(108, 'Sony WH-1000XM4 Headphones', 'Noise-canceling headphones', 'Top-notch sound quality', 350.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
+--(109, 'Nike Air Max', 'Brand new running shoes', 'Comfortable and stylish', 120.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'In original box', 10033, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(110, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+--(111, 'Canon EOS Rebel T7', 'Digital SLR Camera', 'Perfect for photography enthusiasts', 450.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 
 (202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
 (303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
@@ -187,11 +187,11 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 (16, 104, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/dellxps13.jpg', NOW(), NOW()),
 (17, 105, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket1.jpg', NOW(), NOW()),
 (18, 106, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket2.jpg', NOW(), NOW()),
-(19, 107, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket3.jpg', NOW(), NOW()),
-(20, 108, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/sonyheadphones.jpg', NOW(), NOW()),
-(21, 109, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/nikeairmax.jpg', NOW(), NOW()),
-(22, 110, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/applewatch.jpg', NOW(), NOW()),
-(23, 111, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/canoneos.jpg', NOW(), NOW());
+(19, 107, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/leatherjacket3.jpg', NOW(), NOW());
+--(20, 108, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/sonyheadphones.jpg', NOW(), NOW()),
+--(21, 109, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/nikeairmax.jpg', NOW(), NOW()),
+--(22, 110, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/applewatch.jpg', NOW(), NOW()),
+--(23, 111, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/canoneos.jpg', NOW(), NOW());
 
 
 -- Bids where Asif is the Bidder (Buyer)
@@ -201,43 +201,43 @@ INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at
 (1006, 102, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
 (1003, 102, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Pending
 (1008, 104, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1009, 105, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1016, 108, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
+(1009, 105, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'PENDING', NOW(), NOW()); -- Accepted
+--(1016, 108, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
 
--- Bids where Asif is the Seller
-INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1010, 106, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'PENDING', NOW(), NOW()), -- Accepted
-(1011, 106, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
-(1013, 107, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'PENDING', NOW(), NOW()), -- Accepted
-(1014, 107, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
-(1017, 109, '550e8400-e29b-41d4-a716-446655440001'::uuid, 115.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1018, 110, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1020, 111, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
-
--- Reviews where Asif Iqbal is reviewed as a Buyer (Total 5)
-INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
-(10000, 1001, 'BUYER', 5, 'Great buyer! Prompt payment and excellent communication.', NOW(), NOW()),
-(10001, 1006, 'BUYER', 4, 'Smooth transaction. Thank you!', NOW(), NOW()),
-(10003, 1008, 'BUYER', 4, 'Good buyer. Would sell to again.', NOW(), NOW()),
-(10004, 1009, 'BUYER', 5, 'Excellent buyer! Highly recommended.', NOW(), NOW()),
-(10017, 1016, 'BUYER', 5, 'Asif was prompt and communicative.', NOW(), NOW());
-
--- Reviews where Asif Iqbal is reviewed as a Seller (Total 5)
-INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
-(10005, 1010, 'SELLER', 5, 'Fantastic seller! Item as described.', NOW(), NOW()),
-(10008, 1013, 'SELLER', 5, 'Asif is an excellent seller!', NOW(), NOW()),
-(10018, 1017, 'SELLER', 4, 'Great seller! Product as described.', NOW(), NOW()),
-(10019, 1018, 'SELLER', 5, 'Asif was very helpful throughout.', NOW(), NOW()),
-(10020, 1020, 'SELLER', 5, 'Excellent seller, fast shipping!', NOW(), NOW());
-
--- Reviews where Asif Iqbal reviews other Sellers (Total 3)
-INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
-(10010, 1001, 'SELLER', 5, 'John was a great seller! Highly recommend.', NOW(), NOW()),
-(10011, 1006, 'SELLER', 4, 'Smooth transaction with Jane.', NOW(), NOW()),
-(10021, 1016, 'SELLER', 5, 'Great seller! Product exceeded expectations.', NOW(), NOW());
-
--- Reviews where Asif Iqbal reviews other Buyers (Total 3)
-INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
-(10013, 1010, 'BUYER', 5, 'John was prompt with payment. Great buyer!', NOW(), NOW()),
-(10022, 1017, 'BUYER', 5, 'Jane was a wonderful buyer!', NOW(), NOW()),
-(10023, 1018, 'BUYER', 5, 'Mark was prompt with payment.', NOW(), NOW());
+---- Bids where Asif is the Seller
+--INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
+--(1010, 106, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'PENDING', NOW(), NOW()), -- Accepted
+--(1011, 106, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
+--(1013, 107, '550e8400-e29b-41d4-a716-446655440000'::uuid, 1000.00, 'BDT', 'PENDING', NOW(), NOW()), -- Accepted
+--(1014, 107, '550e8400-e29b-41d4-a716-446655440001'::uuid, 800.00, 'BDT', 'PENDING', NOW(), NOW()),
+--(1017, 109, '550e8400-e29b-41d4-a716-446655440001'::uuid, 115.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
+--(1018, 110, '550e8400-e29b-41d4-a716-446655440003'::uuid, 380.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
+--(1020, 111, '550e8400-e29b-41d4-a716-446655440004'::uuid, 440.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
+--
+---- Reviews where Asif Iqbal is reviewed as a Buyer (Total 5)
+--INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
+--(10000, 1001, 'BUYER', 5, 'Great buyer! Prompt payment and excellent communication.', NOW(), NOW()),
+--(10001, 1006, 'BUYER', 4, 'Smooth transaction. Thank you!', NOW(), NOW()),
+--(10003, 1008, 'BUYER', 4, 'Good buyer. Would sell to again.', NOW(), NOW()),
+--(10004, 1009, 'BUYER', 5, 'Excellent buyer! Highly recommended.', NOW(), NOW()),
+--(10017, 1016, 'BUYER', 5, 'Asif was prompt and communicative.', NOW(), NOW());
+--
+---- Reviews where Asif Iqbal is reviewed as a Seller (Total 5)
+--INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
+--(10005, 1010, 'SELLER', 5, 'Fantastic seller! Item as described.', NOW(), NOW()),
+--(10008, 1013, 'SELLER', 5, 'Asif is an excellent seller!', NOW(), NOW()),
+--(10018, 1017, 'SELLER', 4, 'Great seller! Product as described.', NOW(), NOW()),
+--(10019, 1018, 'SELLER', 5, 'Asif was very helpful throughout.', NOW(), NOW()),
+--(10020, 1020, 'SELLER', 5, 'Excellent seller, fast shipping!', NOW(), NOW());
+--
+---- Reviews where Asif Iqbal reviews other Sellers (Total 3)
+--INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
+--(10010, 1001, 'SELLER', 5, 'John was a great seller! Highly recommend.', NOW(), NOW()),
+--(10011, 1006, 'SELLER', 4, 'Smooth transaction with Jane.', NOW(), NOW()),
+--(10021, 1016, 'SELLER', 5, 'Great seller! Product exceeded expectations.', NOW(), NOW());
+--
+---- Reviews where Asif Iqbal reviews other Buyers (Total 3)
+--INSERT INTO review (id, bid_id, type, rating, description, created_at, updated_at) VALUES
+--(10013, 1010, 'BUYER', 5, 'John was prompt with payment. Great buyer!', NOW(), NOW()),
+--(10022, 1017, 'BUYER', 5, 'Jane was a wonderful buyer!', NOW(), NOW()),
+--(10023, 1018, 'BUYER', 5, 'Mark was prompt with payment.', NOW(), NOW());

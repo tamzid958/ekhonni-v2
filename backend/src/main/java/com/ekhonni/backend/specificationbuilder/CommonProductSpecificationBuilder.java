@@ -40,7 +40,7 @@ public class CommonProductSpecificationBuilder {
         if (filter.getSearchTerm() != null) {
             spec = spec.and(ProductSpecification.hasTerm(filter.getSearchTerm()));
         }
-        if(filter.getDivision() != null){
+        if (filter.getDivision() != null) {
             spec = spec.and(ProductSpecification.belongsToDivision(filter.getDivision()));
         }
 
@@ -50,16 +50,16 @@ public class CommonProductSpecificationBuilder {
             hasConditions = true;
         }
 
-        if (filter.getProductBoosted() != null) {
-            spec = spec.and(ProductSpecification.isBoosted(filter.getProductBoosted()));
+        if (filter.getApplyBoosted() != null) {
+            spec = spec.and(ProductSpecification.isBoosted(filter.getApplyBoosted()));
             hasConditions = true;
         }
 
 
-        if(!hasConditions)
-        {
+        if (!hasConditions) {
             spec = spec.and(ProductSpecification.defaultSpec());
         }
+
         return new SpecificationResult(spec, hasConditions);
     }
 }

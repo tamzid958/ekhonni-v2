@@ -9,65 +9,40 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.product.ProductBoostDTO;
-import com.ekhonni.backend.dto.product.ProductCreateDTO;
-import com.ekhonni.backend.dto.product.ProductResponseDTO;
-import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.exception.CategoryNotFoundException;
-import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
-import com.ekhonni.backend.exception.ProductNotUpdatedException;
-import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.filter.SellerProductFilter;
-import com.ekhonni.backend.filter.UserProductFilter;
-import com.ekhonni.backend.model.*;
-import com.ekhonni.backend.projection.ProductProjection;
-import com.ekhonni.backend.repository.CategoryRepository;
+import com.ekhonni.backend.model.Account;
+import com.ekhonni.backend.model.Product;
+import com.ekhonni.backend.model.ProductBoost;
+import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.repository.ProductBoostRepository;
 import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.repository.UserRepository;
-import com.ekhonni.backend.specification.SpecificationResult;
-import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
-import com.ekhonni.backend.specificationbuilder.SellerProductSpecificationBuilder;
-import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
-import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
-import com.ekhonni.backend.util.PaginationUtil;
-import com.ekhonni.backend.util.ProductProjectionConverter;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ProductBoostService {
+    private final double minimumBalance = 50;
     ProductRepository productRepository;
     ProductBoostRepository productBoostRepository;
     AccountService accountService;
 
-
-    private final double minimumBalance = 50;
-
-    public ProductBoostService(ProductRepository productRepository,ProductBoostRepository productBoostRepository,
-                          AccountService accountService
+    public ProductBoostService(ProductRepository productRepository, ProductBoostRepository productBoostRepository,
+                               AccountService accountService
     ) {
         this.productRepository = productRepository;
         this.productBoostRepository = productBoostRepository;
         this.accountService = accountService;
     }
-
-
 
 
     @Transactional
@@ -79,10 +54,13 @@ public class ProductBoostService {
         validateProductForBoost(product);
 
         LocalDateTime now = LocalDateTime.now();
-        ensureNoActiveBoost(product.getId(), now);
+        boolean hasActiveBoost = findActiveBoost(product.getId(), now);
+        if (hasActiveBoost) {
+            throw new ProductNotFoundException("An active boost already exists for this product.");
+        }
 
-        Account account = accountService.getByUserId(seller.getId());
-        deductBoostAmount(account, boostDTO.getBoostType().getAmount());
+        updateSellerAccount(seller.getId(), boostDTO.getBoostType().getAmount());
+        updateSuperAdminAccount(boostDTO.getBoostType().getAmount());
 
         ProductBoost boost = createProductBoost(product, boostDTO, now);
         productBoostRepository.save(boost);
@@ -94,33 +72,82 @@ public class ProductBoostService {
         }
     }
 
-    private void ensureNoActiveBoost(Long productId, LocalDateTime now) {
-        boolean hasActiveBoost = productBoostRepository.findActiveBoostByProductId(productId, now).isPresent();
-        if (hasActiveBoost) {
-            throw new ProductNotFoundException("An active boost already exists for this product.");
-        }
-    }
-
-    private void deductBoostAmount(Account account, double boostAmount) {
-        if (account.getBalance()+minimumBalance< boostAmount) {
-            throw new ProductNotFoundException("Not enough money in your account.");
-        }
-        updateAccount(account, boostAmount);
+    private boolean findActiveBoost(Long productId, LocalDateTime now) {
+        return productBoostRepository.findActiveBoostByProductId(productId, now).isPresent();
     }
 
     @Transactional
-    public void updateAccount(Account userAccount, double boostAmount){
-        userAccount.setTotalWithdrawals(userAccount.getTotalWithdrawals()+boostAmount);
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals()+boostAmount);
+    private void updateSellerAccount(UUID id, double boostAmount) {
+        Account account = accountService.getByUserId(id);
+        if (account.getBalance() - boostAmount < minimumBalance) {
+            throw new ProductNotFoundException("Not enough money in your account.");
+        }
+        account.setTotalWithdrawals(account.getTotalWithdrawals() + boostAmount);
+        ;
     }
+
 
     private ProductBoost createProductBoost(Product product, ProductBoostDTO boostDTO, LocalDateTime now) {
         ProductBoost boost = new ProductBoost();
         boost.setBoostType(boostDTO.getBoostType());
         boost.setProduct(product);
-        boost.setBoostedAt(now);
-        boost.setExpiresAt(now.plus(boostDTO.getBoostType().getDuration(), boostDTO.getBoostType().getUnit()));
         return boost;
+    }
+
+    @Transactional
+    public void updateSuperAdminAccount(double boostAmount) {
+        Account superAdminAccount = accountService.getSuperAdminAccount();
+        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + boostAmount);
+    }
+
+    @Transactional
+    public void updateBoost(ProductBoostDTO boostDTO) {
+        User seller = AuthUtil.getAuthenticatedUser();
+        Product product = productRepository.findById(boostDTO.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException("Product not found for boost"));
+
+        validateProductForBoost(product);
+
+        LocalDateTime now = LocalDateTime.now();
+        ProductBoost boost = productBoostRepository.findByProductId(product.getId())
+                .orElseThrow(() -> new ProductNotFoundException("No boost exists for this product to update"));
+
+        updateSellerAccount(seller.getId(), boostDTO.getBoostType().getAmount());
+        updateSuperAdminAccount(boostDTO.getBoostType().getAmount());
+
+        boost.setExpiresAt(now.plus(boostDTO.getBoostType().getDuration(), boostDTO.getBoostType().getUnit()));
+
+    }
+
+    @Transactional
+    @Modifying
+    public void removeBoost(Long productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found for boost"));
+
+        validateProductForBoost(product);
+
+        ProductBoost boost = productBoostRepository.findByProductId(product.getId())
+                .orElseThrow(() -> new ProductNotFoundException("No boost exists for this product to delete"));
+
+
+        productBoostRepository.delete(boost);
+    }
+
+
+    /*
+      Scheduler to delete expired boosted product
+    */
+    @Scheduled(cron = "0 1 0,12 * * ?")  // Runs at 12:01 AM and 12:01 PM
+    @Transactional
+    public void removeExpiredBoosts() {
+        List<ProductBoost> expiredBoosts = productBoostRepository.findAllByExpiresAtBefore(LocalDateTime.now());
+        if (!expiredBoosts.isEmpty()) {
+            productBoostRepository.deleteAll(expiredBoosts);
+            log.info("Deleted {} expired boost products", expiredBoosts.size());
+        } else {
+            log.info("Nothing to delete");
+        }
     }
 }

@@ -110,11 +110,29 @@ public class ProductController {
     }
 
 
-    // boost product
+    /*
+      Boost Product APIs
+    */
+
     @PostMapping("/boost")
-    public ApiResponse<?> boostProduct(@RequestBody ProductBoostDTO boostDTO){
+    @PreAuthorize("@productService.getSellerId(#boostDTO.productId) == authentication.principal.id")
+    public ApiResponse<?> boostProduct(@RequestBody ProductBoostDTO boostDTO) {
         productBoostService.boostProduct(boostDTO);
         return new ApiResponse<>(HTTPStatus.CREATED, null);
+    }
+
+    @PatchMapping("/boost")
+    @PreAuthorize("@productService.getSellerId(#boostDTO.productId) == authentication.principal.id")
+    public ApiResponse<?> updateBoost(@RequestBody ProductBoostDTO boostDTO) {
+        productBoostService.updateBoost(boostDTO);
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+    }
+
+    @DeleteMapping("/boost/{productId}")
+    @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
+    public ApiResponse<?> removeBoost(@PathVariable Long productId) {
+        productBoostService.removeBoost(productId);
+        return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
 
