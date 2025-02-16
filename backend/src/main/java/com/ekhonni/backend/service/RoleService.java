@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.dto.role.RoleCreateDTO;
 import com.ekhonni.backend.exception.role.RoleAlreadyExistsException;
 import com.ekhonni.backend.exception.role.RoleCannotBeDeletedException;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
@@ -44,20 +45,21 @@ public class RoleService extends BaseService<Role, Long> {
         if (Objects.equals(role.getName(), "SUPER_ADMIN") || Objects.equals(role.getName(), "USER")) {
             throw new RoleCannotBeDeletedException();
         }
-        roleRepository.deleteById(id);
+        roleRepository.softDelete(id);
     }
 
     @Transactional
-    public String add(Role role) {
-        if (roleRepository.existsByName("ADMIN")) throw new RoleAlreadyExistsException();
+    public String add(RoleCreateDTO dto) {
+        String roleName = dto.name().toUpperCase();
+        if (roleRepository.existsByName(roleName)) throw new RoleAlreadyExistsException();
         Role newRole = new Role(
-                role.getName(),
-                role.getDescription()
+                roleName,
+                dto.description()
         );
 
         roleRepository.save(newRole);
 
-        return "New Role added";
+        return "New Role added: " + newRole.getName();
     }
 
     public boolean hasPrivilegeAccess(Role role, Privilege privilege) {

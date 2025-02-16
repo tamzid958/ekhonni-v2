@@ -2,6 +2,7 @@ package com.ekhonni.backend.exception;
 
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.exception.bid.*;
+import com.ekhonni.backend.exception.cashin.CashInNotFoundException;
 import com.ekhonni.backend.exception.payment.*;
 import com.ekhonni.backend.exception.payout.UnsupportedPayoutMethodException;
 import com.ekhonni.backend.exception.payoutaccount.PayoutAccountNotFoundException;
@@ -112,6 +113,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(response);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFoundException(AccountNotFoundException ex) {
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
@@ -209,7 +216,18 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     *                      Payment Exceptions
+     *                      CashIn Exceptions
+     * =================================================================
+     */
+    @ExceptionHandler(CashInNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCashInNotFoundException(CashInNotFoundException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now().toString());
+        return ResponseEntity.status(404).body(response);
+    }
+
+    /**
+     * =================================================================
+     *                    Payout account Exceptions
      * =================================================================
      */
     @ExceptionHandler(PayoutAccountNotFoundException.class)
@@ -227,7 +245,7 @@ public class GlobalExceptionHandler {
 
     /**
      * =================================================================
-     * Review Exceptions
+     *                       Review Exceptions
      * =================================================================
      */
     @ExceptionHandler(ReviewNotFoundException.class)

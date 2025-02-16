@@ -10,12 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -40,13 +41,12 @@ public class BidLogService extends BaseService<BidLog, Long> {
         this.objectMapper = objectMapper;
     }
 
-
     @Scheduled(cron = "0 0 0 * * *")
     public void archiveDeletedBids() {
-        log.info("Starting archiving soft deleted bids");
+        log.info("Starting moving soft deleted bids to log table");
         int pageNumber = 0;
         boolean hasMorePages = true;
-        Sort sort = Sort.by("createdAt").ascending();
+        Sort sort = Sort.by("id").ascending();
         while (hasMorePages) {
             PageRequest pageRequest = PageRequest.of(pageNumber, BATCH_SIZE, sort);
             Page<Bid> bidPage = bidService.getAllDeleted(pageRequest);
@@ -54,32 +54,44 @@ public class BidLogService extends BaseService<BidLog, Long> {
             hasMorePages = bidPage.hasNext();
             pageNumber++;
         }
+        log.info("Done moving soft deleted bids to log table");
     }
 
-    @Modifying
-    @Transactional
     private void processBatch(List<Bid> bidsToArchive) {
-        try {
-            for (Bid bid : bidsToArchive) {
-                try {
-                    BidLog bidLog = new BidLog();
-                    bidLog.setOriginalBidId(bid.getId());
-                    bidLog.setBidData(convertBidToJson(bid));
-
-                    bidLogRepository.save(bidLog);
-                    log.info("Successfully archived bid: {}", bid.getId());
-
-                    bidService.deletePermanently(bid.getId());
-                } catch (Exception e) {
-                    log.error("Error archiving bid {}: {}", bid.getId(), e.getMessage());
-                }
+        for (Bid bid : bidsToArchive) {
+            try {
+                archiveSingleBid(bid);
+            } catch (Exception e) {
+                log.error("Error archiving bid {}: {}", bid.getId(), e.getMessage());
             }
-        } catch (Exception e) {
-            log.error("Error in bid archival process: {}", e.getMessage());
         }
+    }
+
+    @Transactional
+    public void archiveSingleBid(Bid bid) throws Exception {
+        BidLog bidLog = new BidLog();
+        bidLog.setBidId(bid.getId());
+        bidLog.setProductId(bid.getProduct().getId());
+        bidLog.setBidData(convertBidToJson(bid));
+
+        bidLogRepository.save(bidLog);
+        bidService.deletePermanently(bid.getId());
     }
 
     private String convertBidToJson(Bid bid) throws Exception {
         return objectMapper.writeValueAsString(BidArchiveDTO.fromBid(bid));
     }
+
+    public Page<BidLog> getByProductId(Long productId, Pageable pageable) {
+        return bidLogRepository.findByProductIdAndDeletedAtIsNull(productId, pageable);
+    }
+
+    public Page<BidLog> getByBidId(Long bidId, Pageable pageable) {
+        return bidLogRepository.findByBidIdAndDeletedAtIsNull(bidId, pageable);
+    }
+
+    public Page<BidLog> getByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return bidLogRepository.findByCreatedAtBetweenAndDeletedAtIsNull(startDate, endDate, pageable);
+    }
+
 }

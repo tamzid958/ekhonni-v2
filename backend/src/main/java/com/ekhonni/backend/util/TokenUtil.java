@@ -110,16 +110,4 @@ public class TokenUtil {
         return LocalDateTime.now().isAfter(refreshToken.getExpiration());
     }
 
-    public String generateVerificationToken() {
-        String token = UUID.randomUUID().toString();
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-            mac.init(secretKeySpec);
-            byte[] hmac = mac.doFinal(token.getBytes());
-            return Base64.getUrlEncoder().encodeToString(hmac);
-        } catch (Exception e) {
-            throw new RuntimeException("Error generating HMAC token", e);
-        }
-    }
 }

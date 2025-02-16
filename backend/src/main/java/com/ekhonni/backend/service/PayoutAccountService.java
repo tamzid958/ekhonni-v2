@@ -31,7 +31,6 @@ public class PayoutAccountService extends BaseService<PayoutAccount, Long> {
         this.accountService = accountService;
     }
 
-    @Modifying
     @Transactional
     public void create(PayoutAccountCreateDTO dto) {
 

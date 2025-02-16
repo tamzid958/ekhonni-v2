@@ -1,6 +1,7 @@
 package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
+import com.ekhonni.backend.dto.PrivilegeIdsDTO;
 import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
 import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
@@ -56,6 +57,7 @@ public class PrivilegeService {
                     generateUniqueId(),
                     privilegeDTO.name(),
                     privilegeDTO.description(),
+                    privilegeDTO.type(),
                     privilegeDTO.httpMethod(),
                     privilegeDTO.endpoint()
             );
@@ -84,11 +86,27 @@ public class PrivilegeService {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
         Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found"));
 
-        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege.getId());
-
-        rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+        if (!rolePrivilegeAssignmentRepository.existsByRoleAndPrivilegeId(role, privilegeId)) {
+            RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege.getId());
+            rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+        }
 
         return "Privilege assigned to role";
+    }
+
+    public String assignMultiple(long roleId, PrivilegeIdsDTO privilegeIdsDTO) {
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when assigning"));
+
+        for (long privilegeId : privilegeIdsDTO.privilegeIds()) {
+            Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege not found"));
+
+            if (!rolePrivilegeAssignmentRepository.existsByRoleAndPrivilegeId(role, privilegeId)) {
+                RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege.getId());
+                rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+            }
+        }
+
+        return "Privileges assigned to role";
     }
 
     public Page<Privilege> getAllOfRole(long roleId, Pageable pageable) {
@@ -120,13 +138,26 @@ public class PrivilegeService {
 
     public String remove(long roleId, long privilegeId) {
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when removing"));
-        Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
+        this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
 
-        RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilegeId);
+        RolePrivilegeAssignment rolePrivilegeAssignment = rolePrivilegeAssignmentRepository.findByRoleAndPrivilegeId(role, privilegeId).orElseThrow(() -> new RuntimeException("Privilege not assigned by " + privilegeId));
 
         rolePrivilegeAssignmentRepository.delete(rolePrivilegeAssignment);
 
         return "Privilege removed from role";
+    }
+
+    public String removeMultiple(long roleId, PrivilegeIdsDTO privilegeIdsDTO) {
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException("Role not found when removing"));
+        for (long privilegeId : privilegeIdsDTO.privilegeIds()) {
+            this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not found while removing"));
+
+            RolePrivilegeAssignment rolePrivilegeAssignment = rolePrivilegeAssignmentRepository.findByRoleAndPrivilegeId(role, privilegeId).orElseThrow(() -> new RuntimeException("Privilege not assigned by " + privilegeId));
+
+            rolePrivilegeAssignmentRepository.delete(rolePrivilegeAssignment);
+        }
+
+        return "Privileges removed from role";
     }
 
     public Optional<Privilege> findById(long privilegeID) {
@@ -165,5 +196,6 @@ public class PrivilegeService {
 
         return new PageImpl<>(pagedPrivileges, pageable, privileges.size());
     }
+
 
 }

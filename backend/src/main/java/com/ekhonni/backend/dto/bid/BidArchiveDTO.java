@@ -10,7 +10,6 @@ import java.util.UUID;
 @Data
 public class BidArchiveDTO {
     private UUID bidderId;
-    private Long productId;
     private double amount;
     private String currency;
     private BidStatus status;
@@ -20,7 +19,6 @@ public class BidArchiveDTO {
     public static BidArchiveDTO fromBid(Bid bid) {
         BidArchiveDTO dto = new BidArchiveDTO();
         dto.setBidderId(bid.getBidder().getId());
-        dto.setProductId(bid.getProduct().getId());
         dto.setAmount(bid.getAmount());
         dto.setCurrency(bid.getCurrency());
         dto.setStatus(bid.getStatus());

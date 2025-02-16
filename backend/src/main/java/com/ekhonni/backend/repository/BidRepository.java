@@ -17,6 +17,12 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     <P> Page<P> findByBidderIdAndDeletedAtIsNull(UUID bidderId, Class<P> projection, Pageable pageable);
 
+    <P> Page<P> findByProductSellerIdAndDeletedAtIsNull(UUID id, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByBidderIdAndStatusAndDeletedAtIsNull(UUID bidderId, BidStatus status, Class<P> projection, Pageable pageable);
+
+    <P> Page<P> findByProductSellerIdAndStatusAndDeletedAtIsNull(UUID id, BidStatus status, Class<P> projection, Pageable pageable);
+
     Optional<Bid> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId);
 
     <P> Optional<P> findByProductIdAndBidderIdAndDeletedAtIsNull(Long productId, UUID bidderId, Class<P> projection);

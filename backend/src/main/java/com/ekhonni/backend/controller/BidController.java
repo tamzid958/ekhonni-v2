@@ -68,8 +68,15 @@ public class BidController {
     }
 
     @GetMapping("/bidder")
-    public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForUser(Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForAuthenticatedUser(BidderBidProjection.class, pageable));
+    public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForBidder(Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForAuthenticatedBidder(BidderBidProjection.class, pageable));
+    }
+
+    @GetMapping("/bidder/status/{status}")
+    public ResponseEntity<ApiResponse<Page<BidderBidProjection>>> getAllForBidderByStatus(
+            @PathVariable("status") BidStatus status, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForAuthenticatedBidderByStatus(status, BidderBidProjection.class, pageable));
     }
 
     @GetMapping("/product/{product_id}/highest")
@@ -92,6 +99,18 @@ public class BidController {
     @GetMapping("/product/{product_id}/count")
     public ResponseEntity<ApiResponse<Long>> getCountForProduct(@PathVariable("product_id") Long productId) {
         return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getCountForProduct(productId));
+    }
+
+    @GetMapping("/seller")
+    public ResponseEntity<ApiResponse<Page<SellerBidProjection>>> getAllForSeller(Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAllForAuthenticatedSeller(SellerBidProjection.class, pageable));
+    }
+
+    @GetMapping("/seller/status/{status}")
+    public ResponseEntity<ApiResponse<Page<SellerBidProjection>>> getAllForSellerByStatus(
+            @PathVariable("status") BidStatus status, Pageable pageable) {
+        return ResponseUtil.createResponse(HTTPStatus.OK,
+                bidService.getAllForAuthenticatedSellerByStatus(status, SellerBidProjection.class, pageable));
     }
 
     @GetMapping("/seller/product/{product_id}")
@@ -124,18 +143,6 @@ public class BidController {
             @PathVariable("product_id") Long productId, Pageable pageable) {
         return ResponseUtil.createResponse(HTTPStatus.OK,
                 bidService.getAllForProduct(productId, AdminBidProjection.class, pageable));
-    }
-
-    @GetMapping("/product/{product_id}/audit")
-    public ResponseEntity<ApiResponse<Page<AdminBidProjection>>> getAuditForProduct(
-            @PathVariable("product_id") Long productId, Pageable pageable) {
-        return ResponseUtil.createResponse(HTTPStatus.OK,
-                bidService.getAuditForProduct(productId, AdminBidProjection.class, pageable));
-    }
-
-    @GetMapping("/product/{product_id}/audit-count")
-    public ResponseEntity<ApiResponse<Long>> getAuditCountForProduct(@PathVariable("product_id") Long productId) {
-        return ResponseUtil.createResponse(HTTPStatus.OK, bidService.getAuditCountForProduct(productId));
     }
 
     @PatchMapping("/{id}/update-status")

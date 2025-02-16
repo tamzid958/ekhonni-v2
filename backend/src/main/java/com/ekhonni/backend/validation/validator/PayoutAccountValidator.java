@@ -17,11 +17,11 @@ import java.util.Map;
 public class PayoutAccountValidator implements ConstraintValidator<ValidPayoutAccount, PayoutAccountCreateDTO> {
 
     private static final Map<PayoutCategory, List<PayoutMethod>> VALID_CATEGORY_METHODS = Map.of(
-            PayoutCategory.BANK, List.of(PayoutMethod.DBBL),
+//            PayoutCategory.BANK, List.of(PayoutMethod.DBBL),
             PayoutCategory.MOBILE_BANKING, List.of(
-                    PayoutMethod.BKASH,
-                    PayoutMethod.ROCKET,
-                    PayoutMethod.NAGAD
+                    PayoutMethod.BKASH
+//                    PayoutMethod.ROCKET,
+//                    PayoutMethod.NAGAD
             )
     );
 

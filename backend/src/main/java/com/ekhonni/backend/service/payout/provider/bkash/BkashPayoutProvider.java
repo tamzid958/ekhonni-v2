@@ -29,7 +29,6 @@ public class BkashPayoutProvider implements PayoutProvider {
     private final BkashTokenManager bkashTokenManager;
 
     @Override
-    @Modifying
     @Transactional
     public void processPayout(Withdraw withdraw) throws PayoutProcessingException {
 
@@ -60,7 +59,6 @@ public class BkashPayoutProvider implements PayoutProvider {
 
     }
 
-    @Modifying
     @Transactional
     private void updateWithdraw(Withdraw withdraw, BkashPayoutResponse response) {
         if ("Completed".equals(response.getTransactionStatus())) {
@@ -74,7 +72,6 @@ public class BkashPayoutProvider implements PayoutProvider {
         }
     }
 
-    @Modifying
     @Transactional
     public void updateWithdrawStatus(Withdraw withdraw, WithdrawStatus status) {
         withdraw.setStatus(status);

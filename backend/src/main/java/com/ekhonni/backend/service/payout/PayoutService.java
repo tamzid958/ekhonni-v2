@@ -33,8 +33,6 @@ public class PayoutService {
     private final WithdrawService withdrawService;
     private final AccountService accountService;
 
-    @Modifying
-    @Transactional
     public void processPayout(WithdrawRequest withdrawRequest) throws PayoutProcessingException {
 
         Withdraw withdraw = withdrawService.create(withdrawRequest);
@@ -44,11 +42,11 @@ public class PayoutService {
 
         PayoutProviderFactory factory = getPayoutProviderFactory(payoutCategory, payoutMethod);
 
-        PayoutProvider payoutProvider = factory.createPayoutProvider();
+        PayoutProvider payoutProvider = factory.getPayoutProvider();
         payoutProvider.processPayout(withdraw);
 
         if (withdraw.getStatus().equals(WithdrawStatus.COMPLETED)) {
-            updateAccountBalance(withdraw);
+            accountService.withdraw(withdraw.getAccount(), withdraw.getBdtAmount());
         }
     }
 
@@ -62,13 +60,4 @@ public class PayoutService {
                                 category, method)));
     }
 
-    @Modifying
-    @Transactional
-    private void updateAccountBalance(Withdraw withdraw) {
-        Account userAccount = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
-        userAccount.setTotalWithdrawals(userAccount.getTotalWithdrawals() + withdraw.getAmount());
-
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals() + withdraw.getAmount() + withdraw.getPayoutFee());
-    }
 }

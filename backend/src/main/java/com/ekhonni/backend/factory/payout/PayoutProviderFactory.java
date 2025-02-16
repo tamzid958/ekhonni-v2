@@ -11,5 +11,5 @@ import com.ekhonni.backend.service.payout.PayoutProvider;
 public interface PayoutProviderFactory {
     PayoutCategory getPayoutCategory();
     PayoutMethod getPayoutMethod();
-    PayoutProvider createPayoutProvider();
+    PayoutProvider getPayoutProvider();
 }

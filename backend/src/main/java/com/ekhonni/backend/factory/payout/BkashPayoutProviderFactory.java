@@ -30,7 +30,7 @@ public class BkashPayoutProviderFactory implements PayoutProviderFactory {
     }
 
     @Override
-    public PayoutProvider createPayoutProvider() {
+    public PayoutProvider getPayoutProvider() {
         return bkashPayoutProvider;
     }
 

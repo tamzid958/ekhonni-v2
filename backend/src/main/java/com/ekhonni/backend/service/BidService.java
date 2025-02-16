@@ -41,7 +41,6 @@ public class BidService extends BaseService<Bid, Long> {
         this.watchlistService =  watchlistService;
     }
 
-    @Modifying
     @Transactional
     public void create(BidCreateDTO bidCreateDTO) {
         Product product = productService.get(bidCreateDTO.productId())
@@ -61,7 +60,6 @@ public class BidService extends BaseService<Bid, Long> {
         notificationService.createForNewBid(product, bidCreateDTO);
     }
 
-    @Modifying
     @Transactional
     public void handlePreviousBid(BidCreateDTO bidCreateDTO) {
         if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bidCreateDTO.productId(), BidStatus.ACCEPTED)) {
@@ -78,7 +76,6 @@ public class BidService extends BaseService<Bid, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     public void updateBid(Long id, BidUpdateDTO bidUpdateDTO) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
@@ -98,7 +95,6 @@ public class BidService extends BaseService<Bid, Long> {
         }
     }
 
-    @Modifying
     @Transactional
     public void accept(Long id) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
@@ -111,7 +107,6 @@ public class BidService extends BaseService<Bid, Long> {
         notificationService.createForBidAccepted(bid);
     }
 
-    @Modifying
     @Transactional
     public void updateStatus(Long id, BidStatus status) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
@@ -140,8 +135,22 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.countByProductId(productId);
     }
 
-    public <P> Page<P> getAllForAuthenticatedUser(Class<P> projection, Pageable pageable) {
+    public <P> Page<P> getAllForAuthenticatedBidder(Class<P> projection, Pageable pageable) {
         return bidRepository.findByBidderIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
+    }
+
+    public <P> Page<P> getAllForAuthenticatedSeller(Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductSellerIdAndDeletedAtIsNull(AuthUtil.getAuthenticatedUser().getId(), projection, pageable);
+    }
+
+    public <P> Page<P> getAllForAuthenticatedBidderByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByBidderIdAndStatusAndDeletedAtIsNull(
+                AuthUtil.getAuthenticatedUser().getId(), status, projection, pageable);
+    }
+
+    public <P> Page<P> getAllForAuthenticatedSellerByStatus(BidStatus status, Class<P> projection, Pageable pageable) {
+        return bidRepository.findByProductSellerIdAndStatusAndDeletedAtIsNull(
+                AuthUtil.getAuthenticatedUser().getId(), status, projection, pageable);
     }
 
     public <P> Page<P> getAllForUser(UUID userId, Class<P> projection, Pageable pageable) {
@@ -162,5 +171,4 @@ public class BidService extends BaseService<Bid, Long> {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
     }
-
 }

@@ -40,7 +40,7 @@ public class PasswordResetService {
     @Value("${spring.constant.password-reset-url}")
     private String passwordResetUrl;
 
-    public ApiResponse<?> requestReset(String email) {
+    public String requestReset(String email) {
 
         User user = userRepository.findByEmail(email);
 
@@ -52,23 +52,21 @@ public class PasswordResetService {
             throw new EmailNotVerifiedException("Email not verified. Please verify your email to sign in.");
         }
 
-        VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUser(user) != null) {
-            verificationToken = verificationTokenService.replace(user);
-        } else {
-            verificationToken = verificationTokenService.create(user, VerificationTokenType.RESET_PASSWORD);
-        }
+        VerificationToken verificationToken = verificationTokenService.generate(
+                user,
+                VerificationTokenType.RESET_PASSWORD
+        );
 
         EmailTaskDTO emailTaskDTO = getEmailTaskDTO(email, verificationToken);
         emailProducerService.send(emailTaskDTO);
 
         String responseMessage = "A password reset link has been sent to your email. Please use the following link to reset your password";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 
     private EmailTaskDTO getEmailTaskDTO(String email, VerificationToken verificationToken) {
         String subject = "Password Reset Request";
-        String url = passwordResetUrl + verificationToken.getToken();
+        String url = passwordResetUrl.replace("{token}", verificationToken.getToken());
         String message = String.format(
                 "Dear User,\n\n" +
                         "We received a request to reset your password for your Ekhonni account.\n\n" +
@@ -78,16 +76,15 @@ public class PasswordResetService {
                 url
         );
 
-        EmailTaskDTO emailTaskDTO = new EmailTaskDTO(
+        return new EmailTaskDTO(
                 email,
                 subject,
                 message
         );
-        return emailTaskDTO;
     }
 
 
-    public ApiResponse<?> reset(String token, String newPassword) {
+    public String reset(String token, String newPassword) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -104,6 +101,6 @@ public class PasswordResetService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Password Reset Successful";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }

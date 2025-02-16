@@ -1,270 +1,150 @@
 [
   {
+    "name": "Retrieve API Documentation",
+    "description": "Available API endpoints Documented",
+    "httpMethod": "GET",
+    "endpoint": "/swagger-ui.html",
+    "type": "Swagger"
+  },
+  {
     "name": "Manage Account",
     "description": "Allows management of account operations",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/account/{id}"
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
   },
   {
     "name": "Get Account",
     "description": "Allows retrieving account details",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account/{id}"
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
   },
   {
     "name": "Delete Account",
     "description": "Allows deleting an account",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/account/{id}"
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
   },
   {
     "name": "Update Account",
     "description": "Allows updating account information",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/account/{id}"
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
   },
   {
     "name": "Restore Account",
     "description": "Allows restoring deleted accounts",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/account/{id}/restore"
+    "endpoint": "/api/v2/account/{id}/restore",
+    "type": "Account"
   },
   {
     "name": "Get All Accounts",
     "description": "Allows viewing all account data",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account"
-  },
-
-
-  {
-    "name": "Update User Profile",
-    "description": "Allows updating user profile information",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/user/{id}/update"
+    "endpoint": "/api/v2/account",
+    "type": "Account"
   },
   {
-    "name": "Change User Password",
-    "description": "Allows changing the user password",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/user/{id}/change-password"
-  },
-  {
-    "name": "Change User Email",
-    "description": "Allows changing the user email address",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/user/{id}/change-email"
-  },
-  {
-    "name": "Get All User ",
-    "description": "Allows retrieving all user (possibly by name/email)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/user"
-  },
-  {
-    "name": "Get All Active User ",
-    "description": "Allows retrieving all active user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/user/active"
-  },
-  {
-    "name": "Get All Blocked User ",
-    "description": "Allows retrieving all blocked user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/user/block"
-  },
-  {
-    "name": "Get All Deleted User ",
-    "description": "Allows retrieving all deleted user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/user/delete"
-  },
-  {
-    "name": "Assign user a role ",
-    "description": "Allows assigning user a role",
+    "name": "Create Payout Account",
+    "description": "Allows users to create a new payout account",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/{id}/assign/role/{id}"
+    "endpoint": "/api/v2/account/payout",
+    "type": "Account"
   },
   {
-    "name": "remove user from assigned role ",
-    "description": "Allows removing user from assigned role (default role is user)",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/{id}/remove/role/"
+    "name": "Update Payout Account",
+    "description": "Allows users to update an existing payout account",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/account/payout/{id}",
+    "type": "Account"
   },
   {
-    "name": "Get User Profile",
-    "description": "Allows retrieving the user profile",
+    "name": "Get Payout Account",
+    "description": "Fetches details of a specific payout account",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/user/{id}"
+    "endpoint": "/api/v2/account/payout/{id}",
+    "type": "Account"
   },
   {
-    "name": "Update User",
-    "description": "Allows update a user",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/user/{id}"
+    "name": "Get All Payout Accounts for User",
+    "description": "Fetches all payout accounts for the authenticated user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/payout",
+    "type": "Account"
   },
   {
-    "name": "Upload User Image",
-    "description": "Allows uploading profile image of user",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/user/{id}/image"
-  },
-  {
-    "name": "Delete User",
-    "description": "Allows deleting a user",
+    "name": "Delete Payout Account",
+    "description": "Permanently deletes a payout account",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/user/{id}"
+    "endpoint": "/api/v2/account/payout/{id}",
+    "type": "Account"
   },
   {
-    "name": "Refresh Token",
-    "description": "Allows retrieving new user token",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/user/{id}/refresh-token"
+    "name": "Get All Accounts",
+    "description": "Allows users to retrieve a paginated list of all accounts",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account",
+    "type": "Account"
   },
   {
-    "name": "Update Privilege",
-    "description": "Allows updating a privilege",
+    "name": "Get Account",
+    "description": "Allows users to retrieve a specific account by ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
+  },
+  {
+    "name": "Get Account User",
+    "description": "Allows users to retrieve user information for a specific account",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/{id}/user",
+    "type": "Account"
+  },
+  {
+    "name": "Update Account",
+    "description": "Allows users to update an existing account",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/privilege/{id}"
+    "endpoint": "/api/v2/account/{id}",
+    "type": "Account"
   },
   {
-    "name": "Get Role Privileges",
-    "description": "Allows retrieving all privileges for a specific role",
+    "name": "Get Account Balance",
+    "description": "Allows users to retrieve the balance for a specific account",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/role/{id}/privilege/"
+    "endpoint": "/api/v2/account/{id}/balance",
+    "type": "Account"
   },
   {
-    "name": "Assign Privilege",
-    "description": "Assign particular Privilege to a Role",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/role/{id}/assign/privilege/{id}"
-  },
-  {
-    "name": "Get Privilege Details",
-    "description": "Allows viewing details of a specific privilege",
+    "name": "Get Authenticated User Account",
+    "description": "Allows users to retrieve their own account information",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/privilege/{id}"
+    "endpoint": "/api/v2/account/user",
+    "type": "Account"
   },
   {
-    "name": "Get All Privileges",
-    "description": "Allows retrieving all privileges",
+    "name": "Get Authenticated User Balance",
+    "description": "Allows users to retrieve their own account balance",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/privilege"
-  },
-  {
-    "name": "Delete Privilege",
-    "description": "Allows deleting a specific privilege",
-    "httpMethod": "DELETE",
-    "endpoint": "/api/v2/privilege/{id}/delete"
-  },
-  {
-    "name": "Add Role",
-    "description": "Allows creating a new role",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/role/"
-  },
-  {
-    "name": "Update Role",
-    "description": "Allows updating an existing role",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/role/{id}"
-  },
-  {
-    "name": "Get Role Details",
-    "description": "Allows retrieving role details",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/role/{id}"
-  },
-  {
-    "name": "Get All Roles",
-    "description": "Allows retrieving all roles",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/role/"
-  },
-  {
-    "name": "Delete Role",
-    "description": "Allows deleting a specific role",
-    "httpMethod": "DELETE",
-    "endpoint": "/api/v2/role/{id}"
-  },
-  {
-    "name": "Get all reports",
-    "description": "Allows viewing all available reports",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/reports"
-  },
-  {
-    "name": "Get all reports against user",
-    "description": "Allows viewing all available reports against user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/reports/{id}"
-  },
-  {
-    "name": "Get all reports reported by user",
-    "description": "Allows viewing all available reports reported by user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/user/{id}/reports"
-  },
-  {
-    "name": "Report a user",
-    "description": "Allows Reporting a user",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/user/{id}/report"
-  },
-  {
-    "name": "Process Payment Success",
-    "description": "Handles successful payment processing",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/success"
+    "endpoint": "/api/v2/account/user/balance",
+    "type": "Account"
   },
   {
     "name": "Sign-Up",
     "description": "Handles user sign-up",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/auth/sign-up"
+    "endpoint": "/api/v2/auth/sign-up",
+    "type": "Auth"
   },
   {
     "name": "Sign-In",
     "description": "Handles user sign-in",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/auth/sign-in"
-  },
-  {
-    "name": "Admin User Warn",
-    "description": "Admin user warning functionality",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/{id}/warn"
-  },
-  {
-    "name": "Admin User Block",
-    "description": "Admin user blocking functionality",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/block"
-  },
-  {
-    "name": "Admin User UnBlock",
-    "description": "Admin user unblocking functionality",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/user/unblock"
-  },
-
-  {
-    "name": "Retrieve API Documentation",
-    "description": "Available API endpoints Documented",
-    "httpMethod": "GET",
-    "endpoint": "/swagger-ui.html"
-  },
-  {
-    "name": "Retrieve Users of a Role",
-    "description": "Get all users assigned to a role",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/role/{id}/users/"
-  },
-  {
-    "name": "Retrieve notifications",
-    "description": "Get all the notifications of a specific user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/user/{id}/notifications"
+    "endpoint": "/api/v2/auth/sign-in",
+    "type": "Auth"
   },
   {
     "name": "Admin create notifications",
@@ -276,630 +156,1064 @@
     "name": "Get Bid Details",
     "description": "Allows bidder to view their own bid details",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/{id}"
+    "endpoint": "/api/v2/bid/{id}",
+    "type": "Bid"
   },
   {
-    "name": "Get All Bids For User",
+    "name": "Get All Bids For Bidder",
     "description": "Allows bidder to view all their bids",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/bidder"
+    "endpoint": "/api/v2/bid/bidder",
+    "type": "Bid"
+  },
+  {
+    "name": "Get Bidder Bids By Status",
+    "description": "Retrieves paginated list of bids for authenticated bidder/buyer filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/bidder/status/{id}",
+    "type": "Bid"
+  },
+  {
+    "name": "Get All Bids For Seller",
+    "description": "Allows seller to view all their bids",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller",
+    "type": "Bid"
+  },
+  {
+    "name": "Get Seller Bids By Status",
+    "description": "Retrieves paginated list of bids for authenticated seller filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid/seller/status/{id}",
+    "type": "Bid"
   },
   {
     "name": "Get Product Buyer Bids",
     "description": "Allows viewing all bids for a product (buyer view)",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/buyer/product/{id}"
+    "endpoint": "/api/v2/bid/buyer/product/{id}",
+    "type": "Bid"
   },
   {
     "name": "Get User Bid for Product",
     "description": "Fetches the authenticated user's bid for a specific product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/user/product/{id}"
+    "endpoint": "/api/v2/bid/user/product/{id}",
+    "type": "Bid"
   },
   {
     "name": "Get Product Bid Count",
     "description": "Allows viewing bid count for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/count"
+    "endpoint": "/api/v2/bid/product/{id}/count",
+    "type": "Bid"
   },
   {
     "name": "Get Product Highest Bid",
     "description": "Allows viewing highest bid amount for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/highest"
+    "endpoint": "/api/v2/bid/product/{id}/highest",
+    "type": "Bid"
   },
   {
     "name": "Create Bid",
     "description": "Allows creating a new bid",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/bid"
+    "endpoint": "/api/v2/bid",
+    "type": "Bid"
   },
   {
     "name": "Update Bid",
     "description": "Allows bidder to update their own bid",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/{id}/update"
+    "endpoint": "/api/v2/bid/{id}/update",
+    "type": "Bid"
   },
   {
     "name": "Get Seller Product Bids",
     "description": "Allows seller to view bids for their product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/seller/product/{id}"
+    "endpoint": "/api/v2/bid/seller/product/{id}",
+    "type": "Bid"
   },
   {
     "name": "Accept Bid",
     "description": "Allows seller to accept a bid",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/{id}/accept"
+    "endpoint": "/api/v2/bid/{id}/accept",
+    "type": "Bid"
   },
   {
     "name": "Get All Bids Admin",
     "description": "Allows admin to view all bids",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid"
+    "endpoint": "/api/v2/bid",
+    "type": "Bid"
   },
   {
     "name": "Get Product Bids Admin",
     "description": "Allows admin to view all bids for a product",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/admin/product/{id}"
+    "endpoint": "/api/v2/bid/admin/product/{id}",
+    "type": "Bid"
   },
   {
     "name": "Get User Bids Admin",
     "description": "Fetches all bids for a specific user with pagination",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/user/{id}"
-  },
-  {
-    "name": "Get Product Bid Audit",
-    "description": "Allows viewing bid audit for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/audit"
-  },
-  {
-    "name": "Get Product Bid Audit Count",
-    "description": "Allows viewing bid audit count for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/bid/product/{id}/audit-count"
+    "endpoint": "/api/v2/bid/user/{id}",
+    "type": "Bid"
   },
   {
     "name": "Update Bid Status",
     "description": "Allows admin to update bid status",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/{id}/update-status"
+    "endpoint": "/api/v2/bid/{id}/update-status",
+    "type": "Bid"
   },
   {
     "name": "Restore Single Bid",
     "description": "Allows restoring a single deleted bid",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/{id}/restore"
+    "endpoint": "/api/v2/bid/{id}/restore",
+    "type": "Bid"
   },
   {
     "name": "Restore Multiple Bids",
     "description": "Allows restoring multiple deleted bids",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/restore"
+    "endpoint": "/api/v2/bid/restore",
+    "type": "Bid"
   },
   {
     "name": "Restore All Bids",
     "description": "Allows restoring all deleted bids",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/bid/restore-all"
+    "endpoint": "/api/v2/bid/restore-all",
+    "type": "Bid"
   },
   {
     "name": "Soft Delete Bid",
     "description": "Allows soft deleting a bid",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/bid/{id}"
+    "endpoint": "/api/v2/bid/{id}",
+    "type": "Bid"
   },
   {
     "name": "Permanent Delete Bid",
     "description": "Allows permanently deleting a bid",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/bid/{id}/permanent"
-  },
-  {
-    "name": "Initiate Payment",
-    "description": "Allows a user to initiate a payment for a bid",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/initiate/{id}"
-  },
-  {
-    "name": "Payment Success",
-    "description": "Handles the successful completion of a payment",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/success"
-  },
-  {
-    "name": "Payment Failure",
-    "description": "Handles a failed payment",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/fail"
-  },
-  {
-    "name": "Payment Cancel",
-    "description": "Handles payment cancellation",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/cancel"
-  },
-  {
-    "name": "Instant Payment Notification",
-    "description": "Handles IPN requests from the payment gateway",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payment/ipn"
-  },
-  {
-    "name": "Create Seller Review",
-    "description": "Allows creating a review for a seller",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/review/seller"
-  },
-  {
-    "name": "Create Buyer Review",
-    "description": "Allows creating a review for a buyer",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/review/buyer"
-  },
-  {
-    "name": "Update Seller Review",
-    "description": "Allows updating an existing review for a seller",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/review/{id}/seller"
-  },
-  {
-    "name": "Update Buyer Review",
-    "description": "Allows updating an existing review for a buyer",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/review/{id}/buyer"
-  },
-  {
-    "name": "Get Seller Reviews",
-    "description": "Fetches reviews of a seller by their ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/seller/{id}"
-  },
-  {
-    "name": "Get Average Seller Rating",
-    "description": "Allows fetching the average rating of a seller",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/seller/{id}/average"
-  },
-  {
-    "name": "Get Seller Product Reviews",
-    "description": "Allows viewing seller reviews for a specific product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/seller/product/{id}"
-  },
-  {
-    "name": "Get Buyer Reviews",
-    "description": "Fetches reviews of a buyer by their ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/buyer/{id}"
-  },
-  {
-    "name": "Get Average Buyer Rating",
-    "description": "Allows fetching the average rating of a buyer",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/buyer/{id}/average"
-  },
-  {
-    "name": "Get Buyer Product Reviews",
-    "description": "Allows viewing buyer reviews for a specific product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/buyer/product/{id}"
-  },
-  {
-    "name": "Get User Seller Reviews",
-    "description": "Allows viewing seller reviews for current user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/user/seller"
-  },
-  {
-    "name": "Get User Buyer Reviews",
-    "description": "Allows viewing buyer reviews for current user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/user/buyer"
-  },
-  {
-    "name": "Get Review",
-    "description": "Allows viewing a specific review",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/{id}"
-  },
-  {
-    "name": "Get Product Seller Review History",
-    "description": "Allows viewing edit history of seller reviews for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/seller/product/{id}/edit-history"
-  },
-  {
-    "name": "Get Product Buyer Review History",
-    "description": "Allows viewing edit history of buyer reviews for a product",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/review/buyer/product/{id}/edit-history"
-  },
-  {
-    "name": "Delete Multiple Reviews",
-    "description": "Allows deleting multiple reviews",
-    "httpMethod": "DELETE",
-    "endpoint": "/api/v2/review"
-  },
-  {
-    "name": "Delete Review Permanently",
-    "description": "Allows permanently deleting a review",
-    "httpMethod": "DELETE",
-    "endpoint": "/api/v2/review/{id}/permanent"
+    "endpoint": "/api/v2/bid/{id}/permanent",
+    "type": "Bid"
   },
   {
     "name": "Delete Multiple Bids",
     "description": "Allows deleting multiple bids",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/bid"
+    "endpoint": "/api/v2/bid",
+    "type": "Bid"
   },
   {
-    "name": "Create Refund Request",
-    "description": "Allows creating a refund request",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/refund/{id}"
-  },
-  {
-    "name": "Approve Refund",
-    "description": "Allows admin to approve a refund request",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/refund/approve/{id}"
-  },
-  {
-    "name": "Create Payout Account",
-    "description": "Allows users to create a new payout account",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/account/payout"
-  },
-  {
-    "name": "Update Payout Account",
-    "description": "Allows users to update an existing payout account",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/account/payout/{id}"
-  },
-  {
-    "name": "Get Payout Account",
-    "description": "Fetches details of a specific payout account",
+    "name": "Get BidLog by ID",
+    "description": "Fetches a specific bid log by its ID",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account/payout/{id}"
+    "endpoint": "/api/v2/bid-log/{id}",
+    "type": "BidLog"
   },
   {
-    "name": "Get All Payout Accounts for User",
-    "description": "Fetches all payout accounts for the authenticated user with pagination",
+    "name": "Get All BidLogs",
+    "description": "Fetches all bid logs with pagination support",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account/payout"
+    "endpoint": "/api/v2/bid-log",
+    "type": "BidLog"
   },
   {
-    "name": "Delete Payout Account",
-    "description": "Permanently deletes a payout account",
+    "name": "Get BidLogs by Product ID",
+    "description": "Fetches bid logs related to a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/product/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get BidLogs by Bid ID",
+    "description": "Fetches bid logs for a specific bid",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/bid/{id}",
+    "type": "BidLog"
+  },
+  {
+    "name": "Get BidLogs by Date Range",
+    "description": "Fetches bid logs within a specific date range",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/bid-log/date-range",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore BidLog by ID",
+    "description": "Restores a specific bid log by its ID",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/{id}/restore",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore Multiple BidLogs",
+    "description": "Restores multiple bid logs by their IDs",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/restore",
+    "type": "BidLog"
+  },
+  {
+    "name": "Restore All BidLogs",
+    "description": "Restores all bid logs",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/bid-log/restore-all",
+    "type": "BidLog"
+  },
+  {
+    "name": "Soft Delete BidLog by ID",
+    "description": "Soft deletes a specific bid log by its ID",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/account/payout/{id}"
+    "endpoint": "/api/v2/bid-log/{id}",
+    "type": "BidLog"
   },
   {
-    "name": "Get All Accounts",
-    "description": "Allows users to retrieve a paginated list of all accounts",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account"
-  },
-  {
-    "name": "Get Account",
-    "description": "Allows users to retrieve a specific account by ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account/{id}"
-  },
-  {
-    "name": "Get Account User",
-    "description": "Allows users to retrieve user information for a specific account",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account/{id}/user"
-  },
-  {
-    "name": "Update Account",
-    "description": "Allows users to update an existing account",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/account/{id}"
-  },
-  {
-    "name": "Get Account Balance",
-    "description": "Allows users to retrieve the balance for a specific account",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account/{id}/balance"
-  },
-  {
-    "name": "Get Authenticated User Account",
-    "description": "Allows users to retrieve their own account information",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account/user"
-  },
-  {
-    "name": "Get Authenticated User Balance",
-    "description": "Allows users to retrieve their own account balance",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/account/user/balance"
-  },
-  {
-    "name": "Get Transaction by ID",
-    "description": "Fetches a specific transaction by its ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/{id}"
-  },
-  {
-    "name": "Get User Transactions",
-    "description": "Fetches all transactions for the authenticated user with pagination",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/user"
-  },
-  {
-    "name": "Get User Transactions by Status",
-    "description": "Fetches all transactions for the authenticated user filtered by status",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/user/status/{id}"
-  },
-  {
-    "name": "Get User Transactions (Admin)",
-    "description": "Fetches all transactions for a specific user (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/user/{id}"
-  },
-  {
-    "name": "Get User Transactions by Status (Admin)",
-    "description": "Fetches all transactions for a specific user filtered by status (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/user/{id}/status/{id}"
-  },
-  {
-    "name": "Get All Transactions",
-    "description": "Fetches all transactions with pagination (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction"
-  },
-  {
-    "name": "Get All Transactions by Status",
-    "description": "Fetches all transactions filtered by status (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/status/{id}"
-  },
-  {
-    "name": "Get Transactions by Date Range",
-    "description": "Fetches all transactions within a specified date range (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/transaction/date-range"
-  },
-  {
-    "name": "Get Withdraw by ID",
-    "description": "Fetches a specific withdrawal by its ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/{id}"
-  },
-  {
-    "name": "Get User Withdraws",
-    "description": "Fetches all withdrawals for the authenticated user with pagination",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/user"
-  },
-  {
-    "name": "Get User Withdraws by Status",
-    "description": "Fetches all withdrawals for the authenticated user filtered by status",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/user/status/{id}"
-  },
-  {
-    "name": "Get All Withdraws",
-    "description": "Fetches all withdrawals with pagination (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw"
-  },
-  {
-    "name": "Get User Withdraws (Admin)",
-    "description": "Fetches all withdrawals for a specific user (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/user/{id}"
-  },
-  {
-    "name": "Get User Withdraws by Status (Admin)",
-    "description": "Fetches all withdrawals for a specific user filtered by status (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/user/{id}/status/{id}"
-  },
-  {
-    "name": "Get All Withdraws by Status",
-    "description": "Fetches all withdrawals filtered by status (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/status/{id}"
-  },
-  {
-    "name": "Get User Withdraw Statistics",
-    "description": "Fetches withdrawal statistics for a specific user (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/user/{id}/statistics"
-  },
-  {
-    "name": "Get Withdraws by Date Range",
-    "description": "Fetches all withdrawals within a specified date range (Admin only)",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/withdraw/date-range"
-  },
-  {
-    "name": "Initiate Payout",
-    "description": "Allows user to initiate a withdrawal request",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/payout"
-  },
-  {
-    "name": "Create Product",
-    "description": "Creates a new product using the provided details, including images",
-    "httpMethod": "POST",
-    "endpoint": "/api/v2/product"
-  },
-  {
-    "name": "Get Product",
-    "description": "Retrieves a product by its ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/product/{id}"
-  },
-  {
-    "name": "Update Product",
-    "description": "Updates a product using the provided details",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/product/{id}"
-  },
-  {
-    "name": "Delete Product",
-    "description": "Deletes a product (soft delete)",
+    "name": "Soft Delete Multiple BidLogs",
+    "description": "Soft deletes multiple bid logs by their IDs",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/product/{id}"
+    "endpoint": "/api/v2/bid-log",
+    "type": "BidLog"
   },
   {
-    "name": "Filter Products",
-    "description": "Retrieves filtered products based on given criteria",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/product/filter"
-  },
-  {
-    "name": "Filter User Products",
-    "description": "Retrieves filtered products for a specific user",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/product/user/filter"
-  },
-  {
-    "name": "Get Product",
-    "description": "Retrieves a product by its ID",
-    "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/product/{id}"
-  },
-  {
-    "name": "Approve Product",
-    "description": "Approves a pending product",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/admin/product/pending/{id}/approve"
-  },
-  {
-    "name": "Decline Product",
-    "description": "Declines a pending product",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/admin/product/pending/{id}/decline"
-  },
-  {
-    "name": "Delete Product",
-    "description": "Deletes an approved product",
+    "name": "Permanently Delete BidLog by ID",
+    "description": "Permanently deletes a specific bid log by its ID",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/admin/product/approved/{id}"
+    "endpoint": "/api/v2/bid-log/{id}/permanent",
+    "type": "BidLog"
   },
   {
-    "name": "Filter Products for Admin",
-    "description": "Retrieves filtered products for the admin",
+    "name": "Get CashIn by ID",
+    "description": "Retrieves a specific cash-in transaction by its ID",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/product/filter"
+    "endpoint": "/api/v2/cash-in/{id}",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get User CashIns",
+    "description": "Retrieves all cash-ins for the authenticated user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get User CashIns by Status",
+    "description": "Retrieves user's cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/status/{id}",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get User CashIns (Admin)",
+    "description": "Admin endpoint to retrieve cash-ins for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/{id}",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get User CashIns by Status (Admin)",
+    "description": "Admin endpoint to retrieve user's cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/user/{id}/status/{id}",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get All CashIns",
+    "description": "Admin endpoint to retrieve all cash-ins",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get CashIns by Status",
+    "description": "Admin endpoint to retrieve all cash-ins filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/status/{id}",
+    "type": "Cash-in"
+  },
+  {
+    "name": "Get CashIns by Date Range",
+    "description": "Admin endpoint to retrieve cash-ins within a date range",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/cash-in/date-range",
+    "type": "Cash-in"
   },
   {
     "name": "Create Category",
     "description": "Creates a new category",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/admin/category"
+    "endpoint": "/api/v2/admin/category",
+    "type": "Category"
   },
   {
     "name": "Get All Categories",
     "description": "Retrieves all categories and subcategories",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/category/all"
+    "endpoint": "/api/v2/admin/category/all",
+    "type": "Category"
   },
   {
     "name": "Get Subcategories",
     "description": "Retrieves subcategories of a specific category",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/category/{name}/subcategories"
+    "endpoint": "/api/v2/admin/category/{id}/subcategories",
+    "type": "Category"
   },
   {
     "name": "Delete Category",
     "description": "Deletes a category by name",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/admin/category/{name}"
+    "endpoint": "/api/v2/admin/category/{id}",
+    "type": "Category"
   },
   {
     "name": "Update Category",
     "description": "Updates an existing category",
     "httpMethod": "PATCH",
-    "endpoint": "/api/v2/admin/category/{name}"
+    "endpoint": "/api/v2/admin/category/{id}",
+    "type": "Category"
   },
   {
     "name": "Get Category Tree",
     "description": "Retrieves the category tree structure",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/admin/category/tree"
+    "endpoint": "/api/v2/admin/category/tree",
+    "type": "Category"
   },
   {
     "name": "Get Subcategories",
     "description": "Retrieves subcategories of a category by its name",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/{name}/subcategories"
+    "endpoint": "/api/v2/category/{id}/subcategories",
+    "type": "Category"
   },
   {
     "name": "Get User Category Tree",
     "description": "Retrieves the category tree for a specific user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/tree/{user_id}"
+    "endpoint": "/api/v2/category/tree/{id}",
+    "type": "Category"
   },
   {
     "name": "Get Categories by User",
     "description": "Retrieves root categories for a specific user",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/all/{user_id}"
+    "endpoint": "/api/v2/category/all/{id}",
+    "type": "Category"
   },
   {
     "name": "Get All Categories",
     "description": "Retrieves all categories and subcategories",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/all"
+    "endpoint": "/api/v2/category/all",
+    "type": "Category"
   },
   {
     "name": "Get Category Tree",
     "description": "Retrieves the complete category tree",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/category/tree"
+    "endpoint": "/api/v2/category/tree",
+    "type": "Category"
+  },
+  {
+    "name": "Process Payment Success",
+    "description": "Handles successful payment processing",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/success",
+    "type": "Payment"
+  },
+  {
+    "name": "Initiate Payment",
+    "description": "Allows a user to initiate a payment for a bid",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/initiate",
+    "type": "Payment"
+  },
+  {
+    "name": "Initiate cash-in",
+    "description": "Allows a user to initiate a cash in",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cash-in",
+    "type": "Payment"
+  },
+  {
+    "name": "Get Payment Methods",
+    "description": "Get all payment/cash in methods",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/payment/methods",
+    "type": "Payment"
+  },
+  {
+    "name": "Payment Success",
+    "description": "Handles the successful completion of a payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/success",
+    "type": "Payment"
+  },
+  {
+    "name": "Payment Failure",
+    "description": "Handles a failed payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/fail",
+    "type": "Payment"
+  },
+  {
+    "name": "Payment Cancel",
+    "description": "Handles payment cancellation",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cancel",
+    "type": "Payment"
+  },
+  {
+    "name": "Instant Payment Notification Payment",
+    "description": "Handles IPN requests from the payment gateway for payment",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/sslcommerz/ipn",
+    "type": "Payment"
+  },
+  {
+    "name": "Instant Payment Notification CashIn",
+    "description": "Handles IPN requests from the payment gateway for cash in",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payment/cash-in/sslcommerz/ipn",
+    "type": "Payment"
+  },
+  {
+    "name": "Initiate Payout",
+    "description": "Allows user to initiate a withdrawal request",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/payout",
+    "type": "Payout"
+  },
+  {
+    "name": "Update Privilege",
+    "description": "Allows updating a privilege",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/privilege/{id}",
+    "type": "Privilege"
+  },
+  {
+    "name": "Get Privilege Details",
+    "description": "Allows viewing details of a specific privilege",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/privilege/{id}",
+    "type": "Privilege"
+  },
+  {
+    "name": "Get All Privileges",
+    "description": "Allows retrieving all privileges",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/privilege",
+    "type": "Privilege"
+  },
+  {
+    "name": "Delete Privilege",
+    "description": "Allows deleting a specific privilege",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/privilege/{id}/delete",
+    "type": "Privilege"
+  },
+  {
+    "name": "Create Product",
+    "description": "Creates a new product using the provided details, including images",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/product",
+    "type": "Product"
+  },
+  {
+    "name": "Get Product",
+    "description": "Retrieves a product by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/{id}",
+    "type": "Product"
+  },
+  {
+    "name": "Update Product",
+    "description": "Updates a product using the provided details",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/product/{id}",
+    "type": "Product"
+  },
+  {
+    "name": "Delete Product",
+    "description": "Deletes a product (soft delete)",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/product/{id}",
+    "type": "Product"
+  },
+  {
+    "name": "Filter Products",
+    "description": "Retrieves filtered products based on given criteria",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/filter",
+    "type": "Product"
+  },
+  {
+    "name": "Filter User Products",
+    "description": "Retrieves filtered products for a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/product/user/filter",
+    "type": "Product"
+  },
+  {
+    "name": "Get Product",
+    "description": "Retrieves a product by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/product/{id}",
+    "type": "Product"
+  },
+  {
+    "name": "Approve Product",
+    "description": "Approves a pending product",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/admin/product/pending/{id}/approve",
+    "type": "Product"
+  },
+  {
+    "name": "Decline Product",
+    "description": "Declines a pending product",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/admin/product/pending/{id}/decline",
+    "type": "Product"
+  },
+  {
+    "name": "Delete Product",
+    "description": "Deletes an approved product",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/admin/product/approved/{id}",
+    "type": "Product"
+  },
+  {
+    "name": "Filter Products for Admin",
+    "description": "Retrieves filtered products for the admin",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/product/filter",
+    "type": "Product"
+  },
+  {
+    "name": "Create Refund Request",
+    "description": "Allows creating a refund request",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/refund/{id}",
+    "type": "Refund"
+  },
+  {
+    "name": "Approve Refund",
+    "description": "Allows admin to approve a refund request",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/refund/approve/{id}",
+    "type": "Refund"
+  },
+  {
+    "name": "Get all reports",
+    "description": "Allows viewing all available reports",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/reports",
+    "type": "Reports"
+  },
+  {
+    "name": "Get all reports against user",
+    "description": "Allows viewing all available reports against user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/reports/{id}",
+    "type": "Reports"
+  },
+  {
+    "name": "Create Seller Review",
+    "description": "Allows creating a review for a seller",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/review/seller",
+    "type": "Review"
+  },
+  {
+    "name": "Create Buyer Review",
+    "description": "Allows creating a review for a buyer",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/review/buyer",
+    "type": "Review"
+  },
+  {
+    "name": "Update Seller Review",
+    "description": "Allows updating an existing review for a seller",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/review/{id}/seller",
+    "type": "Review"
+  },
+  {
+    "name": "Update Buyer Review",
+    "description": "Allows updating an existing review for a buyer",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/review/{id}/buyer",
+    "type": "Review"
+  },
+  {
+    "name": "Get Seller Reviews",
+    "description": "Fetches reviews of a seller by their ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/{id}",
+    "type": "Review"
+  },
+  {
+    "name": "Get Average Seller Rating",
+    "description": "Allows fetching the average rating of a seller",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/{id}/average",
+    "type": "Review"
+  },
+  {
+    "name": "Get Seller Product Reviews",
+    "description": "Allows viewing seller reviews for a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/product/{id}",
+    "type": "Review"
+  },
+  {
+    "name": "Get Buyer Reviews",
+    "description": "Fetches reviews of a buyer by their ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/{id}",
+    "type": "Review"
+  },
+  {
+    "name": "Get Average Buyer Rating",
+    "description": "Allows fetching the average rating of a buyer",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/{id}/average",
+    "type": "Review"
+  },
+  {
+    "name": "Get Buyer Product Reviews",
+    "description": "Allows viewing buyer reviews for a specific product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/product/{id}",
+    "type": "Review"
+  },
+  {
+    "name": "Get User Seller Reviews",
+    "description": "Allows viewing seller reviews for current user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/user/seller",
+    "type": "Review"
+  },
+  {
+    "name": "Get User Buyer Reviews",
+    "description": "Allows viewing buyer reviews for current user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/user/buyer",
+    "type": "Review"
+  },
+  {
+    "name": "Get Review",
+    "description": "Allows viewing a specific review",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/{id}",
+    "type": "Review"
+  },
+  {
+    "name": "Get Product Seller Review History",
+    "description": "Allows viewing edit history of seller reviews for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/seller/product/{id}/edit-history",
+    "type": "Review"
+  },
+  {
+    "name": "Get Product Buyer Review History",
+    "description": "Allows viewing edit history of buyer reviews for a product",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/review/buyer/product/{id}/edit-history",
+    "type": "Review"
+  },
+  {
+    "name": "Delete Multiple Reviews",
+    "description": "Allows deleting multiple reviews",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/review",
+    "type": "Review"
+  },
+  {
+    "name": "Delete Review Permanently",
+    "description": "Allows permanently deleting a review",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/review/{id}/permanent",
+    "type": "Review"
+  },
+  {
+    "name": "Get Role Privileges",
+    "description": "Allows retrieving all privileges for a specific role",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/role/{id}/privilege/",
+    "type": "Role"
+  },
+  {
+    "name": "Assign Privilege",
+    "description": "Assign particular Privilege to a Role",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/assign/privilege/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Assign Multiple Privilege",
+    "description": "Assign Multiple Privilege to a Role at once",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/assign/privilege",
+    "type": "Role"
+  },
+  {
+    "name": "Remove Privilege",
+    "description": "Remove particular Privilege from a Role",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/remove/privilege/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Remove Multiple Privilege",
+    "description": "Remove Multiple Privilege from a Role at once",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/{id}/remove/privilege",
+    "type": "Role"
+  },
+  {
+    "name": "Add Role",
+    "description": "Allows creating a new role",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/role/",
+    "type": "Role"
+  },
+  {
+    "name": "Update Role",
+    "description": "Allows updating an existing role",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/role/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Get Role Details",
+    "description": "Allows retrieving role details",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/role/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Get All Roles",
+    "description": "Allows retrieving all roles",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/role/",
+    "type": "Role"
+  },
+  {
+    "name": "Delete Role",
+    "description": "Allows deleting a specific role",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/role/{id}",
+    "type": "Role"
+  },
+  {
+    "name": "Retrieve Users of a Role",
+    "description": "Get all users assigned to a role",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/role/{id}/users/",
+    "type": "Role"
+  },
+  {
+    "name": "Get Transaction by ID",
+    "description": "Fetches a specific transaction by its ID",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/{id}",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get User Transactions",
+    "description": "Fetches all transactions for the authenticated user with pagination",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get User Transactions by Status",
+    "description": "Fetches all transactions for the authenticated user filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/status/{id}",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get User Transactions (Admin)",
+    "description": "Fetches all transactions for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/{id}",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get User Transactions by Status (Admin)",
+    "description": "Fetches all transactions for a specific user filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/user/{id}/status/{id}",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get All Transactions",
+    "description": "Fetches all transactions with pagination (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get All Transactions by Status",
+    "description": "Fetches all transactions filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/status/{id}",
+    "type": "Transaction"
+  },
+  {
+    "name": "Get Transactions by Date Range",
+    "description": "Fetches all transactions within a specified date range (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/transaction/date-range",
+    "type": "Transaction"
+  },
+  {
+    "name": "Update User Profile",
+    "description": "Allows updating user profile information",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}/update",
+    "type": "User"
+  },
+  {
+    "name": "Change User Password",
+    "description": "Allows changing the user password",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}/change-password",
+    "type": "User"
+  },
+  {
+    "name": "Change User Email",
+    "description": "Allows changing the user email address",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}/change-email",
+    "type": "User"
+  },
+  {
+    "name": "Get All User ",
+    "description": "Allows retrieving all user (possibly by name/email)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/user",
+    "type": "User"
+  },
+  {
+    "name": "Get All Active User ",
+    "description": "Allows retrieving all active user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/user/active",
+    "type": "User"
+  },
+  {
+    "name": "Get All Blocked User ",
+    "description": "Allows retrieving all blocked user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/user/block",
+    "type": "User"
+  },
+  {
+    "name": "Get All Deleted User ",
+    "description": "Allows retrieving all deleted user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/user/delete",
+    "type": "User"
+  },
+  {
+    "name": "Assign user a role ",
+    "description": "Allows assigning user a role",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/{id}/assign/role/{id}",
+    "type": "User"
+  },
+  {
+    "name": "remove user from assigned role ",
+    "description": "Allows removing user from assigned role (default role is user)",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/{id}/remove/role/",
+    "type": "User"
+  },
+  {
+    "name": "Get User Profile",
+    "description": "Allows retrieving the user profile",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/{id}",
+    "type": "User"
+  },
+  {
+    "name": "Update User",
+    "description": "Allows update a user",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}",
+    "type": "User"
+  },
+  {
+    "name": "Upload User Image",
+    "description": "Allows uploading profile image of user",
+    "httpMethod": "PATCH",
+    "endpoint": "/api/v2/user/{id}/image",
+    "type": "User"
+  },
+  {
+    "name": "Delete User",
+    "description": "Allows deleting a user",
+    "httpMethod": "DELETE",
+    "endpoint": "/api/v2/user/{id}",
+    "type": "User"
+  },
+  {
+    "name": "Refresh Token",
+    "description": "Allows retrieving new user token",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/refresh-token",
+    "type": "User"
+  },
+  {
+    "name": "Get all reports reported by user",
+    "description": "Allows viewing all available reports reported by user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/{id}/reports",
+    "type": "User"
+  },
+  {
+    "name": "Report a user",
+    "description": "Allows Reporting a user",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/report",
+    "type": "User"
+  },
+  {
+    "name": "Admin User Warn",
+    "description": "Admin user warning functionality",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/{id}/warn",
+    "type": "User"
+  },
+  {
+    "name": "Admin User Block",
+    "description": "Admin user blocking functionality",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/block",
+    "type": "User"
+  },
+  {
+    "name": "Admin User UnBlock",
+    "description": "Admin user unblocking functionality",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/admin/user/unblock",
+    "type": "User"
+  },
+  {
+    "name": "Retrieve notifications",
+    "description": "Get all the notifications of a specific user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/{id}/notifications",
+    "type": "Notification"
+  },
+  {
+    "name": "Admin create notifications",
+    "description": "Create notification for specific or all users",
+    "httpMethod": "POST",
+    "endpoint": "/api/v2/user/{id}/notifications/create",
+    "type": "Notification"
+  },
+  {
+    "name": "Admin get notifications",
+    "description": "Get all notification made by admin",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/admin/{id}/notifications",
+    "type": "Notification"
   },
   {
     "name": "Add Product to Watchlist",
     "description": "Adds a product to the user's watchlist",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/user/watchlist"
+    "endpoint": "/api/v2/user/watchlist",
+    "type": "User"
   },
   {
     "name": "Get All Watchlist Products",
     "description": "Retrieves all products in the user's watchlist",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/user/watchlist"
+    "endpoint": "/api/v2/user/watchlist",
+    "type": "User"
   },
   {
     "name": "Remove Products from Watchlist",
     "description": "Removes multiple products from the user's watchlist",
     "httpMethod": "DELETE",
-    "endpoint": "/api/v2/user/watchlist"
+    "endpoint": "/api/v2/user/watchlist",
+    "type": "User"
   },
   {
-    "name": "Send Message",
-    "description": "Allows users to send chat messages",
-    "httpMethod": "SEND",
-    "endpoint": "/app/message"
-  },
-  {
-    "name": "Receive Messages",
-    "description": "Allows users to receive chat messages",
-    "httpMethod": "SUBSCRIBE",
-    "endpoint": "/topic/messages"
-  },
-  {
-    "name": "Receive Messages Hisotry",
-    "description": "Allows users to receive chat messages",
+    "name": "Get Withdraw by ID",
+    "description": "Fetches a specific withdrawal by its ID",
     "httpMethod": "GET",
-    "endpoint": "/chat/history/{id}"
+    "endpoint": "/api/v2/withdraw/{id}",
+    "type": "Withdraw"
   },
   {
-    "name": "Receive Messages Hisotry",
-    "description": "Allows users to receive chat messages",
+    "name": "Get User Withdraws",
+    "description": "Fetches all withdrawals for the authenticated user with pagination",
     "httpMethod": "GET",
-    "endpoint": "/chat/gg"
+    "endpoint": "/api/v2/withdraw/user",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get User Withdraws by Status",
+    "description": "Fetches all withdrawals for the authenticated user filtered by status",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/status/{id}",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get All Withdraws",
+    "description": "Fetches all withdrawals with pagination (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get User Withdraws (Admin)",
+    "description": "Fetches all withdrawals for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get User Withdraws by Status (Admin)",
+    "description": "Fetches all withdrawals for a specific user filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}/status/{id}",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get All Withdraws by Status",
+    "description": "Fetches all withdrawals filtered by status (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/status/{id}",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get User Withdraw Statistics",
+    "description": "Fetches withdrawal statistics for a specific user (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/user/{id}/statistics",
+    "type": "Withdraw"
+  },
+  {
+    "name": "Get Withdraws by Date Range",
+    "description": "Fetches all withdrawals within a specified date range (Admin only)",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/withdraw/date-range",
+    "type": "Withdraw"
   }
 ]

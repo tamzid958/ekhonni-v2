@@ -41,24 +41,22 @@ public class EmailVerificationService {
     private String emailVerificationUrl;
 
 
-    public void send(User user) {
+    public void request(User user) {
 
-        VerificationToken verificationToken;
-        if (verificationTokenRepository.findByUser(user) != null) {
-            verificationToken = verificationTokenService.replace(user);
-        } else {
-            verificationToken = verificationTokenService.create(user, VerificationTokenType.EMAIL);
-        }
+        VerificationToken verificationToken = verificationTokenService.generate(
+                user,
+                VerificationTokenType.EMAIL
+        );
 
         String recipientEmail = user.getEmail();
-        String subject = "Email Verification";
-        EmailTaskDTO emailTaskDTO = getEmailTaskDTO(verificationToken, recipientEmail, subject);
+        EmailTaskDTO emailTaskDTO = getEmailTaskDTO(verificationToken, recipientEmail);
 
         emailProducerService.send(emailTaskDTO);
     }
 
-    private EmailTaskDTO getEmailTaskDTO(VerificationToken verificationToken, String recipientEmail, String subject) {
-        String url = emailVerificationUrl + verificationToken.getToken();
+    private EmailTaskDTO getEmailTaskDTO(VerificationToken verificationToken, String recipientEmail) {
+        String url = emailVerificationUrl.replace("{token}", verificationToken.getToken());
+        String subject = "Email Verification";
         String message = String.format(
                 "Dear User,\n\n" +
                         "Thank you for registering with Ekhonni. To complete your registration, please verify your email address by clicking the link below:\n\n" +
@@ -67,16 +65,15 @@ public class EmailVerificationService {
                 url
         );
 
-        EmailTaskDTO emailTaskDTO = new EmailTaskDTO(
+        return new EmailTaskDTO(
                 recipientEmail,
                 subject,
                 message
         );
-        return emailTaskDTO;
     }
 
 
-    public ApiResponse<?> verify(String token) {
+    public String verify(String token) {
 
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidVerificationTokenException("Invalid Verification Token"));
@@ -96,6 +93,6 @@ public class EmailVerificationService {
         verificationTokenRepository.delete(verificationToken);
 
         String responseMessage = "Email verified successfully!";
-        return new ApiResponse<>(HTTPStatus.OK, responseMessage);
+        return responseMessage;
     }
 }
