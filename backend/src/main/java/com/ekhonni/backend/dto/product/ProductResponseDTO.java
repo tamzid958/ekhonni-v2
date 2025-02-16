@@ -56,6 +56,7 @@ public class ProductResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private ProductSellerAndBuyerDTO seller;
+    private ProductSellerAndBuyerDTO buyer;
     private ProductCategoryDTO category;
     private ProductBoostResponseDTO boostData;
     private List<ProductImageDTO> images = new ArrayList<>();

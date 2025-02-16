@@ -71,6 +71,10 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images;
