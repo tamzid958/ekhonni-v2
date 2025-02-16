@@ -43,7 +43,7 @@ public class BidLogService extends BaseService<BidLog, Long> {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void archiveDeletedBids() {
-        log.info("Starting archiving soft deleted bids");
+        log.info("Starting moving soft deleted bids to log table");
         int pageNumber = 0;
         boolean hasMorePages = true;
         Sort sort = Sort.by("id").ascending();
@@ -54,7 +54,7 @@ public class BidLogService extends BaseService<BidLog, Long> {
             hasMorePages = bidPage.hasNext();
             pageNumber++;
         }
-        log.info("Completed archiving soft deleted bids");
+        log.info("Done moving soft deleted bids to log table");
     }
 
     private void processBatch(List<Bid> bidsToArchive) {

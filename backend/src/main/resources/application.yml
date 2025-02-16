@@ -93,7 +93,7 @@ server:
   port: ${SERVER_PORT}
 
 account:
-  minimum-balance: ${ACCOUNT_MINIMUM_BALANCE:50}
+  minimum-balance: ${ACCOUNT_MINIMUM_BALANCE:0}
   minimum-withdraw-amount: ${ACCOUNT_MINIMUM_WITHDRAW_AMOUNT:50}
 
 sslcommerz:

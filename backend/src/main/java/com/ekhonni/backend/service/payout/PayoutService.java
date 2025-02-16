@@ -33,7 +33,6 @@ public class PayoutService {
     private final WithdrawService withdrawService;
     private final AccountService accountService;
 
-    @Transactional
     public void processPayout(WithdrawRequest withdrawRequest) throws PayoutProcessingException {
 
         Withdraw withdraw = withdrawService.create(withdrawRequest);
@@ -47,7 +46,7 @@ public class PayoutService {
         payoutProvider.processPayout(withdraw);
 
         if (withdraw.getStatus().equals(WithdrawStatus.COMPLETED)) {
-            accountService.withdraw(withdraw.getAccount(), withdraw.getAmount());
+            accountService.withdraw(withdraw.getAccount(), withdraw.getBdtAmount());
         }
     }
 

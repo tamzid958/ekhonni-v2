@@ -52,8 +52,6 @@ public class AccountService extends BaseService<Account, Long> {
         validateMinimumWithdrawalAmount(amount);
         validateMinimumBalance(account, amount);
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
-        Account superAdminAccount = getSuperAdminAccount();
-        superAdminAccount.setTotalWithdrawals(superAdminAccount.getTotalWithdrawals() + amount);
     }
 
     @Transactional
@@ -65,8 +63,6 @@ public class AccountService extends BaseService<Account, Long> {
     @Transactional
     public void deposit(Account account, double amount) {
         account.setTotalEarnings(account.getTotalEarnings() + amount);
-        Account superAdminAccount = getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + amount);
     }
 
     private void validateMinimumWithdrawalAmount(double amount) {
