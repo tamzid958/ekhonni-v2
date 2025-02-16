@@ -122,14 +122,14 @@
     "name": "Sum of all account total balance report",
     "description": "Allows admin to retrieve sum of all account total earnings, withdrawals and balance",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account/report",
+    "endpoint": "/api/v2/account/report/total",
     "type": "Account"
   },
   {
     "name": "Sum of all account total balance report between a certain time",
     "description": "Allows admin to retrieve sum of all account total earnings, withdrawals and balance between a certain time",
     "httpMethod": "GET",
-    "endpoint": "/api/v2/account/report/between",
+    "endpoint": "/api/v2/account/report/total/between",
     "type": "Account"
   },
   {
