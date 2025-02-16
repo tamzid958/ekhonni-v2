@@ -22,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Slf4j
@@ -172,5 +174,18 @@ public class BidService extends BaseService<Bid, Long> {
     public boolean isProductOwner(UUID authenticatedUserId, Long bidId) {
         Bid bid = get(bidId).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
+    }
+
+    public User getByProductIdAndStatus(Long productId, BidStatus status) {
+        return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
+    }
+
+    public User getByProductIdAndStatusIn(Long productId, List<BidStatus> statuses) {
+        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
+    }
+
+    public User getBuyerByProductId(Long productId) {
+        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(
+                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID));
     }
 }

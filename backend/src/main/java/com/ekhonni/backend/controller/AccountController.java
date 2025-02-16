@@ -69,12 +69,12 @@ public class AccountController {
         return ResponseUtil.createResponse(HTTPStatus.OK, accountService.getAuthenticatedUserBalance());
     }
 
-    @GetMapping("/report")
+    @GetMapping("/report/total")
     public ResponseEntity<ApiResponse<AccountReportProjection>> getAccountReport() {
         return ResponseUtil.createResponse(HTTPStatus.OK, accountService.getAccountReport());
     }
 
-    @GetMapping("/report/between")
+    @GetMapping("/report/total/between")
     public ResponseEntity<ApiResponse<AccountReportProjection>> getAccountReportBetween(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
