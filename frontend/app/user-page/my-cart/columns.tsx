@@ -24,7 +24,6 @@ export interface BidList {
 // Create column helper for the table
 const columnHelper = createColumnHelper<BidList>();
 
-// This function will be used to get the columns for the table
 export function getColumns(token: string) {
 
   const router = useRouter();
