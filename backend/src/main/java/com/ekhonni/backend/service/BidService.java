@@ -181,7 +181,7 @@ public class BidService extends BaseService<Bid, Long> {
         return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
     }
 
-    public User getByProductIdAndStatusIn(Long productId, List<BidStatus> statuses) {
+    public User getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
         return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
     }
 
