@@ -1,12 +1,14 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.PrivilegeIdsDTO;
+import com.ekhonni.backend.dto.role.RoleCreateDTO;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.service.PrivilegeService;
 import com.ekhonni.backend.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,8 +39,8 @@ public class RoleController {
     }
 
     @PostMapping("/")
-    public String addRole(@RequestBody Role role) {
-        return roleService.add(role);
+    public String addRole(@Valid @RequestBody RoleCreateDTO roleCreateDTO) {
+        return roleService.add(roleCreateDTO);
     }
 
     @PatchMapping("/{id}")
