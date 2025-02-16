@@ -19,8 +19,10 @@ const items = [
   { title: 'Inbox', url: '/user-page/inbox', icon: Inbox },
   { title: 'Feedback', url: '/user-page/feedback', icon: MessageCircle },
   { title: 'Watchlist', url: '/user-page/watchlist', icon: List },
-  { title: 'Shop', url: '/user-page/shop', icon: ShoppingBag },
+  // { title: 'Shop', url: '/user-page/shop', icon: ShoppingBag },
   { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
+  { title: 'My-cart', url: '/user-page/my-cart', icon: ShoppingBag },
+
 ];
 
 export function AppSidebar() {

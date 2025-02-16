@@ -3,6 +3,8 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { ReviewDialog } from '@/components/Review-Dialog';
+import { useRouter } from 'next/navigation';
+
 
 // Define the BidData interface
 export interface BidList {
@@ -24,12 +26,37 @@ const columnHelper = createColumnHelper<BidList>();
 
 // This function will be used to get the columns for the table
 export function getColumns(token: string) {
+
+  const router = useRouter();
+
   const columns = [
     columnHelper.accessor('productTitle', {
       header: 'Product Title',
+      cell: (info) => {
+        const row = info.row.original;
+        return (
+          <span
+            onClick={() => router.push(`/productDetails?id=${row.productId}`)}
+            className="text-black cursor-pointer hover:underline"
+          >
+            {info.getValue()}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor('productSellerName', {
       header: 'Seller Name',
+      cell: (info) => {
+        const row = info.row.original;
+        return (
+          <span
+            onClick={() => router.push(`/seller-page/${row.productSellerId}`)}
+            className="text-black cursor-pointer hover:underline"
+          >
+            {info.getValue()}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor('productSellerAddress', {
       header: 'Seller Address',
