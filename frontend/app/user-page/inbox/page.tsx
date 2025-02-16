@@ -72,6 +72,15 @@ export default function Chat() {
     setText('');
   };
 
+  if (!session) {
+    return (
+        <div className="flex flex-col justify-center items-center h-screen">
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p>You need to be signed in to view this page.</p>
+        </div>
+    );
+  }
+
   return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bright p-6">
         <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
@@ -101,7 +110,7 @@ export default function Chat() {
             {messages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'} mb-3`}>
                   <div className={`p-2 max-w-md text-sm rounded-xl shadow ${msg.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                    <strong>{msg.senderId === userId ? 'You' : msg.senderId}:</strong> {msg.content}
+                    {msg.content}
                   </div>
                 </div>
             ))}
