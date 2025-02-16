@@ -13,11 +13,10 @@ import com.ekhonni.backend.projection.review.BuyerReviewProjection;
 import com.ekhonni.backend.projection.review.SellerReviewProjection;
 import com.ekhonni.backend.repository.ReviewRepository;
 import com.ekhonni.backend.util.AuthUtil;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.EnumSet;
 import java.util.UUID;

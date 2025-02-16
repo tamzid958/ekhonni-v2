@@ -7,12 +7,11 @@ import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.repository.TransactionRepository;
 import com.ekhonni.backend.util.AuthUtil;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
