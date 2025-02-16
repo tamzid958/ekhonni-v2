@@ -8,25 +8,26 @@ import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.ApiConnectionException;
 import com.ekhonni.backend.exception.payment.NoResponseException;
 import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
-import com.ekhonni.backend.exception.refund.*;
+import com.ekhonni.backend.exception.refund.InvalidRefundRequestException;
+import com.ekhonni.backend.exception.refund.RefundNotFoundException;
+import com.ekhonni.backend.exception.refund.RefundRequestFailedException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.Refund;
 import com.ekhonni.backend.model.Transaction;
+import com.ekhonni.backend.repository.RefundRepository;
 import com.ekhonni.backend.service.AccountService;
 import com.ekhonni.backend.service.BaseService;
 import com.ekhonni.backend.service.TransactionService;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.refund.RefundQueryResponse;
 import com.ekhonni.backend.service.payment.provider.sslcommrez.refund.RefundResponse;
-import com.ekhonni.backend.repository.RefundRepository;
 import com.ekhonni.backend.util.AuthUtil;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
@@ -91,10 +92,7 @@ public class RefundService extends BaseService<Refund, Long> {
     @Transactional
     private void updateSuccessfulRefund(Refund refund, RefundQueryResponse response) {
         Account sellerAccount = accountService.getByUserId(refund.getTransaction().getSeller().getId());
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-
-        sellerAccount.setTotalEarnings(sellerAccount.getTotalEarnings() - refund.getAmount());
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() - refund.getAmount());
+        accountService.remove(sellerAccount, refund.getAmount());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         refund.setInitiatedOn(LocalDateTime.parse(response.getInitiatedOn(), formatter));

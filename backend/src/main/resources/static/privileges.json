@@ -21,24 +21,10 @@
     "type": "Account"
   },
   {
-    "name": "Delete Account",
-    "description": "Allows deleting an account",
-    "httpMethod": "DELETE",
-    "endpoint": "/api/v2/account/{id}",
-    "type": "Account"
-  },
-  {
     "name": "Update Account",
     "description": "Allows updating account information",
     "httpMethod": "PATCH",
     "endpoint": "/api/v2/account/{id}",
-    "type": "Account"
-  },
-  {
-    "name": "Restore Account",
-    "description": "Allows restoring deleted accounts",
-    "httpMethod": "PATCH",
-    "endpoint": "/api/v2/account/{id}/restore",
     "type": "Account"
   },
   {
@@ -130,6 +116,20 @@
     "description": "Allows users to retrieve their own account balance",
     "httpMethod": "GET",
     "endpoint": "/api/v2/account/user/balance",
+    "type": "Account"
+  },
+  {
+    "name": "Sum of all account total balance report",
+    "description": "Allows admin to retrieve sum of all account total earnings, withdrawals and balance",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/report",
+    "type": "Account"
+  },
+  {
+    "name": "Sum of all account total balance report between a certain time",
+    "description": "Allows admin to retrieve sum of all account total earnings, withdrawals and balance between a certain time",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/account/report/between",
     "type": "Account"
   },
   {

@@ -11,14 +11,17 @@ import com.ekhonni.backend.exception.withdraw.InsufficientBalanceException;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.UserProjection;
+import com.ekhonni.backend.projection.account.AccountReportProjection;
 import com.ekhonni.backend.projection.account.UserAccountProjection;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.AuthUtil;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -58,6 +61,11 @@ public class AccountService extends BaseService<Account, Long> {
     public void deduct(Account account, double amount) {
         validateMinimumBalance(account, amount);
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
+    }
+
+    @Transactional
+    public void remove(Account account, double amount) {
+        account.setTotalWithdrawals(account.getTotalEarnings() - amount);
     }
 
     @Transactional
@@ -106,6 +114,16 @@ public class AccountService extends BaseService<Account, Long> {
     public UserAccountProjection getAuthenticatedUserAccount() {
         return accountRepository.findByUserId(AuthUtil.getAuthenticatedUser().getId(), UserAccountProjection.class)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public AccountReportProjection getAccountReport() {
+        return accountRepository.getAccountReport();
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    public AccountReportProjection getAccountReportBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        return accountRepository.getAccountReportBetween(startTime, endTime);
     }
 
 }

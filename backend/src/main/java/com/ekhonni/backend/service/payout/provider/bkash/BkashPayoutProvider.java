@@ -7,10 +7,9 @@ import com.ekhonni.backend.model.Withdraw;
 import com.ekhonni.backend.service.payout.PayoutProvider;
 import com.ekhonni.backend.service.payout.provider.bkash.request.BkashPayoutRequest;
 import com.ekhonni.backend.service.payout.provider.bkash.response.BkashPayoutResponse;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
