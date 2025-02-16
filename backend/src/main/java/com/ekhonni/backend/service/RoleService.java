@@ -50,9 +50,10 @@ public class RoleService extends BaseService<Role, Long> {
 
     @Transactional
     public String add(RoleCreateDTO dto) {
-        if (roleRepository.existsByName(dto.name())) throw new RoleAlreadyExistsException();
+        String roleName = dto.name().toUpperCase();
+        if (roleRepository.existsByName(roleName)) throw new RoleAlreadyExistsException();
         Role newRole = new Role(
-                dto.name().toUpperCase(),
+                roleName,
                 dto.description()
         );
 
