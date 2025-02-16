@@ -18,7 +18,6 @@ import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
@@ -31,7 +30,6 @@ import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
-import com.ekhonni.backend.specificationbuilder.SellerProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
@@ -209,15 +207,6 @@ public class ProductService extends BaseService<Product, Long> {
         return getProductsResponsePage(spec, pageable);
     }
 
-    public Page<ProductResponseDTO> getAllFilteredForSeller(SellerProductFilter filter) {
-        User user = userRepository.findById(filter.getUserId()).orElseThrow(() -> new ProductNotFoundException("user not found"));
-        List<Long> categoryIds = extractCategoryIds(filter.getCategoryName());
-        SpecificationResult specificationResult = SellerProductSpecificationBuilder.build(filter, categoryIds);
-        Specification<Product> spec = specificationResult.getSpec();
-        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
-
-        return getProductsResponsePage(spec, pageable);
-    }
 
     /**
      * Extracts category IDs based on the provided category name.
@@ -236,11 +225,16 @@ public class ProductService extends BaseService<Product, Long> {
      */
     public Page<ProductResponseDTO> getProductsResponsePage(Specification<Product> spec, Pageable pageable) {
         // Fetch paged product IDs based on the specification
+        System.out.println(pageable);
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
         List<Long> productIds = page.getContent();
 
+        System.out.println("ids size " + productIds.size());
+
         // Retrieve product projections for the fetched IDs
-        List<ProductProjection> projections = productRepository.findByIdIn(productIds, pageable);
+        List<ProductProjection> projections = productRepository.findByIdIn(productIds);
+
+        System.out.println(projections.size());
 
         // Sort projections to match the order of productIds
         Map<Long, Integer> idOrderMap = new HashMap<>();

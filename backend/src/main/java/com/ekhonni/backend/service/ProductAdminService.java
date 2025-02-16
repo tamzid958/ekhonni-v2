@@ -118,7 +118,7 @@ public class ProductAdminService {
     public Page<ProductResponseDTO> getAllFilteredForAdmin(AdminProductFilter filter) {
         List<Long> categoryIds = productService.extractCategoryIds(filter.getCategoryName());
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PaginationUtil.createPageable(filter.getPage() - 1, filter.getSize(), filter.getSortBy());
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage(), filter.getSize(), filter.getSortBy());
         return productService.getProductsResponsePage(spec, pageable);
     }
 }

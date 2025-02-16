@@ -50,8 +50,8 @@ public class CommonProductSpecificationBuilder {
             hasConditions = true;
         }
 
-        if (filter.getApplyBoosted() != null) {
-            spec = spec.and(ProductSpecification.isBoosted(filter.getApplyBoosted()));
+        if (filter.getApplyBoost() != null) {
+            spec = spec.and(ProductSpecification.isBoosted(filter.getApplyBoost()));
             hasConditions = true;
         }
 

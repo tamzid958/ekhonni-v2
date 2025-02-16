@@ -14,7 +14,6 @@ import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
@@ -95,11 +94,6 @@ public class ProductController {
     @PreAuthorize("#filter.userId == authentication.principal.id")
     public ApiResponse<?> getFilteredForUser(@ModelAttribute UserProductFilter filter) {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
-    }
-
-    @GetMapping("/seller/filter")
-    public ApiResponse<?> getFilteredForSeller(@ModelAttribute SellerProductFilter filter) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForSeller(filter));
     }
 
 

@@ -31,6 +31,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
 
     @Override
     public Page<Long> findAllFiltered(Specification<Product> spec, Pageable pageable) {
+        System.out.println(pageable);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         // Query to fetch product IDs for the current page
@@ -60,19 +61,21 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
             });
         }
 
-        System.out.println(orderList);
-        System.out.println(orderList.size());
         query.orderBy(orderList);
 
-        int page = Math.max(0, pageable.getPageNumber());
-        int size = Math.max(5, pageable.getPageSize());
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
         int firstResult = page * size;
+
+        System.out.println(page + " " + size);
 
         TypedQuery<Long> idQuery = entityManager.createQuery(query);
         idQuery.setFirstResult(firstResult);
         idQuery.setMaxResults(size);
 
         List<Long> productIds = idQuery.getResultList();
+
+        System.out.println(productIds);
 
         // Query to count total elements matching the specification
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -87,7 +90,6 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
 
         Long totalElements = entityManager.createQuery(countQuery).getSingleResult();
 
-        System.out.println(productIds);
 
         return new PageImpl<>(productIds, pageable, totalElements);
     }

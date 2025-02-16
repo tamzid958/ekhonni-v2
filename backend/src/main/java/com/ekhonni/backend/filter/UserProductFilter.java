@@ -11,11 +11,8 @@ import com.ekhonni.backend.enums.ProductStatus;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Setter
 @Getter
 public class UserProductFilter extends ProductFilter {
-    private  ProductStatus status;
-    private UUID userId;
+    private ProductStatus status;
 }
