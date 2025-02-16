@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import UserDetails from "./user-details";
+import UserDetails from "../../components/userDetails";
 import { useSession } from 'next-auth/react';
 import { useUsers } from '../../hooks/useUser';
 import Loading from '@/components/Loading';
@@ -54,7 +54,6 @@ export default function UserDetailsPage() {
       </div>
     );
   }
-
   return (
     <div className="flex justify-center items-center h-screen w-screen p-4">
       <div className="w-full sm:max-w-md bg-white rounded-lg p-4 md:p-6 ">

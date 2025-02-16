@@ -16,8 +16,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
 import { Toaster } from 'sonner';
-import { handleBlockUser, handleUnblockUser } from '../components/useHandleBlock';
-import { handleChangeUserRole } from '../components/useHandleRole';
+import { handleBlockUser, handleUnblockUser } from '../hooks/useHandleBlock';
+import { handleChangeUserRole } from '../hooks/useHandleRole';
 import {
   Dialog,
   DialogContent,

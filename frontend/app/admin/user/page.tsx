@@ -129,7 +129,7 @@ export default  function User  () {
   }, [selectedTimePeriod]);
 
 
-  if (status === "loading" || isLoading || isLoadingAdmin || isLoadingRole) {
+  if (status === "loading" || isLoading || isLoadingRole) {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
           <div className="flex justify-center flex-col items-center h-screen">
@@ -149,7 +149,7 @@ export default  function User  () {
     );
   }
 
-  else if(  allUserError  || adminError || roleError)
+  else if(  allUserError   || roleError)
   {
     return (
       <div className="flex w-[1220px] h-[1200px] flex-col items-center  bg-white ">
