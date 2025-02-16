@@ -1,8 +1,22 @@
-import { DialogTitle } from "@/components/ui/dialog"; // Import DialogTitle
-import { ArrowBigDown, ChevronRight, Inbox, Info, List, MessageCircle, Settings, ShoppingBag } from "lucide-react";
+import { DialogTitle } from "@/components/ui/dialog";
+import {
+  ArrowBigDown, ChevronRight, Inbox, Info, List,
+  MessageCircle, Settings, ShoppingBag
+} from "lucide-react";
 import React from "react";
 import { SheetContent } from "@/components/ui/sheet";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import useSWR from "swr";
+import fetcher from "@/data/services/fetcher";
+import Loading from '@/components/Loading';
+
+interface UserDetail {
+  profileImage: string | null;
+  email: string;
+  name: string;
+  id: string;
+  address: string;
+}
 
 const items = [
   { title: "Edit Profile", url: "/user-page/edit-profile", icon: Settings },
@@ -15,9 +29,44 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { data: session } = useSession();
+  const userID = session?.user?.id;
+  const token = session?.user?.token;
+
+  const url = userID ? `http://localhost:8080/api/v2/user/${userID}` : null;
+  const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, token));
+  if (!userID) {
+    return <div className="text-center text-red-500">User Not Found</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">Error: {error}</div>;
+  }
+
+  if (isLoading || !data) {
+    return <div className="text-center text-gray-500"><Loading/></div>;
+  }
+
+  const userDetail: UserDetail | null = data?.data || null;
+
   return (
     <SheetContent side="right" className="w-64">
       <DialogTitle>Menu</DialogTitle>
+
+      <div className="flex items-center space-x-2 p-2 border-b border-gray-300 pr-8">
+        <img
+          src={userDetail.profileImage || "/default-avatar.png"}
+          alt="User Avatar"
+          className="w-12 h-12 rounded-full border"
+        />
+        <div>
+          <p className="font-sm text-sm">{userDetail.name || "Unknown User"}</p>
+          <p className="text-sm text-gray-500">{userDetail.email || "No Email"}</p>
+        </div>
+      </div>
+
+
+      {/* Sidebar Menu */}
       <div className="p-4">
         <nav className="space-y-2">
           {items.map((item) => (
