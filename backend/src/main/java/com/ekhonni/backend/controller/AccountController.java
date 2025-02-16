@@ -65,4 +65,6 @@ public class AccountController {
         return ResponseUtil.createResponse(HTTPStatus.OK, accountService.getAuthenticatedUserBalance());
     }
 
+
+
 }

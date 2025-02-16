@@ -32,10 +32,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Author: Asif Iqbal
@@ -151,6 +148,11 @@ public class SSLCommerzApiClient {
 
         IpnResponse response = sslcommerzUtil.extractIpnResponse(ipnResponse);
         Transaction transaction = getDBTransactionFromResponse(response.getTranId());
+
+        if (EnumSet.of(TransactionStatus.VALID, TransactionStatus.VALIDATED, TransactionStatus.VALID_WITH_RISK)
+                .contains(transaction.getStatus())) {
+            log.warn("Transaction already processed: {}", transaction.getId());
+        }
 
         if (!ipnHashVerify(ipnResponse)) {
             transactionService.updateStatus(transaction, TransactionStatus.SIGNATURE_MISMATCH);
@@ -344,6 +346,11 @@ public class SSLCommerzApiClient {
         IpnResponse response = sslcommerzUtil.extractIpnResponse(ipnResponse);
         CashIn cashIn = getDBCashInFromResponse(response.getTranId());
 
+        if (EnumSet.of(TransactionStatus.VALID, TransactionStatus.VALIDATED, TransactionStatus.VALID_WITH_RISK)
+                .contains(cashIn.getStatus())) {
+            log.warn("Cash in already processed: {}", cashIn.getId());
+        }
+
         if (!ipnHashVerify(ipnResponse)) {
             cashInService.updateStatus(cashIn, TransactionStatus.SIGNATURE_MISMATCH);
             log.warn("IPN signature verification failed for CashIn : {}", response.getTranId());
@@ -432,7 +439,7 @@ public class SSLCommerzApiClient {
 
     @Scheduled(fixedRate = 300000)
     public void checkPendingCashIns() {
-        log.info("Starting processing of pending cash ins");
+        log.info("Starting processing of pending cash-ins");
         LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
 
         final int BATCH_SIZE = 100;

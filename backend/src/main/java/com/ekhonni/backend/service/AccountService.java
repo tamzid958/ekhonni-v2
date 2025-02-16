@@ -107,4 +107,5 @@ public class AccountService extends BaseService<Account, Long> {
         return accountRepository.findByUserId(AuthUtil.getAuthenticatedUser().getId(), UserAccountProjection.class)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
     }
+
 }
