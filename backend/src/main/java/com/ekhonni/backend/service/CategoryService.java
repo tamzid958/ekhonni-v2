@@ -220,4 +220,27 @@ public class CategoryService extends BaseService<Category, Long> {
         return rootCategories;
     }
 
+    public List<CategorySubCategoryDTO> getTopCategories() {
+        List<CategorySubCategoryDTO> dtos = new ArrayList<>();
+
+
+        List<String> categoryNames = Arrays.asList(
+                "Travel & Nature",
+                "Antiques",
+                "Health & Beauty",
+                "Sports & Outdoors",
+                "Toys & Games",
+                "Automotive",
+                "Books & Stationery",
+                "Groceries",
+                "Office Supplies"
+        );
+
+
+        for (String categoryName : categoryNames) {
+            dtos.add(new CategorySubCategoryDTO(categoryName, new ArrayList<>(), new ArrayList<>()));
+        }
+
+        return dtos;
+    }
 }

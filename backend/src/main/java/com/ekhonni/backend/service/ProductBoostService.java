@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -59,8 +58,10 @@ public class ProductBoostService {
             throw new ProductNotFoundException("An active boost already exists for this product.");
         }
 
-        updateSellerAccount(seller.getId(), boostDTO.getBoostType().getAmount());
-        updateSuperAdminAccount(boostDTO.getBoostType().getAmount());
+
+        Account sellerAccount = accountService.getByUserId(seller.getId());
+        accountService.deduct(sellerAccount, boostDTO.getBoostType().getAmount());
+
 
         ProductBoost boost = createProductBoost(product, boostDTO, now);
         productBoostRepository.save(boost);
@@ -76,16 +77,6 @@ public class ProductBoostService {
         return productBoostRepository.findActiveBoostByProductId(productId, now).isPresent();
     }
 
-    @Transactional
-    private void updateSellerAccount(UUID id, double boostAmount) {
-        Account account = accountService.getByUserId(id);
-        if (account.getBalance() - boostAmount < minimumBalance) {
-            throw new ProductNotFoundException("Not enough money in your account.");
-        }
-        account.setTotalWithdrawals(account.getTotalWithdrawals() + boostAmount);
-        ;
-    }
-
 
     private ProductBoost createProductBoost(Product product, ProductBoostDTO boostDTO, LocalDateTime now) {
         ProductBoost boost = new ProductBoost();
@@ -94,11 +85,6 @@ public class ProductBoostService {
         return boost;
     }
 
-    @Transactional
-    public void updateSuperAdminAccount(double boostAmount) {
-        Account superAdminAccount = accountService.getSuperAdminAccount();
-        superAdminAccount.setTotalEarnings(superAdminAccount.getTotalEarnings() + boostAmount);
-    }
 
     @Transactional
     public void updateBoost(ProductBoostDTO boostDTO) {
@@ -112,8 +98,8 @@ public class ProductBoostService {
         ProductBoost boost = productBoostRepository.findByProductId(product.getId())
                 .orElseThrow(() -> new ProductNotFoundException("No boost exists for this product to update"));
 
-        updateSellerAccount(seller.getId(), boostDTO.getBoostType().getAmount());
-        updateSuperAdminAccount(boostDTO.getBoostType().getAmount());
+        Account sellerAccount = accountService.getByUserId(seller.getId());
+        accountService.deduct(sellerAccount, boostDTO.getBoostType().getAmount());
 
         boost.setExpiresAt(now.plus(boostDTO.getBoostType().getDuration(), boostDTO.getBoostType().getUnit()));
 

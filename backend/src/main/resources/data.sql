@@ -147,20 +147,20 @@ INSERT INTO product (id, title, sub_title, description, price, division, address
 (104, 'Dell XPS 13', 'Slightly used Dell XPS 13', 'Compact and powerful laptop', 1299.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor wear on keyboard', 10048, '550e8400-e29b-41d4-a716-446655440004'::uuid, NULL, NOW(), NOW()),
 (105, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440000'::uuid, NULL, NOW(), NOW()),
 (106, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NULL, NOW(), NOW()),
-(107, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NULL, NOW(), NOW());
+(107, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NULL, NOW(), NOW()),
 
 --(108, 'Sony WH-1000XM4 Headphones', 'Noise-canceling headphones', 'Top-notch sound quality', 350.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
 --(109, 'Nike Air Max', 'Brand new running shoes', 'Comfortable and stylish', 120.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'In original box', 10033, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 --(110, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 --(111, 'Canon EOS Rebel T7', 'Digital SLR Camera', 'Perfect for photography enthusiasts', 450.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 
-(202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW()),
-(353, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10070, '550e8400-e29b-41d4-a716-446655440006', NOW(), NOW());
+(202, 'Shawl', 'Beautiful Antique Shawl', 'A hand-crafted antique shawl', 3000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Minor wear and tear', 10026, '550e8400-e29b-41d4-a716-446655440006',NULL, NOW(), NOW()),
+(303, 'Tea Pot', 'Antique Tea Pot', 'A rare antique teapot made of porcelain', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Slight chipping on the lid', 10024, '550e8400-e29b-41d4-a716-446655440006', NULL, NOW(), NOW()),
+(304, 'Watch', 'Classic Antique Watch', 'A vintage watch with a leather strap', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Scratches on the glass', 10025, '550e8400-e29b-41d4-a716-446655440006',NULL, NOW(), NOW()),
+(305, 'Marble', 'Antique Marble Collection', 'A set of antique marbles from the 19th century', 1200.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Some discoloration', 10024, '550e8400-e29b-41d4-a716-446655440006', NULL, NOW(), NOW()),
+(306, 'Keyboard', 'Rare Antique Keyboard', 'A rare typewriter-style keyboard', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Fully functional', 10001, '550e8400-e29b-41d4-a716-446655440006',NULL, NOW(), NOW()),
+(352, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10028, '550e8400-e29b-41d4-a716-446655440006',NULL, NOW(), NOW()),
+(353, 'Oil', 'Vintage Hair Oil', 'A rare bottle of vintage hair oil', 56000.00, 'DHAKA', 'Dhaka', 'PENDING_APPROVAL', 'Good', 'Original packaging intact', 10070, '550e8400-e29b-41d4-a716-446655440006', NULL, NOW(), NOW());
 
 -- Add product images for the original products
 INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) VALUES
@@ -194,15 +194,15 @@ INSERT INTO product_image (id, product_id, image_path, created_at, updated_at) V
 --(23, 111, 'http://res.cloudinary.com/dnetpmsx6/image/upload/v1737031662/canoneos.jpg', NOW(), NOW());
 
 
--- Bids where Asif is the Bidder (Buyer)
-INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
-(1001, 101, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
-(1002, 101, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'BDT', 'PENDING', NOW(), NOW()),   -- Pending
-(1006, 102, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1003, 102, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Pending
-(1008, 104, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
-(1009, 105, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'PENDING', NOW(), NOW()); -- Accepted
---(1016, 108, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
+---- Bids where Asif is the Bidder (Buyer)
+--INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES
+--(1001, 101, '550e8400-e29b-41d4-a716-446655440005'::uuid, 100.00, 'BDT', 'ACCEPTED', NOW(), NOW()),  -- Accepted
+--(1002, 101, '550e8400-e29b-41d4-a716-446655440003'::uuid, 875.00, 'BDT', 'PENDING', NOW(), NOW()),   -- Pending
+--(1006, 102, '550e8400-e29b-41d4-a716-446655440005'::uuid, 150.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
+--(1003, 102, '550e8400-e29b-41d4-a716-446655440004'::uuid, 1450.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Pending
+--(1008, 104, '550e8400-e29b-41d4-a716-446655440005'::uuid, 250.00, 'BDT', 'PENDING', NOW(), NOW()),  -- Accepted
+--(1009, 105, '550e8400-e29b-41d4-a716-446655440005'::uuid, 300.00, 'BDT', 'PENDING', NOW(), NOW()); -- Accepted
+----(1016, 108, '550e8400-e29b-41d4-a716-446655440005'::uuid, 340.00, 'BDT', 'PENDING', NOW(), NOW());  -- Accepted
 
 ---- Bids where Asif is the Seller
 --INSERT INTO bid (id, product_id, bidder_id, amount, currency, status, created_at, updated_at) VALUES

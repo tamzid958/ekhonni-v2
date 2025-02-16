@@ -72,10 +72,11 @@ public class ProductSpecification {
         return (product, cq, cb) -> {
             String searchTermLower = "%" + searchTerm.toLowerCase() + "%";
             return cb.or(
-                    cb.like(cb.lower(product.get("title")), searchTermLower),
-                    cb.like(cb.lower(product.get("subTitle")), searchTermLower),
-                    cb.like(cb.lower(product.get("category").get("name")), searchTermLower),
-                    cb.like(cb.lower(product.get("description")), searchTermLower)
+                    cb.like(cb.lower(product.get("title")), searchTermLower)
+//                    ,
+//                    cb.like(cb.lower(product.get("subTitle")), searchTermLower),
+//                    cb.like(cb.lower(product.get("category").get("name")), searchTermLower),
+//                    cb.like(cb.lower(product.get("description")), searchTermLower)
             );
         };
     }

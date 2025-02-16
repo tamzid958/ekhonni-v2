@@ -38,6 +38,7 @@ import java.util.List;
         "createdAt",
         "updatedAt",
         "seller",
+        "buyer",
         "category",
         "boostData",
         "images"
