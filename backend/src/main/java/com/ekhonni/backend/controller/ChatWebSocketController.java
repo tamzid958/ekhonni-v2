@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @AllArgsConstructor
-public class ChatController {
+public class ChatWebSocketController {
 
 
     private final ChatMessageService chatService;
@@ -20,7 +20,6 @@ public class ChatController {
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
     public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO) {
-        System.out.println(chatMessageDTO);
         return chatMessageDTO;
     }
 }
