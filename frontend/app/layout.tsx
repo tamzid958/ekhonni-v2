@@ -1,13 +1,17 @@
-
 import localFont from 'next/font/local';
 import './globals.css';
 import React from 'react';
+import { NavBar } from '@/components/NavBar';
 import { Inter } from 'next/font/google';
+import { TopCAtegory } from '@/components/TopCategory';
 import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
 import SessionWrapper from './wrapper/client/SessionWrapper'
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '@/components/ErrorFallback';
 import { Toaster } from 'sonner';
+import { ProductProvider } from '@/context/ProductContext';
 import { ConditionalFooter, ConditionalNavBar, SessionNavBar } from '@/components/SessionNavbar';
 
 const geistSans = localFont({
@@ -32,7 +36,6 @@ export const metadata = {
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   return (
     <html lang="en" suppressHydrationWarning>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -51,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </SessionWrapper>
       </CustomErrorBoundary>
     </RootLayoutWrapper>
+
     </body>
     </html>
   );
