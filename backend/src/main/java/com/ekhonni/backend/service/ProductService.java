@@ -122,20 +122,25 @@ public class ProductService extends BaseService<Product, Long> {
         ProductProjection projection = productRepository.findProjectionById(id);
         if (projection == null) throw new ProductNotFoundException("Product doesn't exist");
 
-        User seller = null;
+        User user = null;
         try {
-            seller = AuthUtil.getAuthenticatedUser();
+            user = AuthUtil.getAuthenticatedUser();
         } catch (Exception ignored) {
 
         }
-        if (seller == null) {
+        if (user == null) {
             if (projection.getStatus() != ProductStatus.APPROVED) {
                 throw new ProductNotFoundException("Unauthorized to view this product");
             }
         } else {
-            if (!seller.getId().equals(projection.getSellerDTO().getId()) && projection.getStatus() != ProductStatus.APPROVED) {
+            if (!user.getId().equals(projection.getSellerDTO().getId())
+                    && projection.getStatus() != ProductStatus.APPROVED
+                    && !user.getId().equals(projection.getBuyerDTO().getId())
+            )
+            {
                 throw new ProductNotFoundException("User Not Matched To View This product");
             }
+
         }
 
         return ProductProjectionConverter.convert(projection);

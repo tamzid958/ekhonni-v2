@@ -102,6 +102,7 @@ public class BidService extends BaseService<Bid, Long> {
             throw new BidAlreadyAcceptedException();
         }
         bid.getProduct().setStatus(ProductStatus.SOLD);
+        bid.getProduct().setBuyer(bid.getBidder());
         watchlistService.removeProductFromAllUser(bid.getProduct().getId());
         bid.setStatus(BidStatus.ACCEPTED);
         notificationService.createForBidAccepted(bid);
