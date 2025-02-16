@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import React from 'react';
 import { SheetContent } from '@/components/ui/sheet';
+import { signOut } from 'next-auth/react';
+
 
 const items = [
   { title: 'Edit Profile', url: '/user-page/edit-profile', icon: Settings },
@@ -37,6 +39,18 @@ export function AppSidebar() {
               <span>{item.title}</span>
             </a>
           ))}
+
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();  // Prevent page reload
+              signOut({ callbackUrl: '/' });
+            }}
+            className="flex items-center space-x-3 p-2 mt-4 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <ChevronRight className="w-5 h-5" />
+            <span>Log Out</span>
+          </a>
         </nav>
       </div>
     </SheetContent>
