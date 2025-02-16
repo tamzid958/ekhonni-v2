@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @AllArgsConstructor
-public class ProductSellerDTO {
+public class ProductSellerAndBuyerDTO {
     private UUID id;
     private String name;
 }

@@ -141,14 +141,15 @@ INSERT INTO category (id, name, active, parent_category_id, created_at, updated_
 
 -- Insert Products with updated conditions and fields
 -- Insert Products with leaf categories and updated IDs
-INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at) VALUES
-(101, 'iPhone 13 Pro', 'Slightly used iPhone 13 Pro', '256GB storage, excellent condition', 899.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Minimal signs of use', 10048, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
-(102, 'MacBook Pro 2022', 'New MacBook Pro M1', 'Latest model with M1 chip', 1499.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Brand new', 10048, '550e8400-e29b-41d4-a716-446655440001'::uuid, NOW(), NOW()),
-(103, 'Samsung Galaxy S21', 'Brand new Samsung Galaxy S21', 'Latest model, never used', 699.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Factory sealed', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
-(104, 'Dell XPS 13', 'Slightly used Dell XPS 13', 'Compact and powerful laptop', 1299.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor wear on keyboard', 10048, '550e8400-e29b-41d4-a716-446655440004'::uuid, NOW(), NOW()),
-(105, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440000'::uuid, NOW(), NOW()),
-(106, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
-(107, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
+INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, buyer_id, created_at, updated_at) VALUES
+(101, 'iPhone 13 Pro', 'Slightly used iPhone 13 Pro', '256GB storage, excellent condition', 899.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Minimal signs of use', 10048, '550e8400-e29b-41d4-a716-446655440000'::uuid, NULL, NOW(), NOW()),
+(102, 'MacBook Pro 2022', 'New MacBook Pro M1', 'Latest model with M1 chip', 1499.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Brand new', 10048, '550e8400-e29b-41d4-a716-446655440001'::uuid, NULL, NOW(), NOW()),
+(103, 'Samsung Galaxy S21', 'Brand new Samsung Galaxy S21', 'Latest model, never used', 699.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Factory sealed', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NULL, NOW(), NOW()),
+(104, 'Dell XPS 13', 'Slightly used Dell XPS 13', 'Compact and powerful laptop', 1299.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor wear on keyboard', 10048, '550e8400-e29b-41d4-a716-446655440004'::uuid, NULL, NOW(), NOW()),
+(105, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440000'::uuid, NULL, NOW(), NOW()),
+(106, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NULL, NOW(), NOW()),
+(107, 'Leather Jacket', 'Genuine leather jacket', 'Stylish and durable', 199.99, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Never worn', 10026, '550e8400-e29b-41d4-a716-446655440005'::uuid, NULL, NOW(), NOW());
+
 --(108, 'Sony WH-1000XM4 Headphones', 'Noise-canceling headphones', 'Top-notch sound quality', 350.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'Unused', 10048, '550e8400-e29b-41d4-a716-446655440003'::uuid, NOW(), NOW()),
 --(109, 'Nike Air Max', 'Brand new running shoes', 'Comfortable and stylish', 120.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Like_New', 'In original box', 10033, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 --(110, 'Apple Watch Series 6', 'Used but in great condition', 'Advanced health features', 399.00, 'DHAKA', 'Dhaka', 'APPROVED', 'Very_Good', 'Minor scratches on screen', 10048, '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),

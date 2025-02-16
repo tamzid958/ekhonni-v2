@@ -10,7 +10,7 @@ package com.ekhonni.backend.model;
 import com.ekhonni.backend.baseentity.BaseEntity;
 import com.ekhonni.backend.dto.product.ProductCategoryDTO;
 import com.ekhonni.backend.dto.product.ProductImageDTO;
-import com.ekhonni.backend.dto.product.ProductSellerDTO;
+import com.ekhonni.backend.dto.product.ProductSellerAndBuyerDTO;
 import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
@@ -71,13 +71,17 @@ public class Product extends BaseEntity<Long> {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private List<ProductImage> images;
 
 
-    public ProductSellerDTO getSellerDTO() {
-        return new ProductSellerDTO(this.getSeller().getId(), this.getSeller().getName());
+    public ProductSellerAndBuyerDTO getSellerDTO() {
+        return new ProductSellerAndBuyerDTO(this.getSeller().getId(), this.getSeller().getName());
     }
 
     public ProductCategoryDTO getCategoryDTO() {

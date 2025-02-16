@@ -106,6 +106,7 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.conditionDetails(),
                     category,
                     seller,
+                    null,
                     images
             );
 
@@ -225,7 +226,6 @@ public class ProductService extends BaseService<Product, Long> {
      */
     public Page<ProductResponseDTO> getProductsResponsePage(Specification<Product> spec, Pageable pageable) {
         // Fetch paged product IDs based on the specification
-        System.out.println(pageable);
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
         List<Long> productIds = page.getContent();
 
