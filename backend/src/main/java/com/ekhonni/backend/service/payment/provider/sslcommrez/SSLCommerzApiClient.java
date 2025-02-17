@@ -152,6 +152,7 @@ public class SSLCommerzApiClient {
         if (EnumSet.of(TransactionStatus.VALID, TransactionStatus.VALIDATED, TransactionStatus.VALID_WITH_RISK)
                 .contains(transaction.getStatus())) {
             log.warn("Transaction already processed: {}", transaction.getId());
+            return;
         }
 
         if (!ipnHashVerify(ipnResponse)) {
@@ -261,10 +262,10 @@ public class SSLCommerzApiClient {
                 && (Math.abs(expectedBdtAmount - response.getAmount()) <= CURRENCY_CONVERSION_TOLERANCE);
     }
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedDelay = 1800000)
     public void checkPendingTransactions() {
         log.info("Starting processing of pending transactions");
-        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(25);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
@@ -349,6 +350,7 @@ public class SSLCommerzApiClient {
         if (EnumSet.of(TransactionStatus.VALID, TransactionStatus.VALIDATED, TransactionStatus.VALID_WITH_RISK)
                 .contains(cashIn.getStatus())) {
             log.warn("Cash in already processed: {}", cashIn.getId());
+            return;
         }
 
         if (!ipnHashVerify(ipnResponse)) {
@@ -437,10 +439,10 @@ public class SSLCommerzApiClient {
                 && (Math.abs(expectedBdtAmount - response.getAmount()) <= CURRENCY_CONVERSION_TOLERANCE);
     }
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedDelay = 1800000)
     public void checkPendingCashIns() {
         log.info("Starting processing of pending cash-ins");
-        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime timestamp = LocalDateTime.now().minusMinutes(25);
 
         final int BATCH_SIZE = 100;
         int pageNumber = 0;
