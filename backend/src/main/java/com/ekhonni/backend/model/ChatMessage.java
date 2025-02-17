@@ -22,12 +22,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ChatMessage extends BaseEntity<UUID> {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "chat_user1", referencedColumnName = "user1_id", nullable = false),
-            @JoinColumn(name = "chat_user2", referencedColumnName = "user2_id", nullable = false)
+            @JoinColumn(name = "chat_user1", referencedColumnName = "user1_id", insertable = false, updatable = false, nullable = false),
+            @JoinColumn(name = "chat_user2", referencedColumnName = "user2_id", insertable = false, updatable = false, nullable = false)
     })
     private ChatRoom chatRoom;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
@@ -39,11 +40,5 @@ public class ChatMessage extends BaseEntity<UUID> {
 
     @Column(nullable = false)
     private String content;
-
-    @Column(nullable = false)
-    private LocalDateTime sentAt;
-
-    @Column
-    private LocalDateTime readAt;
 
 }

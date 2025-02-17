@@ -27,14 +27,14 @@ import java.util.UUID;
 public class ChatRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user1_id" , nullable = false)
-    private UUID user1;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user1_id", referencedColumnName = "id", nullable = false)
+    private User user1;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user2_id", nullable = false)
-    private UUID user2;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user2_id", referencedColumnName = "id", nullable = false)
+    private User user2;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
