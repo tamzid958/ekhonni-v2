@@ -23,11 +23,10 @@ public record BidCreateDTO(
         @Schema(
                 description = "Bid amount with up to 10 integer digits and 2 decimal places",
                 example = "1000",
-                nullable = false,
                 minimum = "1"
         )
         @NotNull(message = "Amount cannot be null")
-        @Digits(integer = 10, fraction = 0, message = "Amount must have up to 10 integer digits and 0 decimal places")
+        @Digits(integer = 10, fraction = 0, message = "Amount must have up to 10 integer digits")
         @Positive
         Double amount)
 
