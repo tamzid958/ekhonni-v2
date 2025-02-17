@@ -31,6 +31,7 @@ public class ProductProjectionConverter {
         dto.setUpdatedAt(projection.getUpdatedAt());
         dto.setCategory(projection.getCategoryDTO());
         dto.setSeller(projection.getSellerDTO());
+
         dto.setImages(projection.getImagesDTO());
 
         return dto;

@@ -14,18 +14,22 @@ import com.ekhonni.backend.enums.ProductStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 
 @Setter
 @Getter
-public class ProductFilter{
+public class ProductFilter {
+    private final ProductStatus status = ProductStatus.APPROVED;
     private String categoryName;
     private Double minPrice;
     private Double maxPrice;
     private ProductCondition condition;
     private String searchTerm;
     private ProductSort sortBy;
-    private final ProductStatus status = ProductStatus.APPROVED;
     private Division division;
-    private int page=1;
-    private int size=10;
+    private Boolean applyBoost;
+    private UUID userId;
+    private int page;
+    private int size;
 }

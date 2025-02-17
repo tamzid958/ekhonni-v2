@@ -8,14 +8,14 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.CategoryCreateDTO;
 import com.ekhonni.backend.dto.CategoryTreeDTO;
-import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -49,6 +49,11 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping("/tree")
     public List<CategoryTreeDTO> getCategoryTree() {
         return categoryService.getCategoryTree();
+    }
+
+    @GetMapping("/top")
+    public ApiResponse<?> getTop() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getTopCategories());
     }
 
 }

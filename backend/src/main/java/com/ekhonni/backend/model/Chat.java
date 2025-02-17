@@ -8,9 +8,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +21,9 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat extends BaseEntity<Long> {
 
+
+public class Chat extends BaseEntity<Long>{
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
@@ -34,7 +33,8 @@ public class Chat extends BaseEntity<Long> {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
+    private String content;
     private LocalDateTime timestamp;
 
-  
 }
+

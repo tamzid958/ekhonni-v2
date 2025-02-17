@@ -8,16 +8,17 @@
 package com.ekhonni.backend.controller;
 
 
+import com.ekhonni.backend.dto.product.ProductBoostDTO;
 import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.filter.ProductFilter;
-import com.ekhonni.backend.filter.SellerProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.BidService;
+import com.ekhonni.backend.service.ProductBoostService;
 import com.ekhonni.backend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     ProductService productService;
     BidService bidService;
+    ProductBoostService productBoostService;
 
 
     @PostMapping
@@ -94,16 +96,37 @@ public class ProductController {
         return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForUser(filter));
     }
 
-    @GetMapping("/seller/filter")
-    public ApiResponse<?> getFilteredForSeller(@ModelAttribute SellerProductFilter filter) {
-        return new ApiResponse<>(HTTPStatus.FOUND, productService.getAllFilteredForSeller(filter));
-    }
-
 
     @GetMapping("/{id}/bid")
     public ApiResponse<?> getAllBidsForProduct(@PathVariable("id") Long id, Pageable pageable) {
         return new ApiResponse<>(HTTPStatus.ACCEPTED,
                 bidService.getAllForProduct(id, BuyerBidProjection.class, pageable));
+    }
+
+
+    /*
+      Boost Product APIs
+    */
+
+    @PostMapping("/boost")
+    @PreAuthorize("@productService.getSellerId(#boostDTO.productId) == authentication.principal.id")
+    public ApiResponse<?> boostProduct(@RequestBody ProductBoostDTO boostDTO) {
+        productBoostService.boostProduct(boostDTO);
+        return new ApiResponse<>(HTTPStatus.CREATED, null);
+    }
+
+    @PatchMapping("/boost")
+    @PreAuthorize("@productService.getSellerId(#boostDTO.productId) == authentication.principal.id")
+    public ApiResponse<?> updateBoost(@RequestBody ProductBoostDTO boostDTO) {
+        productBoostService.updateBoost(boostDTO);
+        return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
+    }
+
+    @DeleteMapping("/boost/{productId}")
+    @PreAuthorize("@productService.getSellerId(#productId) == authentication.principal.id")
+    public ApiResponse<?> removeBoost(@PathVariable Long productId) {
+        productBoostService.removeBoost(productId);
+        return new ApiResponse<>(HTTPStatus.DELETED, null);
     }
 
 

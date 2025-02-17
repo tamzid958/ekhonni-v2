@@ -30,8 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
 
     ProductProjection findProjectionById(Long id);
 
-    List<ProductProjection> findByIdIn(List<Long> productIds, Pageable pageable);
-
+    List<ProductProjection> findByIdIn(List<Long> productIds);
 
 
     //admin site

@@ -39,6 +39,7 @@ import java.util.List;
         "updatedAt",
         "seller",
         "category",
+        "boostData",
         "images"
 })
 public class ProductResponseDTO {
@@ -54,7 +55,8 @@ public class ProductResponseDTO {
     private ProductStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private ProductSellerDTO seller;
+    private ProductSellerAndBuyerDTO seller;
     private ProductCategoryDTO category;
+    private ProductBoostResponseDTO boostData;
     private List<ProductImageDTO> images = new ArrayList<>();
 }

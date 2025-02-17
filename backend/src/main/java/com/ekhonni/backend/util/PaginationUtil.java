@@ -31,6 +31,12 @@ public class PaginationUtil {
             }
         }
 
+
+        page = Math.max(page, 0);
+        size = Math.max(5, size);
+
+        System.out.println(page + "   gg  " + size);
+        
         return PageRequest.of(page, size, sort);
     }
 }
