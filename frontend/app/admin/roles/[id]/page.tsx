@@ -1,6 +1,6 @@
 "use client";
-import React from 'react';
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -23,19 +23,58 @@ export default function RoleDetails() {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
+  const router = useRouter();
   const { allRolesList, processedRoles,   error, roleMapping } = useRoles(session?.user?.id, session?.user?.token);
 
-
   const { id } = useParams();
-  const role = roleMapping[id];
+
 
   const { data, error: privilegeError, isLoading } = useSWR(
-    userId ? [`/api/v2/role/${id}/privilege/`, userToken] : null,
+    userId ? [`/api/v2/role/${id}/privilege/?page=0&size=200`, userToken] : null,
     async ([url, token]) => {
       const fetchedData = await fetcher(url, token);
       return fetchedData?.content ?? [];
     }
   );
+
+  const groupPrivilegesByType = (privileges) => {
+    return privileges.reduce((acc, privilege) => {
+      if(!acc[privilege.type]){
+        acc[privilege.type] = []
+      }
+      acc[privilege.type].push(privilege);
+      return acc;
+    }, {});
+  };
+  const [selectedRole, setSelectedRole] = useState(id);
+  const [selectedType, setSelectedType] = useState("");
+  const [groupedPrivileges, setGroupedPrivileges] = useState({});
+
+  useEffect(() => {
+    if(data)
+    {
+      const groupedData = groupPrivilegesByType(data);
+      setGroupedPrivileges(groupedData);
+      if(Object.keys(groupedData).length > 0){
+        setSelectedType(Object.keys(groupedData)[0]);
+      }
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (selectedRole) {
+      router.push(`/admin/roles/${selectedRole}`);
+    }
+  }, [selectedRole, router]);
+
+  const handleRoleChange = (event) => {
+    setSelectedRole(event.target.value);
+  };
+  const handleTypeChange = (event) =>{
+    setSelectedType(event.target.value);
+  }
+  const filteredPrivileges = groupedPrivileges[selectedType] || [];
+
 
   console.log("Retrieved Privilege", data);
 
@@ -48,7 +87,6 @@ export default function RoleDetails() {
         <Loading />
       </div>
     );
-
   }
   if (!session) {
     return (
@@ -60,7 +98,6 @@ export default function RoleDetails() {
       </div>
     );
   }
-
   if (privilegeError) {
     return (
       <div className="flex justify-center items-center h-screen w-screen p-4">
@@ -72,7 +109,7 @@ export default function RoleDetails() {
     );
   }
   return (
-    <div className="flex">
+    <div className="flex ">
       <div className="flex w-[1220px] h-[1250px] flex-col  bg-white ">
 
         <div className="flex flex-col md:flex-row w-full">
@@ -81,11 +118,21 @@ export default function RoleDetails() {
             <h1 className="text-black font-sans font-bold text-3xl">
              Privilages for
             </h1>
-            <h2 className="text-black font-sans text-xl">
-              {role}
-            </h2>
-          </div>
+            <div className="flex p-4">
+              <select
+                value={selectedRole}
+                onChange={handleRoleChange}
+                className="px-4 py-2 pr-8 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto"
+              >
+                {Object.keys(roleMapping).map((roleId) => (
+                  <option key={roleId} value={roleId}>
+                    {roleMapping[roleId]}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+          </div>
           <div className="flex items-center gap-2.5 justify-end w-full md:w-1/2  p-4">
 
             <Button
@@ -98,94 +145,36 @@ export default function RoleDetails() {
               aria-label="Add New Role"
             >
               <FaPlus className="text-xl" />
-              Add New Privilege to {role}
+              Add New Privilege
             </Button>
-            {/*<RoleDialog*/}
-            {/*  token = {session.user.token}*/}
-            {/*  isOpen={isDialogOpen}*/}
-            {/*  onClose={() => setDialogOpen(false)}*/}
-            {/*  onSave={handleSave}*/}
-            {/*  existingRoles={allRolesList}*/}
-            {/*/>*/}
-
           </div>
         </div>
 
-        {/* Middle section */}
-        <div className="flex max-w-[1220px] bg-green-100 rounded-xl m-4 p-4 gap-2.5  h-36">
-          <div className="flex-1 p-1">
-            <Card className="flex flex-col bg-white hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col">
-
-                  <CardTitle className="flex text-gray-500 mb-2 text-xl">
-                    Total Roles
-                  </CardTitle>
-                  {/*<h1 className="text-4xl font-bold">{processedRoles.length}</h1>*/}
-                </div>
-              </div>
-            </Card>
-          </div>
-          <div className="flex-1 p-1">
-            <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col">
-                  <CardTitle className="flex text-gray-500 mb-2 text-xl">Active Roles</CardTitle>
-                  {/*<h1 className="text-4xl font-bold">{processedRoles.length}</h1>*/}
-                </div>
-                <div className="flex mt-6">
-                  <Badge
-                    className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
-                  >
-                    {100}%
-                  </Badge>
-                </div>
-              </div>
-            </Card>
-          </div>
-          <div className="flex-1 p-1">
-            <Card className="flex flex-col hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col">
-                  <CardTitle className="flex text-gray-500 mb-2 text-xl">Archived Roles</CardTitle>
-                  <h1 className="text-4xl font-bold">{0}</h1>
-                </div>
-                <div className="flex mt-6">
-                  <Badge
-                    className={`text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 bg-green-500`}
-                  >
-                    {0}%
-                  </Badge>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
         <Separator className="flex  p-0" />
         {/* Bottom section */}
         <div className="w-full  h-36 mt-2">
           <section className=" flex">
             <div className="flex flex-col justify-start items-start">
-              <Tabs defaultValue="all" className="w-[400px] pl-4">
-                <TabsList>
-                  <TabsTrigger value="all" >All Previliges(0 )</TabsTrigger>
-                  {/*<TabsTrigger value="active">Active Users({activeUsers?.content?.length?? 0})</TabsTrigger>*/}
-                  {/*<TabsTrigger value="blocked">Blocked Users({blockedUsers?.content?.length?? 0})</TabsTrigger>*/}
-                  {/*<TabsTrigger value="deleted">Deleted Users({deletedUsers?.content?.length?? 0})</TabsTrigger>*/}
-                </TabsList>
-                <TabsContent value="all" className = "flex w-[1220px] min-h[400px] ">
-                  <DataTable key = {data.length} columns={ privilegeColumns} data={data} userType={"role"}/>
-                </TabsContent>
-                {/*<TabsContent value="active" className = "flex w-[1220px] min-h[400px] ">*/}
-                {/*  <DataTable key={activeUsers?.content?.length ?? 0} columns={columns} data={activeUsers?.content ?? []} />*/}
-                {/*</TabsContent>*/}
-                {/*<TabsContent  value="blocked" className = "flex min-w-[1220px] min-h[400px] ">*/}
-                {/*  <DataTable  key={blockedUsers?.content?.length ?? 0}  columns={blockedUserColumns} data={blockedUsers?.content ?? []} />*/}
-                {/*</TabsContent>*/}
-                {/*<TabsContent value="deleted" className = "flex min-w-[1220px] min-h[400px] ">*/}
-                {/*  <DataTable  key={deletedUsers?.content?.length ?? 0} columns={columns} data={deletedUsers?.content ?? []} />*/}
-                {/*</TabsContent>*/}
-              </Tabs>
+              <div className="flex p-4">
+                <div className="relative">
+                  <select
+                    value={selectedType}
+                    onChange={handleTypeChange}
+                    className="px-4 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {
+                      Object.keys(groupedPrivileges).map((type) => (
+                        <option key={type} value={type} className="m-2">
+                          {type}
+                        </option>
+                      ))
+                    }
+                  </select>
+                </div>
+              </div>
+              <div>
+                <DataTable columns={privilegeColumns} data={filteredPrivileges} />
+              </div>
             </div>
           </section>
         </div>

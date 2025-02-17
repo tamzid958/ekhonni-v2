@@ -271,7 +271,7 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
         }
       };
       return (
-        <Badge className={`text-white px-3 py-1 rounded-full text-sm font-bold ${getBadgeColor(httpMethod)}`}>
+        <Badge className={`text-white px-3 py-1  text-sm  ${getBadgeColor(httpMethod)}`}>
           {httpMethod}
         </Badge>
       );
