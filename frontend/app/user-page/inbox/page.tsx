@@ -72,69 +72,70 @@ export default function Chat() {
     setText('');
   };
 
-  if (!session) {
-    return (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-          <p>You need to be signed in to view this page.</p>
-        </div>
-    );
-  }
 
   return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-brand-bright p-6">
-        <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Ekhonni Chat</h2>
-            <div className="flex gap-3">
-              <button
-                  onClick={connect}
-                  disabled={connected}
-                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400"
-              >
-                Connect
-              </button>
-              <button
-                  onClick={disconnect}
-                  disabled={!connected}
-                  className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:bg-gray-400"
-              >
-                Disconnect
-              </button>
+      <div className="flex items-center justify-center min-h-screen bg-brand-bright p-6">
+        <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6 flex gap-4">
+          {/* Chat Rooms Column */}
+          <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Chat Rooms</h3>
+            <div className="h-80 overflow-y-auto border rounded-lg p-2">
+              {/* Chat rooms will be dynamically loaded here in the future */}
+              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 1</div>
+              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 2</div>
+              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 3</div>
             </div>
           </div>
 
-          {/* Chat Messages */}
-          <div className="h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
-            {messages.map((msg, index) => (
-                <div key={index} className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'} mb-3`}>
-                  <div className={`p-2 max-w-md text-sm rounded-xl shadow ${msg.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                    {msg.content}
-                  </div>
-                </div>
-            ))}
-            <div ref={messagesEndRef}></div>
-          </div>
-
-          {/* Chat Input */}
-          {connected && (
-              <div className="mt-4 flex gap-3">
-                <input
-                    type="text"
-                    placeholder="Type a message..."
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="flex-1 p-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
+          {/* Chat Section Column */}
+          <div className="w-2/3">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Ekhonni Chat</h2>
+              <div className="flex gap-3">
                 <button
-                    onClick={sendMessage}
-                    className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                    onClick={connect}
+                    disabled={connected}
+                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400"
                 >
-                  Send
+                  Connect
+                </button>
+                <button
+                    onClick={disconnect}
+                    disabled={!connected}
+                    className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:bg-gray-400"
+                >
+                  Disconnect
                 </button>
               </div>
-          )}
+            </div>
+            <div className="h-96 overflow-y-auto border rounded-lg p-4 bg-gray-50">
+              {messages.map((msg, index) => (
+                  <div key={index} className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'} mb-3`}>
+                    <div className={`p-2 max-w-md text-sm rounded-xl shadow ${msg.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
+                      {msg.content}
+                    </div>
+                  </div>
+              ))}
+              <div ref={messagesEndRef}></div>
+            </div>
+            {connected && (
+                <div className="mt-4 flex gap-3">
+                  <input
+                      type="text"
+                      placeholder="Type a message..."
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      className="flex-1 p-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <button
+                      onClick={sendMessage}
+                      className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                  >
+                    Send
+                  </button>
+                </div>
+            )}
+          </div>
         </div>
       </div>
   );
