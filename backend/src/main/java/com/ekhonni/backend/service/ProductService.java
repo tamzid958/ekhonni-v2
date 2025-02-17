@@ -134,8 +134,16 @@ public class ProductService extends BaseService<Product, Long> {
             }
 
         }
+        ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
+        productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
+                dto.setBoostData(new ProductBoostResponseDTO(
+                        boost.getBoostType(),
+                        boost.getBoostedAt(),
+                        boost.getExpiresAt()))
+        );
 
-        return ProductProjectionConverter.convert(projection);
+        return dto;
+
     }
 
 
