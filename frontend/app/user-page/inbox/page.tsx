@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useSession } from "next-auth/react";
+import axios from 'axios';
+
 
 export default function Chat() {
   const { data: session, status } = useSession();
@@ -15,7 +17,24 @@ export default function Chat() {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<{ senderId: string; content: string }[]>([]);
   const [text, setText] = useState('');
+  const [chatRooms, setChatRooms] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (userId) {
+      axios.get(`http://localhost:8080/api/v2/user/${userId}/chat/rooms`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      })
+          .then((response) => {
+            setChatRooms(response.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching chat rooms:', error);
+          });
+    }
+  }, [userId, userToken]);
 
   useEffect(() => {
     return () => {
@@ -80,10 +99,15 @@ export default function Chat() {
           <div className="w-1/3 bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Chat Rooms</h3>
             <div className="h-80 overflow-y-auto border rounded-lg p-2">
-              {/* Chat rooms will be dynamically loaded here in the future */}
-              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 1</div>
-              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 2</div>
-              <div className="p-3 bg-gray-200 rounded-lg mb-2">Room 3</div>
+              {chatRooms.length === 0 ? (
+                  <div>No chat rooms available</div>
+              ) : (
+                  chatRooms.map((room: any, index: number) => (
+                      <div key={index} className="p-3 bg-gray-200 rounded-lg mb-2">
+                        {room.user1Name} & {room.user2Name}
+                      </div>
+                  ))
+              )}
             </div>
           </div>
 
