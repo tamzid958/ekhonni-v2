@@ -1,17 +1,16 @@
 'use client';
-import { Button } from './ui/button';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useFilterProducts } from '@/hooks/useFilterProducts';
+import { AppSidebar } from '@/components/userSheet';
+import { Button } from '@/components/ui/button';
+import { NotificationGetter } from '@/components/Notification';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppSidebar } from '@/components/Sidebar';
-import Link from 'next/link';
-import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
-import { NotificationGetter } from '@/components/Notification';
-import { useSession } from 'next-auth/react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useRouter } from 'next/navigation';
-import { AppSidebar } from '@/components/userSheet';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
-import { useFilterProducts } from '@/hooks/useFilterProducts';
 
 type Props = {
   placeholder?: string;
@@ -32,14 +31,13 @@ export function NavBar({ placeholder }: Props) {
   const { data: session, status } = useSession();
   const [query, setQuery] = useState('');
   const linkRef = useRef<HTMLAnchorElement | null>(null);
-  const router = useRouter(); // Access the router
-
+  const router = useRouter();
   const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
+  const filteredProducts = products || [];
 
   const handleLoginRedirect = () => {
-    router.push('/'); // Redirect to home page
+    router.push('/');
   };
-  const filteredProducts = products || [];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
@@ -143,12 +141,12 @@ export function NavBar({ placeholder }: Props) {
       </div>
 
       <div className="flex gap-4 mr-4 mt-4 sm:mr-14 md:mr-16 lg:mr-32">
-        {session && (<Link href="/cart">
+        <Link href="/cart">
           <Button variant="custom" size="icon">
             <ShoppingCart className="h-6 w-6" />
           </Button>
-        </Link>)}
-        {session && (<Select>
+        </Link>
+        <Select>
           <SelectTrigger
             className="text-primary bg-brand-mid hover:bg-brand-light h-10 w-10 px-3 focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
             <Bell className="w-6 h-6" />
@@ -176,7 +174,7 @@ export function NavBar({ placeholder }: Props) {
               </div>
             </SelectGroup>
           </SelectContent>
-        </Select>)}
+        </Select>
 
 
         {session ? (
