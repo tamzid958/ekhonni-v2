@@ -14,7 +14,9 @@ import com.ekhonni.backend.filter.AdminProductFilter;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.AdminProductSpecificationBuilder;
+import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
 import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.transaction.Transactional;
@@ -118,7 +120,9 @@ public class ProductAdminService {
     public Page<ProductResponseDTO> getAllFilteredForAdmin(AdminProductFilter filter) {
         List<Long> categoryIds = productService.extractCategoryIds(filter.getCategoryName());
         Specification<Product> spec = AdminProductSpecificationBuilder.build(filter, categoryIds);
-        Pageable pageable = PaginationUtil.createPageable(filter.getPage(), filter.getSize(), filter.getSortBy());
+        Pageable pageable = PaginationUtil.createPageable(filter.getPage()-1, filter.getSize(), filter.getSortBy());
         return productService.getProductsResponsePage(spec, pageable);
+
+
     }
 }

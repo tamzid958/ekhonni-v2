@@ -31,7 +31,6 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,7 +38,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,80 +72,70 @@ public class ProductService extends BaseService<Product, Long> {
 
     @Transactional
     public void create(ProductCreateDTO dto) {
-
-        try {
+        try{
             User seller = AuthUtil.getAuthenticatedUser();
-            Category category = categoryRepository.findByNameAndActive(dto.category(), true);
-            if (category == null) throw new CategoryNotFoundException("category by this name not found");
 
-            List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages(dto.images());
-            List<ProductImage> images = new ArrayList<>();
-            for (String imagePath : imagePaths) {
-                ProductImage image = new ProductImage(imagePath);
-                images.add(image);
-            }
+            Category category = Optional.ofNullable(categoryRepository.findByNameAndActive(dto.category(), true))
+                    .orElseThrow(() -> new CategoryNotFoundException("Category by this name not found"));
 
-            ProductStatus status = ProductStatus.PENDING_APPROVAL;
+            List<ProductImage> images = cloudinaryImageUploadUtil.uploadImages(dto.images())
+                    .stream()
+                    .map(ProductImage::new)
+                    .collect(Collectors.toList());
 
             Product product = new Product(
-                    dto.title(),
-                    dto.subTitle(),
-                    dto.description(),
-                    dto.price(),
-                    dto.division(),
-                    dto.address(),
-                    status,
-                    dto.condition(),
-                    dto.conditionDetails(),
-                    category,
-                    seller,
-                    images
+                    dto.title(), dto.subTitle(), dto.description(), dto.price(),
+                    dto.division(), dto.address(), ProductStatus.PENDING_APPROVAL,
+                    dto.condition(), dto.conditionDetails(), category, seller, images
             );
 
             productRepository.save(product);
         } catch (Exception e) {
-            throw new ProductNotCreatedException(e.getMessage());
+            throw new RuntimeException(e);
         }
 
     }
+
 
 
     public ProductResponseDTO getOne(Long id) {
         ProductProjection projection = productRepository.findProjectionById(id);
-        if (projection == null) throw new ProductNotFoundException("Product doesn't exist");
-
-        User user = null;
-        try {
-            user = AuthUtil.getAuthenticatedUser();
-        } catch (Exception ignored) {
-
+        if (projection == null) {
+            throw new ProductNotFoundException("Product doesn't exist");
         }
-        if (user == null) {
-            if (projection.getStatus() != ProductStatus.APPROVED) {
-                throw new ProductNotFoundException("Unauthorized to view this product");
-            }
-        } else {
-            User buyer = getBuyerByProductId(id);
-            if (!user.getId().equals(projection.getSellerDTO().getId())
-                    && projection.getStatus() != ProductStatus.APPROVED
-                    && !user.getId().equals(buyer.getId())
-            )
-            {
-                throw new ProductNotFoundException("User Not Matched To View This product");
-            }
 
+        User user = getAuthenticatedUserSafely();
+        if (!isUserAuthorizedToViewProduct(user, id)) {
+            throw new ProductNotFoundException("Unauthorized to view this product");
         }
-        ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
-        productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
-                dto.setBoostData(new ProductBoostResponseDTO(
-                        boost.getBoostType(),
-                        boost.getBoostedAt(),
-                        boost.getExpiresAt()))
-        );
 
-        return dto;
-
+        return convertToProductResponseDTO(projection);
     }
+
+
+    private User getAuthenticatedUserSafely() {
+        try {
+            return AuthUtil.getAuthenticatedUser();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+
+    private boolean isUserAuthorizedToViewProduct(User user, Long productId) {
+        ProductProjection projection = productRepository.findProjectionById(productId);
+        if (user == null) {
+            return projection.getStatus() == ProductStatus.APPROVED;
+        }
+
+        User buyer = getBuyerByProductId(productId);
+        boolean isSeller = user.getId().equals(projection.getSellerDTO().getId());
+        boolean isBuyer = user.getId().equals(buyer.getId());
+        boolean isApproved = projection.getStatus() == ProductStatus.APPROVED;
+
+        return isSeller || isBuyer || isApproved;
+    }
+
 
 
     @Modifying
@@ -180,7 +171,6 @@ public class ProductService extends BaseService<Product, Long> {
             product.setCategory(category);
 
 
-            productRepository.save(product);
             return "updated";
         } catch (Exception e) {
             throw new ProductNotUpdatedException(e.getMessage());
@@ -234,12 +224,8 @@ public class ProductService extends BaseService<Product, Long> {
         Page<Long> page = productRepository.findAllFiltered(spec, pageable);
         List<Long> productIds = page.getContent();
 
-        System.out.println("ids size " + productIds.size());
-
         // Retrieve product projections for the fetched IDs
         List<ProductProjection> projections = productRepository.findByIdIn(productIds);
-
-        System.out.println(projections.size());
 
         // Sort projections to match the order of productIds
         Map<Long, Integer> idOrderMap = new HashMap<>();
@@ -248,23 +234,29 @@ public class ProductService extends BaseService<Product, Long> {
         }
         projections.sort(Comparator.comparing(p -> idOrderMap.getOrDefault(p.getId(), Integer.MAX_VALUE)));
 
-        // Convert each projection to a response DTO and add boost data if available
+        // Convert each projection to a response DTO
         List<ProductResponseDTO> products = projections.stream()
-                .map(projection -> {
-                    ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
-                    productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
-                            dto.setBoostData(new ProductBoostResponseDTO(
-                                    boost.getBoostType(),
-                                    boost.getBoostedAt(),
-                                    boost.getExpiresAt()))
-                    );
-                    return dto;
-                })
+                .map(this::convertToProductResponseDTO)
                 .collect(Collectors.toList());
 
         // Return the final paged result
         return new PageImpl<>(products, pageable, page.getTotalElements());
     }
+
+
+
+
+    private ProductResponseDTO convertToProductResponseDTO(ProductProjection projection) {
+        ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
+        productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
+                dto.setBoostData(new ProductBoostResponseDTO(
+                        boost.getBoostType(),
+                        boost.getBoostedAt(),
+                        boost.getExpiresAt()))
+        );
+        return dto;
+    }
+
 
     public User getBuyerByProductId(Long productId) {
         Bid bid = bidRepository.findFirstByProductIdAndStatusInAndDeletedAtIsNull(
