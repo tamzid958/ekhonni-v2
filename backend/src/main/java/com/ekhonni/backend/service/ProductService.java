@@ -100,7 +100,6 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.conditionDetails(),
                     category,
                     seller,
-                    null,
                     images
             );
 

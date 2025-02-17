@@ -48,8 +48,6 @@ public interface ProductProjection {
 
     ProductSellerAndBuyerDTO getSellerDTO();
 
-    ProductSellerAndBuyerDTO getBuyerDTO();
-
     List<ProductImageDTO> getImagesDTO();
 
 }
