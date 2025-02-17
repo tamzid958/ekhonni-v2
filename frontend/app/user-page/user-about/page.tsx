@@ -4,6 +4,7 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
+import Loading from '@/components/Loading';
 
 
 interface UserDetails {
@@ -16,7 +17,7 @@ interface UserDetails {
 
 
 export default function UserDetails() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const token = session?.user?.token;
 
@@ -33,7 +34,7 @@ export default function UserDetails() {
   }
 
   if (isLoading || !data) {
-    return <div className="text-center text-gray-500">Loading...</div>;
+    return <div className="text-center text-gray-500"><Loading/></div>;
   }
   const userDetails: UserDetails = data.data;
 
