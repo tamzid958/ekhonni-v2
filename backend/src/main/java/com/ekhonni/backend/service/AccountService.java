@@ -16,6 +16,8 @@ import com.ekhonni.backend.projection.account.UserAccountProjection;
 import com.ekhonni.backend.repository.AccountRepository;
 import com.ekhonni.backend.repository.UserRepository;
 import com.ekhonni.backend.util.AuthUtil;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +53,7 @@ public class AccountService extends BaseService<Account, Long> {
     }
 
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void withdraw(Account account, double amount) {
         validateMinimumWithdrawalAmount(amount);
         validateMinimumBalance(account, amount);
@@ -58,19 +61,22 @@ public class AccountService extends BaseService<Account, Long> {
     }
 
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    public void deposit(Account account, double amount) {
+        account.setTotalEarnings(account.getTotalEarnings() + amount);
+    }
+
+    @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void deduct(Account account, double amount) {
         validateMinimumBalance(account, amount);
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
     }
 
     @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void remove(Account account, double amount) {
         account.setTotalWithdrawals(account.getTotalEarnings() - amount);
-    }
-
-    @Transactional
-    public void deposit(Account account, double amount) {
-        account.setTotalEarnings(account.getTotalEarnings() + amount);
     }
 
     private void validateMinimumWithdrawalAmount(double amount) {
