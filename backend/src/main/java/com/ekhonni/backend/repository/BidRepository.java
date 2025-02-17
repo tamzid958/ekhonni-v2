@@ -42,8 +42,12 @@ public interface BidRepository extends BaseRepository<Bid, Long> {
 
     long countByProductId(Long productId);
 
-    User findByProductIdAndStatusAndDeletedAtIsNull(Long productId, BidStatus status);
+    Optional<Bid> findFirstByProductIdAndStatusAndDeletedAtIsNull(Long productId, BidStatus status);
 
-    User findByProductIdAndStatusInAndDeletedAtIsNull(Long productId, List<BidStatus> statuses);
+    List<Bid> findByProductIdAndStatusAndDeletedAtIsNull(Long productId, BidStatus status);
+
+    Optional<Bid> findFirstByProductIdAndStatusInAndDeletedAtIsNull(Long productId, List<BidStatus> statuses);
+
+    List<Bid> findByProductIdAndStatusInAndDeletedAtIsNull(Long productId, List<BidStatus> statuses);
 
 }

@@ -18,12 +18,10 @@ import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
+import com.ekhonni.backend.exception.bid.BidNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
-import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.Product;
-import com.ekhonni.backend.model.ProductImage;
-import com.ekhonni.backend.model.User;
+import com.ekhonni.backend.model.*;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.*;
 import com.ekhonni.backend.specification.SpecificationResult;
@@ -260,17 +258,19 @@ public class ProductService extends BaseService<Product, Long> {
         return new PageImpl<>(products, pageable, page.getTotalElements());
     }
 
-    public User getByProductIdAndStatus(Long productId, BidStatus status) {
+    public List<Bid> getByProductIdAndStatus(Long productId, BidStatus status) {
         return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
     }
 
-    public User getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
+    public List<Bid> getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
         return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
     }
 
     public User getBuyerByProductId(Long productId) {
-        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(
-                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID));
+        Bid bid = bidRepository.findFirstByProductIdAndStatusInAndDeletedAtIsNull(
+                        productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID))
+                .orElseThrow(() -> new BidNotFoundException("No buyer found for the product"));
+        return bid.getBidder();
     }
 
 }

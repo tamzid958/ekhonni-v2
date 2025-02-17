@@ -183,16 +183,18 @@ public class BidService extends BaseService<Bid, Long> {
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
     }
 
-    public User getByProductIdAndStatus(Long productId, BidStatus status) {
-        return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
+    public List<Bid> getByProductIdAndStatus(Long productId, BidStatus status) {
+       return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
     }
 
-    public User getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
+    public List<Bid> getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
         return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
     }
 
     public User getBuyerByProductId(Long productId) {
-        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(
-                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID));
+        Bid bid = bidRepository.findFirstByProductIdAndStatusInAndDeletedAtIsNull(
+                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID))
+                .orElseThrow(() -> new BidNotFoundException("No buyer found for the product"));
+        return bid.getBidder();
     }
 }
