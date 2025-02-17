@@ -17,6 +17,7 @@ import com.ekhonni.backend.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public record CategoryAdminController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto) {
+    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto) throws IOException {
         return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
     }
 

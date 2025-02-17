@@ -9,6 +9,7 @@ package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -22,11 +23,18 @@ public class Category extends BaseEntity<Long> {
 
     @Column(nullable = false, unique = true)
     private String name;
-    private boolean active;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private String imagePath;
+
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_category_id")
     private Category parentCategory;
+
+
 
 
 }

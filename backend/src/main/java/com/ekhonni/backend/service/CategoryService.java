@@ -14,31 +14,38 @@ import com.ekhonni.backend.dto.CategoryTreeDTO;
 import com.ekhonni.backend.dto.CategoryUpdateDTO;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
+import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
 @Slf4j
 public class CategoryService extends BaseService<Category, Long> {
 
-    CategoryRepository categoryRepository;
-    ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
 
 
-    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository,
+                           CloudinaryImageUploadUtil cloudinaryImageUploadUtil
+    ) {
         super(categoryRepository);
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
     }
 
 
-    public String save(CategoryCreateDTO dto) {
+    public String save(CategoryCreateDTO dto) throws IOException {
         Category old = categoryRepository.findByName(dto.name());
         if (old != null) throw new CategoryNotFoundException("Category already exists");
 
@@ -52,8 +59,11 @@ public class CategoryService extends BaseService<Category, Long> {
             throw new CategoryNotFoundException("Parent category is inactive");
         }
 
+        String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
+
         Category category = new Category(
                 dto.name(),
+                imagePath,
                 true,
                 parentCategory
         );
