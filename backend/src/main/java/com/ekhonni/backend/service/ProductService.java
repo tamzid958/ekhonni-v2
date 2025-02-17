@@ -12,6 +12,7 @@ import com.ekhonni.backend.dto.product.ProductBoostResponseDTO;
 import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
+import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
 import com.ekhonni.backend.exception.ProductNotCreatedException;
@@ -24,10 +25,7 @@ import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.ProductProjection;
-import com.ekhonni.backend.repository.CategoryRepository;
-import com.ekhonni.backend.repository.ProductBoostRepository;
-import com.ekhonni.backend.repository.ProductRepository;
-import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.repository.*;
 import com.ekhonni.backend.specification.SpecificationResult;
 import com.ekhonni.backend.specificationbuilder.CommonProductSpecificationBuilder;
 import com.ekhonni.backend.specificationbuilder.UserProductSpecificationBuilder;
@@ -49,31 +47,27 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductService extends BaseService<Product, Long> {
-    ProductRepository productRepository;
-    CategoryService categoryService;
-    CategoryRepository categoryRepository;
-    UserRepository userRepository;
-    CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
-    ProductBoostRepository productBoostRepository;
-    AccountService accountService;
+    private final ProductRepository productRepository;
+    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
+    private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
+    private final ProductBoostRepository productBoostRepository;
+    private final BidRepository bidRepository;
 
-    @Value("${product.upload.dir}")
-    String PRODUCT_UPLOAD_DIR;
 
 
     public ProductService(ProductRepository productRepository, CategoryService categoryService,
-                          CategoryRepository categoryRepository, UserRepository userRepository,
+                          CategoryRepository categoryRepository,
                           CloudinaryImageUploadUtil cloudinaryImageUploadUtil, ProductBoostRepository productBoostRepository,
-                          AccountService accountService
+                          BidRepository bidRepository
     ) {
         super(productRepository);
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
         this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
         this.productBoostRepository = productBoostRepository;
-        this.accountService = accountService;
+        this.bidRepository = bidRepository;
     }
 
 
@@ -106,7 +100,6 @@ public class ProductService extends BaseService<Product, Long> {
                     dto.conditionDetails(),
                     category,
                     seller,
-                    null,
                     images
             );
 
@@ -133,9 +126,10 @@ public class ProductService extends BaseService<Product, Long> {
                 throw new ProductNotFoundException("Unauthorized to view this product");
             }
         } else {
+            User buyer = getBuyerByProductId(id);
             if (!user.getId().equals(projection.getSellerDTO().getId())
                     && projection.getStatus() != ProductStatus.APPROVED
-                    && !user.getId().equals(projection.getBuyerDTO().getId())
+                    && !user.getId().equals(buyer.getId())
             )
             {
                 throw new ProductNotFoundException("User Not Matched To View This product");
@@ -266,5 +260,17 @@ public class ProductService extends BaseService<Product, Long> {
         return new PageImpl<>(products, pageable, page.getTotalElements());
     }
 
+    public User getByProductIdAndStatus(Long productId, BidStatus status) {
+        return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
+    }
+
+    public User getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
+        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
+    }
+
+    public User getBuyerByProductId(Long productId) {
+        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(
+                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID));
+    }
 
 }

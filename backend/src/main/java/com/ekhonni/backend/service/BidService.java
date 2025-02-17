@@ -106,7 +106,6 @@ public class BidService extends BaseService<Bid, Long> {
             throw new BidAlreadyAcceptedException();
         }
         bid.getProduct().setStatus(ProductStatus.SOLD);
-        bid.getProduct().setBuyer(bid.getBidder());
         watchlistService.removeProductFromAllUser(bid.getProduct().getId());
         bid.setStatus(BidStatus.ACCEPTED);
         notificationService.createForBidAccepted(bid);
@@ -177,16 +176,5 @@ public class BidService extends BaseService<Bid, Long> {
         return bid.getProduct().getSeller().getId().equals(authenticatedUserId);
     }
 
-    public User getByProductIdAndStatus(Long productId, BidStatus status) {
-        return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
-    }
 
-    public User getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
-        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
-    }
-
-    public User getBuyerByProductId(Long productId) {
-        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(
-                productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID));
-    }
 }
