@@ -50,7 +50,11 @@ public class BidService extends BaseService<Bid, Long> {
     @Transactional
     public void create(BidCreateDTO bidCreateDTO) {
         Product product = productService.get(bidCreateDTO.productId())
-                .orElseThrow(() -> new ProductNotFoundException("Product not found for bid"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        if (!product.getStatus().equals(ProductStatus.APPROVED)) {
+            throw new ProductNotFoundException("Product not found");
+        }
 
         User authenticatedUser = AuthUtil.getAuthenticatedUser();
         if (product.getSeller().getId().equals(authenticatedUser.getId())) {
