@@ -258,14 +258,6 @@ public class ProductService extends BaseService<Product, Long> {
         return new PageImpl<>(products, pageable, page.getTotalElements());
     }
 
-    public List<Bid> getByProductIdAndStatus(Long productId, BidStatus status) {
-        return bidRepository.findByProductIdAndStatusAndDeletedAtIsNull(productId, status);
-    }
-
-    public List<Bid> getByProductIdAndStatuses(Long productId, List<BidStatus> statuses) {
-        return bidRepository.findByProductIdAndStatusInAndDeletedAtIsNull(productId, statuses);
-    }
-
     public User getBuyerByProductId(Long productId) {
         Bid bid = bidRepository.findFirstByProductIdAndStatusInAndDeletedAtIsNull(
                         productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID))
