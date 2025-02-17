@@ -16,9 +16,11 @@ import com.ekhonni.backend.model.User;
 import com.ekhonni.backend.projection.bid.BuyerBidProjection;
 import com.ekhonni.backend.repository.BidRepository;
 import com.ekhonni.backend.util.AuthUtil;
+import jakarta.persistence.LockModeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,6 +102,7 @@ public class BidService extends BaseService<Bid, Long> {
     }
 
     @Transactional
+    @Lock(LockModeType.OPTIMISTIC)
     public void accept(Long id) {
         Bid bid = get(id).orElseThrow(() -> new BidNotFoundException("Bid not found"));
         if (bidRepository.existsByProductIdAndStatusAndDeletedAtIsNull(bid.getProduct().getId(), BidStatus.ACCEPTED)) {

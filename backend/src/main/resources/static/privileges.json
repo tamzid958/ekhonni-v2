@@ -150,7 +150,8 @@
     "name": "Admin create notifications",
     "description": "Create notification for specific or all users",
     "httpMethod": "POST",
-    "endpoint": "/api/v2/user/{id}/notifications/create"
+    "endpoint": "/api/v2/user/{id}/notifications/create",
+    "type": "Notification"
   },
   {
     "name": "Get Bid Details",
@@ -573,7 +574,7 @@
     "type": "Payment"
   },
   {
-    "name": "Instant Payment Notification Payment",
+    "name": "Instant Payment Notification Product Payment",
     "description": "Handles IPN requests from the payment gateway for payment",
     "httpMethod": "POST",
     "endpoint": "/api/v2/payment/sslcommerz/ipn",
