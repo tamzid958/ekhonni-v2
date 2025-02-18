@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/tabs';
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 import { z } from 'zod';
 
@@ -217,7 +217,7 @@ export function TabsDemo() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleSaveChanges} disabled={!(name || phone || email || location || profileImage)}>
+            <Button className="w-full " onClick={handleSaveChanges} disabled={!(name || phone || email || location || profileImage)}>
               Save changes
             </Button>
           </CardFooter>

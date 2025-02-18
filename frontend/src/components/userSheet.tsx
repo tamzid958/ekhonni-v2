@@ -1,7 +1,7 @@
 import { DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowBigDown, ChevronRight, Inbox, Info, List,
-  MessageCircle, Settings, ShoppingBag
+  MessageCircle, Settings, ShoppingBag, Wallet
 } from "lucide-react";
 import React from "react";
 import { SheetContent } from "@/components/ui/sheet";
@@ -26,6 +26,7 @@ const items = [
   { title: "Watchlist", url: "/user-page/watchlist", icon: List },
   { title: "Sell Product", url: "/form", icon: ArrowBigDown },
   { title: "My-cart", url: "/user-page/my-cart", icon: ShoppingBag },
+  { title: "Account", url: "/user-page/account", icon: Wallet },
 ];
 
 export function AppSidebar() {

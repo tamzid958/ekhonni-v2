@@ -2,7 +2,6 @@
 import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppSidebar } from '@/components/Sidebar';
 import Link from 'next/link';
 import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { NotificationGetter } from '@/components/Notification';

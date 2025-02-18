@@ -9,7 +9,9 @@ import fetcher from "@/data/services/fetcher";
 
 
 export default function PersonalFeedbackPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+
 
   const userId = session?.user?.id;
   const token = session?.user?.token;
@@ -29,15 +31,15 @@ export default function PersonalFeedbackPage() {
 
 
   if (!session) {
-    return <div className="text-center text-lg font-semibold text-red-600">⚠ Please log in to view your feedback.</div>;
+    return <div className="min-h-screen text-center text-lg font-semibold text-red-600">⚠ Please log in to view your feedback.</div>;
   }
 
   if (buyerLoading || sellerLoading) {
-    return <div className="text-center text-lg font-semibold text-blue-500">⏳ Loading feedback...</div>;
+    return <div className="min-h-screen text-center text-lg font-semibold text-blue-500">⏳ Loading feedback...</div>;
   }
 
   if (buyerError || sellerError) {
-    return <div className="text-center text-lg font-semibold text-red-600">⚠ Error loading feedback.</div>;
+    return <div className="min-h-screen text-center text-lg font-semibold text-red-600">⚠ Error loading feedback.</div>;
   }
 
   return (
