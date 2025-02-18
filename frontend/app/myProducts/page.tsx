@@ -21,10 +21,16 @@ interface ProductData {
     name: string;
   };
   condition: string;
+  boostData?: {
+    boostType: string;
+    boostedAt: string;
+    expiresAt: string;
+  } | null;
   category: {
     id: number;
     name: string;
   };
+
   images: {
     imagePath: string;
   }[];
@@ -54,6 +60,8 @@ export default function MyProductPage() {
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, userToken));
   const products = data?.data?.content || [];
   console.log(products);
+  console.log('eta booster data');
+  console.log(products.price);
   if (status === 'loading' || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
