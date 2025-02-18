@@ -61,6 +61,11 @@ export default function Chat() {
           const newMessage = JSON.parse(messageOutput.body);
           setMessages((prev) => [...prev, newMessage]);
         });
+
+        client.subscribe('/user/queue/chat-rooms', (chatRoomUpdate) => {
+          const newChatRoom = JSON.parse(chatRoomUpdate.body);
+          setChatRooms((prev) => [...prev, newChatRoom]); // Update state dynamically
+        });
       },
       onDisconnect: () => {
         setConnected(false);
