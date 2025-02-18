@@ -39,7 +39,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ use
         onDeleteSuccess(userId);
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error('Error deleting users:', error);
     }
   };
 

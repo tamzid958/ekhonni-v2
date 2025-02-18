@@ -5,5 +5,5 @@ import {User} from '@/data/types/user';
 
 export function useUser()
 {
-  return useSWR<User>("/user");
+  return useSWR<User>("/users");
 }

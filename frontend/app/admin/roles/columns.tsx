@@ -28,6 +28,7 @@ import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
 import { useRouter } from "next/navigation";
 import { FaUser, FaUsers } from 'react-icons/fa6';
 import { RoleDialog } from '../components/RoleDialog';
+import {RoleSelector} from '../components/RoleSelector'
 
 export type Role = {
   id: number
@@ -39,14 +40,15 @@ export type Role = {
   NoOfUsers: number
 }
 
-
 export type Privilege = {
   id: number
   name: string
   description:string
   type: string
+  roles: string[]
   httpMethod: string
   endpoint: string
+
 }
 
 export const columns: ColumnDef<Role>[] = [
@@ -231,6 +233,14 @@ export const columns: ColumnDef<Role>[] = [
 
 ]
 
+function RoleSelector(props: {
+  initialRoles: string[],
+  onChange: (updatedRoles: string[]) => void,
+  availableRoles: string[]
+}) {
+  return null;
+}
+
 export const privilegeColumns: ColumnDef<Privilege>[] = [
 
   {
@@ -281,7 +291,34 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
     accessorKey: "endpoint",
     header: "API End Point",
   },
+  {
+    accessorKey: "roles",
+    header: "Assigned To",
+    cell: ({ row }) => {
 
+      const RolesData = row.original.roles;
+
+      const [roles, setRoles] = useState<string[]>(RolesData || []);
+      const availableRoles = ['ADMIN', 'USER', 'SUPER_ADMIN', 'Viewer'];
+
+      const handleRolesChange = (updatedRoles: string[]) => {
+        setRoles(updatedRoles);
+        // You can send the updated roles to your backend or manage state as needed
+        // For example: updateUserRoles(row.original.id, updatedRoles);
+        console.log('Updated Roles:', updatedRoles);
+
+      };
+      return (
+        <div>
+          <RoleSelector
+            initialRoles={roles}
+            onChange={handleRolesChange}
+            availableRoles={availableRoles}
+          />
+        </div>
+      );
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -342,5 +379,4 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
       )
     },
   }
-
 ]

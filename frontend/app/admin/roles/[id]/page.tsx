@@ -33,7 +33,11 @@ export default function RoleDetails() {
     userId ? [`/api/v2/role/${id}/privilege/?page=0&size=200`, userToken] : null,
     async ([url, token]) => {
       const fetchedData = await fetcher(url, token);
-      return fetchedData?.content ?? [];
+      const updatedData = fetchedData?.content?.map( item => ({
+        ...item,
+        roles: ["SUPER_ADMIN"],
+      })) ?? [];
+      return updatedData;
     }
   );
 
@@ -145,7 +149,7 @@ export default function RoleDetails() {
               aria-label="Add New Role"
             >
               <FaPlus className="text-xl" />
-              Add New Privilege
+              Assign New Privilege
             </Button>
           </div>
         </div>
@@ -173,7 +177,7 @@ export default function RoleDetails() {
                 </div>
               </div>
               <div>
-                <DataTable columns={privilegeColumns} data={filteredPrivileges} />
+                <DataTable columns={privilegeColumns} data={filteredPrivileges} userType="privilege" />
               </div>
             </div>
           </section>

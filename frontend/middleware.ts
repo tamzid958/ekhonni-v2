@@ -29,7 +29,7 @@ const ACCESS_LIST: Record<Role, Route[]> = {
     "/myProducts/bidList",
     "/productDetails",
     "/seller-page",
-    "/user-page"
+    "/users-page"
   ],
   GUEST: PUBLIC_ROUTES,
 };

@@ -33,7 +33,7 @@ export default function UserDetails() {
         });
         console.log("response", response);
         if (!response.ok) {
-          throw new Error("Failed to fetch user details");
+          throw new Error("Failed to fetch users details");
         }
 
         const data = await response.json();

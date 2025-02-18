@@ -25,12 +25,12 @@ export const handleBlockUser = async (userId,reason, blockPolicy,  userToken) =>
     }
     else
     {
-      console.log("Failed to block user", response.data);
-      toast("Failed to block user");
+      console.log("Failed to block users", response.data);
+      toast("Failed to block users");
     }
   }
   catch (error) {
-    console.error('Error blocking user:', error);
+    console.error('Error blocking users:', error);
   }
 }
 export const handleUnblockUser = async (userId,  userToken) => {
@@ -53,11 +53,11 @@ export const handleUnblockUser = async (userId,  userToken) => {
     }
     else
     {
-      console.log("Failed to unblock user", response.data);
-      toast("Failed to unblock user");
+      console.log("Failed to unblock users", response.data);
+      toast("Failed to unblock users");
     }
   }
   catch (error) {
-    console.error('Error unblocking user:', error);
+    console.error('Error unblocking users:', error);
   }
 }
