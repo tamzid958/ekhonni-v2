@@ -20,7 +20,7 @@ export default function MyCartPage() {
   console.log(currentPage);
 
 
-  const url = `/api/v2/bid/bidder?page=${apiPage}&size=20`;
+  const url = `/api/v2/bid/bidder?page=${apiPage}&size=1`;
   const {
     data,
     error,

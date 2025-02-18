@@ -17,7 +17,7 @@ export default function CustomPaginationItem({ page, currentPage }: PaginationIt
   // Clone existing query parameters
   const params = new URLSearchParams(searchParams.toString());
   params.set('page', page.toString());
-  params.delete('currentPage'); // ✅ Remove `currentPage` from the URL
+  // params.delete('currentPage'); // ✅ Remove `currentPage` from the URL
 
   return (
     <Link href={`${pathname}?${params.toString()}`} passHref>

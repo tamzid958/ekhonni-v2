@@ -6,14 +6,7 @@ import { HorizontalAdminCard } from '../components/HorizontalAdminCard';
 import { Package } from 'lucide-react';
 import { Data } from './page';
 import { Separator } from '@/components/ui/separator';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-} from '@/components/ui/pagination';
-import { Toaster } from 'sonner';
+import PaginationComponent from '@/components/pagination/Pagination';
 
 interface Props {
   products: Data[];
@@ -29,12 +22,12 @@ export default function ProductRenderer({ products, totalPages, currentPage, fil
   const pathname = usePathname();
   const router = useRouter();
 
-  // Handle Pagination Changes
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  // // Handle Pagination Changes
+  // const handlePageChange = (page: number) => {
+  //   const params = new URLSearchParams(searchParams.toString());
+  //   params.set('page', page.toString());
+  //   router.push(`${pathname}?${params.toString()}`);
+  // };
 
   // Ensure Search Query Only Updates on Client
   useEffect(() => {
@@ -45,7 +38,6 @@ export default function ProductRenderer({ products, totalPages, currentPage, fil
     <div className="space-y-6 container h-screen mx-12 p-4">
       <div className="flex flex-col justify-between mt-4">
         <h1 className="text-3xl font-semibold mb-6 text-gray-700">Products</h1>
-        <Toaster position="top-right" />
 
         {/* Button Group */}
         <div className="flex mb-6 space-x-4">
@@ -97,50 +89,7 @@ export default function ProductRenderer({ products, totalPages, currentPage, fil
 
           {/* Pagination */}
           <div className="flex justify-center mt-8">
-            <Pagination>
-              <PaginationContent>
-                {/* First Page */}
-                <PaginationItem>
-                  <PaginationLink isActive={currentPage === 1} onClick={() => handlePageChange(1)}>
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-
-                {/* Left Ellipsis (if needed) */}
-                {currentPage > 3 && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-
-                {/* Pages around current */}
-                {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                  .filter((page) => page > 1 && page < totalPages)
-                  .map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink isActive={currentPage === page} onClick={() => handlePageChange(page)}>
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                {/* Right Ellipsis (if needed) */}
-                {currentPage < totalPages - 2 && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-
-                {/* Last Page */}
-                {totalPages > 1 && (
-                  <PaginationItem>
-                    <PaginationLink isActive={currentPage === totalPages} onClick={() => handlePageChange(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
+            <PaginationComponent totalPages={totalPages} currentPage={currentPage} />
           </div>
         </div>
 

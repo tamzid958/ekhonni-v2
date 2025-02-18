@@ -1,5 +1,5 @@
-import React from "react";
-import ProductDetailsClient from "./ProductDetailsClient";
+import React from 'react';
+import ProductDetailsClient from './ProductDetailsClient';
 
 async function fetchProductDetails(productId: string) {
   const productResponse = await fetch(`http://localhost:8080/api/v2/product/${productId}`);
@@ -20,8 +20,6 @@ async function fetchProductDetails(productId: string) {
   const sellerLocationData = await sellerLocationResponse.json();
 
 
-
-
   return {
     productDetails: productData.data,
     biddingCount: biddingCountData.data,
@@ -31,14 +29,23 @@ async function fetchProductDetails(productId: string) {
   };
 }
 
-export default async function ProductDetailsPage({ searchParams }: { searchParams: { id: string } }) {
+export default async function ProductDetailsPage({ params }: {
+  params: Promise<{ searchParams: { id: string } }>;
+}) {
+  const { searchParams } = await params;
   const { id: productId } = searchParams;
 
   if (!productId) {
     return <div>Product ID is missing!</div>;
   }
 
-  const { productDetails, biddingCount, biddingDetails, sellerRating, sellerLocation } = await fetchProductDetails(productId);
+  const {
+    productDetails,
+    biddingCount,
+    biddingDetails,
+    sellerRating,
+    sellerLocation,
+  } = await fetchProductDetails(productId);
   console.log(productDetails.seller);
 
 

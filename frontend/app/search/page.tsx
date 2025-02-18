@@ -1,5 +1,6 @@
 // Need to add pagination
 'use client';
+import React, { useState } from 'react';
 import { useFilterProducts } from '@/hooks/useFilterProducts';
 import { useSearchParams } from 'next/navigation';
 import { CheckboxReactHookFormMultiple } from '@/components/CheckboxFilter';
@@ -7,7 +8,6 @@ import { SliderDemo } from '@/components/PriceRangeFilter';
 import { Button } from '@/components/ui/button';
 import { CardForSearch } from './components/CardForSearch';
 import Link from 'next/link';
-import { useState } from 'react';
 import { CheckboxReactHookFormMultipleCondition } from '@/components/CheckBoxFilterCondition';
 
 interface Product {

@@ -37,8 +37,10 @@ interface Props {
   searchParams: { category?: string };
 }
 
-export default async function CategoryProductPage({ searchParams }: Props) {
-  const selectedCategory = searchParams.category || 'All';
+export default async function CategoryProductPage({ searchParams }: {
+  searchParams: { category?: string };
+}) {
+  const selectedCategory = searchParams?.category || 'All';
 
   const url = selectedCategory === 'All' ?
     `http://localhost:8080/api/v2/product/filter`
