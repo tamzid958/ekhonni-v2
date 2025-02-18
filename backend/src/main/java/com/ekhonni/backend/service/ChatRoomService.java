@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
-    public ChatRoom create(UUID user1Id, UUID user2Id){
+    public ChatRoomResponseDTO create(UUID user1Id, UUID user2Id){
         User user1 = userRepository.findById(user1Id)
                 .orElseThrow( () -> new UserNotFoundException("User not found"));
         User user2 = userRepository.findById(user2Id)
@@ -31,8 +32,24 @@ public class ChatRoomService {
         if (user1.equals(user2)) {
             throw new IllegalArgumentException("User cannot chat with themselves");
         }
-        ChatRoom chatRoom = new ChatRoom(user1, user2, LocalDateTime.now(), null, null);
-        return chatRoomRepository.save(chatRoom);
+
+        Optional<ChatRoom> existingRoom = chatRoomRepository.findByUsers(user1, user2);
+        ChatRoom chatRoom = existingRoom
+                .orElseGet(() -> chatRoomRepository.save(
+                        new ChatRoom(
+                                user1,
+                                user2,
+                                LocalDateTime.now(),
+                                null,
+                                null
+                        )));
+
+        User receiver = chatRoom.getUser1().equals(user1) ? chatRoom.getUser2() : chatRoom.getUser1();
+
+        return new ChatRoomResponseDTO(
+                receiver.getId(),
+                receiver.getName()
+        );
     }
 
     public List<ChatRoomResponseDTO> get(UUID userId) {
@@ -41,12 +58,12 @@ public class ChatRoomService {
 
         List<ChatRoom> chatRooms = chatRoomRepository.findByUser(user);
 
+
         return chatRooms.stream()
-                .map(chatRoom -> new ChatRoomResponseDTO(
-                        new ChatRoomId(chatRoom.getUser1().getId(), chatRoom.getUser2().getId()),
-                        chatRoom.getUser1().getName(),
-                        chatRoom.getUser2().getName()
-                ))
+                .map(chatRoom -> {
+                    User receiver = chatRoom.getUser1().equals(user) ? chatRoom.getUser2() : chatRoom.getUser1();
+                    return new ChatRoomResponseDTO(receiver.getId(), receiver.getName());
+                })
                 .collect(Collectors.toList());
     }
 }
