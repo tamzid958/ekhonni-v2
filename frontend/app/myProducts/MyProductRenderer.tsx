@@ -22,6 +22,11 @@ interface ProductData {
     name: string;
   };
   condition: string;
+  boostData?: {
+    boostType: string;
+    boostedAt: string;
+    expiresAt: string;
+  } | null;
   category: {
     id: number;
     name: string;
@@ -60,6 +65,13 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
         return <Badge variant="default">Sold</Badge>;
       default:
         return <Badge variant="default">Default</Badge>;
+    }
+  };
+
+  const getStatusBoostBadge = (boostData) => {
+    switch (boostData) {
+      case null:
+        return <Button>boost</Button>;
     }
   };
 
@@ -111,6 +123,7 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
               .map((product) => (
                 <div key={product.id} className="relative flex flex-col">
                   <span className="absolute top-2 left-2 z-10">{getStatusBadge(product.status)}</span>
+                  <span className="absolute top-2 right-8 z-10">{getStatusBoostBadge(product.boostData)}</span>
                   <CardDemo {...product}
                   />
                   {(filter === 'APPROVED' || 'SOLD') && <Button

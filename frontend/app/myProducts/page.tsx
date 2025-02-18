@@ -59,9 +59,11 @@ export default function MyProductPage() {
   // Fetch products using SWR
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, userToken));
   const products = data?.data?.content || [];
+
   console.log(products);
   console.log('eta booster data');
-  console.log(products.price);
+  console.log();
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
