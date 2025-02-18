@@ -1,5 +1,4 @@
 'use client';
-import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import {
   NavigationMenu,
@@ -11,32 +10,23 @@ import React from 'react';
 import { ChevronsRight } from 'lucide-react';
 import Link from 'next/link';
 
-const fetcher = async (url, token) => {
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+const fetcher = async (url) => {
+  const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch');
   return res.json();
 };
 
 export function TopCAtegory() {
-  const { data: session, status } = useSession();
-  const [token, setToken] = React.useState(null);
-
-  React.useEffect(() => {
-    if (session?.user?.token) {
-      setToken(session.user.token);
-    }
-  }, [session]);
-
   const { data, error } = useSWR(
-    token ? ['http://localhost:8080/api/v2/admin/category/all', token] : null,
-    ([url, token]) => fetcher(url, token),
+    'http://localhost:8080/api/v2/category/all',
+    fetcher,
     { suspense: false },
   );
 
   if (error) return <div className="text-red-500">Failed to load categories</div>;
-  if (!data) return <div></div>;
+  if (!data) return <div className="bg-brand-mid relative h-10 flex justify-center items-center">
+    <span className="text-gray-600 text-sm">Loading categories...</span>
+  </div>;
 
   return (
     <div className="bg-brand-mid relative h-10 flex justify-center">
