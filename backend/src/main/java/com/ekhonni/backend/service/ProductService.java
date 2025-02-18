@@ -130,7 +130,7 @@ public class ProductService extends BaseService<Product, Long> {
 
         User buyer = getBuyerByProductId(productId);
         boolean isSeller = user.getId().equals(projection.getSellerDTO().getId());
-        boolean isBuyer = user.getId().equals(buyer.getId());
+        boolean isBuyer = buyer!=null && user.getId().equals(buyer.getId());
         boolean isApproved = projection.getStatus() == ProductStatus.APPROVED;
 
         return isSeller || isBuyer || isApproved;
@@ -261,7 +261,8 @@ public class ProductService extends BaseService<Product, Long> {
     public User getBuyerByProductId(Long productId) {
         Bid bid = bidRepository.findFirstByProductIdAndStatusInAndDeletedAtIsNull(
                         productId, Arrays.asList(BidStatus.ACCEPTED, BidStatus.PAID))
-                .orElseThrow(() -> new BidNotFoundException("No buyer found for the product"));
+                .orElse(null);
+        if (bid == null) return null;
         return bid.getBidder();
     }
 

@@ -59,11 +59,10 @@ public class CategoryService extends BaseService<Category, Long> {
             throw new CategoryNotFoundException("Parent category is inactive");
         }
 
-        String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
+        //String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
 
         Category category = new Category(
                 dto.name(),
-                imagePath,
                 true,
                 parentCategory
         );
