@@ -68,4 +68,10 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
 
     List<Category> findByParentCategory(Category category);
+
+    boolean existsByName(String name);
+
+    boolean existsByParentCategoryName(String name);
+
+    void deleteCategoryByName(String name);
 }

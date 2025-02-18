@@ -17,11 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 public record CategoryUpdateDTO(
         @Column(nullable = false, unique = true)
         String name,
+
         Boolean active,
+
         @NonEmptyMultipartFile
         @ImageOnly
-        @Size(min = 1, max = 1, message = "Exactly 1 images are required")
-        @Schema(description = "image of the category", example = "[\"image.jpg\"")
+        @Schema(description = "image of the category", example = "[\"image.jpg\"]")
         MultipartFile image
 ) {
 }

@@ -109,26 +109,39 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
+    @Transactional
     public void delete(String name) {
-        Category category = categoryRepository.findByName(name);
-        if (category == null) {
-            throw new CategoryException("category by this name not found");
-        }
-        List<Category> children = categoryRepository.findByParentCategory(category);
-        if (!children.isEmpty()) {
-            throw new CategoryException("sub category exists");
+        // Check if the category exists
+        if (!categoryRepository.existsByName(name)) {
+            throw new CategoryException("Category by this name does not exist");
         }
 
-        categoryRepository.deleteCategoryById(category.getId());
+        // Check if the category has subcategories
+        if (categoryRepository.existsByParentCategoryName(name)) {
+            throw new CategoryException("Cannot delete category because subcategories exist");
+        }
+
+        // show error for products that are under this category in future
+
+        // Delete the category
+        categoryRepository.deleteCategoryByName(name);
     }
 
 
-    @Transactional
-    public void update(CategoryUpdateDTO categoryUpdateDTO)  {
-        Category category = categoryRepository.findByName(categoryUpdateDTO.name());
 
+    @Transactional
+    public void update(CategoryUpdateDTO categoryUpdateDTO, String oldName)  {
+        Category category = categoryRepository.findByName(oldName);
         if (category == null) {
-            throw new CategoryException("Category by this name not found");
+            throw new CategoryException("Category by this old name not found");
+        }
+
+        if(categoryUpdateDTO.name()!=null){
+            boolean existingCategory = categoryRepository.existsByName(categoryUpdateDTO.name());
+            if (existingCategory) {
+                throw new CategoryException("Category by this new name already exists");
+            }
+            category.setName(categoryUpdateDTO.name());
         }
 
         if (categoryUpdateDTO.active() != null) {

@@ -11,9 +11,12 @@ package com.ekhonni.backend.controller;
 import com.ekhonni.backend.dto.category.CategoryCreateDTO;
 import com.ekhonni.backend.dto.category.CategoryTreeDTO;
 import com.ekhonni.backend.dto.category.CategoryUpdateDTO;
+import com.ekhonni.backend.dto.product.ProductCreateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +29,16 @@ public record CategoryAdminController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto)  {
+    @Operation(
+            summary = "Create a new category",
+            description = "creates a new category using the provided details, including image",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Category creation form with image and details"
+            )
+    )
+    public ApiResponse<?> create(
+            @Parameter(description = "Category details for creation")
+            @Valid @ModelAttribute CategoryCreateDTO dto) {
         return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
     }
 
@@ -50,8 +62,18 @@ public record CategoryAdminController(CategoryService categoryService) {
     }
 
     @PatchMapping("/{name}")
-    public ApiResponse<?> update(@RequestBody CategoryUpdateDTO categoryUpdateDTO) {
-        categoryService.update(categoryUpdateDTO);
+    @Operation(
+            summary = "Update an existing category",
+            description = "updates a new category using the provided details, may include image",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Category update form with image and details"
+            )
+    )
+    public ApiResponse<?> update(
+            @PathVariable String name,
+            @Parameter(description = "Category details for update")
+            @Valid @ModelAttribute CategoryUpdateDTO dto) {
+        categoryService.update(dto,name);
         return new ApiResponse<>(HTTPStatus.ACCEPTED, null);
 
     }
