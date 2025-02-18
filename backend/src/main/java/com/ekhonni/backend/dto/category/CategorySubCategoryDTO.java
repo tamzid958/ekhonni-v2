@@ -5,7 +5,7 @@
  * Project Name: backend
  */
 
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CategorySubCategoryDTO {
-    private String name;
-    private List<String> subCategories;
+    CategoryDTO category;
+    List<CategoryDTO> subCategories;
     private List<String> chainCategories;
 }

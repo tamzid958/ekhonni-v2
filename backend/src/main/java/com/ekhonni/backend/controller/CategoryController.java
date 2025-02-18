@@ -8,7 +8,7 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.CategoryTreeDTO;
+import com.ekhonni.backend.dto.category.CategoryTreeDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;

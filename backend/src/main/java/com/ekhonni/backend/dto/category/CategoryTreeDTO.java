@@ -5,7 +5,7 @@
  * Project Name: ekhonni-v2
  */
 
-package com.ekhonni.backend.dto;
+package com.ekhonni.backend.dto.category;
 
 
 import lombok.Getter;

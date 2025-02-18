@@ -10,4 +10,5 @@ package com.ekhonni.backend.projection.category;
 public interface ViewerCategoryProjection {
     Long getId();
     String getName();
+    String getImagePath();
 }

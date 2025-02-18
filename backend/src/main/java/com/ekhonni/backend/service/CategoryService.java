@@ -8,22 +8,17 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.CategoryCreateDTO;
-import com.ekhonni.backend.dto.CategorySubCategoryDTO;
-import com.ekhonni.backend.dto.CategoryTreeDTO;
-import com.ekhonni.backend.dto.CategoryUpdateDTO;
-import com.ekhonni.backend.exception.CategoryNotFoundException;
+import com.ekhonni.backend.dto.category.*;
+import com.ekhonni.backend.exception.CategoryException;
 import com.ekhonni.backend.model.Category;
-import com.ekhonni.backend.model.ProductImage;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -45,40 +40,51 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    public String save(CategoryCreateDTO dto) throws IOException {
-        Category old = categoryRepository.findByName(dto.name());
-        if (old != null) throw new CategoryNotFoundException("Category already exists");
+    public String save(CategoryCreateDTO dto) {
+        Category existingCategory = categoryRepository.findByName(dto.name());
 
-        Category parentCategory = null;
-        if (dto.parentCategory() != null)
-            parentCategory = categoryRepository.findByName(dto.parentCategory());
-        if (dto.parentCategory() != null && parentCategory == null)
-            throw new CategoryNotFoundException("Parent category by this name not found");
-
-        if (dto.parentCategory() != null && !parentCategory.isActive()) {
-            throw new CategoryNotFoundException("Parent category is inactive");
+        if (existingCategory != null) {
+            throw new CategoryException("Category already exists");
         }
 
-        //String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
+        Category parentCategory = null;
+        if (dto.parentCategory() != null) {
+            parentCategory = categoryRepository.findByName(dto.parentCategory());
 
-        Category category = new Category(
+            if (parentCategory == null) {
+                throw new CategoryException("Parent category not found");
+            }
+
+            if (!parentCategory.isActive()) {
+                throw new CategoryException("Parent category is inactive");
+            }
+        }
+
+
+        String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
+
+        Category newCategory = new Category(
                 dto.name(),
+                imagePath,
                 true,
                 parentCategory
         );
-        categoryRepository.save(category);
-        return "created";
+        categoryRepository.save(newCategory);
+
+        return "Category created successfully";
     }
 
 
-    public CategorySubCategoryDTO getSub(String name) {
+        public CategorySubCategoryDTO getSub(String name) {
         Category parent = categoryRepository.findByNameAndActive(name, true);
-        if (parent == null) throw new CategoryNotFoundException("Category by this name not found");
+        if (parent == null) throw new CategoryException("Category by this name not found");
         List<String> sequenceOfCategory = getSequence(name);
-        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), sequenceOfCategory);
+        CategoryDTO parentDTO = new CategoryDTO(parent.getName(),parent.getImagePath());
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parentDTO, new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
         for (ViewerCategoryProjection child : children) {
-            categorySubCategoryDTO.getSubCategories().add(child.getName());
+            CategoryDTO childDTO = new CategoryDTO(child.getName(),child.getImagePath());
+            categorySubCategoryDTO.getSubCategories().add(childDTO);
         }
         return categorySubCategoryDTO;
     }
@@ -89,10 +95,12 @@ public class CategoryService extends BaseService<Category, Long> {
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
         List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
         for (Category rootCategory : rootCategories) {
-            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>(), new ArrayList<>());
+            CategoryDTO rootDTO= new CategoryDTO(rootCategory.getName(),rootCategory.getImagePath());
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootDTO, new ArrayList<>(), new ArrayList<>());
             List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
             for (ViewerCategoryProjection subCategory : subCategories) {
-                categorySubCategoryDTO.getSubCategories().add(subCategory.getName());
+                CategoryDTO childDTO = new CategoryDTO(subCategory.getName(),subCategory.getImagePath());
+                categorySubCategoryDTO.getSubCategories().add(childDTO);
             }
             categorySubCategoryDTOS.add(categorySubCategoryDTO);
         }
@@ -104,11 +112,11 @@ public class CategoryService extends BaseService<Category, Long> {
     public void delete(String name) {
         Category category = categoryRepository.findByName(name);
         if (category == null) {
-            throw new CategoryNotFoundException("category by this name not found");
+            throw new CategoryException("category by this name not found");
         }
         List<Category> children = categoryRepository.findByParentCategory(category);
         if (!children.isEmpty()) {
-            throw new CategoryNotFoundException("sub category exists");
+            throw new CategoryException("sub category exists");
         }
 
         categoryRepository.deleteCategoryById(category.getId());
@@ -116,23 +124,29 @@ public class CategoryService extends BaseService<Category, Long> {
 
 
     @Transactional
-    public void update(CategoryUpdateDTO categoryUpdateDTO) {
-        //category not found
+    public void update(CategoryUpdateDTO categoryUpdateDTO)  {
         Category category = categoryRepository.findByName(categoryUpdateDTO.name());
+
         if (category == null) {
-            throw new CategoryNotFoundException("Category by this name not found");
+            throw new CategoryException("Category by this name not found");
         }
 
-        category.setActive(categoryUpdateDTO.active());
-        categoryRepository.save(category);
+        if (categoryUpdateDTO.active() != null) {
+            category.setActive(categoryUpdateDTO.active());
+        }
 
+        if (categoryUpdateDTO.image() != null) {
+            String imagePath = cloudinaryImageUploadUtil.uploadImage(categoryUpdateDTO.image());
+            category.setImagePath(imagePath);
+        }
     }
+
 
     public List<String> getSequence(String name) {
 
         Category category = categoryRepository.findByNameAndActive(name, true);
         if (category == null) {
-            throw new CategoryNotFoundException("Category by this name not found");
+            throw new CategoryException("Category by this name not found");
         }
         List<String> sequence = new ArrayList<>();
         sequence.add(category.getName());
@@ -146,7 +160,7 @@ public class CategoryService extends BaseService<Category, Long> {
 
     public List<Long> getRelatedActiveIds(String name) {
         Category category = categoryRepository.findByNameAndActive(name, true);
-        if (category == null) throw new CategoryNotFoundException("Category by this name not found");
+        if (category == null) throw new CategoryException("Category by this name not found");
         Long categoryId = category.getId();
         return categoryRepository.findRelatedActiveIds(categoryId);
     }
@@ -232,22 +246,20 @@ public class CategoryService extends BaseService<Category, Long> {
     public List<CategorySubCategoryDTO> getTopCategories() {
         List<CategorySubCategoryDTO> dtos = new ArrayList<>();
 
-
-        List<String> categoryNames = Arrays.asList(
-                "Travel & Nature",
-                "Antiques",
-                "Health & Beauty",
-                "Sports & Outdoors",
-                "Toys & Games",
-                "Automotive",
-                "Books & Stationery",
-                "Groceries",
-                "Office Supplies"
+        List<CategoryDTO> topCategories = Arrays.asList(
+                new CategoryDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Antiques", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Health & Beauty", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Sports & Outdoors", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Toys & Games", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Automotive", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Books & Stationery", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Groceries", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryDTO("Office Supplies", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg")
         );
 
-
-        for (String categoryName : categoryNames) {
-            dtos.add(new CategorySubCategoryDTO(categoryName, new ArrayList<>(), new ArrayList<>()));
+        for (CategoryDTO category : topCategories) {
+            dtos.add(new CategorySubCategoryDTO(category, new ArrayList<>(), new ArrayList<>()));
         }
 
         return dtos;

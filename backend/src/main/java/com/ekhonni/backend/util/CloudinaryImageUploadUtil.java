@@ -9,6 +9,7 @@ package com.ekhonni.backend.util;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.ekhonni.backend.exception.ImageUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,18 +29,18 @@ public class CloudinaryImageUploadUtil {
         List<String> imageUrls = new ArrayList<>();
 
         for (MultipartFile image : images) {
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-            String imageUrl = uploadResult.get("url").toString();
-            imageUrls.add(imageUrl);
+            imageUrls.add(uploadImage(image));
         }
 
         return imageUrls;
     }
 
-    public String uploadImage(MultipartFile image) throws IOException {
-
-        Map<?, ?> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-
-        return uploadResult.get("url").toString();
+    public String uploadImage(MultipartFile image)  {
+        try {
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            return uploadResult.get("url").toString();
+        } catch (IOException e) {
+            throw new ImageUploadException("Failed to upload image");
+        }
     }
 }

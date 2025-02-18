@@ -7,8 +7,8 @@
 
 package com.ekhonni.backend.exception;
 
-public class CategoryNotFoundException extends RuntimeException {
-    public CategoryNotFoundException(String message) {
+public class CategoryException extends RuntimeException {
+    public CategoryException(String message) {
         super(message);
     }
 

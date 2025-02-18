@@ -7,13 +7,13 @@
 
 package com.ekhonni.backend.util;
 
-import com.ekhonni.backend.dto.CategorySubCategoryDTO;
+import com.ekhonni.backend.dto.category.CategorySubCategoryDTO;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 
 public class CategoryProjectionConverter {
     public static CategorySubCategoryDTO convert(ViewerCategoryProjection projection) {
         CategorySubCategoryDTO dto = new CategorySubCategoryDTO();
-        dto.setName(projection.getName());
+//        dto.setName(projection.getName());
         return dto;
     }
 

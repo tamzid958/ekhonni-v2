@@ -32,112 +32,114 @@ INSERT INTO account (id, total_earnings, total_withdrawals, status, user_id, cre
 (106, 100000.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440005'::uuid, NOW(), NOW()),
 (107, 0.00, 0.00, 'ACTIVE', '550e8400-e29b-41d4-a716-446655440006'::uuid, NOW(), NOW());
 
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10000, 'Travel & Nature', true, null, NOW(), NOW()),
-(10001, 'Antiques', true, null, NOW(), NOW()),
-(10002, 'Health & Beauty', true, null, NOW(), NOW()),
-(10003, 'Sports & Outdoors', true, null, NOW(), NOW()),
-(10004, 'Toys & Games', true, null, NOW(), NOW()),
-(10005, 'Automotive', true, null, NOW(), NOW()),
-(10006, 'Books & Stationery', true, null, NOW(), NOW()),
-(10007, 'Groceries', true, null, NOW(), NOW()),
-(10008, 'Office Supplies', true, null, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10000, 'Travel & Nature', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10001, 'Antiques', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10002, 'Health & Beauty', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10003, 'Sports & Outdoors', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10004, 'Toys & Games', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10005, 'Automotive', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10006, 'Books & Stationery', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10007, 'Groceries', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10008, 'Office Supplies', true, null, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
 
 -- Insert into Travel and Nature
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10009, 'Adventure Travel', true, 10000, NOW(), NOW()),
-(10010, 'Camping & Hiking', true, 10000, NOW(), NOW()),
-(10011, 'Wildlife & Safari', true, 10000, NOW(), NOW()),
-(10012, 'Eco-Tourism', true, 10000, NOW(), NOW()),
-(10013, 'Beach Holidays', true, 10000, NOW(), NOW()),
-(10014, 'Cultural Tours', true, 10000, NOW(), NOW());
+
+(10009, 'Adventure Travel', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10010, 'Camping & Hiking', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10011, 'Wildlife & Safari', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10012, 'Eco-Tourism', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10013, 'Beach Holidays', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10014, 'Cultural Tours', true, 10000, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
 
 -- Insert into Adventure Travel
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10015, 'Mountain Climbing', true, 10009, NOW(), NOW()),
-(10016, 'Rock Climbing', true, 10009, NOW(), NOW()),
-(10017, 'Trekking', true, 10009, NOW(), NOW()),
-(10018, 'Canoeing & Kayaking', true, 10009, NOW(), NOW()),
-(10019, 'Desert Expeditions', true, 10009, NOW(), NOW()),
-(10020, 'Polar Expeditions', true, 10009, NOW(), NOW());
+
+(10015, 'Mountain Climbing', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10016, 'Rock Climbing', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10017, 'Trekking', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10018, 'Canoeing & Kayaking', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10019, 'Desert Expeditions', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10020, 'Polar Expeditions', true, 10009, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
 
 -- Insert subcategories into Antiques
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10021, 'Furniture', true, 10001, NOW(), NOW()),
-(10022, 'Jewelry', true, 10001, NOW(), NOW()),
-(10023, 'Coins & Currency', true, 10001, NOW(), NOW()),
-(10024, 'Instruments & Tools', true, 10001, NOW(), NOW()),
-(10025, 'Watches & Clocks', true, 10001, NOW(), NOW()),
-(10026, 'Clothing', true, 10001, NOW(), NOW());
+
+(10021, 'Furniture', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10022, 'Jewelry', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10023, 'Coins & Currency', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10024, 'Instruments & Tools', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10025, 'Watches & Clocks', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10026, 'Clothing', true, 10001, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
 
 -- Insert into Health & Beauty
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10027, 'Skincare', true, 10002, NOW(), NOW()),
-(10028, 'Hair Care', true, 10002, NOW(), NOW()),
-(10029, 'Makeup', true, 10002, NOW(), NOW()),
-(10030, 'Fragrances', true, 10002, NOW(), NOW()),
-(10031, 'Personal Hygiene', true, 10002, NOW(), NOW()),
-(10032, 'Health Supplements', true, 10002, NOW(), NOW());
+
+(10027, 'Skincare', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10028, 'Hair Care', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10029, 'Makeup', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10030, 'Fragrances', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10031, 'Personal Hygiene', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10032, 'Health Supplements', true, 10002, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+
+-- Insert into Furniture subcategories
+
+(10069, 'Furniture 2', true, 10021, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10070, 'Furniture 3', true, 10069, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10071, 'Furniture 4', true, 10070, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
+
 
 -- Insert into Sports & Outdoors
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10033, 'Fitness Equipment', true, 10003, NOW(), NOW()),
-(10034, 'Water Sports', true, 10003, NOW(), NOW()),
-(10035, 'Team Sports', true, 10003, NOW(), NOW()),
-(10036, 'Winter Sports', true, 10003, NOW(), NOW()),
-(10037, 'Fishing', true, 10003, NOW(), NOW()),
-(10038, 'Cycling', true, 10003, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10033, 'Fitness Equipment', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10034, 'Water Sports', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10035, 'Team Sports', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10036, 'Winter Sports', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10037, 'Fishing', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10038, 'Cycling', true, 10003, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
 -- Insert into Toys & Games
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10039, 'Board Games', true, 10004, NOW(), NOW()),
-(10040, 'Action Figures', true, 10004, NOW(), NOW()),
-(10041, 'Dolls & Plush Toys', true, 10004, NOW(), NOW()),
-(10042, 'Building Toys', true, 10004, NOW(), NOW()),
-(10043, 'Educational Toys', true, 10004, NOW(), NOW()),
-(10044, 'Outdoor Toys', true, 10004, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10039, 'Board Games', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10040, 'Action Figures', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10041, 'Dolls & Plush Toys', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10042, 'Building Toys', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10043, 'Educational Toys', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10044, 'Outdoor Toys', true, 10004, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
 -- Insert into Automotive
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10045, 'Car Accessories', true, 10005, NOW(), NOW()),
-(10046, 'Motorcycle Accessories', true, 10005, NOW(), NOW()),
-(10047, 'Car Care', true, 10005, NOW(), NOW()),
-(10048, 'Auto Electronics', true, 10005, NOW(), NOW()),
-(10049, 'Replacement Parts', true, 10005, NOW(), NOW()),
-(10050, 'Tires & Wheels', true, 10005, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10045, 'Car Accessories', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10046, 'Motorcycle Accessories', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10047, 'Car Care', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10048, 'Auto Electronics', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10049, 'Replacement Parts', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10050, 'Tires & Wheels', true, 10005, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
 -- Insert into Books & Stationery
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10051, 'Fiction', true, 10006, NOW(), NOW()),
-(10052, 'Non-Fiction', true, 10006, NOW(), NOW()),
-(10053, 'Academic Books', true, 10006, NOW(), NOW()),
-(10054, 'Notebooks & Diaries', true, 10006, NOW(), NOW()),
-(10055, 'Art Supplies', true, 10006, NOW(), NOW()),
-(10056, 'Office Stationery', true, 10006, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10051, 'Fiction', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10052, 'Non-Fiction', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10053, 'Academic Books', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10054, 'Notebooks & Diaries', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10055, 'Art Supplies', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10056, 'Office Stationery', true, 10006, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
 -- Insert into Groceries
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10057, 'Fruits & Vegetables', true, 10007, NOW(), NOW()),
-(10058, 'Meat & Seafood', true, 10007, NOW(), NOW()),
-(10059, 'Dairy Products', true, 10007, NOW(), NOW()),
-(10060, 'Beverages', true, 10007, NOW(), NOW()),
-(10061, 'Snacks', true, 10007, NOW(), NOW()),
-(10062, 'Pantry Staples', true, 10007, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10057, 'Fruits & Vegetables', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10058, 'Meat & Seafood', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10059, 'Dairy Products', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10060, 'Beverages', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10061, 'Snacks', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10062, 'Pantry Staples', true, 10007, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
 -- Insert into Office Supplies
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10063, 'Desk Accessories', true, 10008, NOW(), NOW()),
-(10064, 'Office Furniture', true, 10008, NOW(), NOW()),
-(10065, 'Writing Instruments', true, 10008, NOW(), NOW()),
-(10066, 'Paper Products', true, 10008, NOW(), NOW()),
-(10067, 'Printing Supplies', true, 10008, NOW(), NOW()),
-(10068, 'Organizers', true, 10008, NOW(), NOW());
+INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at, image_path) VALUES
+(10063, 'Desk Accessories', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10064, 'Office Furniture', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10065, 'Writing Instruments', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10066, 'Paper Products', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10067, 'Printing Supplies', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg'),
+(10068, 'Organizers', true, 10008, NOW(), NOW(), 'http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg');
 
-
-INSERT INTO category (id, name, active, parent_category_id, created_at, updated_at) VALUES
-(10069, 'Furniture 2', true, 10021, NOW(), NOW()),
-(10070, 'Furniture 3', true, 10069, NOW(), NOW()),
-(10071, 'Furniture 4', true, 10070, NOW(), NOW());
 
 -- Insert Products with leaf categories and updated IDs
 INSERT INTO product (id, title, sub_title, description, price, division, address, status, condition, condition_details, category_id, seller_id, created_at, updated_at) VALUES

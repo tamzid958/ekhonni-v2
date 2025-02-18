@@ -8,9 +8,9 @@
 package com.ekhonni.backend.controller;
 
 
-import com.ekhonni.backend.dto.CategoryCreateDTO;
-import com.ekhonni.backend.dto.CategoryTreeDTO;
-import com.ekhonni.backend.dto.CategoryUpdateDTO;
+import com.ekhonni.backend.dto.category.CategoryCreateDTO;
+import com.ekhonni.backend.dto.category.CategoryTreeDTO;
+import com.ekhonni.backend.dto.category.CategoryUpdateDTO;
 import com.ekhonni.backend.enums.HTTPStatus;
 import com.ekhonni.backend.response.ApiResponse;
 import com.ekhonni.backend.service.CategoryService;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("/api/v2/admin/category")
 @RestController
@@ -27,7 +26,7 @@ public record CategoryAdminController(CategoryService categoryService) {
 
 
     @PostMapping
-    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto) throws IOException {
+    public ApiResponse<?> create(@Valid @RequestBody CategoryCreateDTO dto)  {
         return new ApiResponse<>(HTTPStatus.CREATED, categoryService.save(dto));
     }
 

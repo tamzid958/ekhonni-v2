@@ -307,8 +307,8 @@ public class GlobalExceptionHandler {
 
     //category
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+    @ExceptionHandler(CategoryException.class)
+    public ResponseEntity<ApiResponse<?>> handleCategoryNotFoundException(CategoryException ex) {
         var response = new ApiResponse<>(HTTPStatus.NOT_FOUND, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }

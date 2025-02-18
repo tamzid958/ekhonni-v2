@@ -23,9 +23,9 @@ public class Category extends BaseEntity<Long> {
 
     @Column(nullable = false, unique = true)
     private String name;
-//
-//    @Column(nullable = false)
-//    private String imagePath;
+
+    @Column(nullable = false)
+    private String imagePath;
 
     @Column(nullable = false)
     private boolean active = true;

@@ -14,11 +14,9 @@ import com.ekhonni.backend.dto.product.ProductResponseDTO;
 import com.ekhonni.backend.dto.product.ProductUpdateDTO;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ProductStatus;
-import com.ekhonni.backend.exception.CategoryNotFoundException;
-import com.ekhonni.backend.exception.ProductNotCreatedException;
+import com.ekhonni.backend.exception.CategoryException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
-import com.ekhonni.backend.exception.bid.BidNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.*;
@@ -31,7 +29,6 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +37,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,7 +72,7 @@ public class ProductService extends BaseService<Product, Long> {
             User seller = AuthUtil.getAuthenticatedUser();
 
             Category category = Optional.ofNullable(categoryRepository.findByNameAndActive(dto.category(), true))
-                    .orElseThrow(() -> new CategoryNotFoundException("Category by this name not found"));
+                    .orElseThrow(() -> new CategoryException("Category by this name not found"));
 
             List<ProductImage> images = cloudinaryImageUploadUtil.uploadImages(dto.images())
                     .stream()
@@ -147,7 +143,7 @@ public class ProductService extends BaseService<Product, Long> {
                     .orElseThrow(() -> new ProductNotFoundException("Product not found for update"));
 
             Category category = categoryRepository.findByName(dto.category());
-            if (category == null) throw new CategoryNotFoundException("category by this name not found");
+            if (category == null) throw new CategoryException("category by this name not found");
 
 
             List<String> imagePaths = cloudinaryImageUploadUtil.uploadImages(dto.images());
