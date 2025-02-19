@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import axios from 'axios';
 
 interface SellerProfile {
   profileImage: string | null;
@@ -19,11 +21,16 @@ interface SellerProfile {
   address: string;
 }
 
+
 const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
   const [activeMenu, setActiveMenu] = useState<string>('');
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const userId = session?.user?.id;
+  const userToken = session?.user?.token;
 
   const sellerId = pathname.split('/')[2];
 
@@ -51,6 +58,29 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
   }, [pathname]);
 
   const shareUrl = `${window.location.origin}/sellerPage/${sellerId}`;
+
+  const startChat = async () => {
+    if (!userId || !sellerId ) {
+      console.error("User ID or Seller ID missing.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+          `http://localhost:8080/api/v2/user/${userId}/chat/rooms?user2Id=${sellerId}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${userToken}` },
+          }
+      );
+
+      const chatRoom = response.data;
+
+      router.push(`/user-page/inbox`);
+    } catch (error) {
+      console.error("Error creating chat room:", error);
+    }
+  };
 
 
   return (
@@ -96,7 +126,9 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
               </DialogContent>
             </Dialog>
 
-            <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            <button
+                onClick={startChat}
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-900">
               Chat
             </button>
           </div>
