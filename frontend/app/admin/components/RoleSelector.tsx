@@ -6,11 +6,11 @@ import { Select } from '@/components/ui/select';
 
 interface RoleSelectorProps {
   initialRoles: string[];
-  onChange: (roles: string[]) => void;
+  onChange: (updatedRoles: string[]) => void;
   availableRoles: string[];
 }
 
-export const RoleSelector: React.FC<RoleSelectorProps> = ({ initialRoles, onChange, availableRoles }) => {
+export default const RoleSelector: React.FC<RoleSelectorProps> = ({ initialRoles, onChange, availableRoles }) => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>(initialRoles);
 
   const handleRoleChange = (selectedOptions: any) => {
@@ -29,6 +29,8 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ initialRoles, onChan
 
   return (
     <div className="space-y-2">
+      bla blabla
+      {/* Display Selected Roles */}
       <div className="flex flex-wrap gap-2">
         {selectedRoles.length > 0 ? (
           selectedRoles.map((role, index) => (
