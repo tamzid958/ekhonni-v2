@@ -8,17 +8,12 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.product.ProductBoostResponseDTO;
-import com.ekhonni.backend.dto.product.ProductCreateDTO;
-import com.ekhonni.backend.dto.product.ProductResponseDTO;
-import com.ekhonni.backend.dto.product.ProductUpdateDTO;
+import com.ekhonni.backend.dto.product.*;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryNotFoundException;
-import com.ekhonni.backend.exception.ProductNotCreatedException;
 import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
-import com.ekhonni.backend.exception.bid.BidNotFoundException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
 import com.ekhonni.backend.model.*;
@@ -31,7 +26,6 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +34,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -245,9 +238,17 @@ public class ProductService extends BaseService<Product, Long> {
 
 
 
-
+    private ProductSellerAndBuyerDTO getBuyerInfo(Long id){
+        User buyer = getBuyerByProductId(id);
+        if(buyer != null){
+            return new ProductSellerAndBuyerDTO(buyer.getId(),buyer.getName());
+        }
+        return null;
+    }
     private ProductResponseDTO convertToProductResponseDTO(ProductProjection projection) {
         ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
+        ProductSellerAndBuyerDTO buyerDTO = getBuyerInfo(dto.getId());
+        dto.setBuyer(buyerDTO);
         productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
                 dto.setBoostData(new ProductBoostResponseDTO(
                         boost.getBoostType(),

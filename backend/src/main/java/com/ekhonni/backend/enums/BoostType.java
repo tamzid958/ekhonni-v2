@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 
 @Getter
 public enum BoostType {
-    ONE_WEEK(100.0, 1, ChronoUnit.MINUTES),
+    ONE_WEEK(100.0, 1, ChronoUnit.WEEKS),
     TWO_WEEKS(180.0, 2, ChronoUnit.WEEKS),
     ONE_MONTH(350.0, 1, ChronoUnit.MONTHS);
 
