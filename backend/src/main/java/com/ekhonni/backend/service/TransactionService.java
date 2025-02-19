@@ -7,9 +7,11 @@ import com.ekhonni.backend.model.Transaction;
 import com.ekhonni.backend.projection.transaction.TransactionProjection;
 import com.ekhonni.backend.repository.TransactionRepository;
 import com.ekhonni.backend.util.AuthUtil;
+import jakarta.persistence.LockModeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +55,7 @@ public class TransactionService extends BaseService<Transaction, Long> {
     }
 
     @Transactional
+    @Lock(LockModeType.OPTIMISTIC)
     public void updateSessionKey(Transaction transaction, String sessionKey) {
         transaction.setSessionKey(sessionKey);
     }
