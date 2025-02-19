@@ -17,13 +17,13 @@ export default async function LabeledCategory({ searchParams }: {
 }) {
   const category = searchParams?.category || 'All';
   const currentPage = Number(searchParams?.page) || 1; // ✅ Correctly parsing `page`
-  
+
   console.log('currentPage =>', currentPage);
 
   // Build URL with the correct query parameters
   const url =
     category === 'All'
-      ? `http://localhost:8080/api/v2/product/filter?page=${currentPage}`
+      ? `http://localhost:8080/api/v2/product/filter?page=${currentPage}&size=5`
       : `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(category)}&page=${currentPage}`;
 
   let products: Product[] = [];

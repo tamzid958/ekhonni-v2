@@ -20,7 +20,7 @@ export default function CustomPaginationItem({ page, currentPage }: PaginationIt
   // params.delete('currentPage'); // ✅ Remove `currentPage` from the URL
 
   return (
-    <Link href={`${pathname}?${params.toString()}`} passHref>
+    <Link href={`${pathname}?${params.toString()}`}>
       <PaginationLink
         className={`px-4 py-2 rounded-md transition-colors ${
           currentPage === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'

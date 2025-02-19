@@ -29,10 +29,7 @@ async function fetchProductDetails(productId: string) {
   };
 }
 
-export default async function ProductDetailsPage({ params }: {
-  params: Promise<{ searchParams: { id: string } }>;
-}) {
-  const { searchParams } = await params;
+export default async function ProductDetailsPage({ searchParams }: { searchParams: { id: string } }) {
   const { id: productId } = searchParams;
 
   if (!productId) {
