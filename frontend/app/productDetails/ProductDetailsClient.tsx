@@ -1,29 +1,32 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { CakeSlice, Heart, Star } from 'lucide-react';
+import { CakeSlice, Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { QuickBid } from '@/components/QuickBid';
 import { z } from "zod";
 import { useSession } from 'next-auth/react';
-import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 
 
-interface ProductDetailsProps {
+export interface ProductDetailsProps {
   productDetails: {
-    id: string;
+    id: string[];
     title: string;
+    subTitle: string;
     description: string;
     images: Array<{ imagePath: string }>;
     price: number;
     status: string;
+    division: string;
+    address: string;
     condition: string;
+    conditionDetails: string;
     createdAt: string;
     updatedAt: string;
     seller: {
@@ -53,10 +56,10 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
 
   const { data: session, status } = useSession();
   const bidSchema = z.string().regex(/^\d+$/, 'Bid amount must be a number');
-  const router = useRouter();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const token = session?.user?.token;
+
 
 
   useEffect(() => {

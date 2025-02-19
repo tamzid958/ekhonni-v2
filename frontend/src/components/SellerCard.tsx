@@ -52,9 +52,7 @@ export function CardDemo({
 
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const handleBidNow = () => {
-    router.push(`/productDetails?id=${id}`);
-  };
+
 
   useEffect(() => {
     const checkWishlistStatus = async () => {
@@ -147,7 +145,7 @@ export function CardDemo({
           <Button
             className="absolute mb-48 ml-40 mt-2 px-4 py-2 rounded shadow"
             variant="default"
-            onClick={handleBidNow}
+            onClick={() => router.push(`/productDetails/${id}`)}
           >
             Bid Now
           </Button>

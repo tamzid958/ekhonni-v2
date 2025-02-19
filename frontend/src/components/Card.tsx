@@ -40,7 +40,7 @@ export function CardDemo({ id, title, price, category, images }: Product) {
       <CardFooter className="p-3 flex justify-between items-center w-full">
         {/* Left Side (Title & Category) */}
         <div className="flex flex-col items-start">
-          <CardTitle className="mb-2 text-lg font-sans font-medium hover:underline" onClick={() => router.push(`/productDetails?id=${id}`)}
+          <CardTitle className="mb-2 text-lg font-sans font-medium hover:underline" onClick={() => router.push(`/productDetails/${id}`)}
           >
             {title}
           </CardTitle>

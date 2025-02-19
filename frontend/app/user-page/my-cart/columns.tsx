@@ -35,7 +35,7 @@ export function getColumns(token: string) {
         const row = info.row.original;
         return (
           <span
-            onClick={() => router.push(`/productDetails?id=${row.productId}`)}
+            onClick={() => router.push(`/productDetails/${row.productId}`)}
             className="text-black cursor-pointer hover:underline"
           >
             {info.getValue()}
