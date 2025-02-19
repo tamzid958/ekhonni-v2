@@ -18,10 +18,10 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, ChatRoomId> 
 
     @Query("""
     SELECT c
-    FROM ChatRoom c 
-    WHERE 
-        (c.user1 = :user1 AND c.user2 = :user2) 
-        OR 
+    FROM ChatRoom c
+    WHERE
+        (c.user1 = :user1 AND c.user2 = :user2)
+        OR
         (c.user1 = :user2 AND c.user2 = :user1)
 """)
     Optional<ChatRoom> findByUsers(

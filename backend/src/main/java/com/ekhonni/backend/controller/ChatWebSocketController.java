@@ -14,12 +14,22 @@ import org.springframework.stereotype.Controller;
 public class ChatWebSocketController {
 
 
-    private final ChatMessageService chatService;
+    private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO) {
-        return chatMessageDTO;
+    public void sendMessage(ChatMessageDTO chatMessageDTO) {
+
+        ChatMessageDTO savedMessage = chatMessageService.save(chatMessageDTO);
+        messagingTemplate.convertAndSendToUser(
+                chatMessageDTO.senderId().toString(),
+                "/queue/messages",
+                savedMessage
+        );
+        messagingTemplate.convertAndSendToUser(
+                chatMessageDTO.receiverId().toString(),
+                "/queue/messages",
+                savedMessage
+        );
     }
 }
