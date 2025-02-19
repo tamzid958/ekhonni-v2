@@ -9,7 +9,7 @@ package com.ekhonni.backend.service;
 
 
 import com.ekhonni.backend.dto.category.CategoryDTO;
-import com.ekhonni.backend.dto.category.CategorySubCategoryDTO;
+import com.ekhonni.backend.dto.category.CategorySubCategoryDTOV2;
 import com.ekhonni.backend.dto.category.CategoryUpdateDTO;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;

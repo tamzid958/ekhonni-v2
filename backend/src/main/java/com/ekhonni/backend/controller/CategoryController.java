@@ -30,6 +30,11 @@ public record CategoryController(CategoryService categoryService) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
     }
 
+    @GetMapping("/{name}/subcategories-v2")
+    public ApiResponse<?> getSubCategoriesV2(@PathVariable("name") String name) {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSubV2(name));
+    }
+
 
     @GetMapping("/tree/{user_id}")
     public ApiResponse<?> getUserCategoryTree(@PathVariable("user_id") String userId) {
@@ -59,6 +64,12 @@ public record CategoryController(CategoryService categoryService) {
     @GetMapping("/top")
     public ApiResponse<?> getTop() {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getTopCategories());
+    }
+
+
+    @GetMapping("/top-v2")
+    public ApiResponse<?> getTopV2() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getTopCategoriesV2());
     }
 
 }

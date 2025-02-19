@@ -1,18 +1,19 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 6:50 PM
- * Date: 12/29/2024
- * Project Name: backend
+ * Time: 7:16 PM
+ * Date: 2/19/25
+ * Project Name: ekhonni-v2
  */
 
 package com.ekhonni.backend.dto.category;
+
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -21,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CategorySubCategoryDTO {
-    private CategoryDTO category;
-    private List<CategoryDTO> subCategories = new ArrayList<>();
-    private List<String> chainCategories = new ArrayList<>();
+    private String name;
+    private List<String> subCategories;
+    private List<String> chainCategories;
 }

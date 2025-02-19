@@ -36,12 +36,12 @@
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
 
         for (Category rootCategory : rootCategories) {
-            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
+            CategorySubCategoryDTO categorySubCategoryDTOV2 = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>());
             List<CategoryProjection> subCategories = categoryRepository.findByParentCategoryOrderByIdAsc(rootCategory);
             for (CategoryProjection categoryProjection : subCategories) {
-                categorySubCategoryDTO.getSubCategories().add(categoryProjection.getName());
+                categorySubCategoryDTOV2.getSubCategories().add(categoryProjection.getName());
             }
-            categorySubCategoryDTOS.add(categorySubCategoryDTO);
+            categorySubCategoryDTOS.add(categorySubCategoryDTOV2);
         }
         return categorySubCategoryDTOS;
 

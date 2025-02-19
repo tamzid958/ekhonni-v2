@@ -23,22 +23,10 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
 
     List<Category> findByParentCategoryIsNullAndActive(boolean active);
     List<CategoryProjection>findProjectionByParentCategoryIsNullAndActive(boolean active);
-
     List<ViewerCategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
 
 
-//    @Modifying
-//    @Transactional
-//    @Query(value = """
-//            WITH RECURSIVE category_tree AS (
-//                SELECT id FROM category WHERE parent_category_id = :parentId
-//                UNION ALL
-//                SELECT c.id FROM category c
-//                INNER JOIN category_tree ct ON c.parent_category_id = ct.id
-//            )
-//            DELETE FROM category WHERE id IN (SELECT id FROM category_tree) OR id = :parentId
-//            """, nativeQuery = true)
-//    void deleteCategoryById(Long parentId);
+
 
 
     @Modifying
@@ -78,4 +66,24 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
     void deleteCategoryByName(String name);
 
     List<ViewerCategoryProjection> findByParentCategoryNameAndActiveOrderByIdAsc(String name, boolean b);
+
+
+    @Query(value = """
+    WITH RECURSIVE category_tree AS (
+        SELECT id, id AS main_category_id
+        FROM category
+        WHERE id IN (:mainCategoryIds) AND active = true
+        UNION ALL
+        SELECT c.id, ct.main_category_id
+        FROM category c
+        INNER JOIN category_tree ct ON c.parent_category_id = ct.id
+        WHERE c.active = true
+    )
+    SELECT ct.main_category_id, COUNT(p.id) AS product_count
+    FROM product p
+    INNER JOIN category_tree ct ON p.category_id = ct.id
+    GROUP BY ct.main_category_id
+    """, nativeQuery = true)
+    List<Object[]> countProductsByCategoriesAndDescendants(@Param("mainCategoryIds") List<Long> mainCategoryIds);
+
 }

@@ -76,7 +76,7 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-        public CategorySubCategoryDTO getSub(String name) {
+        public CategorySubCategoryDTOV2 getSubV2(String name) {
         Category parent = categoryRepository.findByNameAndActive(name, true);
         if (parent == null) {
             throw new CategoryException("Category by this name not found");
@@ -84,7 +84,7 @@ public class CategoryService extends BaseService<Category, Long> {
         List<String> sequenceOfCategory = getSequence(name);
 
         CategoryDTO parentDTO = new CategoryDTO(parent.getName(),parent.getImagePath());
-        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parentDTO, new ArrayList<>(), sequenceOfCategory);
+        CategorySubCategoryDTOV2 categorySubCategoryDTO = new CategorySubCategoryDTOV2(parentDTO, new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
         for (ViewerCategoryProjection child : children) {
             CategoryDTO childDTO = new CategoryDTO(child.getName(),child.getImagePath());
@@ -94,23 +94,25 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    public List<CategorySubCategoryDTO> getAllCategorySubCategoryDTO() {
+//    public List<CategorySubCategoryDTOV2> getAllCategorySubCategoryDTO() {
+//
+//        List<CategorySubCategoryDTOV2> categorySubCategoryDTOS = new ArrayList<>();
+//        List<CategoryProjection> rootCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+//        for (CategoryProjection rootCategory : rootCategories) {
+//            CategoryDTO rootDTO= new CategoryDTO(rootCategory.getName(),rootCategory.getImagePath());
+//            CategorySubCategoryDTOV2 categorySubCategoryDTOV2 = new CategorySubCategoryDTOV2(rootDTO, new ArrayList<>(), new ArrayList<>());
+//            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryNameAndActiveOrderByIdAsc(rootCategory.getName(), true);
+//            for (ViewerCategoryProjection subCategory : subCategories) {
+//                CategoryDTO childDTO = new CategoryDTO(subCategory.getName(),subCategory.getImagePath());
+//                categorySubCategoryDTOV2.getSubCategories().add(childDTO);
+//            }
+//            categorySubCategoryDTOS.add(categorySubCategoryDTOV2);
+//        }
+//        return categorySubCategoryDTOS;
+//
+//    }
 
-        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
-        List<CategoryProjection> rootCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
-        for (CategoryProjection rootCategory : rootCategories) {
-            CategoryDTO rootDTO= new CategoryDTO(rootCategory.getName(),rootCategory.getImagePath());
-            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootDTO, new ArrayList<>(), new ArrayList<>());
-            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryNameAndActiveOrderByIdAsc(rootCategory.getName(), true);
-            for (ViewerCategoryProjection subCategory : subCategories) {
-                CategoryDTO childDTO = new CategoryDTO(subCategory.getName(),subCategory.getImagePath());
-                categorySubCategoryDTO.getSubCategories().add(childDTO);
-            }
-            categorySubCategoryDTOS.add(categorySubCategoryDTO);
-        }
-        return categorySubCategoryDTOS;
 
-    }
 
 
     @Transactional
@@ -263,8 +265,8 @@ public class CategoryService extends BaseService<Category, Long> {
         return rootCategories;
     }
 
-    public List<CategorySubCategoryDTO> getTopCategories() {
-        List<CategorySubCategoryDTO> dtos = new ArrayList<>();
+    public List<CategorySubCategoryDTOV2> getTopCategories() {
+        List<CategorySubCategoryDTOV2> dtos = new ArrayList<>();
 
         List<CategoryDTO> topCategories = Arrays.asList(
                 new CategoryDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
@@ -279,16 +281,16 @@ public class CategoryService extends BaseService<Category, Long> {
         );
 
         for (CategoryDTO category : topCategories) {
-            dtos.add(new CategorySubCategoryDTO(category, new ArrayList<>(), new ArrayList<>()));
+            dtos.add(new CategorySubCategoryDTOV2(category, new ArrayList<>(), new ArrayList<>()));
         }
 
         return dtos;
     }
 
-    public CategorySubCategoryDTO getAllCategorySubCategoryDTOV2() {
+    public CategorySubCategoryDTOV2 getAllCategorySubCategoryDTOV2() {
 
         CategoryDTO rootCategoryDTO = new CategoryDTO("root", "null");
-        CategorySubCategoryDTO responseDTO = new CategorySubCategoryDTO();
+        CategorySubCategoryDTOV2 responseDTO = new CategorySubCategoryDTOV2();
         responseDTO.setCategory(rootCategoryDTO);
         List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
         for (CategoryProjection mainCategory : mainCategories) {
@@ -296,6 +298,48 @@ public class CategoryService extends BaseService<Category, Long> {
             responseDTO.getSubCategories().add(categoryDTO);
         }
         return  responseDTO;
+
+    }
+
+    public CategorySubCategoryDTO getSub(String name) {
+        Category parent = categoryRepository.findByNameAndActive(name, true);
+        if (parent == null) throw new CategoryException("Category by this name not found");
+        List<String> sequenceOfCategory = getSequence(name);
+        CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parent.getName(), new ArrayList<>(), sequenceOfCategory);
+        List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
+        for (ViewerCategoryProjection child : children) {
+            categorySubCategoryDTO.getSubCategories().add(child.getName());
+        }
+        return categorySubCategoryDTO;
+    }
+
+
+    public List<CategorySubCategoryDTO> getAllCategorySubCategoryDTO() {
+
+        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
+        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
+        for (Category rootCategory : rootCategories) {
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory.getName(), new ArrayList<>(), new ArrayList<>());
+            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
+            for (ViewerCategoryProjection subCategory : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(subCategory.getName());
+            }
+            categorySubCategoryDTOS.add(categorySubCategoryDTO);
+        }
+        return categorySubCategoryDTOS;
+
+    }
+
+
+    public List<Object[]> getTopCategoriesV2() {
+        List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+        List<Long>ids = new ArrayList<>();
+        for(CategoryProjection categoryProjection:mainCategories){
+            ids.add(categoryProjection.getId());
+        }
+        return categoryRepository.countProductsByCategoriesAndDescendants(ids);
+
+
 
     }
 }

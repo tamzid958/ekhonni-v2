@@ -59,6 +59,11 @@ public record CategoryAdminController(CategoryService categoryService) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
     }
 
+    @GetMapping("/{name}/subcategories-v2")
+    public ApiResponse<?> getSubCategoriesV2(@PathVariable("name") String name) {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getSub(name));
+    }
+
 
     @DeleteMapping("/{name}")
     public ApiResponse<?> delete(@PathVariable String name) {
