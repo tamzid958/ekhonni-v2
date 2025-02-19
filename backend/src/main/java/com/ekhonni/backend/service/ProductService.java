@@ -8,10 +8,7 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.product.ProductBoostResponseDTO;
-import com.ekhonni.backend.dto.product.ProductCreateDTO;
-import com.ekhonni.backend.dto.product.ProductResponseDTO;
-import com.ekhonni.backend.dto.product.ProductUpdateDTO;
+import com.ekhonni.backend.dto.product.*;
 import com.ekhonni.backend.enums.BidStatus;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.ekhonni.backend.exception.CategoryException;
@@ -241,7 +238,13 @@ public class ProductService extends BaseService<Product, Long> {
 
 
 
-
+    private ProductSellerAndBuyerDTO getBuyerInfo(Long id){
+        User buyer = getBuyerByProductId(id);
+        if(buyer != null){
+            return new ProductSellerAndBuyerDTO(buyer.getId(),buyer.getName());
+        }
+        return null;
+    }
     private ProductResponseDTO convertToProductResponseDTO(ProductProjection projection) {
         ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
         productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->

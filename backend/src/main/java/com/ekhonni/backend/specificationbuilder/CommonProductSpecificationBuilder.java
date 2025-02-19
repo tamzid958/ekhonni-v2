@@ -55,6 +55,11 @@ public class CommonProductSpecificationBuilder {
             hasConditions = true;
         }
 
+        if (filter.getUserId() != null) {
+            spec = spec.and(ProductSpecification.belongsToUser(filter.getUserId()));
+            hasConditions = true;
+        }
+
 
         if (!hasConditions) {
             spec = spec.and(ProductSpecification.defaultSpec());
