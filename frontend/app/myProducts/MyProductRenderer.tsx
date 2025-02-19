@@ -7,6 +7,7 @@ import { CardDemo } from '@/components/Card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { DrawerDemo } from './Components/Drawer';
 
 interface ProductData {
   id: number;
@@ -68,10 +69,12 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
     }
   };
 
-  const getStatusBoostBadge = (boostData) => {
+  const getStatusBoostBadge = (id, boostData) => {
     switch (boostData) {
       case null:
-        return <Button>boost</Button>;
+        return <DrawerDemo id={id} />;
+      default:
+        return <span>{id}</span>;
     }
   };
 
@@ -123,7 +126,8 @@ export default function MyProducts({ products, filter, setFilter }: MyProductPag
               .map((product) => (
                 <div key={product.id} className="relative flex flex-col">
                   <span className="absolute top-2 left-2 z-10">{getStatusBadge(product.status)}</span>
-                  <span className="absolute top-2 right-8 z-10">{getStatusBoostBadge(product.boostData)}</span>
+                  <span
+                    className="absolute top-2 right-8 z-10">{getStatusBoostBadge(product.id, product.boostData)}</span>
                   <CardDemo {...product}
                   />
                   {(filter === 'APPROVED' || 'SOLD') && <Button

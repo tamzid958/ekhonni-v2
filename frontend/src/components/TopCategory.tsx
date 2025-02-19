@@ -18,14 +18,14 @@ const fetcher = async (url) => {
 
 export function TopCAtegory() {
   const { data, error } = useSWR(
-    'http://localhost:8080/api/v2/category/all',
+    'http://localhost:8080/api/v2/category/top',
     fetcher,
     { suspense: false },
   );
 
-  if (error) return <div className="text-red-500">Failed to load categories</div>;
+  if (error) return <div className="bg-brand-mid relative h-10 flex justify-center items-center"></div>;
   if (!data) return <div className="bg-brand-mid relative h-10 flex justify-center items-center">
-    <span className="text-gray-600 text-sm">Loading categories...</span>
+    <span className="text-gray-600 text-sm">Loading top categories...</span>
   </div>;
 
   return (

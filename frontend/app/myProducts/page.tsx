@@ -61,8 +61,6 @@ export default function MyProductPage() {
   const products = data?.data?.content || [];
 
   console.log(products);
-  console.log('eta booster data');
-  console.log();
 
   if (status === 'loading' || isLoading) {
     return (

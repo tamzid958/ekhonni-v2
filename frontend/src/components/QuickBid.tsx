@@ -4,12 +4,27 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
+import fetcher from '@/data/services/fetcher';
 
 type Props = {
   title?: string;
 }
 
 export function QuickBid({ title }: Props) {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
+  const userToken = session?.user?.token;
+  const url = `/api/v2/product/filter?applyBoost=true`;
+  console.log(url);
+  console.log(userToken);
+
+  const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, userToken));
+  const products = data?.data?.content || [];
+
+  console.log(products);
+
   return (
     <div className="bg-brand-bright pl-40 pr-40 pt-10 pb-16 ">
       <div>
