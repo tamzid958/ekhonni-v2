@@ -56,7 +56,7 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
-    public ApiResponse<?> getOne(@PathVariable Long id) {
+    public ApiResponse<ProductResponseDTO> getOne(@PathVariable Long id) {
         ProductResponseDTO product = productService.getOne(id);
         return new ApiResponse<>(HTTPStatus.FOUND, product);
     }

@@ -48,6 +48,11 @@ public record CategoryAdminController(CategoryService categoryService) {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
     }
 
+    @GetMapping("/all-v2")
+    public ApiResponse<?> getAllV2() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTOV2());
+    }
+
 
     @GetMapping("/{name}/subcategories")
     public ApiResponse<?> getSubCategories(@PathVariable("name") String name) {

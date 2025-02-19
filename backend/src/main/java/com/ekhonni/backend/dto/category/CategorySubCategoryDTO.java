@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -20,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CategorySubCategoryDTO {
-    CategoryDTO category;
-    List<CategoryDTO> subCategories;
-    private List<String> chainCategories;
+    private CategoryDTO category;
+    private List<CategoryDTO> subCategories = new ArrayList<>();
+    private List<String> chainCategories = new ArrayList<>();
 }

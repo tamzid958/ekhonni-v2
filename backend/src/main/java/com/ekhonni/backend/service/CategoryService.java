@@ -11,6 +11,7 @@ package com.ekhonni.backend.service;
 import com.ekhonni.backend.dto.category.*;
 import com.ekhonni.backend.exception.CategoryException;
 import com.ekhonni.backend.model.Category;
+import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
 import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
@@ -77,8 +78,11 @@ public class CategoryService extends BaseService<Category, Long> {
 
         public CategorySubCategoryDTO getSub(String name) {
         Category parent = categoryRepository.findByNameAndActive(name, true);
-        if (parent == null) throw new CategoryException("Category by this name not found");
+        if (parent == null) {
+            throw new CategoryException("Category by this name not found");
+        }
         List<String> sequenceOfCategory = getSequence(name);
+
         CategoryDTO parentDTO = new CategoryDTO(parent.getName(),parent.getImagePath());
         CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(parentDTO, new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
@@ -93,11 +97,11 @@ public class CategoryService extends BaseService<Category, Long> {
     public List<CategorySubCategoryDTO> getAllCategorySubCategoryDTO() {
 
         List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
-        List<Category> rootCategories = categoryRepository.findByParentCategoryIsNullAndActive(true);
-        for (Category rootCategory : rootCategories) {
+        List<CategoryProjection> rootCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+        for (CategoryProjection rootCategory : rootCategories) {
             CategoryDTO rootDTO= new CategoryDTO(rootCategory.getName(),rootCategory.getImagePath());
             CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootDTO, new ArrayList<>(), new ArrayList<>());
-            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(rootCategory, true);
+            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryNameAndActiveOrderByIdAsc(rootCategory.getName(), true);
             for (ViewerCategoryProjection subCategory : subCategories) {
                 CategoryDTO childDTO = new CategoryDTO(subCategory.getName(),subCategory.getImagePath());
                 categorySubCategoryDTO.getSubCategories().add(childDTO);
@@ -121,7 +125,10 @@ public class CategoryService extends BaseService<Category, Long> {
             throw new CategoryException("Cannot delete category because subcategories exist");
         }
 
-        // show error for products that are under this category in future
+        // show error for products that are under this category
+        if(productRepository.existsByCategoryName(name)){
+            throw new CategoryException("Cannot delete category because products exists under this category");
+        }
 
         // Delete the category
         categoryRepository.deleteCategoryByName(name);
@@ -276,5 +283,19 @@ public class CategoryService extends BaseService<Category, Long> {
         }
 
         return dtos;
+    }
+
+    public CategorySubCategoryDTO getAllCategorySubCategoryDTOV2() {
+
+        CategoryDTO rootCategoryDTO = new CategoryDTO("root", "null");
+        CategorySubCategoryDTO responseDTO = new CategorySubCategoryDTO();
+        responseDTO.setCategory(rootCategoryDTO);
+        List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+        for (CategoryProjection mainCategory : mainCategories) {
+            CategoryDTO categoryDTO = new CategoryDTO(mainCategory.getName(),mainCategory.getImagePath());
+            responseDTO.getSubCategories().add(categoryDTO);
+        }
+        return  responseDTO;
+
     }
 }

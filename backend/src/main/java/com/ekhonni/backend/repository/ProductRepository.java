@@ -43,4 +43,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
     Long countByIdInAndStatus(List<Long> ids, ProductStatus status);
 
 
+    boolean existsByCategoryName(String name);
 }

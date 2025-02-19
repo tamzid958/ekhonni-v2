@@ -11,6 +11,7 @@ import com.ekhonni.backend.enums.Division;
 import com.ekhonni.backend.enums.ProductCondition;
 import com.ekhonni.backend.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -42,6 +43,7 @@ import java.util.UUID;
         "boostData",
         "images"
 })
+@Schema(description = "DTO for retrieving g a product with necessary information and images")
 public class ProductResponseDTO {
     private Long id;
     private String title;

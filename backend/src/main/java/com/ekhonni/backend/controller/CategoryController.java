@@ -45,6 +45,11 @@ public record CategoryController(CategoryService categoryService) {
     public ApiResponse<?> getAll() {
         return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTO());
     }
+    @GetMapping("/all-v2")
+    public ApiResponse<?> getAllV2() {
+        return new ApiResponse<>(HTTPStatus.FOUND, categoryService.getAllCategorySubCategoryDTOV2());
+    }
+
 
     @GetMapping("/tree")
     public List<CategoryTreeDTO> getCategoryTree() {
