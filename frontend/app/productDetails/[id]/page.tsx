@@ -1,56 +1,52 @@
-import React from "react";
-import { ProductDetailsProps } from "../ProductDetailsClient";
+'use client';
+
+import React, { useMemo } from 'react';
+import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
 import ProductDetailsClient from "../ProductDetailsClient";
 import Loading from "@/components/Loading";
+import fetcher from "@/data/services/fetcher";
 
+export default function ProductDetailsPage() {
+  const params = useParams();
+  const productId = params?.id as string;
 
-async function fetchProductDetails(productId: string): Promise<ProductDetailsProps> {
-  const productResponse = await fetch(
-    `http://localhost:8080/api/v2/product/${productId}`
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id;
+  const userToken = session?.user?.token || "";
+
+  const { data: productData, error: productError, isLoading: productLoading } = useSWR(
+    productId ? `http://localhost:8080/api/v2/product/${productId}` : null,
+    (url) => fetcher(url, userToken)
   );
-  const productData = await productResponse.json();
 
-  const biddingCountResponse = await fetch(
-    `http://localhost:8080/api/v2/bid/product/${productId}/count`
+  const { data: biddingCountData } = useSWR(
+    productId ? `http://localhost:8080/api/v2/bid/product/${productId}/count` : null,
+    fetcher
   );
-  const biddingCountData = await biddingCountResponse.json();
-
-  const biddingDetailsResponse = await fetch(
-    `http://localhost:8080/api/v2/bid/buyer/product/${productId}`
+  const { data: biddingDetailsData } = useSWR(
+    productId ? `http://localhost:8080/api/v2/bid/buyer/product/${productId}` : null,
+    fetcher
   );
-  const biddingDetailsData = await biddingDetailsResponse.json();
 
-  const sellerId = productData.data.seller.id;
-
-  const sellerRatingResponse = await fetch(
-    `http://localhost:8080/api/v2/review/seller/${sellerId}/average`
+  const sellerId = productData?.data?.seller?.id;
+  const { data: sellerRatingData } = useSWR(
+    sellerId ? `http://localhost:8080/api/v2/review/seller/${sellerId}/average` : null,
+    fetcher
   );
-  const sellerRatingData = await sellerRatingResponse.json();
-
-  const sellerLocationResponse = await fetch(
-    `http://localhost:8080/api/v2/user/${sellerId}`
+  const { data: sellerLocationData } = useSWR(
+    sellerId ? `http://localhost:8080/api/v2/user/${sellerId}` : null,
+    fetcher
   );
-  const sellerLocationData = await sellerLocationResponse.json();
 
-  return {
-    productDetails: productData.data,
-    biddingCount: biddingCountData.data,
-    biddingDetails: biddingDetailsData.data.content || [],
-    sellerRating: sellerRatingData.data || 0,
-    sellerLocation: sellerLocationData.address,
-  };
-}
+  const isAuthorized = useMemo(() => {
+    if (!productData?.data) return false;
+    if (productData.data.status !== "SOLD") return true;
+    return userId && (userId === productData.data.seller.id || userId === productData.data.buyer?.id);
+  }, [productData, userId]);
 
-export default async function ProductDetailsPage({
-                                                   params,
-                                                 }: {
-  params: { id: string };
-}) {
-  const { id: productId } = params;
-
-  const productData = await fetchProductDetails(productId);
-
-  if (!productData) {
+  if (productLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loading />
@@ -58,21 +54,22 @@ export default async function ProductDetailsPage({
     );
   }
 
-  const {
-    productDetails,
-    biddingCount,
-    biddingDetails,
-    sellerRating,
-    sellerLocation,
-  } = productData;
+  if (!isAuthorized) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">Product Has been Sold</p>
+      </div>
+    );
+  }
 
   return (
     <ProductDetailsClient
-      productDetails={productDetails}
-      biddingCount={biddingCount}
-      biddingDetails={biddingDetails}
-      sellerRating={sellerRating}
-      sellerLocation={sellerLocation}
+      productDetails={productData?.data}
+      biddingCount={biddingCountData?.data || 0}
+      biddingDetails={biddingDetailsData?.data?.content || []}
+      sellerRating={sellerRatingData?.data || 0}
+      sellerLocation={sellerLocationData?.address || ""}
+      isAuthorized={isAuthorized}
     />
   );
 }
