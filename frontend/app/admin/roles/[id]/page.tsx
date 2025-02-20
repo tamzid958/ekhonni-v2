@@ -23,9 +23,10 @@ export default function RoleDetails() {
   const userId = session?.user?.id;
   const userToken = session?.user?.token;
   const router = useRouter();
-  const { allRolesList, processedRoles, error, roleMapping } = useRoles(session?.user?.id, session?.user?.token);
+  const { allRolesList, processedRoles, error, roleMapping, reverseRoleMapping } = useRoles(session?.user?.id, session?.user?.token);
 
   const { id } = useParams();
+  const roleId = Number(id);
 
   const { data, error: privilegeError, isLoading } = useSWR(
     userId ? [`/api/v2/role/${id}/privilege/?page=0&size=200`, userToken] : null,
@@ -38,6 +39,18 @@ export default function RoleDetails() {
       return updatedData;
     }
   );
+  const { data: allPrivilege, error: allPrivilegeError, isLoading: allPrivilegeLoading } = useSWR(
+    userId ? [`/api/v2/role/1/privilege/?page=0&size=200`, userToken] : null,
+    async ([url, token]) => {
+      const fetchedData = await fetcher(url, token);
+      const updatedData = fetchedData?.content?.map(item => ({
+        ...item,
+        roles: ["SUPER_ADMIN"],
+      })) ?? [];
+      return updatedData;
+    }
+  );
+
 
   const groupPrivilegesByType = (privileges) => {
     return privileges.reduce((acc, privilege) => {
@@ -48,22 +61,27 @@ export default function RoleDetails() {
       return acc;
     }, {});
   };
+  // const groupedAllprivileges = groupPrivilegesByType(allPrivilege);
+
 
   const [selectedRole, setSelectedRole] = useState(id);
   const [selectedType, setSelectedType] = useState("");
   const [groupedPrivileges, setGroupedPrivileges] = useState({});
+  const [groupedAllPrivileges, setGroupedAllPrivileges] = useState({});
   const [selectedPrivileges, setSelectedPrivileges] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     if (data) {
       const groupedData = groupPrivilegesByType(data);
+      const groupedAllData = groupPrivilegesByType(allPrivilege);
+      setGroupedAllPrivileges(groupedAllData);
       setGroupedPrivileges(groupedData);
       if (Object.keys(groupedData).length > 0) {
         setSelectedType(Object.keys(groupedData)[0]);
       }
     }
-  }, [data]);
+  }, [data, allPrivilege]);
 
   useEffect(() => {
     if (selectedRole) {
@@ -88,11 +106,9 @@ export default function RoleDetails() {
     });
   };
 
+
   const handleAssignPrivileges = () => {
-    // Call the backend API to assign privileges
-    console.log("Assigning privileges:", selectedPrivileges);
-    // Example backend API call
-    // fetch('/api/assignPrivileges', { method: 'POST', body: { roleId: selectedRole, privilegeIds: selectedPrivileges } });
+
     setIsDialogOpen(false); // Close dialog after assigning
   };
 
@@ -200,20 +216,13 @@ export default function RoleDetails() {
           </section>
         </div>
       </div>
-
-      {/* Privilege Dialog */}
       <PrivilegeDialog
-        token={userToken}
+        token={session.user.token}
+        roleId={roleId}
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        onSave={(updatedPrivileges) => {
-          // Handle the saving of updated privileges
-          setSelectedPrivileges(updatedPrivileges);
-        }}
-        groupedPrivileges={groupedPrivileges}
-        existingPrivileges={filteredPrivileges.filter((privilege) =>
-          selectedPrivileges.includes(privilege.id)
-        )}
+        groupedPrivileges={groupedAllPrivileges}
+        onSave={handleAssignPrivileges}
       />
     </div>
   );

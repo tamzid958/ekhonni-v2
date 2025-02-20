@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
-import { Toaster } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { allRolesList, reverseRoleMapping } from '../hooks/useRoles';
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from 'next/navigation';
 import { FaUser, FaUsers } from 'react-icons/fa6';
 import { RoleDialog } from '../components/RoleDialog';
 import {RoleSelector} from '../components/RoleSelector'
@@ -43,6 +43,7 @@ import {RoleSelector} from '../components/RoleSelector'
 import { X } from 'lucide-react';
 import { Select } from '@/components/ui/select';
 import { FaSearch } from 'react-icons/fa';
+import { axiosInstance } from '@/data/services/fetcher';
 
 export type Role = {
   id: number
@@ -413,17 +414,38 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
 {
     id: "actions",
     cell: ({ row }) => {
-      const Role = row.original;
+      const Privilege = row.original;
       const router = useRouter();
       const { data: session } = useSession();
       const userToken = session?.user?.token;
+      const {id} = useParams();
       const [isMenuOpen, setIsMenuOpen] = useState(false);
       const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
 
+      const roleId = Number(id);
       const handleEditRole = (role: {name: string, description: string}) =>{
         setIsRoleDialogOpen(true)
         setIsMenuOpen(false);
 
+      }
+      const handleRemovePrivilege = async (privilegeId: number, roleId: number) => {
+        console.log("Removing privilege with id:", privilegeId);
+        try{
+          const response = await axiosInstance.post(`/api/v2/role/${roleId}/remove/privilege/${privilegeId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
+            });
+          if(response.status === 200)
+          {
+            toast.success('Privileges Removed successfully');
+          }
+        }catch (error)
+        {
+          console.log('Error saving role:', error)
+          alert('Failed to assign privileges. Please try again');
+        }
       }
       return (
         <div>
@@ -438,12 +460,6 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => router.push(`/admin/roles/${Role.id}`)}
-              >
-                Add/View Privileges
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
                 setIsRoleDialogOpen(true);
                 setIsMenuOpen(false);
@@ -451,8 +467,8 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
                 Change Role
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleEditRole(Role)}>
-                Edit Role
+              <DropdownMenuItem onClick={() => handleRemovePrivilege(Privilege.id, roleId)}>
+                Remove Previlege
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </DropdownMenuContent>
@@ -463,7 +479,7 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
             onClose={() => setIsRoleDialogOpen(false)} onSave={(updatedRole) =>{
             console.log("Role Updated", updatedRole);
           }}
-            existingRole = {Role}
+            existingRole = {Privilege}
           />
           <Toaster />
         </div>

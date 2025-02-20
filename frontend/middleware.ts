@@ -14,6 +14,7 @@ const PUBLIC_ROUTES: Route[] = [
   "/productDetails",
   "/search",
   "/seller-page",
+
 ] as const;
 
 const AUTH_ROUTES = [
@@ -27,24 +28,36 @@ const ACCESS_LIST: Record<Role, Route[]> = {
   USER: [
     "/myProducts",
     "/myProducts/bidList",
-    "/productDetails",
     "/seller-page",
-    "/users-page"
+    "/user-page",
+    "/form"
   ],
   GUEST: PUBLIC_ROUTES,
 };
 
 const isPublicRoute = (pathname: string): boolean => {
-  return PUBLIC_ROUTES.includes(pathname as Route);
+  return (
+    PUBLIC_ROUTES.includes(pathname as Route) ||
+    PUBLIC_ROUTES.some((path) => {
+      // Handle dynamic routes like /productDetails/:id
+      const dynamicRoutePattern = new RegExp(`^${path.replace(/:[a-zA-Z0-9_]+/, '[^/]+')}$`);
+      return dynamicRoutePattern.test(pathname) || pathname.startsWith(`${path}/`);
+    })
+  );
 };
+
 
 const hasAccess = (allowedPaths: Route[], pathname: string): boolean => {
   return (
     allowedPaths.includes(pathname as Route) ||
     allowedPaths.includes("*") ||
-    allowedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+    allowedPaths.some((path) => {
+      const dynamicRoutePattern = new RegExp(`^${path.replace(/:[a-zA-Z0-9_]+/, '[^/]+')}$`);
+      return dynamicRoutePattern.test(pathname) || pathname.startsWith(`${path}/`);
+    })
   );
 };
+
 
 const getSession = async (request: NextRequest) => {
   try {
@@ -57,6 +70,7 @@ const getSession = async (request: NextRequest) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
     return await response.json();
   } catch (error) {
     console.error("Session fetch error:", error);
