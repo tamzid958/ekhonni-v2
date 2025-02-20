@@ -80,10 +80,11 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
         WHERE c.active = true
     )
     SELECT ct.main_category_id, COUNT(p.id) AS product_count
-    FROM product p
-    INNER JOIN category_tree ct ON p.category_id = ct.id
+    FROM category_tree ct
+    LEFT JOIN product p ON p.category_id = ct.id
     GROUP BY ct.main_category_id
     """, nativeQuery = true)
     List<Object[]> countProductsByCategoriesAndDescendants(@Param("mainCategoryIds") List<Long> mainCategoryIds);
+
 
 }

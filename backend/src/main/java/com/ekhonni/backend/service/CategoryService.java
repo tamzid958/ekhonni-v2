@@ -331,15 +331,39 @@ public class CategoryService extends BaseService<Category, Long> {
     }
 
 
-    public List<Object[]> getTopCategoriesV2() {
+    public List<CategorySubCategoryDTO> getTopCategoriesV2() {
         List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+        Map<Long,String>categoryMapOfIdName = new HashMap<>();
         List<Long>ids = new ArrayList<>();
         for(CategoryProjection categoryProjection:mainCategories){
             ids.add(categoryProjection.getId());
+            categoryMapOfIdName.put(categoryProjection.getId(),categoryProjection.getName());
         }
-        return categoryRepository.countProductsByCategoriesAndDescendants(ids);
+        List<Object[]> results = categoryRepository.countProductsByCategoriesAndDescendants(ids);
 
 
+        results.sort((a, b) -> Long.compare((Long) b[1], (Long) a[1]));
+        List<String>rootCategories = new ArrayList<>();
+
+        for (int i = 0; i < results.size(); i++) {
+            Object[] row = results.get(i);
+            Long categoryId = (Long) row[0];
+            rootCategories.add(categoryMapOfIdName.get(categoryId));
+        }
+
+
+        List<CategorySubCategoryDTO> categorySubCategoryDTOS = new ArrayList<>();
+        for (String rootCategory : rootCategories) {
+            CategorySubCategoryDTO categorySubCategoryDTO = new CategorySubCategoryDTO(rootCategory, new ArrayList<>(), new ArrayList<>());
+            List<ViewerCategoryProjection> subCategories = categoryRepository.findByParentCategoryNameAndActiveOrderByIdAsc(rootCategory, true);
+            for (ViewerCategoryProjection subCategory : subCategories) {
+                categorySubCategoryDTO.getSubCategories().add(subCategory.getName());
+            }
+            categorySubCategoryDTOS.add(categorySubCategoryDTO);
+        }
+        return categorySubCategoryDTOS;
+
+        //then based on count i want to sort the mainCategories
 
     }
 }
