@@ -1,10 +1,10 @@
+'use client';
 import * as React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
 
@@ -13,17 +13,12 @@ type Props = {
 }
 
 export function QuickBid({ title }: Props) {
-  const { data: session, status } = useSession();
-  const userId = session?.user?.id;
-  const userToken = session?.user?.token;
-  const url = `/api/v2/product/filter?applyBoost=true`;
+
+  const url = `/api/v2/product/filter?status=APPROVED&size=1000`;
   console.log(url);
-  console.log(userToken);
 
-  const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, userToken));
+  const { data, error, isLoading } = useSWR(url, (url) => fetcher(url));
   const products = data?.data?.content || [];
-
-  console.log(products);
 
   return (
     <div className="bg-brand-bright pl-40 pr-40 pt-10 pb-16 ">
@@ -42,39 +37,40 @@ export function QuickBid({ title }: Props) {
         className="w-full pt-10"
       >
         <CarouselContent className="max-w-4xl">
-          {Array.from({ length: 15 }).map((_, index) => (
-            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-              <div className="p-1">
-                <Card className="realtive overflow-hidden w-[100%] h-[45%]">
-                  <CardContent
-                    className="flex aspect-square items-center justify-center rounded-2xl p-0">
-                    <img
-                      src={`ad${((index + 1) % 5) + 1}.png`}
-                      alt={`public/AdsImage/ad ${index + 1}`}
-                      className="h-full w-full object-cover"
-                    />
-                    <Button
-                      className="absolute mb-48 ml-36 px-4 py-2 rounded shadow"
-                      variant="default"
-                    >
-                      Bid Now
-                    </Button>
-                  </CardContent>
-                </Card>
-                <div className="flex flex-row w-full pt-2">
-                  <div className="flex flex-col w-3/4">
-                    <h2 className=" font-sans text-black">Library Tool</h2>
-                    <h2 className="text-xl font-sans text-black">$45.00</h2>
-                  </div>
-                  <div>
-                    <Button className="m-2 mr-4" variant="default">
-                      <ShoppingCart />
-                    </Button>
+          {products
+            .map((product, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <Card className="realtive overflow-hidden w-[100%] h-[45%]">
+                    <CardContent
+                      className="flex aspect-square items-center justify-center rounded-2xl p-0">
+                      <img
+                        src={product.images[0].imagePath}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+                      <Button
+                        className="absolute mb-48 ml-36 px-4 py-2 rounded shadow"
+                        variant="default"
+                      >
+                        Bid Now
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  <div className="flex flex-row w-full pt-2">
+                    <div className="flex flex-col w-3/4">
+                      <h2 className=" font-sans text-black">{product.title}</h2>
+                      <h2 className="text-xl font-sans text-black">${product.price}</h2>
+                    </div>
+                    <div>
+                      <Button className="m-2 mr-4" variant="default">
+                        <ShoppingCart />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
+              </CarouselItem>
+            ))}
         </CarouselContent>
         <CarouselPrevious className="w-12 h-12 left-[93%] -top-[4%]" variant={'default'} />
         <CarouselNext className="w-12 h-12 left-[97%] -top-[4%]" variant={'default'} />

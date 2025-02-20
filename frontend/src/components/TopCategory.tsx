@@ -18,7 +18,7 @@ const fetcher = async (url) => {
 
 export function TopCAtegory() {
   const { data, error } = useSWR(
-    'http://localhost:8080/api/v2/category/top',
+    'http://localhost:8080/api/v2/category/top-v2',
     fetcher,
     { suspense: false },
   );
