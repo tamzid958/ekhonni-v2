@@ -67,7 +67,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const response = await axios.post(
-          `http://localhost:8080/api/v2/user/${userId}/chat/rooms?user2Id=${sellerId}`,
+          `http://localhost:8080/api/v2/user/${userId}/chat-rooms/${sellerId}/create`,
           {},
           {
             headers: { Authorization: `Bearer ${userToken}` },

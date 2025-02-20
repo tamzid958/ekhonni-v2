@@ -22,15 +22,15 @@ export default function Chat() {
 
   // Connect to WebSocket when user is logged in
   useEffect(() => {
-    if (userId && userToken) {
+    if (userId) {
       connect();
     }
-  }, [userId, userToken]);
+  }, [userId]);
 
   // Fetch chat rooms
   useEffect(() => {
     if (userId) {
-      axios.get(`http://localhost:8080/api/v2/user/${userId}/chat/rooms`, {
+      axios.get(`http://localhost:8080/api/v2/user/${userId}/chat-rooms`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
@@ -69,7 +69,8 @@ export default function Chat() {
         console.log('Connected to WebSocket');
 
         // Subscribe to global messages and chat room updates
-        client.subscribe(`/user/${userId}/queue/messages`, (messageOutput) => {
+        client.subscribe(`/topic/messages`, (messageOutput) => {
+          console.log("Received message:", messageOutput.body);
           const newMessage = JSON.parse(messageOutput.body);
           setMessages((prev) => [...prev, newMessage]);
         });
@@ -81,7 +82,11 @@ export default function Chat() {
       },
       onDisconnect: () => {
         setConnected(false);
-        console.log('Disconnected');
+        console.log('Disconnected from WebSocket');
+      },
+      onStompError: (frame) => {
+        console.error('STOMP Error:', frame.headers['message']);
+        // Retry the connection if needed or show a user-friendly error
       },
     });
 
@@ -89,18 +94,21 @@ export default function Chat() {
     setStompClient(client);
   };
 
-
   // Send message to the current chat
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!stompClient || !text.trim() || !userId || !selectedChatRoom) return;
 
-    const message = { senderId: userId, receiverId: selectedChatRoom, content: text }; // Include receiverId
-    stompClient.publish({
-      destination: '/app/chat',
-      body: JSON.stringify(message),
-    });
+    const message = { senderId: userId, receiverId: selectedChatRoom, content: text };
 
-    setText('');
+    try {
+      await stompClient.publish({
+        destination: '/app/chat',
+        body: JSON.stringify(message),
+      });
+      setText('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   // Handle selecting a chat room
