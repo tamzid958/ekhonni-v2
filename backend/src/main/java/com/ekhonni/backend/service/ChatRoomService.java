@@ -1,6 +1,6 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.compositekey.ChatRoomId;
+
 import com.ekhonni.backend.dto.ChatRoomResponseDTO;
 import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.ChatRoom;
@@ -38,10 +38,7 @@ public class ChatRoomService {
                 .orElseGet(() -> chatRoomRepository.save(
                         new ChatRoom(
                                 user1,
-                                user2,
-                                LocalDateTime.now(),
-                                null,
-                                null
+                                user2
                         )));
 
         User receiver = chatRoom.getUser1().equals(user1) ? chatRoom.getUser2() : chatRoom.getUser1();

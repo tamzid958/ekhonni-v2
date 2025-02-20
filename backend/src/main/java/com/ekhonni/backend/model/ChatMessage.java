@@ -23,12 +23,8 @@ import java.util.UUID;
 public class ChatMessage extends BaseEntity<UUID> {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "chat_user1", referencedColumnName = "user1_id", insertable = false, updatable = false, nullable = false),
-            @JoinColumn(name = "chat_user2", referencedColumnName = "user2_id", insertable = false, updatable = false, nullable = false)
-    })
+    @JoinColumn(name = "chat_room_id" , nullable = false)
     private ChatRoom chatRoom;
-
 
     @Column(nullable = false)
     UUID senderId;

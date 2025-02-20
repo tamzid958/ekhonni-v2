@@ -1,7 +1,5 @@
 package com.ekhonni.backend.repository;
 
-import com.ekhonni.backend.compositekey.ChatRoomId;
-import com.ekhonni.backend.dto.ChatRoomResponseDTO;
 import com.ekhonni.backend.model.ChatRoom;
 import com.ekhonni.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, ChatRoomId> {
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
 
     @Query("""
     SELECT c

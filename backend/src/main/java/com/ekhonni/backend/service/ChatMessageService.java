@@ -1,6 +1,6 @@
 package com.ekhonni.backend.service;
 
-import com.ekhonni.backend.compositekey.ChatRoomId;
+
 import com.ekhonni.backend.dto.ChatMessageDTO;
 import com.ekhonni.backend.exception.user.UserNotFoundException;
 import com.ekhonni.backend.model.ChatMessage;
@@ -26,12 +26,8 @@ public class ChatMessageService {
         User user2 = userRepository.findById(chatMessageDTO.receiverId())
                 .orElseThrow( () -> new UserNotFoundException("User not found"));
 
-        ChatRoomId chatRoomId = new ChatRoomId(
-                user1.getId().compareTo(user2.getId()) < 0 ? user1.getId() : user2.getId(),
-                user1.getId().compareTo(user2.getId()) < 0 ? user2.getId() : user1.getId()
-        );
 
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+        ChatRoom chatRoom = chatRoomRepository.findByUsers(user1, user2)
                 .orElseThrow(() -> new UserNotFoundException("Chat room not found"));
 
         ChatMessage chatMessage = new ChatMessage(

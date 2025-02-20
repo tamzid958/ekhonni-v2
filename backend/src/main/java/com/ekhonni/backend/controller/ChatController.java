@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v2/user/{userId}/chat/rooms")
+@RequestMapping("api/v2/user/{userId}/chat-rooms")
 @AllArgsConstructor
 public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping
-    public ChatRoomResponseDTO create(@PathVariable UUID userId, @RequestParam UUID user2Id) {
-        return chatRoomService.create(userId, user2Id);
+    @PostMapping("/{otherUserId}/create")
+    public ChatRoomResponseDTO create(@PathVariable UUID userId, @PathVariable UUID otherUserId) {
+        return chatRoomService.create(userId, otherUserId);
     }
 
     @GetMapping

@@ -1,6 +1,5 @@
 package com.ekhonni.backend.dto;
 
-import com.ekhonni.backend.compositekey.ChatRoomId;
 
 import java.util.UUID;
 

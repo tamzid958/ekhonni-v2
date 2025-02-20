@@ -18,18 +18,10 @@ public class ChatWebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat")
-    public void sendMessage(ChatMessageDTO chatMessageDTO) {
+    @SendTo("/topic/messages")
+    public ChatMessageDTO sendMessage(ChatMessageDTO chatMessageDTO) {
 
         ChatMessageDTO savedMessage = chatMessageService.save(chatMessageDTO);
-        messagingTemplate.convertAndSendToUser(
-                chatMessageDTO.senderId().toString(),
-                "/queue/messages",
-                savedMessage
-        );
-        messagingTemplate.convertAndSendToUser(
-                chatMessageDTO.receiverId().toString(),
-                "/queue/messages",
-                savedMessage
-        );
+        return chatMessageDTO;
     }
 }
