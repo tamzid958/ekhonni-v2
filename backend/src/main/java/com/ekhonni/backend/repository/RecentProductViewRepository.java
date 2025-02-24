@@ -1,14 +1,15 @@
 /**
  * Author: Rifat Shariar Sakil
- * Time: 8:38 PM
- * Date: 2/3/25
+ * Time: 2:36 PM
+ * Date: 2/24/25
  * Project Name: ekhonni-v2
  */
 
 package com.ekhonni.backend.repository;
 
+import com.ekhonni.backend.model.RecentlyViewedProduct;
 import com.ekhonni.backend.model.User;
-import com.ekhonni.backend.model.WatchlistProduct;
+import com.ekhonni.backend.projection.RecentViewedProductProjection;
 import com.ekhonni.backend.projection.WatchlistProductProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface WatchlistRepository extends JpaRepository<WatchlistProduct, Long> {
-    Page<WatchlistProductProjection> findAllProjectionByUser(@Param("user") User user, Pageable pageable);
+public interface RecentProductViewRepository extends JpaRepository<RecentlyViewedProduct, Long> {
+    Page<RecentViewedProductProjection> findAllByUserOrderByCreatedAtDesc(@Param("user") User user, Pageable pageable);
     void deleteByUserIdAndProductIdIn(UUID userId, List<Long> productIds);
     void deleteByProductIdIn(List<Long> productIds);
     boolean existsByUser_IdAndProduct_Id(UUID userId, Long productId);

@@ -96,4 +96,12 @@ public class WatchlistService {
            User user = AuthUtil.getAuthenticatedUser();
            return watchlistRepository.existsByUser_IdAndProduct_Id(user.getId(),productId);
     }
+
+    @Transactional
+    public String clearAll() {
+
+        User user = AuthUtil.getAuthenticatedUser();
+        watchlistRepository.deleteAllByUserId(user.getId());
+        return "Removed selected products from the watchlist";
+    }
 }

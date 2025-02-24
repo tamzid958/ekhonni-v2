@@ -45,13 +45,14 @@ public class ProductService extends BaseService<Product, Long> {
     private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
     private final ProductBoostRepository productBoostRepository;
     private final BidRepository bidRepository;
+    private final RecentProductViewService recentProductViewService;
 
 
 
     public ProductService(ProductRepository productRepository, CategoryService categoryService,
                           CategoryRepository categoryRepository,
                           CloudinaryImageUploadUtil cloudinaryImageUploadUtil, ProductBoostRepository productBoostRepository,
-                          BidRepository bidRepository
+                          BidRepository bidRepository, RecentProductViewService recentProductViewService
     ) {
         super(productRepository);
         this.productRepository = productRepository;
@@ -60,6 +61,7 @@ public class ProductService extends BaseService<Product, Long> {
         this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
         this.productBoostRepository = productBoostRepository;
         this.bidRepository = bidRepository;
+        this.recentProductViewService = recentProductViewService;
     }
 
 
@@ -102,7 +104,15 @@ public class ProductService extends BaseService<Product, Long> {
             throw new ProductNotFoundException("Unauthorized to view this product");
         }
 
+        if(user!=null){
+            addToRecentViewOfUser(user, id);
+        }
+
         return convertToProductResponseDTO(projection);
+    }
+
+    private void addToRecentViewOfUser(User user, Long id) {
+        recentProductViewService.addProduct(user,id);
     }
 
 
@@ -245,7 +255,7 @@ public class ProductService extends BaseService<Product, Long> {
         }
         return null;
     }
-    private ProductResponseDTO convertToProductResponseDTO(ProductProjection projection) {
+    public ProductResponseDTO convertToProductResponseDTO(ProductProjection projection) {
         ProductResponseDTO dto = ProductProjectionConverter.convert(projection);
         productBoostRepository.findByProductId(projection.getId()).ifPresent(boost ->
                 dto.setBoostData(new ProductBoostResponseDTO(
