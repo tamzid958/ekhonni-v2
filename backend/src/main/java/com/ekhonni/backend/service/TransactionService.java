@@ -113,4 +113,5 @@ public class TransactionService extends BaseService<Transaction, Long> {
     public Page<Transaction> getPendingTransactionsOlderThan(TransactionStatus status, LocalDateTime timestamp, Pageable pageable) {
         return transactionRepository.findByStatusEqualsAndUpdatedAtLessThanEqualAndDeletedAtIsNull(status, timestamp, pageable);
     }
+
 }
