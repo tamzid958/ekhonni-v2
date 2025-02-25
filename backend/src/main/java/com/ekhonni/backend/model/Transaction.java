@@ -5,6 +5,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,10 @@ public class Transaction extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentMethod method;
 
     private Double storeAmount;
     private Double bdtAmount;
@@ -54,16 +59,6 @@ public class Transaction extends BaseEntity<Long> {
 
     public User getSeller() {
         return getProduct().getSeller();
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "id=" + getId() +
-                ", status=" + status +
-                ", sessionKey=" + sessionKey +
-                ", updatedAt=" + getUpdatedAt() +
-                "}";
     }
 
 }

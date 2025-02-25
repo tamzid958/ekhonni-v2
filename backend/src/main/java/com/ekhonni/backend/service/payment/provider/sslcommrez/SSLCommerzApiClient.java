@@ -2,6 +2,7 @@ package com.ekhonni.backend.service.payment.provider.sslcommrez;
 
 import com.ekhonni.backend.config.payment.SSLCommerzConfig;
 import com.ekhonni.backend.enums.BidStatus;
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.*;
 import com.ekhonni.backend.model.Account;
@@ -55,8 +56,7 @@ public class SSLCommerzApiClient {
 
     @Retry(name = "retryPayment", fallbackMethod = "initiatePaymentFallback")
     public InitiatePaymentResponse initiatePayment(Long bidId) throws Exception {
-        Bid bid = bidService.get(bidId)
-                .orElseThrow(() -> {
+        Bid bid = bidService.get(bidId).orElseThrow(() -> {
                     log.warn("Payment request for invalid bid: {}", bidId);
                     return new InvalidTransactionRequestException();
                 });
@@ -64,7 +64,15 @@ public class SSLCommerzApiClient {
         verifyBid(bid);
 
         Transaction transaction = transactionService.findByBidId(bidId)
-                .orElseGet(() -> transactionService.create(bid));
+                .orElseGet(() -> transactionService.create(bid, PaymentMethod.SSLCOMMERZ));
+
+        if (EnumSet.of(TransactionStatus.VALID, TransactionStatus.VALIDATED, TransactionStatus.VALID_WITH_RISK)
+                .contains(transaction.getStatus())) {
+            log.warn("Transaction already processed: {}", transaction.getId());
+            throw new InvalidTransactionRequestException();
+        }
+
+        transactionService.updateMethod(transaction, PaymentMethod.SSLCOMMERZ);
 
         String requestBody = prepareRequestBody(transaction);
         InitialResponse response = sendPaymentRequest(requestBody);
@@ -322,7 +330,7 @@ public class SSLCommerzApiClient {
     }
 
     public InitiatePaymentResponse initiateCashIn(double amount) {
-        CashIn cashIn = cashInService.create(amount);
+        CashIn cashIn = cashInService.create(amount, PaymentMethod.SSLCOMMERZ);
         String requestBody = prepareCashInRequestBody(cashIn);
         InitialResponse response = sendPaymentRequest(requestBody);
         verifyInitialResponse(response);

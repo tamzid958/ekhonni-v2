@@ -14,7 +14,7 @@ import com.ekhonni.backend.projection.UserProjection;
 import com.ekhonni.backend.projection.account.AccountReportProjection;
 import com.ekhonni.backend.projection.account.UserAccountProjection;
 import com.ekhonni.backend.repository.AccountRepository;
-import com.ekhonni.backend.repository.UserRepository;
+import com.ekhonni.backend.service.UserService;
 import com.ekhonni.backend.util.AuthUtil;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class AccountService extends BaseService<Account, Long> {
 
     private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Value("${account.minimum-balance}")
     private double MINIMUM_BALANCE;
@@ -38,15 +38,15 @@ public class AccountService extends BaseService<Account, Long> {
     @Value("${account.minimum-withdraw-amount}")
     private double MINIMUM_WITHDRAW_AMOUNT;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+    public AccountService(AccountRepository accountRepository, UserService userService) {
         super(accountRepository);
         this.accountRepository = accountRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional
     public void create(UUID userId) {
-        User user = userRepository.findById(userId)
+        User user = userService.get(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Account account = new Account(user, 0.0, 0.0, AccountStatus.ACTIVE);
         accountRepository.save(account);
@@ -55,8 +55,8 @@ public class AccountService extends BaseService<Account, Long> {
     @Transactional
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void withdraw(Account account, double amount) {
-        validateMinimumWithdrawalAmount(amount);
         validateMinimumBalance(account, amount);
+        validateMinimumWithdrawalAmount(amount);
         account.setTotalWithdrawals(account.getTotalWithdrawals() + amount);
     }
 
@@ -64,6 +64,14 @@ public class AccountService extends BaseService<Account, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     public void deposit(Account account, double amount) {
         account.setTotalEarnings(account.getTotalEarnings() + amount);
+    }
+
+    @Transactional
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    public void transfer(Account senderAccount, Account receiverAccount, double amount) {
+        validateMinimumBalance(senderAccount, amount);
+        senderAccount.setTotalWithdrawals(senderAccount.getTotalWithdrawals() + amount);
+        receiverAccount.setTotalEarnings(receiverAccount.getTotalEarnings() + amount);
     }
 
     @Transactional

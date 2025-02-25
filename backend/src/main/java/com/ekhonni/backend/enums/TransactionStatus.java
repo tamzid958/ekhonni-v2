@@ -6,6 +6,7 @@ package com.ekhonni.backend.enums;
  */
 public enum TransactionStatus {
     PENDING,
+    TRANSFERRING,
     VALID,
     INVALID_TRANSACTION,
     SUCCESS,

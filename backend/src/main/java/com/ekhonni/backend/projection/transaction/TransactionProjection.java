@@ -1,5 +1,6 @@
 package com.ekhonni.backend.projection.transaction;
 
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.util.AuthUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,6 +33,8 @@ public interface TransactionProjection {
 
     @JsonProperty("amount")
     Double getBidAmount();
+
+    PaymentMethod getMethod();
 
     @JsonProperty("currency")
     String getBidCurrency();

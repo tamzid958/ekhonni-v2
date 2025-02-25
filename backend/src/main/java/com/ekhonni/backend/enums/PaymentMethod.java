@@ -5,5 +5,6 @@ package com.ekhonni.backend.enums;
  * Date: 2/10/25
  */
 public enum PaymentMethod {
-    SSLCOMMERZ
+    SSLCOMMERZ,
+    TRANSFER
 }

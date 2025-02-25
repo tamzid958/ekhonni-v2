@@ -1,5 +1,6 @@
 package com.ekhonni.backend.projection.cashin;
 
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public interface CashInProjection {
     Long getAccountId();
     Double getAmount();
     String getCurrency();
+    PaymentMethod getMethod();
     TransactionStatus getStatus();
     String getBankTransactionId();
     LocalDateTime getCreatedAt();

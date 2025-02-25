@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.model.Account;
 import com.ekhonni.backend.model.CashIn;
@@ -33,9 +34,10 @@ public class CashInService extends BaseService<CashIn, Long> {
     }
 
     @Transactional
-    public CashIn create(Double amount) {
+    public CashIn create(Double amount, PaymentMethod method) {
         Account account = accountService.getByUserId(AuthUtil.getAuthenticatedUser().getId());
         CashIn cashIn = new CashIn();
+        cashIn.setMethod(method);
         cashIn.setAccount(account);
         cashIn.setAmount(amount);
         cashIn.setCurrency("BDT");

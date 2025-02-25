@@ -1,6 +1,7 @@
 package com.ekhonni.backend.model;
 
 import com.ekhonni.backend.baseentity.BaseEntity;
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +30,10 @@ public class CashIn extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     @NotNull
     private TransactionStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private PaymentMethod method;
 
     @NotNull
     private Double amount;

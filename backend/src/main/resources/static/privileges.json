@@ -595,6 +595,13 @@
     "type": "Payout"
   },
   {
+    "name": "Get Payout Methods",
+    "description": "Get all payout in methods",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/payout/methods",
+    "type": "Payout"
+  },
+  {
     "name": "Update Privilege",
     "description": "Allows updating a privilege",
     "httpMethod": "PATCH",

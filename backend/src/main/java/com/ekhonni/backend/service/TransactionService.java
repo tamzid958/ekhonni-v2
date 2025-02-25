@@ -1,5 +1,6 @@
 package com.ekhonni.backend.service;
 
+import com.ekhonni.backend.enums.PaymentMethod;
 import com.ekhonni.backend.enums.TransactionStatus;
 import com.ekhonni.backend.exception.payment.TransactionNotFoundException;
 import com.ekhonni.backend.model.Bid;
@@ -47,10 +48,20 @@ public class TransactionService extends BaseService<Transaction, Long> {
     }
 
     @Transactional
-    public Transaction create(Bid bid) {
+    public Transaction create(Bid bid, PaymentMethod method) {
         Transaction transaction = new Transaction();
         transaction.setBid(bid);
+        transaction.setMethod(method);
         transaction.setStatus(TransactionStatus.PENDING);
+        return transactionRepository.save(transaction);
+    }
+
+    @Transactional
+    public Transaction create(Bid bid, PaymentMethod method, TransactionStatus status) {
+        Transaction transaction = new Transaction();
+        transaction.setBid(bid);
+        transaction.setMethod(method);
+        transaction.setStatus(status);
         return transactionRepository.save(transaction);
     }
 
@@ -63,6 +74,11 @@ public class TransactionService extends BaseService<Transaction, Long> {
     @Transactional
     public void updateStatus(Transaction transaction, TransactionStatus status) {
         transaction.setStatus(status);
+    }
+
+    @Transactional
+    public void updateMethod(Transaction transaction, PaymentMethod method) {
+        transaction.setMethod(method);
     }
 
     public boolean existsByBidId(Long bidId) {
