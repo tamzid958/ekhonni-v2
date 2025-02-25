@@ -2,10 +2,12 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.PrivilegeDTO;
 import com.ekhonni.backend.dto.PrivilegeIdsDTO;
+import com.ekhonni.backend.dto.RoleIdsDTO;
 import com.ekhonni.backend.exception.prvilege.NoResourceFoundException;
 import com.ekhonni.backend.exception.prvilege.PrivilegeNotFoundException;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
+import com.ekhonni.backend.model.PrivilegeDetailed;
 import com.ekhonni.backend.model.Role;
 import com.ekhonni.backend.model.RolePrivilegeAssignment;
 import com.ekhonni.backend.repository.RolePrivilegeAssignmentRepository;
@@ -198,4 +200,25 @@ public class PrivilegeService {
     }
 
 
+    public String assignMultipleRole(long privilegeId, RoleIdsDTO roleIdsDTO) {
+        Role privilege = roleRepository.findById(privilegeId).orElseThrow(() -> new RoleNotFoundException("Privilege not found when assigning"));
+
+        for (long roleId : roleIdsDTO.roleIds()) {
+            Role role = roleRepository.findById(roleId).orElseThrow(() -> new PrivilegeNotFoundException("Role not found"));
+
+            if (!rolePrivilegeAssignmentRepository.existsByRoleAndPrivilegeId(role, privilegeId)) {
+                RolePrivilegeAssignment rolePrivilegeAssignment = new RolePrivilegeAssignment(role, privilege.getId());
+                rolePrivilegeAssignmentRepository.save(rolePrivilegeAssignment);
+            }
+        }
+
+        return "Roles assigned to privilege";
+    }
+
+    public PrivilegeDetailed getById(long privilegeId) {
+        Privilege privilege = this.findById(privilegeId).orElseThrow(() -> new PrivilegeNotFoundException("Privilege Not Found"));
+        List<String> assignedTo = rolePrivilegeAssignmentRepository.findAllByPrivilegeId(privilegeId)
+                .stream().map(rp -> rp.getRole().getName()).toList();
+        return PrivilegeDetailed.builder().privilege(privilege).assignedTo(assignedTo).build();
+    }
 }

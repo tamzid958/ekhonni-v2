@@ -22,4 +22,6 @@ public interface RolePrivilegeAssignmentRepository extends BaseRepository<RolePr
     boolean existsByRoleAndPrivilegeId(Role role, long privilegeId);
 
     Optional<RolePrivilegeAssignment> findByRoleAndPrivilegeId(Role role, long privilegeId);
+
+    List<RolePrivilegeAssignment> findAllByPrivilegeId(long privilegeId);
 }
