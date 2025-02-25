@@ -16,6 +16,7 @@ import com.ekhonni.backend.exception.ProductNotFoundException;
 import com.ekhonni.backend.exception.ProductNotUpdatedException;
 import com.ekhonni.backend.filter.ProductFilter;
 import com.ekhonni.backend.filter.UserProductFilter;
+import com.ekhonni.backend.imageupload.ProductImageUploadEvent;
 import com.ekhonni.backend.model.*;
 import com.ekhonni.backend.projection.ProductProjection;
 import com.ekhonni.backend.repository.*;
@@ -26,6 +27,8 @@ import com.ekhonni.backend.util.AuthUtil;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
+import jakarta.validation.constraints.Size;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +36,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,13 +51,15 @@ public class ProductService extends BaseService<Product, Long> {
     private final ProductBoostRepository productBoostRepository;
     private final BidRepository bidRepository;
     private final RecentProductViewService recentProductViewService;
+    private final RabbitTemplate rabbitTemplate;
 
 
 
     public ProductService(ProductRepository productRepository, CategoryService categoryService,
                           CategoryRepository categoryRepository,
                           CloudinaryImageUploadUtil cloudinaryImageUploadUtil, ProductBoostRepository productBoostRepository,
-                          BidRepository bidRepository, RecentProductViewService recentProductViewService
+                          BidRepository bidRepository, RecentProductViewService recentProductViewService,
+                          RabbitTemplate rabbitTemplate
     ) {
         super(productRepository);
         this.productRepository = productRepository;
@@ -62,34 +69,54 @@ public class ProductService extends BaseService<Product, Long> {
         this.productBoostRepository = productBoostRepository;
         this.bidRepository = bidRepository;
         this.recentProductViewService = recentProductViewService;
+        this.rabbitTemplate = rabbitTemplate;
     }
-
 
     @Transactional
     public void create(ProductCreateDTO dto) {
-        try{
+        try {
             User seller = AuthUtil.getAuthenticatedUser();
 
-            Category category = Optional.ofNullable(categoryRepository.findByNameAndActive(dto.category(), true))
-                    .orElseThrow(() -> new CategoryException("Category by this name not found"));
+            Category category = categoryRepository.findByNameAndActive(dto.category(), true);
+            if (category == null) {
+                throw new CategoryException("Category by this name not found");
+            }
 
-            List<ProductImage> images = cloudinaryImageUploadUtil.uploadImages(dto.images())
-                    .stream()
-                    .map(ProductImage::new)
-                    .collect(Collectors.toList());
 
             Product product = new Product(
                     dto.title(), dto.subTitle(), dto.description(), dto.price(),
                     dto.division(), dto.address(), ProductStatus.PENDING_APPROVAL,
-                    dto.condition(), dto.conditionDetails(), category, seller, images
+                    dto.condition(), dto.conditionDetails(), category, seller, null
             );
-
             productRepository.save(product);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
+            handleImagesByRabbitMQ(dto,product);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create product", e);
+        }
     }
+
+    private void handleImagesByRabbitMQ(ProductCreateDTO dto, Product product) {
+        List<byte[]> imageBytes = dto.images().stream()
+                .map(file -> {
+                    try {
+                        return file.getBytes();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to read image bytes", e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        List<String> filenames = dto.images().stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList());
+        List<String> contentTypes = dto.images().stream().map(MultipartFile::getContentType).collect(Collectors.toList());
+
+        rabbitTemplate.convertAndSend("image_upload_queue",
+                new ProductImageUploadEvent(product.getId(), imageBytes, filenames, contentTypes));
+    }
+
+
+
 
 
 

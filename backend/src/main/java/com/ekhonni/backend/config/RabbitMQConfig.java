@@ -61,4 +61,9 @@ public class RabbitMQConfig {
         rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
         return rabbitTemplate;
     }
+
+    @Bean
+    public Queue imageUploadQueue() {
+        return new Queue("image_upload_queue", true);
+    }
 }
