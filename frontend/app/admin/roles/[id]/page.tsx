@@ -51,7 +51,6 @@ export default function RoleDetails() {
     }
   );
 
-
   const groupPrivilegesByType = (privileges) => {
     return privileges.reduce((acc, privilege) => {
       if (!acc[privilege.type]) {
@@ -148,8 +147,8 @@ export default function RoleDetails() {
   }
 
   return (
-    <div className="flex ">
-      <div className="flex w-[1220px] h-[1250px] flex-col bg-white ">
+    <div className="flex w-[190vh] h-screen ">
+      <div className="flex w-full h-full flex-col bg-white ">
         <div className="flex flex-col md:flex-row w-full">
           <div className="flex flex-col w-full md:w-1/2 p-4">
             <h1 className="text-black font-sans font-bold text-3xl">Privilages for</h1>
@@ -183,7 +182,7 @@ export default function RoleDetails() {
 
         <Separator className="flex p-0" />
         {/* Bottom section */}
-        <div className="w-full h-36 mt-2">
+        <div className="w-full h-36 mt-2 ">
           <section className="flex">
             <div className="flex flex-col justify-start items-start">
               <div className="flex p-4">
@@ -201,7 +200,7 @@ export default function RoleDetails() {
                   </select>
                 </div>
               </div>
-              <div>
+              <div className="mr-4">
                 <DataTable
                   columns={privilegeColumns}
                   data={filteredPrivileges.map(priv => ({
