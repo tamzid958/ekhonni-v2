@@ -5,7 +5,7 @@ import { CardDemo } from '@/components/SellerCard';
 import { useParams } from 'next/navigation';
 
 interface ProductData {
-  id: string;
+  id: number;
   price: number;
   title: string;
   description: string;

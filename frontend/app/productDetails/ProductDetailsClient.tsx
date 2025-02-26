@@ -17,7 +17,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 
 export interface ProductDetailsProps {
   productDetails: {
-    id: string;
+    id: number;
     title: string;
     description: string;
     images: Array<{ imagePath: string }>;
@@ -259,6 +259,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   if (!productDetails) {
     return <div>Loading...</div>;
   }
+
 
   return (
     <div className="flex flex-col bg-brand-bright">

@@ -190,19 +190,16 @@ export function NavBar({ placeholder }: Props) {
             <AppSidebar />
           </Sheet>
         ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="custom" size="icon">
-                <User className="h-6 w-6" />
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login" className="text-sm text-black hover:text-gray-300">
+              Log in
+            </Link>
+            <Link href="/auth/signup">
+              <Button className="px-4 py-1 text-sm rounded-full bg-black text-white hover:bg-gray-200 ">
+                Sign up
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
-              <p className="mb-2">Log in first</p>
-              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                Go to Login
-              </Link>
-            </PopoverContent>
-          </Popover>
+            </Link>
+          </div>
         )}
 
       </div>

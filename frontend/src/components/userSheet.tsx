@@ -54,17 +54,19 @@ export function AppSidebar() {
     <SheetContent side="right" className="w-64">
       <DialogTitle>Menu</DialogTitle>
 
-      <div className="flex items-center space-x-2 p-2 border-b border-gray-300 pr-8">
+
+      <div className="flex flex-col items-center p-2 border-b border-gray-300">
         <img
           src={userDetail.profileImage || "/default-avatar.png"}
           alt="User Avatar"
-          className="w-12 h-12 rounded-full border"
+          className="w-12 h-12 rounded-full border mb-2"
         />
-        <div>
-          <p className="font-sm text-sm">{userDetail.name || "Unknown User"}</p>
+        <div className="text-center">
+          <p className="text-sm font-medium">{userDetail.name || "Unknown User"}</p>
           <p className="text-sm text-gray-500">{userDetail.email || "No Email"}</p>
         </div>
       </div>
+
 
 
       {/* Sidebar Menu */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useParams } from "next/navigation";
+import { useParams } from "next/navigation"; // Import useParams()
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import ProductDetailsClient from "../ProductDetailsClient";
@@ -12,6 +12,8 @@ export default function ProductDetailsPage() {
   const params = useParams();
   const productId = params?.id as string;
 
+
+
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const userToken = session?.user?.token || "";
@@ -20,6 +22,8 @@ export default function ProductDetailsPage() {
     productId ? `http://localhost:8080/api/v2/product/${productId}` : null,
     (url) => fetcher(url, userToken)
   );
+
+
 
   const { data: biddingCountData } = useSWR(
     productId ? `http://localhost:8080/api/v2/bid/product/${productId}/count` : null,
@@ -48,7 +52,7 @@ export default function ProductDetailsPage() {
 
   if (productLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center min-h-screen">
         <Loading />
       </div>
     );
@@ -56,11 +60,15 @@ export default function ProductDetailsPage() {
 
   if (!isAuthorized) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">Product Has been Sold</p>
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <p className="text-3xl text-gray-700 opacity-70 font-semibold">
+          Product is not available now
+        </p>
       </div>
     );
   }
+
+
 
   return (
     <ProductDetailsClient

@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 interface CardDemoProps {
-  id: string;
+  id: number;
   title: string;
   description: string;
   img: string;
