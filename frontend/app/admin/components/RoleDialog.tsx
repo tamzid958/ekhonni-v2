@@ -9,6 +9,7 @@ import React, { useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { axiosInstance } from '@/data/services/fetcher';
+import { toast } from 'sonner';
 
 interface Role{
   id?: number
@@ -18,6 +19,7 @@ interface Role{
 interface RoleDialogProps {
   token: string
   isOpen: boolean;
+  isExistingRole: boolean;
   onClose: () => void;
   onSave: (data: Role) => void;
   existingRole?: Role | null;
@@ -29,16 +31,17 @@ const roleSchema = z.object((
     description: z.string().max(200, "Description cannot exceed 200 characters").optional(),
   }
 ));
-export const RoleDialog: React.FC<RoleDialogProps> = ({token, isOpen, onClose, onSave, existingRole = null, existingRoles = [], }) => {
+export const RoleDialog: React.FC<RoleDialogProps> = ({token, isOpen, onClose, onSave, existingRole = null, existingRoles = [], isExistingRole= false }) => {
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    formState: {errors},
+    formState: {errors, isValid},
   } = useForm<Role> ({
     resolver: zodResolver(roleSchema),
     defaultValues: {name: "", description: ""},
+    mode: 'onChange'
   });
   useEffect(() => {
     if(existingRole){
@@ -87,6 +90,11 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({token, isOpen, onClose, o
           }
         }
         );
+        if(response.status == 200)
+        {
+          toast.success('Role added successfully');
+        }
+
       }
       onSave(response.data);
       onClose();
@@ -121,8 +129,8 @@ export const RoleDialog: React.FC<RoleDialogProps> = ({token, isOpen, onClose, o
             <Button type="button" onClick={onClose} variant="outline" >
               Cancel
             </Button>
-            <Button type="submit" onClick={onClose} variant="outline" >
-                     Add / Update Role
+            <Button type="submit" onClick={onClose} disabled={!isValid} variant="outline" className="bg-black text-white" >
+              {isExistingRole ? 'Update Role' : 'Add Role'}
             </Button>
           </DialogFooter>
         </form>

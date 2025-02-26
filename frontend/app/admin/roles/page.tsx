@@ -73,16 +73,6 @@ const Roles = () => {
           </div>
 
           <div className="flex items-center gap-2.5 justify-end w-full md:w-1/2  p-4">
-            {/*<Button*/}
-            {/*  variant="outline"*/}
-            {/*  className="bg-black text-white flex items-center justify-center gap-2"*/}
-            {/*  // onClick={() => exportUserDataToCSV(allUsers)}*/}
-            {/*  aria-label="Export to CSV"*/}
-            {/*>*/}
-            {/*  <FaFileCsv className="text-xl" />*/}
-            {/*  Export to CSV*/}
-            {/*</Button>*/}
-
             <Button
               variant="outline"
               className="bg-black text-white flex items-center justify-center gap-2"

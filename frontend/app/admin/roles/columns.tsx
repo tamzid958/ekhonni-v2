@@ -44,6 +44,7 @@ import { X } from 'lucide-react';
 import { Select } from '@/components/ui/select';
 import { FaSearch } from 'react-icons/fa';
 import { axiosInstance } from '@/data/services/fetcher';
+import ConfirmationDialog from '../components/DeleteConfirmationDialog';
 
 export type Role = {
   id: number
@@ -219,13 +220,6 @@ export const columns: ColumnDef<Role>[] = [
                 Add/View Privileges
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {
-                setIsRoleDialogOpen(true);
-                setIsMenuOpen(false);
-              }}>
-                Change Role
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
              <DropdownMenuItem onClick={() => handleEditRole(Role)}>
                Edit Role
              </DropdownMenuItem>
@@ -239,6 +233,7 @@ export const columns: ColumnDef<Role>[] = [
                       console.log("Role Updated", updatedRole);
                       }}
             existingRole = {Role}
+            isExistingRole={true}
            />
           <Toaster />
         </div>
@@ -310,39 +305,33 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
     accessorKey: 'roles',
     header: 'Assigned To',
     cell: ({ row }) => {
-      const rolesData = row.original.roles || []; // Get the roles or default to an empty array
-      const [selectedRoles, setSelectedRoles] = useState<string[]>(rolesData); // State for selected roles
-      const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false); // Toggle dropdown
-      const [searchQuery, setSearchQuery] = useState<string>(''); // Search query for filtering roles
+      const rolesData = row.original.roles || [];
+      const [selectedRoles, setSelectedRoles] = useState<string[]>(rolesData);
+      const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+      const [searchQuery, setSearchQuery] = useState<string>('');
 
-      const availableRoles = ['ADMIN', 'USER', 'SUPER_ADMIN', 'Viewer']; // Available roles to assign
+      const availableRoles = ['ADMIN', 'USER', 'SUPER_ADMIN', 'Viewer'];
 
-      // Handle the addition of selected roles
       const handleRolesChange = (role: string) => {
         setSelectedRoles((prev) => [...prev, role]);
       };
 
-      // Remove a selected role
       const handleRemoveRole = (role: string) => {
         setSelectedRoles((prev) => prev.filter((r) => r !== role));
       };
 
-      // Toggle dropdown visibility
       const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
-      // Handle search query update
       const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
       };
 
-      // Filter available roles based on the search query
       const filteredRoles = availableRoles.filter((role) =>
         role.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
       return (
         <div className='flex relative'>
-          {/* Display selected roles as badges */}
           <div className="flex flex-wrap gap-2 ">
             {selectedRoles.length > 0 ? (
               selectedRoles.map((role, index) => (
@@ -351,7 +340,7 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
                   <Button
                     variant="link"
                     className="ml-1 p-0"
-                    onClick={() => handleRemoveRole(role)} // Remove role on click
+                    onClick={() => handleRemoveRole(role)}
                   >
                     <X className="h-4 w-4 text-red-500" />
                   </Button>
@@ -362,14 +351,11 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
             )}
           </div>
 
-          {/* Plus icon to trigger the dropdown */}
           <div className="flex min-h-6 min-w-8 max-h-10 max-w-10 rounded-xl mx-4 bg-blue-500 justify-center shadow-xl items-center" onClick={toggleDropdown}>
             <Plus className="h-5 w-5 "  />
           </div>
-          {/* Dropdown with search functionality */}
           {isDropdownOpen && (
             <div className="absolute float-end bg-white border rounded mt-2 w-64 shadow-md z-10" style={{ top: '100%', left: 0 }} >
-              {/* Search input */}
               <div className="flex items-center p-2 border-b">
                 <FaSearch className="h-4 w-4 text-gray-500" />
                 <input
@@ -381,7 +367,6 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
                 />
               </div>
 
-              {/* Display filtered roles in the dropdown */}
               <div className="max-h-40 ">
                 {filteredRoles.length > 0 ? (
                   filteredRoles.map((role, index) => (
@@ -390,10 +375,10 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
                       className={`flex items-center justify-between p-2 cursor-pointer ${selectedRoles.includes(role) ? 'bg-gray-200 text-gray-500' : 'hover:bg-gray-100'}`}
                       onClick={() => {
                         if (!selectedRoles.includes(role)) {
-                          handleRolesChange(role); // Only trigger handleRolesChange if the role is not selected
+                          handleRolesChange(role);
                         }
                       }}
-                      style={{ pointerEvents: selectedRoles.includes(role) ? 'none' : 'auto' }} // Disable click events for selected roles
+                      style={{ pointerEvents: selectedRoles.includes(role) ? 'none' : 'auto' }}
                     >
                       <span>{role}</span>
                       {selectedRoles.includes(role) && (
@@ -411,79 +396,38 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
       );
     },
   },
-{
+  {
     id: "actions",
     cell: ({ row }) => {
       const Privilege = row.original;
-      const router = useRouter();
+      const { id } = useParams();
       const { data: session } = useSession();
       const userToken = session?.user?.token;
-      const {id} = useParams();
-      const [isMenuOpen, setIsMenuOpen] = useState(false);
-      const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
-
       const roleId = Number(id);
-      const handleEditRole = (role: {name: string, description: string}) =>{
-        setIsRoleDialogOpen(true)
-        setIsMenuOpen(false);
 
-      }
-      const handleRemovePrivilege = async (privilegeId: number, roleId: number) => {
+      const handleRemovePrivilege = async (privilegeId, roleId) => {
         console.log("Removing privilege with id:", privilegeId);
-        try{
-          const response = await axiosInstance.post(`/api/v2/role/${roleId}/remove/privilege/${privilegeId}`,
+        try {
+          const response = await axiosInstance.post(
+            `/api/v2/role/${roleId}/remove/privilege/${privilegeId}`,
             {
               headers: {
                 Authorization: `Bearer ${userToken}`,
               },
-            });
-          if(response.status === 200)
-          {
-            toast.success('Privileges Removed successfully');
+            }
+          );
+          if (response.status === 200) {
+            toast.success("Privilege removed successfully");
           }
-        }catch (error)
-        {
-          console.log('Error saving role:', error)
-          alert('Failed to assign privileges. Please try again');
+        } catch (error) {
+          console.log("Error removing privilege:", error);
+          toast.error("Couldn't remove privilege! something went wrong");
         }
-      }
+      };
+
       return (
-        <div>
-          {/* Dropdown Menu */}
-          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {
-                setIsRoleDialogOpen(true);
-                setIsMenuOpen(false);
-              }}>
-                Change Role
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleRemovePrivilege(Privilege.id, roleId)}>
-                Remove Previlege
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <RoleDialog
-            token={userToken}
-            isOpen={isRoleDialogOpen}
-            onClose={() => setIsRoleDialogOpen(false)} onSave={(updatedRole) =>{
-            console.log("Role Updated", updatedRole);
-          }}
-            existingRole = {Privilege}
-          />
-          <Toaster />
-        </div>
-      )
+        <ConfirmationDialog onConfirm={() => handleRemovePrivilege(Privilege.id, roleId)} />
+      );
     },
   }
 ]
