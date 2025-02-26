@@ -14,6 +14,7 @@ const PUBLIC_ROUTES: Route[] = [
   "/productDetails",
   "/search",
   "/seller-page",
+
 ] as const;
 
 const AUTH_ROUTES = [
@@ -27,7 +28,6 @@ const ACCESS_LIST: Record<Role, Route[]> = {
   USER: [
     "/myProducts",
     "/myProducts/bidList",
-    "/productDetails",
     "/seller-page",
     "/user-page",
     "/form"
@@ -36,16 +36,28 @@ const ACCESS_LIST: Record<Role, Route[]> = {
 };
 
 const isPublicRoute = (pathname: string): boolean => {
-  return PUBLIC_ROUTES.includes(pathname as Route);
+  return (
+    PUBLIC_ROUTES.includes(pathname as Route) ||
+    PUBLIC_ROUTES.some((path) => {
+      // Handle dynamic routes like /productDetails/:id
+      const dynamicRoutePattern = new RegExp(`^${path.replace(/:[a-zA-Z0-9_]+/, '[^/]+')}$`);
+      return dynamicRoutePattern.test(pathname) || pathname.startsWith(`${path}/`);
+    })
+  );
 };
+
 
 const hasAccess = (allowedPaths: Route[], pathname: string): boolean => {
   return (
     allowedPaths.includes(pathname as Route) ||
     allowedPaths.includes("*") ||
-    allowedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))
+    allowedPaths.some((path) => {
+      const dynamicRoutePattern = new RegExp(`^${path.replace(/:[a-zA-Z0-9_]+/, '[^/]+')}$`);
+      return dynamicRoutePattern.test(pathname) || pathname.startsWith(`${path}/`);
+    })
   );
 };
+
 
 const getSession = async (request: NextRequest) => {
   try {

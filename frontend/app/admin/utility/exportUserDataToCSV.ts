@@ -3,7 +3,7 @@ import {saveAs} from "file-saver";
 
 export const exportUserDataToCSV = (users: any[], fileName: string = "user_data") => {
   if(!users || users.length === 0){
-    console.error("No user data available to export.");
+    console.error("No users data available to export.");
     return;
   }
   const workSheet = XLSX.utils.json_to_sheet(users);

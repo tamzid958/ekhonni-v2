@@ -6,11 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
-import { exportUserDataToCSV } from '../utility/exportUserDataToCSV';
-import { FaArrowDown, FaFileCsv, FaUserPlus } from 'react-icons/fa6';
-import { inviteUser } from '../utility/inviteUserViaEmail';
-import { Select, SelectContent, SelectItem } from '@radix-ui/react-select';
-import { SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Badge } from '@/components/ui/badge';
 import { FaArrowUp, FaPlus } from 'react-icons/fa';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataTable } from '../components/data-table';
 import {columns } from '../roles/columns';
 import { RoleDialog } from '../components/RoleDialog';
-import { axiosInstance } from '@/data/services/fetcher';
+
 
 const Roles = () => {
   const { data: session, status } = useSession();
@@ -77,16 +73,6 @@ const Roles = () => {
           </div>
 
           <div className="flex items-center gap-2.5 justify-end w-full md:w-1/2  p-4">
-            {/*<Button*/}
-            {/*  variant="outline"*/}
-            {/*  className="bg-black text-white flex items-center justify-center gap-2"*/}
-            {/*  // onClick={() => exportUserDataToCSV(allUsers)}*/}
-            {/*  aria-label="Export to CSV"*/}
-            {/*>*/}
-            {/*  <FaFileCsv className="text-xl" />*/}
-            {/*  Export to CSV*/}
-            {/*</Button>*/}
-
             <Button
               variant="outline"
               className="bg-black text-white flex items-center justify-center gap-2"

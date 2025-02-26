@@ -43,7 +43,7 @@ export const calculateUserStats = (
     return (((current - previous) / previous) * 100).toFixed(2);
   };
 
-  // Calculate user increases by time period
+  // Calculate users increases by time period
   const newUsersThisWeek = getUsersByTimePeriod(currentUsers, "week");
   const previousUsersThisWeek = getUsersByTimePeriod(previousUsers, "week");
   const newUsersWeekChange = getChange(newUsersThisWeek, previousUsersThisWeek);
