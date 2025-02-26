@@ -1,6 +1,8 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.PrivilegeIdsDTO;
+import com.ekhonni.backend.dto.role.RoleCreateDTO;
+import com.ekhonni.backend.dto.role.RoleUpdateDTO;
 import com.ekhonni.backend.exception.role.RoleNotFoundException;
 import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.Role;
@@ -37,13 +39,13 @@ public class RoleController {
     }
 
     @PostMapping("/")
-    public String addRole(@RequestBody Role role) {
-        return roleService.add(role);
+    public String addRole(@RequestBody RoleCreateDTO roleCreateDTO) {
+        return roleService.add(roleCreateDTO);
     }
 
     @PatchMapping("/{id}")
-    public Role updateRole(@PathVariable long id, @RequestBody Role role) {
-        return roleService.update(id, role);
+    public RoleUpdateDTO updateRole(@PathVariable long id, @Validated @RequestBody RoleUpdateDTO roleUpdateDTO) {
+        return roleService.update(id, roleUpdateDTO);
     }
 
     @DeleteMapping("/{id}")
