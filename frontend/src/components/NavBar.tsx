@@ -58,7 +58,7 @@ export function NavBar({ placeholder }: Props) {
     const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
 
     async function fetchNotifications(lastFetchTime: string) {
-      console.log('Fetching notifications for users:', userId);
+      console.log('Fetching notifications for user:', userId);
       const result = await NotificationGetter(userId, userToken, lastFetchTime);
 
 
