@@ -65,9 +65,25 @@ const AdminIntroPage = () => {
             <p className="text-gray-700">Manage user accounts, roles, and permissions.</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => router.push('/admin/users')}
+              onClick={() => router.push('/admin/user')}
             >
               Go to Users
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Notifications Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Notifications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Send notifications to your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/notifications')}
+            >
+              Go to Notifications
             </Button>
           </CardContent>
         </Card>
@@ -104,7 +120,7 @@ const AdminIntroPage = () => {
             </Button>
           </CardContent>
         </Card>
-        
+
       </section>
 
       {/* Additional Info Section */}

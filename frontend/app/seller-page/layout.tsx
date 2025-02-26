@@ -57,18 +57,33 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen min-w-screen bg-gray-100">
       <header className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          {/* Seller Info */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {sellerProfile?.name || 'Loading...'}
-            </h1>
-            <p className="text-sm text-gray-500">{sellerProfile?.email || 'Loading...'}</p>
-            <p className="text-sm text-gray-500">{sellerProfile?.address || 'Loading...'}</p>
+          <div className="flex items-center space-x-4">
+            {sellerProfile?.profileImage ? (
+              <img
+                src={sellerProfile.profileImage}
+                alt={`${sellerProfile.name}'s profile`}
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center">
+      <span className="text-white text-lg font-semibold">
+        {sellerProfile?.name?.charAt(0).toUpperCase()}
+      </span>
+              </div>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {sellerProfile?.name || 'Loading...'}
+              </h1>
+              <p className="text-sm text-gray-500">{sellerProfile?.email || 'Loading...'}</p>
+              <p className="text-sm text-gray-500">{sellerProfile?.address || 'Loading...'}</p>
+            </div>
           </div>
+
           <div className="flex space-x-4">
             <Dialog>
               <DialogTrigger asChild>
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                <button className="bg-brand-dark text-white px-4 py-2 rounded-md hover:bg-brand-mid">
                   Share
                 </button>
               </DialogTrigger>
@@ -96,7 +111,7 @@ const SellerPageLayout = ({ children }: { children: React.ReactNode }) => {
               </DialogContent>
             </Dialog>
 
-            <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            <button className="bg-green-300 text-white px-4 py-2 rounded-md hover:bg-green-400">
               Chat
             </button>
           </div>

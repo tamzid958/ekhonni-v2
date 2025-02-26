@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { ReviewDialog } from '@/components/Review-Dialog';
+
 
 // Define the BidData interface
 export interface BidData {
@@ -23,6 +25,8 @@ export interface BidData {
   bidderAddress: string;
   id: number;
   currency: string;
+  productId: string;
+
 }
 
 // Function to handle the approve action
@@ -101,13 +105,10 @@ export function getColumns(productStatus: string, token: string) {
             )}
 
             {/* Show "Leave a Review" button if status is PAID */}
-            {status === 'PAID' && (
-              <Link href={`/leave-review?bidId=${bidId}`}>
-                <Button variant="outline">
-                  Leave a Review
-                </Button>
-              </Link>
+            {info.row.original.status === 'PAID' && (
+              <ReviewDialog bidId={info.row.original.id} productId={info.row.original.productId} ruleFor={'buyer'}/>
             )}
+
           </div>
         );
       },

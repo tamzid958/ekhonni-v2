@@ -1,17 +1,16 @@
 'use client';
-import { Button } from './ui/button';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useFilterProducts } from '@/hooks/useFilterProducts';
+import { AppSidebar } from '@/components/userSheet';
+import { Button } from '@/components/ui/button';
+import { NotificationGetter } from '@/components/Notification';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/Sidebar';
-import Link from 'next/link';
-import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
-import { NotificationGetter } from '@/components/Notification';
-import { useSession } from 'next-auth/react';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { useRouter } from 'next/navigation';
-
 
 type Props = {
   placeholder?: string;
@@ -32,16 +31,27 @@ export function NavBar({ placeholder }: Props) {
   const { data: session, status } = useSession();
   const [query, setQuery] = useState('');
   const linkRef = useRef<HTMLAnchorElement | null>(null);
-  const router = useRouter(); // Access the router
-
+  const router = useRouter();
+  const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
+  const filteredProducts = products || [];
 
   const handleLoginRedirect = () => {
-    router.push('/'); // Redirect to home page
+    router.push('/');
+  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  };
+  const handleKeyDown = (e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) => {
+    if ('key' in e && e.key === 'Enter' && query.trim() !== '') {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+      setQuery('');
+    } else if ('type' in e && e.type === 'click' && query.trim() !== '') {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+      setQuery('');
+    }
   };
 
-
   useEffect(() => {
-    console.log('Session Data:', session);
     if (!session) return;
     const userId = session?.user?.id;
     const userToken = session?.user?.token;
@@ -79,59 +89,73 @@ export function NavBar({ placeholder }: Props) {
     fetchNotifications(lastFetchTime);
   }, [session]);
   const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
+    setSidebarOpen((prev) => !prev);
   };
 
 
   return (
-    <nav className="flex justify-between p-4 text-2xl bg-brand-dark h-[120px] relative z-40">
-      <div className="font-bold ml-16 mt-2">
+    <nav className="flex gap-4 p-4 text-2xl bg-brand-dark h-24 relative z-40 overflow-visible">
+      <div className="font-bold ml-4 md:ml-8 lg:ml-20 md:mt-4 lg:mt-2">
         <Link href="/">
-          <img src="frame.png" alt="logo" className="h-[75px]" />
+          <img
+            src="frame.png"
+            alt="logo"
+            className="h-8 lg:h-14 xl:h-16 min-h-8 min-w-8 w-auto object-contain"
+          />
         </Link>
       </div>
-      <div className="w-[680px] flex justify-center items-center">
-        <div className="w-full relative">
-          <input
-            type="text"
-            placeholder={placeholder}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className={cn(
-              'flex h-12 w-full rounded-md border border-input bg-background py-2 px-4 text-xl ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50',
-              'pr-6',
-            )}
-          />
-          <div className="absolute left-[92%] top-1/2 transform -translate-y-1/2">
-            <Link
-              href={{
-                pathname: '/search',
-                query: query ? { q: query } : {},
-              }}
-            >
-              <Button variant="custom2" size="customSize" className="w-[50%] h-[95%] rounded-xl">
-                <Search className="text-muted-foreground" size={18} />
-              </Button>
-            </Link>
+
+      <div className="relative flex justify-center items-center mt-2 w-full max-w-xl mx-auto">
+        <input
+          className="w-full m-1 pl-4 pr-12 py-2 rounded-lg border-none focus:ring-0 focus:outline-none"
+          type="text"
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+
+        {query && filteredProducts.length > 0 && (
+          <div
+            className="absolute left-0 top-[calc(85%)] w-full bg-brand-bright border border-gray-200 rounded-md shadow-lg z-50">
+            <div className="max-h-60 overflow-y-auto divide-y divide-gray-200">
+              {filteredProducts.map((item) => (
+                <Link key={item.id} href={`/productDetails?id=${item.id}`}>
+                      <span className="block px-4 py-2 hover:bg-brand-mid transition-colors cursor-pointer rounded-lg">
+                        <p className="text-gray-800 text-base">{item.title}</p>
+                      </span>
+                </Link>
+              ))}
+            </div>
           </div>
+        )}
+
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+          <button
+            className="m-1 rounded-full text-white focus:outline-none"
+            onClick={handleKeyDown}
+          >
+            <Search className="text-brand-dark" size={20} />
+          </button>
         </div>
       </div>
-      <div className="flex gap-4 mr-28 mt-4">
+
+      <div className="flex gap-4 mr-4 mt-4 sm:mr-14 md:mr-16 lg:mr-32">
         <Link href="/cart">
-          <Button variant="custom" size="icon2" className="rounded-full">
-            <ShoppingCart />
+          <Button variant="custom" size="icon">
+            <ShoppingCart className="h-6 w-6" />
           </Button>
         </Link>
         <Select>
           <SelectTrigger
-            className="text-primary bg-brand-mid hover:bg-brand-light h-12 w-12 px-3 rounded-full focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
-            <Bell className="w-5 h-5" />
+            className="text-primary bg-brand-mid hover:bg-brand-light h-10 w-10 px-3 focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
+            <Bell className="w-6 h-6" />
           </SelectTrigger>
-          <SelectContent className="bg-brand-bright right-12 w-96">
+          <SelectContent className="bg-brand-bright w-96 md:right-10 lg:right-12">
             <SelectGroup>
               <p className="text-xm font-bold p-2 justify-center flex">NOTIFICATION</p>
               <div
-                className="max-h-80 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
+                className="max-h-96 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
                 {notifications.length > 0 ? (
                   notifications.slice().reverse().map((item, index) => (
                     <Link key={item.id} href={item.redirectUrl || '#'}>
@@ -153,19 +177,22 @@ export function NavBar({ placeholder }: Props) {
         </Select>
 
 
-
         {session ? (
-          <SidebarProvider>
-            <Button variant="custom" size="icon2" className="rounded-full" onClick={toggleSidebar}>
-              <User />
-            </Button>
-            {isSidebarOpen && <AppSidebar />}
-          </SidebarProvider>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="custom" size="icon" onClick={toggleSidebar}>
+                <User className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+
+            {/* The Sidebar content */}
+            <AppSidebar />
+          </Sheet>
         ) : (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="custom" size="icon2" className="rounded-full">
-                <User />
+              <Button variant="custom" size="icon">
+                <User className="h-6 w-6" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>

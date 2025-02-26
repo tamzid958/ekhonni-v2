@@ -2,9 +2,9 @@ import { createColumnHelper } from '@tanstack/react-table';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { ReviewDialog } from '@/components/Review-Dialog';
+import { useRouter } from 'next/navigation';
+
 
 // Define the BidData interface
 export interface BidList {
@@ -20,60 +20,59 @@ export interface BidList {
   currency: string;
 }
 
-// // Function to handle the approve action
-// async function handleApprove(bidId: number, token: string) {
-//   try {
-//     const response = await fetch(`http://localhost:8080/api/v2/bid/${bidId}/accept`, {
-//       method: 'PATCH',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({ bidId }),
-//     });
-//
-//     if (!response.ok) {
-//       toast('Failed to approve bid');
-//       throw new Error('Failed to approve bid');
-//     }
-//     toast('Bid accepted successfully');
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
 
 // Create column helper for the table
 const columnHelper = createColumnHelper<BidList>();
 
-// This function will be used to get the columns for the table
 export function getColumns(token: string) {
+
+  const router = useRouter();
+
   const columns = [
     columnHelper.accessor('productTitle', {
       header: 'Product Title',
+      cell: (info) => {
+        const row = info.row.original;
+        return (
+          <span
+            onClick={() => router.push(`/productDetails?id=${row.productId}`)}
+            className="text-black cursor-pointer hover:underline"
+          >
+            {info.getValue()}
+          </span>
+        );
+      },
     }),
-    // columnHelper.accessor('productSellerName', {
-    //   header: 'Product Seller Name',
-    //   cell: (info) => new Date(info.getValue()).toLocaleString(),
-    // }),
     columnHelper.accessor('productSellerName', {
-      header: 'Product Seller Name',
+      header: 'Seller Name',
+      cell: (info) => {
+        const row = info.row.original;
+        return (
+          <span
+            onClick={() => router.push(`/seller-page/${row.productSellerId}`)}
+            className="text-black cursor-pointer hover:underline"
+          >
+            {info.getValue()}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor('productSellerAddress', {
-      header: 'Product Seller Address',
+      header: 'Seller Address',
     }),
     columnHelper.accessor('currency', {
       header: 'Currency',
     }),
     columnHelper.accessor('amount', {
       header: 'Amount',
-      cell: (info) => `$${info.getValue().toFixed(2)}`,
+      cell: (info) => `${info.getValue().toFixed(2)}`,
     }),
     columnHelper.accessor('status', {
       header: 'Status',
     }),
     columnHelper.display({
       id: 'payment',
-      header: () => <span>Payment Option</span>,
+      header: () => <span>Actions</span>,
       cell: (info) => {
         const row = info.row.original;
         return (
@@ -87,7 +86,7 @@ export function getColumns(token: string) {
             )}
 
             {row.status === 'PAID' && (
-              <ReviewDialog bidId={row.id} productId={row.productId} />
+              <ReviewDialog bidId={row.id} productId={row.productId} ruleFor={'seller'}/>
             )}
 
           </div>

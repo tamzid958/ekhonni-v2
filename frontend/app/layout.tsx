@@ -1,14 +1,12 @@
-
 import localFont from 'next/font/local';
 import './globals.css';
 import React from 'react';
 import { Inter } from 'next/font/google';
-import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
-import SessionWrapper from './wrapper/client/SessionWrapper'
+import SessionWrapper from './wrapper/client/SessionWrapper';
 import { Toaster } from 'sonner';
-import { ConditionalFooter, ConditionalNavBar, SessionNavBar } from '@/components/SessionNavbar';
+import { ConditionalFooter, ConditionalNavBar } from '@/components/SessionNavbar';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -32,7 +30,6 @@ export const metadata = {
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   return (
     <html lang="en" suppressHydrationWarning>
     <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -41,16 +38,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <SessionWrapper>
           <div className="w-full">
-           <ConditionalNavBar />
+            <ConditionalNavBar />
           </div>
           <main className="flex-grow overflow-auto">{children}</main>
-
           <div className="bg-gray-800 text-white">
             <ConditionalFooter />
           </div>
         </SessionWrapper>
       </CustomErrorBoundary>
     </RootLayoutWrapper>
+
     </body>
     </html>
   );
