@@ -51,7 +51,7 @@ spring:
           expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
     refresh:
       token:
-        expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+        expiration: ${REFRESH_TOKEN_EXPIRATION}
 
     admin:
       email: ${ADMIN_EMAIL}
@@ -223,9 +223,12 @@ info:
     team: Backend Team
   environment: ${spring.profiles.active}
 
-
-
-
+org:
+  jobrunr:
+    dashboard:
+      enabled: true
+    background-job-server:
+      enabled: true
 
 
 

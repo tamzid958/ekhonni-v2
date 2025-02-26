@@ -1,6 +1,7 @@
 package com.ekhonni.backend.filter;
 
 import com.ekhonni.backend.exception.user.InvalidJwtTokenException;
+import com.ekhonni.backend.service.TokenBlacklistService;
 import com.ekhonni.backend.service.UserDetailsServiceImpl;
 import com.ekhonni.backend.util.TokenUtil;
 import jakarta.servlet.FilterChain;
@@ -28,6 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final TokenUtil tokenUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -40,6 +42,10 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String token = extractToken(authHeader);
+
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            throw new InvalidJwtTokenException();
+        }
 
         try {
             String email = tokenUtil.extractSubject(token);

@@ -9,6 +9,19 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RequestUtil {
+
+
+    public String extractAuthorizationHeader(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
+    public String extractBearerToken(HttpServletRequest request) {
+        String authHeader = extractAuthorizationHeader(request);
+
+        return authHeader.substring(7);
+    }
+
+
     public String extractAndNormalizeUri(HttpServletRequest request) {
         String uri = request.getRequestURI();
 

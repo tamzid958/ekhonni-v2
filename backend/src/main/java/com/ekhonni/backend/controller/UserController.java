@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.hibernate.tool.schema.spi.SchemaTruncator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -66,7 +65,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<String>> updateEmailRequest(
             @PathVariable UUID id,
             @Valid @RequestBody EmailDTO emailDTO
-    ){
+    ) {
         return ResponseUtil.createResponse(HTTPStatus.OK, userService.updateEmailRequest(id, emailDTO));
     }
 
@@ -112,6 +111,11 @@ public class UserController {
     @PreAuthorize("#id == authentication.principal.id && @userService.isActive(#id)")
     public ResponseEntity<ApiResponse<AuthToken>> getNewAccessToken(@PathVariable UUID id, @RequestBody RefreshTokenDTO refreshTokenDTO) {
         return ResponseUtil.createResponse(HTTPStatus.OK, userService.getNewAccessToken(refreshTokenDTO));
+    }
+
+    @GetMapping("/log-out")
+    public ResponseEntity<ApiResponse<String>> logoutUser() {
+        return ResponseUtil.createResponse(HTTPStatus.OK, userService.logout());
     }
 
 
