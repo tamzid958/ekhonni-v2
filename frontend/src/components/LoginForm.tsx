@@ -38,6 +38,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange'
   });
   const router = useRouter();
 

@@ -36,9 +36,10 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
+    mode: 'onChange'
   });
 
   const onSubmit: SubmitHandler<SignupFormValues> = async (data) => {
@@ -50,7 +51,6 @@ export default function Register() {
         phone: data.phone,
         address: data.address,
       });
-
       if (result.status === 200) {
         toast.success("SignUp Successful! Please verify your email.");
         router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
@@ -118,6 +118,7 @@ export default function Register() {
             </div>
             <Button
               type="submit"
+              disabled={!isValid}
               className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 rounded-lg shadow-md transition"
             >
               Sign Up
