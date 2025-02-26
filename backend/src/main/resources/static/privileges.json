@@ -1077,6 +1077,13 @@
     "type": "User"
   },
   {
+    "name": "Log Out User",
+    "description": "Allows logout user",
+    "httpMethod": "GET",
+    "endpoint": "/api/v2/user/log-out",
+    "type": "User"
+  },
+  {
     "name": "Get all reports reported by user",
     "description": "Allows viewing all available reports reported by user",
     "httpMethod": "GET",

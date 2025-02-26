@@ -12,15 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Author: Md Jahid Hasan
@@ -84,7 +81,7 @@ public class TokenUtil {
     }
 
 
-    private Date extractAccessTokenExpiration(String jwt) {
+    public Date extractAccessTokenExpiration(String jwt) {
         return Jwts.parserBuilder().setSigningKey(generateKey()).build().parseClaimsJws(jwt).getBody().getExpiration();
     }
 
