@@ -8,7 +8,7 @@
 package com.ekhonni.backend.service;
 
 
-import com.ekhonni.backend.dto.category.CategoryDTO;
+import com.ekhonni.backend.dto.category.CategoryResponseDTO;
 import com.ekhonni.backend.dto.category.CategorySubCategoryDTOV2;
 import com.ekhonni.backend.dto.category.CategoryUpdateDTO;
 import com.ekhonni.backend.model.Category;
@@ -39,13 +39,13 @@ public class CategoryService extends BaseService<Category, Long> {
 
 
     // done
-    public void save(CategoryDTO categoryDTO) {
+    public void save(CategoryDTO categoryResponseDTO) {
         Category parentCategory = null;
-        if (categoryDTO.parentCategory() != null) parentCategory = getByName(categoryDTO.parentCategory());
-        if (categoryDTO.parentCategory() != null && parentCategory == null)
+        if (categoryResponseDTO.parentCategory() != null) parentCategory = getByName(categoryResponseDTO.parentCategory());
+        if (categoryResponseDTO.parentCategory() != null && parentCategory == null)
             throw new RuntimeException("parent category by this name not found");
         Category category = new Category(
-                categoryDTO.name(),
+                categoryResponseDTO.name(),
                 true,
                 parentCategory
         );

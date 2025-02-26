@@ -31,6 +31,14 @@ public class RabbitMQConfig {
     @Value("${rabbitmq-custom.email-configuration.routing-key}")
     private String emailRoutingKey;
 
+    @Value("${rabbitmq-custom.image-upload-configuration.product-queue}")
+    private String productQueue;
+
+    @Value("${rabbitmq-custom.image-upload-configuration.category-queue}")
+    private String categoryQueue;
+
+
+
     @Bean
     public Queue emailQueue() {
         return new Queue(emailQueue, true);
@@ -63,7 +71,12 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue imageUploadQueue() {
-        return new Queue("image_upload_queue", true);
+    public Queue productQueue() {
+        return new Queue(productQueue, true);
+    }
+
+    @Bean
+    public Queue categoryQueue() {
+        return new Queue(categoryQueue, true);
     }
 }

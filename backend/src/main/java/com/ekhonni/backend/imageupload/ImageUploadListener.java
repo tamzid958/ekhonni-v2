@@ -7,11 +7,14 @@
 
 package com.ekhonni.backend.imageupload;
 
+import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.model.Product;
 import com.ekhonni.backend.model.ProductImage;
+import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,15 +24,22 @@ import java.util.stream.Collectors;
 @Service
 public class ImageUploadListener {
 
+
+
     private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ImageUploadListener(CloudinaryImageUploadUtil cloudinaryImageUploadUtil, ProductRepository productRepository) {
+
+    public ImageUploadListener(CloudinaryImageUploadUtil cloudinaryImageUploadUtil,
+                               ProductRepository productRepository,
+                               CategoryRepository categoryRepository) {
         this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    @RabbitListener(queues = "image_upload_queue")
+    @RabbitListener(queues = "${rabbitmq-custom.image-upload-configuration.product-queue}")
     public void processImageUpload(ProductImageUploadEvent event) {
         try {
             Product product = productRepository.findById(event.productId())
@@ -44,7 +54,6 @@ public class ImageUploadListener {
             List<String> imageUrls = cloudinaryImageUploadUtil.uploadImages(multipartFiles);
 
 
-
             // convert URLs to ProductImage & update product
             List<ProductImage> images = imageUrls.stream()
                     .map(ProductImage::new)
@@ -53,9 +62,38 @@ public class ImageUploadListener {
             product.setImages(images);
             productRepository.save(product);
 
+
+            System.out.println("iamge saved");
+
         } catch (Exception e) {
             System.err.println("Image upload failed for product ID: " + event.productId());
             e.printStackTrace();
         }
     }
+
+
+    @RabbitListener(queues = "${rabbitmq-custom.image-upload-configuration.category-queue}")
+    public void processImageUploadOfCategory(CategoryImageUploadEvent event) {
+        try {
+            Category category = categoryRepository.findById(event.categoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+
+            // Convert byte[] to MultipartFile
+            MultipartFile multipartFile = new InMemoryMultipartFile(
+                    event.imageBytes(), event.filename(), event.contentType()
+            );
+
+            // Upload image to Cloudinary
+            String imageUrl = cloudinaryImageUploadUtil.uploadImage(multipartFile);
+
+            // Update category with the new image path
+            category.setImagePath(imageUrl);
+            categoryRepository.save(category);
+
+        } catch (Exception e) {
+            System.err.println("Image upload failed for category ID: " + event.categoryId());
+            e.printStackTrace();
+        }
+    }
+
 }

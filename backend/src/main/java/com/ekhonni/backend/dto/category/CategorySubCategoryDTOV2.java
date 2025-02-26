@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 
 public class CategorySubCategoryDTOV2 {
-    private CategoryDTO category;
-    private List<CategoryDTO> subCategories = new ArrayList<>();
+    private CategoryResponseDTO category;
+    private List<CategoryResponseDTO> subCategories = new ArrayList<>();
     private List<String> chainCategories = new ArrayList<>();
 }

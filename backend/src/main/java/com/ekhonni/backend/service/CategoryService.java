@@ -10,6 +10,7 @@ package com.ekhonni.backend.service;
 
 import com.ekhonni.backend.dto.category.*;
 import com.ekhonni.backend.exception.CategoryException;
+import com.ekhonni.backend.imageupload.CategoryImageUploadEvent;
 import com.ekhonni.backend.model.Category;
 import com.ekhonni.backend.projection.CategoryProjection;
 import com.ekhonni.backend.projection.category.ViewerCategoryProjection;
@@ -17,9 +18,15 @@ import com.ekhonni.backend.repository.CategoryRepository;
 import com.ekhonni.backend.repository.ProductRepository;
 import com.ekhonni.backend.util.CloudinaryImageUploadUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -28,19 +35,23 @@ public class CategoryService extends BaseService<Category, Long> {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-    private final CloudinaryImageUploadUtil cloudinaryImageUploadUtil;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq-custom.image-upload-configuration.category-queue}")
+    private String categoryQueue;
 
 
     public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository,
-                           CloudinaryImageUploadUtil cloudinaryImageUploadUtil
+                           RabbitTemplate rabbitTemplate
     ) {
         super(categoryRepository);
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
-        this.cloudinaryImageUploadUtil = cloudinaryImageUploadUtil;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
 
+    @Transactional
     public String save(CategoryCreateDTO dto) {
         Category existingCategory = categoryRepository.findByName(dto.name());
 
@@ -62,32 +73,68 @@ public class CategoryService extends BaseService<Category, Long> {
         }
 
 
-        String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
+       // String imagePath = cloudinaryImageUploadUtil.uploadImage(dto.image());
 
-        Category newCategory = new Category(
+        Category category = new Category(
                 dto.name(),
-                imagePath,
+                null,
                 true,
                 parentCategory
         );
-        categoryRepository.save(newCategory);
+        categoryRepository.save(category);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                handleImageByRabbitMQ(dto, category);
+            }
+        });
 
         return "Category created successfully";
     }
 
+    private void handleImageByRabbitMQ(CategoryDTO dto, Category category) {
+        MultipartFile file = null;
 
-        public CategorySubCategoryDTOV2 getSubV2(String name) {
+        if (dto instanceof CategoryCreateDTO createDTO) {
+            file = createDTO.image();
+        } else if (dto instanceof CategoryUpdateDTO updateDTO) {
+            file = updateDTO.image();
+        }
+
+        if (file == null || file.isEmpty()) {
+            return;
+        }
+
+        byte[] imageBytes;
+        try {
+            imageBytes = file.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read image bytes", e);
+        }
+
+        String filename = file.getOriginalFilename();
+        String contentType = file.getContentType();
+
+        rabbitTemplate.convertAndSend(categoryQueue,
+                new CategoryImageUploadEvent(category.getId(), imageBytes, filename, contentType));
+    }
+
+
+
+
+    public CategorySubCategoryDTOV2 getSubV2(String name) {
         Category parent = categoryRepository.findByNameAndActive(name, true);
         if (parent == null) {
             throw new CategoryException("Category by this name not found");
         }
         List<String> sequenceOfCategory = getSequence(name);
 
-        CategoryDTO parentDTO = new CategoryDTO(parent.getName(),parent.getImagePath());
+        CategoryResponseDTO parentDTO = new CategoryResponseDTO(parent.getName(),parent.getImagePath());
         CategorySubCategoryDTOV2 categorySubCategoryDTO = new CategorySubCategoryDTOV2(parentDTO, new ArrayList<>(), sequenceOfCategory);
         List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
         for (ViewerCategoryProjection child : children) {
-            CategoryDTO childDTO = new CategoryDTO(child.getName(),child.getImagePath());
+            CategoryResponseDTO childDTO = new CategoryResponseDTO(child.getName(),child.getImagePath());
             categorySubCategoryDTO.getSubCategories().add(childDTO);
         }
         return categorySubCategoryDTO;
@@ -158,8 +205,12 @@ public class CategoryService extends BaseService<Category, Long> {
         }
 
         if (categoryUpdateDTO.image() != null) {
-            String imagePath = cloudinaryImageUploadUtil.uploadImage(categoryUpdateDTO.image());
-            category.setImagePath(imagePath);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    handleImageByRabbitMQ(categoryUpdateDTO, category);
+                }
+            });
         }
     }
 
@@ -268,19 +319,19 @@ public class CategoryService extends BaseService<Category, Long> {
     public List<CategorySubCategoryDTOV2> getTopCategories() {
         List<CategorySubCategoryDTOV2> dtos = new ArrayList<>();
 
-        List<CategoryDTO> topCategories = Arrays.asList(
-                new CategoryDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Antiques", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Health & Beauty", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Sports & Outdoors", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Toys & Games", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Automotive", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Books & Stationery", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Groceries", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryDTO("Office Supplies", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg")
+        List<CategoryResponseDTO> topCategories = Arrays.asList(
+                new CategoryResponseDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Antiques", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Health & Beauty", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Sports & Outdoors", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Toys & Games", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Automotive", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Books & Stationery", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Groceries", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+                new CategoryResponseDTO("Office Supplies", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg")
         );
 
-        for (CategoryDTO category : topCategories) {
+        for (CategoryResponseDTO category : topCategories) {
             dtos.add(new CategorySubCategoryDTOV2(category, new ArrayList<>(), new ArrayList<>()));
         }
 
@@ -289,13 +340,13 @@ public class CategoryService extends BaseService<Category, Long> {
 
     public CategorySubCategoryDTOV2 getAllCategorySubCategoryDTOV2() {
 
-        CategoryDTO rootCategoryDTO = new CategoryDTO("root", "null");
+        CategoryResponseDTO rootCategoryResponseDTO = new CategoryResponseDTO("root", "null");
         CategorySubCategoryDTOV2 responseDTO = new CategorySubCategoryDTOV2();
-        responseDTO.setCategory(rootCategoryDTO);
+        responseDTO.setCategory(rootCategoryResponseDTO);
         List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
         for (CategoryProjection mainCategory : mainCategories) {
-            CategoryDTO categoryDTO = new CategoryDTO(mainCategory.getName(),mainCategory.getImagePath());
-            responseDTO.getSubCategories().add(categoryDTO);
+            CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO(mainCategory.getName(),mainCategory.getImagePath());
+            responseDTO.getSubCategories().add(categoryResponseDTO);
         }
         return  responseDTO;
 

@@ -16,16 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "DTO for creating a category with necessary information and image")
 public record CategoryCreateDTO(
-        @NotBlank(message = "Category name can not be null")
+        @NotBlank(message = "Category name cannot be null")
         String name,
-
 
         @NonEmptyMultipartFile
         @ImageOnly
-        @Schema(description = "image of the category", example = "[\"image.jpg\"]")
+        @Schema(description = "Image of the category", example = "[\"image.jpg\"]")
         MultipartFile image,
 
-
         String parentCategory
-) {
+) implements CategoryDTO {
 }
+
+

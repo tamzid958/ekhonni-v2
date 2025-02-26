@@ -29,6 +29,7 @@ import com.ekhonni.backend.util.PaginationUtil;
 import com.ekhonni.backend.util.ProductProjectionConverter;
 import jakarta.validation.constraints.Size;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +53,9 @@ public class ProductService extends BaseService<Product, Long> {
     private final BidRepository bidRepository;
     private final RecentProductViewService recentProductViewService;
     private final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq-custom.image-upload-configuration.product-queue}")
+    private String productQueue;
 
 
 
@@ -111,7 +115,7 @@ public class ProductService extends BaseService<Product, Long> {
         List<String> filenames = dto.images().stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList());
         List<String> contentTypes = dto.images().stream().map(MultipartFile::getContentType).collect(Collectors.toList());
 
-        rabbitTemplate.convertAndSend("image_upload_queue",
+        rabbitTemplate.convertAndSend(productQueue,
                 new ProductImageUploadEvent(product.getId(), imageBytes, filenames, contentTypes));
     }
 

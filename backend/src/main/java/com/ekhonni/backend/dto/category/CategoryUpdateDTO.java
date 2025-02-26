@@ -22,7 +22,8 @@ public record CategoryUpdateDTO(
 
         @NonEmptyMultipartFile
         @ImageOnly
-        @Schema(description = "image of the category", example = "[\"image.jpg\"]")
+        @Schema(description = "Image of the category", example = "[\"image.jpg\"]")
         MultipartFile image
-) {
+) implements CategoryDTO {
 }
+
