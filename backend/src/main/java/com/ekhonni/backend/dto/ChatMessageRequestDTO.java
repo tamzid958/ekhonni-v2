@@ -1,11 +1,11 @@
 package com.ekhonni.backend.dto;
 
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-public record ChatMessageDTO(
+public record ChatMessageRequestDTO(
+        UUID chatRoomId,
         UUID senderId,
         UUID receiverId,
         String content

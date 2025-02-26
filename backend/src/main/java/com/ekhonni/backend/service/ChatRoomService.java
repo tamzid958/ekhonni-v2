@@ -44,6 +44,7 @@ public class ChatRoomService {
         User receiver = chatRoom.getUser1().equals(user1) ? chatRoom.getUser2() : chatRoom.getUser1();
 
         return new ChatRoomResponseDTO(
+                chatRoom.getId(),
                 receiver.getId(),
                 receiver.getName()
         );
@@ -59,7 +60,7 @@ public class ChatRoomService {
         return chatRooms.stream()
                 .map(chatRoom -> {
                     User receiver = chatRoom.getUser1().equals(user) ? chatRoom.getUser2() : chatRoom.getUser1();
-                    return new ChatRoomResponseDTO(receiver.getId(), receiver.getName());
+                    return new ChatRoomResponseDTO(chatRoom.getId(), receiver.getId(), receiver.getName());
                 })
                 .collect(Collectors.toList());
     }

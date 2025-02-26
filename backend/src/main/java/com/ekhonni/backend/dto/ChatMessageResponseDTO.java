@@ -1,11 +1,11 @@
 package com.ekhonni.backend.dto;
 
-
 import java.util.UUID;
 
-public record ChatRoomResponseDTO(
+public record ChatMessageResponseDTO(
         UUID chatRoomId,
+        UUID senderId,
         UUID receiverId,
-        String receiverName
+        String content
 ) {
 }
