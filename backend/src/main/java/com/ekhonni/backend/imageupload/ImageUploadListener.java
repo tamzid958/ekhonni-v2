@@ -39,7 +39,7 @@ public class ImageUploadListener {
         this.categoryRepository = categoryRepository;
     }
 
-    @RabbitListener(queues = "${rabbitmq-custom.image-upload-configuration.product-queue}")
+    @RabbitListener(queues = "${rabbitmq-custom.image-upload.product-queue}")
     public void processImageUpload(ProductImageUploadEvent event) {
         try {
             Product product = productRepository.findById(event.productId())
@@ -72,7 +72,7 @@ public class ImageUploadListener {
     }
 
 
-    @RabbitListener(queues = "${rabbitmq-custom.image-upload-configuration.category-queue}")
+    @RabbitListener(queues = "${rabbitmq-custom.image-upload.category-queue}")
     public void processImageUploadOfCategory(CategoryImageUploadEvent event) {
         try {
             Category category = categoryRepository.findById(event.categoryId())

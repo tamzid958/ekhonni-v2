@@ -31,11 +31,22 @@ public class RabbitMQConfig {
     @Value("${rabbitmq-custom.email-configuration.routing-key}")
     private String emailRoutingKey;
 
-    @Value("${rabbitmq-custom.image-upload-configuration.product-queue}")
+    @Value("${rabbitmq-custom.image-upload.exchange}")
+    private String imageUploadExchange;
+
+    @Value("${rabbitmq-custom.image-upload.product-routing-key}")
+    private String productRoutingKey;
+
+    @Value("${rabbitmq-custom.image-upload.category-routing-key}")
+    private String categoryRoutingKey;
+
+    @Value("${rabbitmq-custom.image-upload.product-queue}")
     private String productQueue;
 
-    @Value("${rabbitmq-custom.image-upload-configuration.category-queue}")
+    @Value("${rabbitmq-custom.image-upload.category-queue}")
     private String categoryQueue;
+
+
 
 
 
@@ -79,4 +90,21 @@ public class RabbitMQConfig {
     public Queue categoryQueue() {
         return new Queue(categoryQueue, true);
     }
+
+    @Bean
+    public TopicExchange imageUploadExchange() {
+        return new TopicExchange("imageUploadExchange");
+    }
+
+    @Bean
+    public Binding productBinding(Queue productQueue, TopicExchange imageUploadExchange) {
+        return BindingBuilder.bind(productQueue).to(imageUploadExchange).with(productRoutingKey);
+    }
+
+    @Bean
+    public Binding categoryBinding(Queue categoryQueue, TopicExchange imageUploadExchange) {
+        return BindingBuilder.bind(categoryQueue).to(imageUploadExchange).with(categoryRoutingKey);
+    }
+
+
 }

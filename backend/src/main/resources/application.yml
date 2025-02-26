@@ -146,10 +146,12 @@ rabbitmq-custom:
     queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
     exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
     routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}
-
-  image-upload-configuration:
-    product-queue: ${RABBITMQ_PRODUCT_IMAGE_QUEUE_NAME}
-    category-queue: ${RABBITMQ_CATEGORY_IMAGE_QUEUE_NAME}
+  image-upload:
+    exchange: ${RABBITMQ_IMAGE_UPLOAD_EXCHANGE_NAME}
+    product-queue: ${RABBITMQ_PRODUCT_IMAGE_UPLOAD_QUEUE_NAME}
+    category-queue: ${RABBITMQ_CATEGORY_IMAGE_UPLOAD_QUEUE_NAME}
+    product-routing-key: ${RABBITMQ_PRODUCT_IMAGE_UPLOAD_ROUTING_KEY}
+    category-routing-key: ${RABBITMQ_CATEGORY_IMAGE_UPLOAD_ROUTING_KEY}
 
 profile:
   image:

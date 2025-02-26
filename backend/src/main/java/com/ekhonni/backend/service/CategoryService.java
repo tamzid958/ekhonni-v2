@@ -37,8 +37,11 @@ public class CategoryService extends BaseService<Category, Long> {
     private final ProductRepository productRepository;
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${rabbitmq-custom.image-upload-configuration.category-queue}")
-    private String categoryQueue;
+    @Value("${rabbitmq-custom.image-upload.exchange}")
+    private String imageUploadExchange;
+
+    @Value("${rabbitmq-custom.image-upload.category-routing-key}")
+    private String categoryRoutingKey;
 
 
     public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository,
@@ -116,7 +119,7 @@ public class CategoryService extends BaseService<Category, Long> {
         String filename = file.getOriginalFilename();
         String contentType = file.getContentType();
 
-        rabbitTemplate.convertAndSend(categoryQueue,
+        rabbitTemplate.convertAndSend(imageUploadExchange, categoryRoutingKey,
                 new CategoryImageUploadEvent(category.getId(), imageBytes, filename, contentType));
     }
 

@@ -54,8 +54,11 @@ public class ProductService extends BaseService<Product, Long> {
     private final RecentProductViewService recentProductViewService;
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${rabbitmq-custom.image-upload-configuration.product-queue}")
-    private String productQueue;
+    @Value("${rabbitmq-custom.image-upload.exchange}")
+    private String imageUploadExchange;
+
+    @Value("${rabbitmq-custom.image-upload.product-routing-key}")
+    private String productRoutingKey;
 
 
 
@@ -115,7 +118,7 @@ public class ProductService extends BaseService<Product, Long> {
         List<String> filenames = dto.images().stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList());
         List<String> contentTypes = dto.images().stream().map(MultipartFile::getContentType).collect(Collectors.toList());
 
-        rabbitTemplate.convertAndSend(productQueue,
+        rabbitTemplate.convertAndSend(imageUploadExchange, productRoutingKey,
                 new ProductImageUploadEvent(product.getId(), imageBytes, filenames, contentTypes));
     }
 
