@@ -12,7 +12,7 @@ export default function WatchlistPage() {
   const { data: session, status } = useSession();
   const userToken = session?.user?.token;
 
-  const url = '/api/v2/users/watchlist';
+  const url = '/api/v2/user/watchlist';
   const { data, error, isLoading } = useSWR(userToken ? [url, userToken] : null, ([url, token]) => fetcher(url, token));
   console.log(data?.data);
 
