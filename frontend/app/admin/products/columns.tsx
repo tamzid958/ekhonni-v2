@@ -67,9 +67,9 @@ export function getColumns(token: string) {
     columnHelper.accessor('category.name', {
       header: 'Category Name',
     }),
-    columnHelper.accessor('description', {
-      header: 'Description',
-    }),
+    // columnHelper.accessor('description', {
+    //   header: 'Description',
+    // }),
     columnHelper.accessor('boostData', {
       header: 'Boost Data',
     }),
@@ -148,7 +148,7 @@ const getStatusBadge = (status: string) => {
   const badgeMap = {
     APPROVED: <Badge variant="default">Approved</Badge>,
     DECLINED: <Badge variant="destructive">Declined</Badge>,
-    PENDING_APPROVAL: <Badge variant="secondary">Pending Approval</Badge>,
+    PENDING_APPROVAL: <Badge variant="secondary" className="text-center">Pending</Badge>,
     ARCHIVED: <Badge variant="outline">Archived</Badge>,
     SOLD: <Badge variant="default">Sold</Badge>,
   };
