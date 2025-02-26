@@ -57,8 +57,12 @@ export function Category() {
               </CarouselItem>
             ))}
         </CarouselContent>
-        <CarouselPrevious className="w-12 h-12 left-[93%] -top-[4%]" variant={'default'} />
-        <CarouselNext className="w-12 h-12 left-[97%] -top-[4%]" variant={'default'} />
+        <CarouselPrevious
+          className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-12 xl:h-12 left-[81%] sm:left-[84%] md:left-[85%] lg:left-[89%] xl:left-[91%] -top-[4%]"
+          variant={'default'} />
+        <CarouselNext
+          className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-12 xl:h-12 left-[97%] -top-[4%]"
+          variant={'default'} />
       </Carousel>
     </div>
   );

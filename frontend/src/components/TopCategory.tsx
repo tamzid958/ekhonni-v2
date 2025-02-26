@@ -43,7 +43,6 @@ export function TopCAtegory() {
                   {category.name}
                 </Link>
               </NavigationMenuTrigger>
-
               <div
                 className="absolute left-0 top-full bg-brand-bright shadow-lg border rounded-md opacity-0 invisible peer-hover:opacity-100 peer-hover:visible hover:opacity-100 hover:visible transition-opacity duration-200 pointer-events-none peer-hover:pointer-events-auto hover:pointer-events-auto">
                 <ul className="text-xs font-semibold grid m-2 md:w-[200px] lg:w-[300px]">
