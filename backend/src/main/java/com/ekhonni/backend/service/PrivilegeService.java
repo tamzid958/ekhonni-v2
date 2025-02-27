@@ -181,7 +181,7 @@ public class PrivilegeService {
                         && privilege.getEndpoint().equals(endpoint));
     }
 
-    public Page<Privilege> getAll(Pageable pageable) {
+    public Page<PrivilegeDetailed> getAll(Pageable pageable) {
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
@@ -196,7 +196,16 @@ public class PrivilegeService {
             pagedPrivileges = privilegeList.subList(startItem, toIndex);
         }
 
-        return new PageImpl<>(pagedPrivileges, pageable, privileges.size());
+        List<PrivilegeDetailed> privilegeDetailedList = pagedPrivileges.stream()
+                .map(privilege -> {
+                    List<String> assignedTo = rolePrivilegeAssignmentRepository.findAllByPrivilegeId(privilege.getId())
+                            .stream().map(rp -> rp.getRole().getName()).toList();
+                    return PrivilegeDetailed.builder().privilege(privilege).assignedTo(assignedTo).build();
+                })
+                .toList();
+
+        return new PageImpl<>(privilegeDetailedList, pageable, privileges.size());
+
     }
 
 

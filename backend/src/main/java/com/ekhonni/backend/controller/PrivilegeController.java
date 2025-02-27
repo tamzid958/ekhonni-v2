@@ -1,7 +1,6 @@
 package com.ekhonni.backend.controller;
 
 import com.ekhonni.backend.dto.RoleIdsDTO;
-import com.ekhonni.backend.model.Privilege;
 import com.ekhonni.backend.model.PrivilegeDetailed;
 import com.ekhonni.backend.service.PrivilegeService;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ public class PrivilegeController {
 
 
     @GetMapping("")
-    public Page<Privilege> getAllPrivilege(Pageable pageable) {
+    public Page<PrivilegeDetailed> getAllPrivilege(Pageable pageable) {
         return privilegeService.getAll(pageable);
     }
 
