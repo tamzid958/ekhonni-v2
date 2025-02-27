@@ -1,7 +1,7 @@
 import { DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowBigDown, ChevronRight, Inbox, Info, List,
-  MessageCircle, Settings, ShoppingBag
+  MessageCircle, Settings, ShoppingBag, Wallet
 } from "lucide-react";
 import React from "react";
 import { SheetContent } from "@/components/ui/sheet";
@@ -26,12 +26,14 @@ const items = [
   { title: "Watchlist", url: "/user-page/watchlist", icon: List },
   { title: "Sell Product", url: "/form", icon: ArrowBigDown },
   { title: "My-cart", url: "/user-page/my-cart", icon: ShoppingBag },
+  { title: "Account", url: "/user-page/account", icon: Wallet },
 ];
 
 export function AppSidebar() {
   const { data: session } = useSession();
   const userID = session?.user?.id;
   const token = session?.user?.token;
+  console.log('userId: ' + userID);
 
   const url = userID ? `http://localhost:8080/api/v2/user/${userID}` : null;
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, token));
@@ -44,7 +46,7 @@ export function AppSidebar() {
   }
 
   if (isLoading || !data) {
-    return <div className="text-center text-gray-500"><Loading/></div>;
+    return <div className="text-center text-gray-500"><Loading /></div>;
   }
 
   const userDetail: UserDetail | null = data?.data || null;
@@ -53,17 +55,19 @@ export function AppSidebar() {
     <SheetContent side="right" className="w-64">
       <DialogTitle>Menu</DialogTitle>
 
-      <div className="flex items-center space-x-2 p-2 border-b border-gray-300 pr-8">
+
+      <div className="flex flex-col items-center p-2 border-b border-gray-300">
         <img
-          src={userDetail.profileImage || "/default-avatar.png"}
+          src={userDetail.profileImage || '/default-avatar.png'}
           alt="User Avatar"
-          className="w-12 h-12 rounded-full border"
+          className="w-12 h-12 rounded-full border mb-2"
         />
-        <div>
-          <p className="font-sm text-sm">{userDetail.name || "Unknown User"}</p>
+        <div className="text-center">
+          <p className="text-sm font-medium">{userDetail.name || "Unknown User"}</p>
           <p className="text-sm text-gray-500">{userDetail.email || "No Email"}</p>
         </div>
       </div>
+
 
 
       {/* Sidebar Menu */}
@@ -83,7 +87,7 @@ export function AppSidebar() {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              signOut({ callbackUrl: "/" });
+              signOut({ callbackUrl: '/' });
             }}
             className="flex items-center space-x-3 p-2 mt-4 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
           >

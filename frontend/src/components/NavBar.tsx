@@ -1,5 +1,7 @@
 'use client';
+import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import Link from 'next/link';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useFilterProducts } from '@/hooks/useFilterProducts';
@@ -7,9 +9,6 @@ import { AppSidebar } from '@/components/userSheet';
 import { Button } from '@/components/ui/button';
 import { NotificationGetter } from '@/components/Notification';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
-import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -32,6 +31,7 @@ export function NavBar({ placeholder }: Props) {
   const [query, setQuery] = useState('');
   const linkRef = useRef<HTMLAnchorElement | null>(null);
   const router = useRouter();
+
   const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
   const filteredProducts = products || [];
 
@@ -58,7 +58,7 @@ export function NavBar({ placeholder }: Props) {
     const lastFetchTime = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().split('.')[0];
 
     async function fetchNotifications(lastFetchTime: string) {
-      // console.log('Fetching notifications for user:', userId);
+      console.log('Fetching notifications for user:', userId);
       const result = await NotificationGetter(userId, userToken, lastFetchTime);
 
 
@@ -190,19 +190,16 @@ export function NavBar({ placeholder }: Props) {
             <AppSidebar />
           </Sheet>
         ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="custom" size="icon">
-                <User className="h-6 w-6" />
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login" className="text-sm text-black hover:text-gray-300">
+              Log in
+            </Link>
+            <Link href="/auth/register">
+              <Button className="px-4 py-1 text-sm rounded-full bg-black text-white hover:bg-gray-200 ">
+                Sign up
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
-              <p className="mb-2">Log in first</p>
-              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                Go to Login
-              </Link>
-            </PopoverContent>
-          </Popover>
+            </Link>
+          </div>
         )}
 
       </div>

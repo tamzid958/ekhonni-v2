@@ -77,18 +77,22 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="flex-col align-middle pl-4">
-      <div className="flex items-center py-4 mr-2">
-        { userType === "role"?
-          (<div className="flex">
+    <div className="flex-col  pl-4">
+      <div className="flex  py-4 mr-2">
+        {
+          (() => {
+            switch (userType) {
+              case "role":
+                return (
+                  <div className="flex">
                     <Input
-                    placeholder="Filter Ids..."
-                    value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                      table.getColumn("id")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm w-28 mr-2"
-                  />
+                      placeholder="Filter Ids..."
+                      value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("id")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
                     <Input
                       placeholder="Filter name..."
                       value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -104,9 +108,42 @@ export function DataTable<TData, TValue>({
                         table.getColumn("status")?.setFilterValue(event.target.value)
                       }
                       className="max-w-sm w-28 mr-2"
-                    /> </div>):
+                    />
+                  </div>
+                );
+              case "privilege":
+                return (
+                  <div className="flex">
 
-          (<div className="flex">
+                    <Input
+                      placeholder="Filter name..."
+                      value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("name")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                    <Input
+                      placeholder="Filter Method"
+                      value={(table.getColumn("httpMethod")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("httpMethod")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                    <Input
+                      placeholder="Filter api..."
+                      value={(table.getColumn("endpoint")?.getFilterValue() as string) ?? ""}
+                      onChange={(event) =>
+                        table.getColumn("endpoint")?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm w-28 mr-2"
+                    />
+                  </div>
+                );
+              case "user":
+                return (
+                  <div className="flex">
                     <Input
                       placeholder="Filter name..."
                       value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -131,10 +168,13 @@ export function DataTable<TData, TValue>({
                       }
                       className="max-w-sm w-28 mr-2"
                     />
-          </div>)
-
+                  </div>
+                );
+              default:
+                return (<div></div>)
+            }
+          })()
         }
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -164,8 +204,8 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md w-full border ">
-      <Table>
+      <div className="flex h-screem w-[192vh] rounded-md  border ">
+      <Table className="w-full table-auto">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

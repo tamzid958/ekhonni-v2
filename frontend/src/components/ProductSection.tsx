@@ -35,7 +35,7 @@ export function ProductSection({ title, products, selectedCategory }: ProductSec
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
           {products.map((product) => (
-            <Link key={product.id} href={`/productDetails?id=${product.id}`} className="cursor-pointer">
+            <Link key={product.id} href={`/productDetails/${product.id}`} className="cursor-pointer">
               <CardDemo {...product} />
             </Link>
           ))}
