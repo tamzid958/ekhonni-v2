@@ -1,16 +1,16 @@
 'use client';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useFilterProducts } from '@/hooks/useFilterProducts';
-import { AppSidebar } from '@/components/userSheet';
-import { Button } from '@/components/ui/button';
-import { NotificationGetter } from '@/components/Notification';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
+import { Button } from './ui/button';
 import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
+import { NotificationGetter } from '@/components/Notification';
+import { useSession } from 'next-auth/react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useRouter } from 'next/navigation';
+import { AppSidebar } from '@/components/userSheet';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import { useFilterProducts } from '@/hooks/useFilterProducts';
 
 type Props = {
   placeholder?: string;
@@ -31,13 +31,14 @@ export function NavBar({ placeholder }: Props) {
   const { data: session, status } = useSession();
   const [query, setQuery] = useState('');
   const linkRef = useRef<HTMLAnchorElement | null>(null);
-  const router = useRouter();
+  const router = useRouter(); // Access the router
+
   const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
-  const filteredProducts = products || [];
 
   const handleLoginRedirect = () => {
-    router.push('/');
+    router.push('/'); // Redirect to home page
   };
+  const filteredProducts = products || [];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
@@ -141,12 +142,12 @@ export function NavBar({ placeholder }: Props) {
       </div>
 
       <div className="flex gap-4 mr-4 mt-4 sm:mr-14 md:mr-16 lg:mr-32">
-        <Link href="/cart">
+        {session && (<Link href="/cart">
           <Button variant="custom" size="icon">
             <ShoppingCart className="h-6 w-6" />
           </Button>
-        </Link>
-        <Select>
+        </Link>)}
+        {session && (<Select>
           <SelectTrigger
             className="text-primary bg-brand-mid hover:bg-brand-light h-10 w-10 px-3 focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
             <Bell className="w-6 h-6" />
@@ -174,7 +175,7 @@ export function NavBar({ placeholder }: Props) {
               </div>
             </SelectGroup>
           </SelectContent>
-        </Select>
+        </Select>)}
 
 
         {session ? (
@@ -189,19 +190,16 @@ export function NavBar({ placeholder }: Props) {
             <AppSidebar />
           </Sheet>
         ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="custom" size="icon">
-                <User className="h-6 w-6" />
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login" className="text-sm text-black hover:text-gray-300">
+              Log in
+            </Link>
+            <Link href="/auth/register">
+              <Button className="px-4 py-1 text-sm rounded-full bg-black text-white hover:bg-gray-200 ">
+                Sign up
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
-              <p className="mb-2">Log in first</p>
-              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                Go to Login
-              </Link>
-            </PopoverContent>
-          </Popover>
+            </Link>
+          </div>
         )}
 
       </div>

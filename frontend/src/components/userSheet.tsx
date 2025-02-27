@@ -1,10 +1,13 @@
-import { DialogTitle } from '@/components/ui/dialog';
-import { ArrowBigDown, ChevronRight, Inbox, Info, List, MessageCircle, Settings, ShoppingBag } from 'lucide-react';
-import React from 'react';
-import { SheetContent } from '@/components/ui/sheet';
-import { signOut, useSession } from 'next-auth/react';
-import useSWR from 'swr';
-import fetcher from '@/data/services/fetcher';
+import { DialogTitle } from "@/components/ui/dialog";
+import {
+  ArrowBigDown, ChevronRight, Inbox, Info, List,
+  MessageCircle, Settings, ShoppingBag, Wallet
+} from "lucide-react";
+import React from "react";
+import { SheetContent } from "@/components/ui/sheet";
+import { signOut, useSession } from "next-auth/react";
+import useSWR from "swr";
+import fetcher from "@/data/services/fetcher";
 import Loading from '@/components/Loading';
 
 interface UserDetail {
@@ -16,13 +19,14 @@ interface UserDetail {
 }
 
 const items = [
-  { title: 'Edit Profile', url: '/user-page/edit-profile', icon: Settings },
-  { title: 'About', url: '/user-page/user-about', icon: Info },
-  { title: 'Inbox', url: '/user-page/inbox', icon: Inbox },
-  { title: 'Feedback', url: '/user-page/feedback', icon: MessageCircle },
-  { title: 'Watchlist', url: '/user-page/watchlist', icon: List },
-  { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
-  { title: 'My-cart', url: '/user-page/my-cart', icon: ShoppingBag },
+  { title: "Edit Profile", url: "/user-page/edit-profile", icon: Settings },
+  { title: "About", url: "/user-page/user-about", icon: Info },
+  { title: "Inbox", url: "/user-page/inbox", icon: Inbox },
+  { title: "Feedback", url: "/user-page/feedback", icon: MessageCircle },
+  { title: "Watchlist", url: "/user-page/watchlist", icon: List },
+  { title: "Sell Product", url: "/form", icon: ArrowBigDown },
+  { title: "My-cart", url: "/user-page/my-cart", icon: ShoppingBag },
+  { title: "Account", url: "/user-page/account", icon: Wallet },
 ];
 
 export function AppSidebar() {
@@ -51,17 +55,19 @@ export function AppSidebar() {
     <SheetContent side="right" className="w-64">
       <DialogTitle>Menu</DialogTitle>
 
-      <div className="flex items-center space-x-2 p-2 border-b border-gray-300 pr-8">
+
+      <div className="flex flex-col items-center p-2 border-b border-gray-300">
         <img
           src={userDetail.profileImage || '/default-avatar.png'}
           alt="User Avatar"
-          className="w-12 h-12 rounded-full border"
+          className="w-12 h-12 rounded-full border mb-2"
         />
-        <div>
-          <p className="font-sm text-sm">{userDetail.name || 'Unknown User'}</p>
-          <p className="text-sm text-gray-500">{userDetail.email || 'No Email'}</p>
+        <div className="text-center">
+          <p className="text-sm font-medium">{userDetail.name || "Unknown User"}</p>
+          <p className="text-sm text-gray-500">{userDetail.email || "No Email"}</p>
         </div>
       </div>
+
 
 
       {/* Sidebar Menu */}
