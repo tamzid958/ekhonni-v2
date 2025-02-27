@@ -20,4 +20,6 @@ import lombok.Setter;
 public class CategoryResponseDTO {
     String name;
     String imagePath;
+    Long productCount;
+    Boolean hasSubCategory;
 }

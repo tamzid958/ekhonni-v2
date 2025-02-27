@@ -44,4 +44,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, CustomP
 
 
     boolean existsByCategoryName(String name);
+
+    @Query("SELECT p.category.name, COUNT(p) FROM Product p WHERE p.category.name IN :categoryNames GROUP BY p.category.name")
+    List<Object[]> countProductsByCategoryNames(@Param("categoryNames") List<String> categoryNames);
+
 }

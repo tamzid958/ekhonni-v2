@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -133,11 +134,26 @@ public class CategoryService extends BaseService<Category, Long> {
         }
         List<String> sequenceOfCategory = getSequence(name);
 
-        CategoryResponseDTO parentDTO = new CategoryResponseDTO(parent.getName(),parent.getImagePath());
+        CategoryResponseDTO parentDTO = new CategoryResponseDTO(parent.getName(),parent.getImagePath(),0L, false);
         CategorySubCategoryDTOV2 categorySubCategoryDTO = new CategorySubCategoryDTOV2(parentDTO, new ArrayList<>(), sequenceOfCategory);
-        List<ViewerCategoryProjection> children = categoryRepository.findByParentCategoryAndActiveOrderByIdAsc(parent, true);
+
+
+
+        List<CategoryProjection> children = categoryRepository.findProjectionByParentCategoryAndActiveOrderByIdAsc(parent, true);
+
+        Map<Long, Long> productCounts = getProductCountsByCategory(children);
+        Map<String, Boolean> subcategoryCheck = checkSubcategories(children);
+
         for (ViewerCategoryProjection child : children) {
-            CategoryResponseDTO childDTO = new CategoryResponseDTO(child.getName(),child.getImagePath());
+            Long productCount = productCounts.getOrDefault(child.getId(), 0L);
+            Boolean hasSubcategories = subcategoryCheck.getOrDefault(child.getName(), false);
+
+            CategoryResponseDTO childDTO = new CategoryResponseDTO(
+                    child.getName(),
+                    child.getImagePath(),
+                    productCount,
+                    hasSubcategories
+            );
             categorySubCategoryDTO.getSubCategories().add(childDTO);
         }
         return categorySubCategoryDTO;
@@ -322,33 +338,47 @@ public class CategoryService extends BaseService<Category, Long> {
     public List<CategorySubCategoryDTOV2> getTopCategories() {
         List<CategorySubCategoryDTOV2> dtos = new ArrayList<>();
 
-        List<CategoryResponseDTO> topCategories = Arrays.asList(
-                new CategoryResponseDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Antiques", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Health & Beauty", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Sports & Outdoors", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Toys & Games", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Automotive", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Books & Stationery", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Groceries", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
-                new CategoryResponseDTO("Office Supplies", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg")
-        );
-
-        for (CategoryResponseDTO category : topCategories) {
-            dtos.add(new CategorySubCategoryDTOV2(category, new ArrayList<>(), new ArrayList<>()));
-        }
+//        List<CategoryResponseDTO> topCategories = Arrays.asList(
+//                new CategoryResponseDTO("Travel & Nature", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Antiques", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Health & Beauty", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Sports & Outdoors", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Toys & Games", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Automotive", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Books & Stationery", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Groceries", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg"),
+//                new CategoryResponseDTO("Office Supplies", "http://res.cloudinary.com/dnetpmsx6/image/upload/default.jpg")
+//        );
+//
+//        for (CategoryResponseDTO category : topCategories) {
+//            dtos.add(new CategorySubCategoryDTOV2(category, new ArrayList<>(), new ArrayList<>()));
+//        }
 
         return dtos;
     }
 
     public CategorySubCategoryDTOV2 getAllCategorySubCategoryDTOV2() {
 
-        CategoryResponseDTO rootCategoryResponseDTO = new CategoryResponseDTO("root", "null");
+        CategoryResponseDTO rootCategoryResponseDTO = new CategoryResponseDTO("root", "null", 0L, false);
         CategorySubCategoryDTOV2 responseDTO = new CategorySubCategoryDTOV2();
         responseDTO.setCategory(rootCategoryResponseDTO);
+
         List<CategoryProjection> mainCategories = categoryRepository.findProjectionByParentCategoryIsNullAndActive(true);
+        Map<Long, Long> productCounts = getProductCountsByCategory(mainCategories);
+        Map<String, Boolean> subcategoryCheck = checkSubcategories(mainCategories);
+
+
+
         for (CategoryProjection mainCategory : mainCategories) {
-            CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO(mainCategory.getName(),mainCategory.getImagePath());
+            Long productCount = productCounts.getOrDefault(mainCategory.getId(), 0L);
+            Boolean hasSubcategories = subcategoryCheck.getOrDefault(mainCategory.getName(), false);
+
+            CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO(
+                    mainCategory.getName(),
+                    mainCategory.getImagePath(),
+                    productCount,
+                    hasSubcategories
+            );
             responseDTO.getSubCategories().add(categoryResponseDTO);
         }
         return  responseDTO;
@@ -420,4 +450,36 @@ public class CategoryService extends BaseService<Category, Long> {
         //then based on count i want to sort the mainCategories
 
     }
+
+
+    // get product count by categories
+    public Map<Long, Long> getProductCountsByCategory(List<CategoryProjection>categoryProjections) {
+        List<Long> categoryNames = new ArrayList<>();
+        for (CategoryProjection categoryProjection : categoryProjections) {
+            categoryNames.add(categoryProjection.getId());
+        }
+        List<Object[]> results = categoryRepository.countProductsByCategoriesAndDescendants(categoryNames);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Long) result[1]
+                ));
+    }
+
+
+    public Map<String, Boolean> checkSubcategories(List<CategoryProjection>categoryProjections) {
+        List<String> categoryNames = new ArrayList<>();
+        for (CategoryProjection categoryProjection : categoryProjections) {
+            categoryNames.add(categoryProjection.getName());
+        }
+
+        List<Object[]> results = categoryRepository.hasSubcategories(categoryNames);
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],
+                        result -> (Boolean) result[1]
+                ));
+    }
+
 }

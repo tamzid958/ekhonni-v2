@@ -24,6 +24,8 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
     List<Category> findByParentCategoryIsNullAndActive(boolean active);
     List<CategoryProjection>findProjectionByParentCategoryIsNullAndActive(boolean active);
     List<ViewerCategoryProjection> findByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
+    List<CategoryProjection> findProjectionByParentCategoryAndActiveOrderByIdAsc(Category category, boolean active);
+
 
 
 
@@ -85,6 +87,10 @@ public interface CategoryRepository extends BaseRepository<Category, Long> {
     GROUP BY ct.main_category_id
     """, nativeQuery = true)
     List<Object[]> countProductsByCategoriesAndDescendants(@Param("mainCategoryIds") List<Long> mainCategoryIds);
+
+    @Query("SELECT c.parentCategory.name, COUNT(c) > 0 FROM Category c WHERE c.parentCategory.name IN :categoryNames GROUP BY c.parentCategory.name")
+    List<Object[]> hasSubcategories(@Param("categoryNames") List<String> categoryNames);
+
 
 
 }
