@@ -6,12 +6,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useSession } from 'next-auth/react';
 import { ProductData } from './page';
 import { getColumns } from './columns';
+import { useRouter } from 'next/navigation';
 
 export default function DataTable({ data }: { data: ProductData[] }) {
   const { data: session } = useSession();
   const token = session?.user?.token; // Get the session token
 
-  const columns = getColumns(token); // Pass token to getColumns
+  const router = useRouter();
+  const columns = getColumns(token, router);
 
   const table = useReactTable({
     data,

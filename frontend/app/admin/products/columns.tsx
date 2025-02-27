@@ -20,8 +20,7 @@ import { Badge } from '@/components/ui/badge';
 
 const columnHelper = createColumnHelper<ProductData>();
 
-export function getColumns(token: string) {
-  const router = useRouter();
+export function getColumns(token: string, router: ReturnType<typeof useRouter>) {
 
   return [
     columnHelper.accessor('images', {
@@ -70,10 +69,11 @@ export function getColumns(token: string) {
     // columnHelper.accessor('description', {
     //   header: 'Description',
     // }),
-    columnHelper.accessor('boostData', {
+    columnHelper.accessor('boostData.boostType', {
       header: 'Boost Data',
     }),
-    columnHelper.accessor('status', {
+    columnHelper.display({
+      id: 'actions',
       header: 'Actions',
       cell: (info) => {
         const product = info.row.original;
@@ -81,7 +81,7 @@ export function getColumns(token: string) {
           <div className="space-y-2 flex flex-col">
             {product.status === 'PENDING_APPROVAL' && (
               <>
-                <AlertDialog key={product.id}>
+                <AlertDialog key={`approve-${product.id}`}>
                   <AlertDialogTrigger asChild>
                     <Button variant="secondary" className="text-green-500 hover:text-green-700">
                       <Check size={22} strokeWidth={5} />
@@ -99,7 +99,7 @@ export function getColumns(token: string) {
                   </AlertDialogContent>
                 </AlertDialog>
 
-                <AlertDialog key={product.id}>
+                <AlertDialog key={`decline-${product.id}`}>
                   <AlertDialogTrigger asChild>
                     <Button variant="secondary" className="text-red-500 hover:text-red-700">
                       <X size={22} strokeWidth={5} />
@@ -119,7 +119,7 @@ export function getColumns(token: string) {
               </>
             )}
             {product.status === 'APPROVED' && (
-              <AlertDialog key={product.id}>
+              <AlertDialog key={`delete-${product.id}`}>
                 <AlertDialogTrigger asChild>
                   <Button variant="secondary" className="text-gray-500 hover:text-gray-700">
                     <Trash size={22} strokeWidth={5} />

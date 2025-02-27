@@ -30,7 +30,9 @@ export interface ProductData {
     id: number;
     name: string;
   };
-  boostData: string;
+  boostData: {
+    boostType: string;
+  };
   images: {
     imagePath: string;
   }[];
@@ -57,6 +59,7 @@ export default function ProductViewPage() {
   const { data, error, isLoading } = useSWR(userToken ? [url, userToken] : null, ([url, token]) => fetcher(url, token));
   const products = data?.data?.content || [];
   const totalPages = data?.data?.page?.totalPages;
+  console.log(products);
 
   const statusOptions = ['ALL', 'APPROVED', 'PENDING_APPROVAL', 'DECLINED', 'ARCHIVED'];
   const sizeOptions = [5, 10, 15, 20];
