@@ -21,10 +21,16 @@ interface ProductData {
     name: string;
   };
   condition: string;
+  boostData?: {
+    boostType: string;
+    boostedAt: string;
+    expiresAt: string;
+  } | null;
   category: {
     id: number;
     name: string;
   };
+
   images: {
     imagePath: string;
   }[];
@@ -53,7 +59,9 @@ export default function MyProductPage() {
   // Fetch products using SWR
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, userToken));
   const products = data?.data?.content || [];
+
   console.log(products);
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
