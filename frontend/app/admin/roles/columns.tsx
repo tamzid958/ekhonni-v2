@@ -310,7 +310,7 @@ export const privilegeColumns: ColumnDef<Privilege>[] = [
       const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
       const [searchQuery, setSearchQuery] = useState<string>('');
 
-      const availableRoles = ['ADMIN', 'USER', 'SUPER_ADMIN', 'Viewer'];
+      const availableRoles = ['ADMIN', 'USER', 'SUPER_ADMIN', 'GUEST'];
 
       const handleRolesChange = (role: string) => {
         setSelectedRoles((prev) => [...prev, role]);

@@ -33,6 +33,7 @@ export function AppSidebar() {
   const { data: session } = useSession();
   const userID = session?.user?.id;
   const token = session?.user?.token;
+  console.log('userId: ' + userID);
 
   const url = userID ? `http://localhost:8080/api/v2/user/${userID}` : null;
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, token));
@@ -45,7 +46,7 @@ export function AppSidebar() {
   }
 
   if (isLoading || !data) {
-    return <div className="text-center text-gray-500"><Loading/></div>;
+    return <div className="text-center text-gray-500"><Loading /></div>;
   }
 
   const userDetail: UserDetail | null = data?.data || null;
@@ -57,7 +58,7 @@ export function AppSidebar() {
 
       <div className="flex flex-col items-center p-2 border-b border-gray-300">
         <img
-          src={userDetail.profileImage || "/default-avatar.png"}
+          src={userDetail.profileImage || '/default-avatar.png'}
           alt="User Avatar"
           className="w-12 h-12 rounded-full border mb-2"
         />
@@ -86,7 +87,7 @@ export function AppSidebar() {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              signOut({ callbackUrl: "/" });
+              signOut({ callbackUrl: '/' });
             }}
             className="flex items-center space-x-3 p-2 mt-4 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
           >
