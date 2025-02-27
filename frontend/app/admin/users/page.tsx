@@ -131,7 +131,7 @@ export default  function User  () {
 
   if (status === "loading" || isLoading || isLoadingRole) {
     return (
-      <div className="flex w-[1220px] h-[1200px] flex-col  bg-white ">
+      <div className="flex w-[195vh] h-screen flex-col  bg-white ">
           <div className="flex justify-center flex-col items-center h-screen">
             <Loading />
           </div>
@@ -140,7 +140,7 @@ export default  function User  () {
   }
   if (!session) {
     return (
-      <div className="flex flex-col w-[1220px] h-[1200px] items-center bg-white ">
+      <div className="flex flex-col w-[195vh] h-screen items-center bg-white ">
         <div className="flex flex-col justify-center items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>You need to be signed in to view this page.</p>
@@ -152,7 +152,7 @@ export default  function User  () {
   else if(  allUserError   || roleError)
   {
     return (
-      <div className="flex w-[1220px] h-[1200px] flex-col items-center  bg-white ">
+      <div className="flex w-[195vh] h-screen flex-col items-center  bg-white ">
         <div className="flex justify-center flex-col items-center h-screen">
         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
         <p>Failed to Load User Data</p>
@@ -161,8 +161,8 @@ export default  function User  () {
     );
   }
   return (
-    <div className="flex">
-    <div className="flex w-[1220px] h-[1250px] flex-col  bg-white ">
+    <div className="flex w-[190vh] h-screen max-h-screen ">
+    <div className="flex w-full h-full flex-col  bg-white ">
 
       <div className="flex flex-col md:flex-row w-full">
 
@@ -200,7 +200,7 @@ export default  function User  () {
       </div>
 
       {/* Middle section */}
-      <div className="flex max-w-[1220px] bg-green-100 rounded-xl m-4 p-4 gap-2.5  h-36">
+      <div className="flex w-full bg-green-100 rounded-xl m-4 p-4 gap-2.5  h-36">
         <div className="flex-1 p-1">
           <Card className="flex flex-col bg-white hover:bg-brand-bright justify-start p-4 hover:drop-shadow-xl border-black">
             <div className="flex items-start justify-between">
@@ -279,7 +279,7 @@ export default  function User  () {
         </div>
       </div>
 
-      <Separator className="flex  p-0" />
+      <Separator className="flex  w-[195vh]" />
       {/* Bottom section */}
       <div className="w-full  h-36 mt-2">
         <section className=" flex">
@@ -291,17 +291,17 @@ export default  function User  () {
                 <TabsTrigger value="blocked">Blocked Users({blockedUsers?.content?.length?? 0})</TabsTrigger>
                 <TabsTrigger value="deleted">Deleted Users({deletedUsers?.content?.length?? 0})</TabsTrigger>
               </TabsList>
-              <TabsContent value="all" className = "flex w-[1220px] min-h[400px] ">
-                  <DataTable key = {processedUsers.length} columns={columns} data={processedUsers}/>
+              <TabsContent value="all" className = "flex w-full ">
+                  <DataTable key = {processedUsers.length} columns={columns} data={processedUsers} userType="user"/>
               </TabsContent>
-              <TabsContent value="active" className = "flex w-[1220px] min-h[400px] ">
-                  <DataTable key={activeUsers?.content?.length ?? 0} columns={columns} data={activeUsers?.content ?? []} />
+              <TabsContent value="active" className = "flex w-full ">
+                  <DataTable key={activeUsers?.content?.length ?? 0} columns={columns} data={activeUsers?.content ?? []} userType="user" />
               </TabsContent>
-              <TabsContent  value="blocked" className = "flex min-w-[1220px] min-h[400px] ">
-                  <DataTable  key={blockedUsers?.content?.length ?? 0}  columns={blockedUserColumns} data={blockedUsers?.content ?? []} />
+              <TabsContent  value="blocked" className = "flex  w-full">
+                  <DataTable  key={blockedUsers?.content?.length ?? 0}  columns={blockedUserColumns} data={blockedUsers?.content ?? []} userType="user"/>
               </TabsContent>
-              <TabsContent value="deleted" className = "flex min-w-[1220px] min-h[400px] ">
-                <DataTable  key={deletedUsers?.content?.length ?? 0} columns={columns} data={deletedUsers?.content ?? []} />
+              <TabsContent value="deleted" className = "flex w-full">
+                <DataTable  key={deletedUsers?.content?.length ?? 0} columns={columns} data={deletedUsers?.content ?? []} userType="user" />
               </TabsContent>
             </Tabs>
           </div>

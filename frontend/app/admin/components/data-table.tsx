@@ -77,8 +77,8 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="flex-col align-middle pl-4">
-      <div className="flex items-center py-4 mr-2">
+    <div className="flex-col  pl-4">
+      <div className="flex  py-4 mr-2">
         {
           (() => {
             switch (userType) {
@@ -204,8 +204,8 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md w-full border ">
-      <Table>
+      <div className="flex h-screem w-[192vh] rounded-md  border ">
+      <Table className="w-full table-auto">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

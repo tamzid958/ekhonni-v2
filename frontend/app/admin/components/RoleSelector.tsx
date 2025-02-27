@@ -24,12 +24,10 @@ export default const RoleSelector: React.FC<RoleSelectorProps> = ({ initialRoles
     setSelectedRoles(updatedRoles);
     onChange(updatedRoles);
   };
-
   const roleOptions = availableRoles.map((role) => ({ value: role, label: role }));
 
   return (
     <div className="space-y-2">
-      bla blabla
       {/* Display Selected Roles */}
       <div className="flex flex-wrap gap-2">
         {selectedRoles.length > 0 ? (
@@ -49,8 +47,6 @@ export default const RoleSelector: React.FC<RoleSelectorProps> = ({ initialRoles
           <span>No roles selected</span>
         )}
       </div>
-
-      {/* Multi-select Dropdown */}
       <Select
         isMulti
         options={roleOptions}
