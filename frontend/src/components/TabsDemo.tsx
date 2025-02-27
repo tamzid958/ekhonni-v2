@@ -186,6 +186,7 @@ export function TabsDemo() {
       <TabsContent value="account">
         <Card>
           <CardHeader>
+          <CardHeader>
             <CardTitle>Account</CardTitle>
             <CardDescription>Update any account detail. Fields are optional.</CardDescription>
           </CardHeader>

@@ -194,7 +194,7 @@ export function NavBar({ placeholder }: Props) {
             <Link href="/auth/login" className="text-sm text-black hover:text-gray-300">
               Log in
             </Link>
-            <Link href="/auth/signup">
+            <Link href="/auth/register">
               <Button className="px-4 py-1 text-sm rounded-full bg-black text-white hover:bg-gray-200 ">
                 Sign up
               </Button>

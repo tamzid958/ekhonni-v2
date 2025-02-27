@@ -128,11 +128,6 @@ export function ReviewDialog({ productId, bidId, ruleFor }: ReviewDialogProps) {
           )}
         </div>
       </DialogTrigger>
-
-
-
-
-
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{previousReview ? 'Update Your Review' : ruleFor === 'seller' ? 'Leave a Review for Seller' : 'Leave a Review for Buyer'}</DialogTitle>

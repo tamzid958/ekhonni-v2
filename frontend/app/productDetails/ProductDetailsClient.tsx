@@ -17,7 +17,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 
 export interface ProductDetailsProps {
   productDetails: {
-    id: number;
+    id: string;
     title: string;
     description: string;
     images: Array<{ imagePath: string }>;
