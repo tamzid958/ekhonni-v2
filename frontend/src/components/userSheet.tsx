@@ -1,13 +1,10 @@
-import { DialogTitle } from "@/components/ui/dialog";
-import {
-  ArrowBigDown, ChevronRight, Inbox, Info, List,
-  MessageCircle, Settings, ShoppingBag
-} from "lucide-react";
-import React from "react";
-import { SheetContent } from "@/components/ui/sheet";
-import { signOut, useSession } from "next-auth/react";
-import useSWR from "swr";
-import fetcher from "@/data/services/fetcher";
+import { DialogTitle } from '@/components/ui/dialog';
+import { ArrowBigDown, ChevronRight, Inbox, Info, List, MessageCircle, Settings, ShoppingBag } from 'lucide-react';
+import React from 'react';
+import { SheetContent } from '@/components/ui/sheet';
+import { signOut, useSession } from 'next-auth/react';
+import useSWR from 'swr';
+import fetcher from '@/data/services/fetcher';
 import Loading from '@/components/Loading';
 
 interface UserDetail {
@@ -19,19 +16,20 @@ interface UserDetail {
 }
 
 const items = [
-  { title: "Edit Profile", url: "/user-page/edit-profile", icon: Settings },
-  { title: "About", url: "/user-page/user-about", icon: Info },
-  { title: "Inbox", url: "/user-page/inbox", icon: Inbox },
-  { title: "Feedback", url: "/user-page/feedback", icon: MessageCircle },
-  { title: "Watchlist", url: "/user-page/watchlist", icon: List },
-  { title: "Sell Product", url: "/form", icon: ArrowBigDown },
-  { title: "My-cart", url: "/user-page/my-cart", icon: ShoppingBag },
+  { title: 'Edit Profile', url: '/user-page/edit-profile', icon: Settings },
+  { title: 'About', url: '/user-page/user-about', icon: Info },
+  { title: 'Inbox', url: '/user-page/inbox', icon: Inbox },
+  { title: 'Feedback', url: '/user-page/feedback', icon: MessageCircle },
+  { title: 'Watchlist', url: '/user-page/watchlist', icon: List },
+  { title: 'Sell Product', url: '/form', icon: ArrowBigDown },
+  { title: 'My-cart', url: '/user-page/my-cart', icon: ShoppingBag },
 ];
 
 export function AppSidebar() {
   const { data: session } = useSession();
   const userID = session?.user?.id;
   const token = session?.user?.token;
+  console.log('userId: ' + userID);
 
   const url = userID ? `http://localhost:8080/api/v2/user/${userID}` : null;
   const { data, error, isLoading } = useSWR(url, (url) => fetcher(url, token));
@@ -44,7 +42,7 @@ export function AppSidebar() {
   }
 
   if (isLoading || !data) {
-    return <div className="text-center text-gray-500"><Loading/></div>;
+    return <div className="text-center text-gray-500"><Loading /></div>;
   }
 
   const userDetail: UserDetail | null = data?.data || null;
@@ -55,13 +53,13 @@ export function AppSidebar() {
 
       <div className="flex items-center space-x-2 p-2 border-b border-gray-300 pr-8">
         <img
-          src={userDetail.profileImage || "/default-avatar.png"}
+          src={userDetail.profileImage || '/default-avatar.png'}
           alt="User Avatar"
           className="w-12 h-12 rounded-full border"
         />
         <div>
-          <p className="font-sm text-sm">{userDetail.name || "Unknown User"}</p>
-          <p className="text-sm text-gray-500">{userDetail.email || "No Email"}</p>
+          <p className="font-sm text-sm">{userDetail.name || 'Unknown User'}</p>
+          <p className="text-sm text-gray-500">{userDetail.email || 'No Email'}</p>
         </div>
       </div>
 
@@ -83,7 +81,7 @@ export function AppSidebar() {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              signOut({ callbackUrl: "/" });
+              signOut({ callbackUrl: '/' });
             }}
             className="flex items-center space-x-3 p-2 mt-4 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
           >
