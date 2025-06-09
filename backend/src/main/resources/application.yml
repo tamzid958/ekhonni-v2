@@ -1,0 +1,235 @@
+spring:
+
+  application:
+    name: ${APPLICATION_NAME}
+
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: ${DB_DRIVER_CLASSNAME}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: ${JPA_GENERATE_DDL:true}
+    defer-datasource-initialization: ${JPA_DEFER_DATASOURCE_INIT:false}
+    show-sql: ${JPA_SHOW_SQL:false}
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        format_sql: ${JPA_FORMAT_SQL:false}
+        highlight_sql: ${JPA_HIGHLIGHT_SQL:false}
+
+  sql:
+    init:
+      platform: ${SQL_INIT_PLATFORM:postgresql}
+      mode: ${SQL_INIT_MODE:never}
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email
+
+    jwt:
+      secret: ${JWT_SECRET}
+      access:
+        token:
+          expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh:
+      token:
+        expiration: ${REFRESH_TOKEN_EXPIRATION}
+
+    admin:
+      email: ${ADMIN_EMAIL}
+      password: ${ADMIN_PASSWORD}
+
+  constant:
+    public:
+      urls: ${PUBLIC_URLS}
+    email-verification-url: ${EMAIL_VERIFICATION_URL}
+    password-reset-url: ${PASSWORD_RESET_URL}
+    auth:
+      urls: ${AUTH_URLS}
+
+  mail:
+    host: ${SMTP_MAIL_HOST}
+    port: ${SMTP_MAIL_PORT}
+    username: ${SMTP_MAIL_USERNAME}
+    password: ${SMTP_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
+  allowed-methods: ${CORS_ALLOWED_METHODS}
+  allowed-headers: ${CORS_ALLOWED_HEADERS}
+  exposed-headers: ${CORS_EXPOSED_HEADERS}
+
+server:
+  address: ${SERVER_ADDRESS}
+  port: ${SERVER_PORT}
+
+account:
+  minimum-balance: ${ACCOUNT_MINIMUM_BALANCE:0}
+  minimum-withdraw-amount: ${ACCOUNT_MINIMUM_WITHDRAW_AMOUNT:50}
+
+sslcommerz:
+  domain: ${SSLCOMMERZ_DOMAIN}
+  store-id: ${SSLCOMMERZ_STORE_ID}
+  store-password: ${SSLCOMMERZ_STORE_PASSWORD}
+  success-url: ${SSLCOMMERZ_SUCCESS_URL}
+  fail-url: ${SSLCOMMERZ_FAIL_URL}
+  cancel-url: ${SSLCOMMERZ_CANCEL_URL}
+  success-redirect-url: ${SSLCOMMERZ_SUCCESS_REDIRECT_URL}
+  fail-redirect-url: ${SSLCOMMERZ_FAIL_REDIRECT_URL}
+  cancel-redirect-url: ${SSLCOMMERZ_CANCEL_REDIRECT_URL}
+  payment-ipn-url: ${SSLCOMMERZ_PAYMENT_IPN_URL}
+  cashin-ipn-url: ${SSLCOMMERZ_CASHIN_IPN_URL}
+  api-url: ${SSLCOMMERZ_API_URL}
+  validation-api-url: ${SSLCOMMERZ_VALIDATION_API_URL}
+  merchant-trans-id-validation-api-url: ${SSLCOMMERZ_MERCHANT_TRANS_ID_VALIDATION_API_URL}
+  connection-timeout: ${SSLCOMMERZ_CONNECTION_TIMEOUT}
+  read-timeout: ${SSLCOMMERZ_READ_TIMEOUT}
+  allowed-ips: ${SSLCOMMERZ_ALLOWED_IPS}
+
+bkash:
+  username: ${BKASH_USERNAME}
+  password: ${BKASH_PASSWORD}
+  app-key: ${BKASH_APP_KEY}
+  app-secret: ${BKASH_APP_SECRET}
+  x-app-key: ${BKASH_X_APP_KEY}
+  merchant-invoice-number: ${BKASH_MERCHANT_INVOICE_NUMBER}
+  disbursement-url: ${BKASH_DISBURSEMENT_URL}
+  grant-token-url: ${BKASH_GRANT_TOKEN_URL}
+  refresh-token-url: ${BKASH_REFRESH_TOKEN_URL}
+  query-balance-url: ${BKASH_QUERY_BALANCE_URL}
+  intra-account-transfer-url: ${BKASH_INTRA_ACCOUNT_TRANSFER_URL}
+  search-transaction-details-url: ${BKASH_SEARCH_TRANSACTION_DETAILS_URL}
+
+notification:
+  product-redirect-url: ${PRODUCT_REDIRECT_URL}
+
+email-change-url: ${EMAIL_CHANGE_URL}
+
+upload:
+  dir: ${UPLOAD_DIR}
+
+product:
+  upload:
+    dir: ${UPLOAD_DIR}
+
+rabbitmq-custom:
+  email-configuration:
+    queue: ${RABBITMQ_EMAIL_QUEUE_NAME}
+    exchange: ${RABBITMQ_EMAIL_EXCHANGE_NAME}
+    routing-key: ${RABBITMQ_EMAIL_ROUTING_KEY}
+
+profile:
+  image:
+    upload:
+      dir: ${PROFILE_UPLOAD_DIR}
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.ekhonni: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: "env,beans"
+      base-path: /actuator
+      cors:
+        allowed-origins: "*"
+        allowed-methods: GET,POST
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    git:
+      enabled: true
+    build:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 10ms, 100ms
+    enable:
+      jvm: true
+      process: true
+      system: true
+      http: true
+  health:
+    diskspace:
+      enabled: true
+    db:
+      enabled: true
+    redis:
+      enabled: true
+    mail:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: Ekhonni Backend Service
+    version: 2.0.0
+  contact:
+    email: ekhonni72@gmail.com
+    team: Backend Team
+  environment: ${spring.profiles.active}
+
+org:
+  jobrunr:
+    dashboard:
+      enabled: true
+    background-job-server:
+      enabled: true
+
+
+
+
