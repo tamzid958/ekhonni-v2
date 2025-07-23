@@ -1,7 +1,7 @@
 import React from 'react';
 import { axiosInstance } from '@/data/services/fetcher';
 import { toast } from 'sonner';
-import {roleMapping} from '../hooks/useRoles';
+import {roleMapping} from './useRoles';
 
 export const handleChangeUserRole = async (userId: string, newRoleId:number, userToken: string | undefined) => {
 
@@ -29,7 +29,7 @@ export const handleChangeUserRole = async (userId: string, newRoleId:number, use
     return response.data;
 
   } catch (error) {
-    console.error("Error updating user role:", error);
-    toast.error("Failed to update user role.");
+    console.error("Error updating users role:", error);
+    toast.error("Failed to update users role.");
   }
 };

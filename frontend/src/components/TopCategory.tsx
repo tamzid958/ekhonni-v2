@@ -1,141 +1,74 @@
-"use client"
-
-import * as React from "react"
-import {cn} from "@/lib/utils"
+'use client';
+import useSWR from 'swr';
 import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import Link from "next/link";
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
+import React from 'react';
+import { ChevronsRight } from 'lucide-react';
+import Link from 'next/link';
+
+const fetcher = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch');
+  return res.json();
+};
 
 export function TopCAtegory() {
-    return (
-        <div className="bg-brand-mid h-[85px] flex justify-center">
-            <NavigationMenu>
-                <NavigationMenuList className="space-x-6">
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>ALL CATEGORIES</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                            <ul className="text-b grid gap-2 p-4 md:w-[200px] lg:w-[300px]">
-                                <ListItem href="/docs" title="Electronics">
-                                    Wide range of tech products and accessories.
-                                </ListItem>
-                                <ListItem href="/docs/installation" title="Fashion">
-                                    Latest trends in clothing and accessories.
-                                </ListItem>
-                                <ListItem href="/docs" title="Sporting Goods">
-                                    Quality gear for all your sports needs.
-                                </ListItem>
-                                <ListItem href="/docs" title="Business">
-                                    Tools for growing and managing your business.
-                                </ListItem>
-                                <ListItem href="/docs" title="Collection and Art">
-                                    Curated art and collectible items for you.
-                                </ListItem>
-                                <ListItem href="/docs" title="Books and Movies">
-                                    Must-read books and top-rated movies.
-                                </ListItem>
+  const { data, error } = useSWR(
+    'http://localhost:8080/api/v2/category/all',
+    fetcher,
+    { suspense: false },
+  );
 
-                            </ul>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+  if (error) return <div className="text-red-500">Failed to load categories</div>;
+  if (!data) return <div className="bg-brand-mid relative h-10 flex justify-center items-center">
+    <span className="text-gray-600 text-sm">Loading categories...</span>
+  </div>;
 
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                SNEAKERS
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
+  return (
+    <div className="bg-brand-mid relative h-10 flex justify-center">
+      <NavigationMenu className="w-full max-w-5xl">
+        <NavigationMenuList className="flex justify-center space-x-1">
+          {data.data.slice(0, 10).map((category) => (
+            <NavigationMenuItem key={category.name} className="relative group">
+              <NavigationMenuTrigger
+                className="peer flex items-center text-xs px-2 font-semibold text-gray-700 border-transparent hover:underline">
+                <Link
+                  href={`/categoryProducts?category=${encodeURIComponent(category.name)}`}
+                  passHref
+                  className="">
+                  {category.name}
+                </Link>
+              </NavigationMenuTrigger>
 
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                CLOTHES
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                LUXURY
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                PERFUME
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                SPORTS
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                HEALTH
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                BEAUTY
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Link href="/docs" legacyBehavior passHref>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                GARDEN
-                            </NavigationMenuLink>
-                        </Link>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
-        </div>
-    )
+              <div
+                className="absolute left-0 top-full bg-brand-bright shadow-lg border rounded-md opacity-0 invisible peer-hover:opacity-100 peer-hover:visible hover:opacity-100 hover:visible transition-opacity duration-200 pointer-events-none peer-hover:pointer-events-auto hover:pointer-events-auto">
+                <ul className="text-xs font-semibold grid m-2 md:w-[200px] lg:w-[300px]">
+                  {category.subCategories.map((sub, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center p-2 rounded-md hover:bg-brand-mid group">
+                      <Link
+                        href={`/categoryProducts?category=${encodeURIComponent(sub)}`}
+                        passHref
+                        className="flex items-center w-full">
+                        <ChevronsRight
+                          className="mr-2 opacity-0 hover:opacity-100 transition-opacity duration-200"
+                          size={16}
+                        />
+                        <span>{sub}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
+  );
 }
-
-const ListItem = React.forwardRef<
-    React.ElementRef<"a">,
-    React.ComponentPropsWithoutRef<"a">
->(({className, title, children, ...props}, ref) => {
-    return (
-        <li>
-            <NavigationMenuLink asChild>
-                <a
-                    ref={ref}
-                    className={cn(
-                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-mid hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                        className
-                    )}
-                    {...props}
-                >
-                    <div className="text-sm font-medium leading-none">{title}</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {children}
-                    </p>
-                </a>
-            </NavigationMenuLink>
-        </li>
-    )
-})
-ListItem.displayName = "ListItem"

@@ -36,9 +36,10 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
+    mode: 'onChange'
   });
 
   const onSubmit: SubmitHandler<SignupFormValues> = async (data) => {
@@ -50,7 +51,6 @@ export default function Register() {
         phone: data.phone,
         address: data.address,
       });
-
       if (result.status === 200) {
         toast.success("SignUp Successful! Please verify your email.");
         router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
@@ -77,11 +77,12 @@ export default function Register() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-brand-bright">
-      <Card className="w-full max-w-lg mt-10 mb-10 p-8 bg-white shadow-2xl rounded-xl border-gray-300">
+      <Card className="w-full max-w-lg mt-10 mb-10  p-8 bg-white shadow-2xl rounded-xl border-gray-300">
         <CardContent>
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
             Create an Account
           </h2>
+          <h2 className="mb-4 text-xl text-gray-500 font-mono text-center"> Join with Ekhonni.com </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block mb-2 text-sm font-semibold text-gray-700">Your Name</label>
@@ -117,6 +118,7 @@ export default function Register() {
             </div>
             <Button
               type="submit"
+              disabled={!isValid}
               className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-3 rounded-lg shadow-md transition"
             >
               Sign Up

@@ -37,12 +37,10 @@ export function useUsers(userId: string, userToken: string) {
     userId ? [`/api/v2/admin/user`, userToken] : null,
     async ([url, token]) => {
       const fetchedData = await fetcher(url, token);
-      console.log("📥 Fetched Data:", fetchedData);
       return fetchedData?.content ?? [];
     }
   );
 
-  // ✅ Ensure `data` is always an array before calling `processUsers()`
   const allUsers = processUsers(data ?? []);
 
   const getUserById = (id: string): User | undefined => {

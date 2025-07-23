@@ -22,9 +22,8 @@ import {
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
+
 import { z } from 'zod';
-
-
 
 export function TabsDemo() {
   const { data: session } = useSession();
@@ -55,9 +54,9 @@ export function TabsDemo() {
     .regex(/\d/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
 
-  const imageSchema = z.instanceof(File).optional(); // Optional image file validation
+  const imageSchema = z.instanceof(File).optional();
 
-  // ✅ Check if email or password form is filled for validation
+
   const isPasswordFormValid = currentPassword.trim() !== '' && newPassword.trim() !== '';
   const isEmailFormValid = email.trim() !== '';
 
@@ -81,7 +80,6 @@ export function TabsDemo() {
       phone: phone.trim() || "",
       address: location.trim() || "",
     };
-
     try {
       if (Object.keys(updatedProfile).length > 0) {
         const profileResponse = await fetch(profileUpdateUrl, {
@@ -100,7 +98,6 @@ export function TabsDemo() {
         setPhone('');
         setLocation('');
       }
-
       if (email.trim()) {
         const emailResponse = await fetch(emailUpdateUrl, {
           method: "PATCH",
@@ -113,17 +110,15 @@ export function TabsDemo() {
 
         if (!emailResponse.ok) throw new Error("Failed to update email");
 
-          setEmail('');
+        setEmail('');
 
         toast.success("Email updated successfully! You'll be logged out.");
         await signOut({ redirect: false });
         setTimeout(() => router.push("/auth/login"), 500);
       }
-
       if (profileImage) {
         const formData = new FormData();
         formData.append("image", profileImage);
-
         const imageResponse = await fetch(imageUpdateUrl, {
           method: "PATCH",
           headers: {
@@ -131,7 +126,6 @@ export function TabsDemo() {
           },
           body: formData,
         });
-
         if (!imageResponse.ok) throw new Error("Failed to update profile image");
         setProfileImage(null);
         toast.success("Profile image updated successfully!");
@@ -142,6 +136,7 @@ export function TabsDemo() {
       toast.error("Failed to update profile, email, or image. Please try again.");
     }
   };
+
 
   const handleSavePassword = async () => {
     if (!userId || !token) {
@@ -169,16 +164,16 @@ export function TabsDemo() {
       toast.success("Password updated successfully! You'll be logged out.");
       await signOut({ redirect: false });
       setTimeout(() => router.push("/auth/login"), 500);
-
     } catch (error) {
       console.error("Error updating password:", error);
       toast.error("Failed to update password. Please try again.");
     }
   };
 
+
+
   return (
     <Tabs defaultValue="account" className="w-[400px] bg-white rounded-lg shadow-md">
-      <Toaster position="top-right" />
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="account" className="px-4 py-2 font-medium">
           Account
@@ -187,7 +182,6 @@ export function TabsDemo() {
           Password
         </TabsTrigger>
       </TabsList>
-
       {/* Account Tab */}
       <TabsContent value="account">
         <Card>
@@ -229,7 +223,6 @@ export function TabsDemo() {
           </CardFooter>
         </Card>
       </TabsContent>
-
       {/* Password Tab */}
       <TabsContent value="password">
         <Card>

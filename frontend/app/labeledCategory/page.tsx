@@ -1,11 +1,15 @@
+import React from 'react';
 import LabeledCategoryRenderer from './labeledCategoryRenderer';
 
-interface Data {
+interface Product {
   id: number;
   title: string;
-  description: string;
-  img: string;
   price: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  images: { imagePath: string }[];
 }
 
 interface Props {
@@ -26,7 +30,7 @@ export default async function LabeledCategory({ searchParams }: Props) {
       ? `http://localhost:8080/api/v2/product/filter?page=${currentPage}`
       : `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(category)}&page=${currentPage}`;
 
-  let products: Data[] = [];
+  let products: Product[] = [];
   try {
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {

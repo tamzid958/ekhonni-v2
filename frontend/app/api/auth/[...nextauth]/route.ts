@@ -53,10 +53,10 @@ const options: NextAuthOptions = {
               console.log("Login successful:", res);
 
               return {
-                id: res.id,
-                role: res.role,
-                accessToken: res.authToken.accessToken,
-                refreshToken: res.authToken.refreshToken,
+                id: res.data.id,
+                role: res.data.role,
+                accessToken: res.data.authToken.accessToken,
+                refreshToken: res.data.authToken.refreshToken,
               };
             }
           } catch (error) {
@@ -118,7 +118,6 @@ const options: NextAuthOptions = {
         console.error("Failed to refresh token:", refreshedToken.error);
         return { ...token, error: refreshedToken.error };
       }
-
       return {
         id: token.id,
         role: token.role,
@@ -129,13 +128,11 @@ const options: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      session.user = {
-        token: token.accessToken,
-        id: token.id,
-        role: token.role,
-      };
+      session.user.id = token.id;
+      session.user.role = token.role;
+      session.user.token = token.accessToken;
       return session;
-    },
+    }
   },
 };
 

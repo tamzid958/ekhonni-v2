@@ -38,7 +38,7 @@ interface Product {
 
 export default function Search() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || 'No query provided';
+  const query = searchParams.get('q') || '';
   const [sortBy, setSortBy] = useState('');
   const [selecetedDivisions, setSelectedDivisions] = useState<string[]>([]);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
@@ -56,7 +56,6 @@ export default function Search() {
   const allProductsItems = products || [];
 
   const handleFilter = (newValue: [number, number]) => {
-    //console.log('Filtered values:', newValue);
     setValue(newValue);
   };
 

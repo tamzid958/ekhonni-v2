@@ -1,17 +1,12 @@
 import localFont from 'next/font/local';
 import './globals.css';
 import React from 'react';
-import { NavBar } from '@/components/NavBar';
 import { Inter } from 'next/font/google';
-import { TopCAtegory } from '@/components/TopCategory';
-import Footer from '@/components/Footer';
 import RootLayoutWrapper from './wrapper/client/RootLayoutWrapper';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
-import SessionWrapper from './wrapper/client/SessionWrapper'
-import { ErrorBoundary } from 'react-error-boundary';
-import ErrorFallback from '@/components/ErrorFallback';
+import SessionWrapper from './wrapper/client/SessionWrapper';
 import { Toaster } from 'sonner';
-import { ProductProvider } from '@/context/ProductContext';
+import { ConditionalFooter, ConditionalNavBar } from '@/components/SessionNavbar';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -43,16 +38,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster />
         <SessionWrapper>
           <div className="w-full">
-            <NavBar placeholder="What are you looking for?" />
-            <TopCAtegory />
+            <ConditionalNavBar />
           </div>
-
-
           <main className="flex-grow overflow-auto">{children}</main>
-
-
           <div className="bg-gray-800 text-white">
-            <Footer />
+            <ConditionalFooter />
           </div>
         </SessionWrapper>
       </CustomErrorBoundary>

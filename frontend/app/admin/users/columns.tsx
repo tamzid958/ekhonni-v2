@@ -16,8 +16,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useSession } from 'next-auth/react';
 import { Toaster } from 'sonner';
-import { handleBlockUser, handleUnblockUser } from '../components/useHandleBlock';
-import { handleChangeUserRole } from '../components/useHandleRole';
+import { handleBlockUser, handleUnblockUser } from '../hooks/useHandleBlock';
+import { handleChangeUserRole } from '../hooks/useHandleRole';
 import {
   Dialog,
   DialogContent,
@@ -256,7 +256,7 @@ export const columns: ColumnDef<User>[] = [
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(Number(e.target.value))}
                   >
-                    {allRolesList.map((role) => (
+                    {allRolesList?.map((role) => (
                       <option key={role.id} value={role.id}>
                         {role.name}
                       </option>

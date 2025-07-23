@@ -65,7 +65,7 @@ const AdminIntroPage = () => {
             <p className="text-gray-700">Manage user accounts, roles, and permissions.</p>
             <Button
               className="mt-4 w-full"
-              onClick={() => router.push('/admin/users')}
+              onClick={() => router.push('/admin/user')}
             >
               Go to Users
             </Button>
@@ -87,6 +87,40 @@ const AdminIntroPage = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Roles Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Roles</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage roles of your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/roles')}
+            >
+              Go to Roles
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Transaction Card */}
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle>Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">Manage transactions of your users.</p>
+            <Button
+              className="mt-4 w-full"
+              onClick={() => router.push('/admin/transaction')}
+            >
+              Go to Transactions
+            </Button>
+          </CardContent>
+        </Card>
+
       </section>
 
       {/* Additional Info Section */}

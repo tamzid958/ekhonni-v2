@@ -11,6 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import { ReviewDialog } from '@/components/Review-Dialog';
+
 
 // Define the BidData interface
 export interface BidData {
@@ -22,6 +25,8 @@ export interface BidData {
   bidderAddress: string;
   id: number;
   currency: string;
+  productId: string;
+
 }
 
 // Function to handle the approve action
@@ -71,35 +76,45 @@ export function getColumns(productStatus: string, token: string) {
     }),
   ];
 
-  // Conditionally add the "Actions" column based on product status
-  if (productStatus !== 'SOLD') {
-    columns.push(
-      columnHelper.display({
-        id: 'actions',
-        header: 'Actions',
-        cell: (info) => {
-          const bidId = info.row.original.id;
+  columns.push(
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: (info) => {
+        const bidId = info.row.original.id;
+        const status = info.row.original.status;
 
-          return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleApprove(bidId, token)}>
-                  Approve
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          );
-        },
-      }),
-    );
-  }
+        return (
+          <div className="flex space-x-2">
+            {/* Show dropdown only if product is not SOLD */}
+            {productStatus !== 'SOLD' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <MoreHorizontal />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleApprove(bidId, token)}>
+                    Approve
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Show "Leave a Review" button if status is PAID */}
+            {info.row.original.status === 'PAID' && (
+              <ReviewDialog bidId={info.row.original.id} productId={info.row.original.productId} ruleFor={'buyer'}/>
+            )}
+
+          </div>
+        );
+      },
+    }),
+  );
+
 
   return columns;
 }
