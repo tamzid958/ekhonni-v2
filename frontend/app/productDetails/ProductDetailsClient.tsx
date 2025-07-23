@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CakeSlice, Heart, Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { QuickBid } from '@/components/QuickBid';
@@ -15,7 +15,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 
 
 
-interface ProductDetailsProps {
+export interface ProductDetailsProps {
   productDetails: {
     id: string;
     title: string;
@@ -39,11 +39,12 @@ interface ProductDetailsProps {
   sellerRating: number;
   sellerLocation: string;
   // prevBidding: number;
+  isAuthorized: boolean;
 
 }
 
 
-export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation }: ProductDetailsProps) {
+export default function ProductDetailsClient({ productDetails, biddingCount, biddingDetails,  sellerRating, sellerLocation, isAuthorized}: ProductDetailsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
@@ -57,6 +58,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const token = session?.user?.token;
+
 
 
   useEffect(() => {
@@ -257,6 +259,7 @@ export default function ProductDetailsClient({ productDetails, biddingCount, bid
   if (!productDetails) {
     return <div>Loading...</div>;
   }
+
 
   return (
     <div className="flex flex-col bg-brand-bright">

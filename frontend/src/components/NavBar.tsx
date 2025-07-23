@@ -1,5 +1,7 @@
 'use client';
+import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import Link from 'next/link';
+import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useFilterProducts } from '@/hooks/useFilterProducts';
@@ -7,9 +9,6 @@ import { AppSidebar } from '@/components/userSheet';
 import { Button } from '@/components/ui/button';
 import { NotificationGetter } from '@/components/Notification';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectGroup, SelectTrigger } from '@/components/ui/select';
-import { Bell, Search, ShoppingCart, User } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -32,6 +31,7 @@ export function NavBar({ placeholder }: Props) {
   const [query, setQuery] = useState('');
   const linkRef = useRef<HTMLAnchorElement | null>(null);
   const router = useRouter();
+
   const { products, error, isLoading } = useFilterProducts(query, 'newlyListed', [], [], [0, 1000000]);
   const filteredProducts = products || [];
 
@@ -141,40 +141,42 @@ export function NavBar({ placeholder }: Props) {
       </div>
 
       <div className="flex gap-4 mr-4 mt-4 sm:mr-14 md:mr-16 lg:mr-32">
-        <Link href="/cart">
+        {session ? (<Link href="/cart">
           <Button variant="custom" size="icon">
             <ShoppingCart className="h-6 w-6" />
           </Button>
-        </Link>
-        <Select>
-          <SelectTrigger
-            className="text-primary bg-brand-mid hover:bg-brand-light h-10 w-10 px-3 focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
-            <Bell className="w-6 h-6" />
-          </SelectTrigger>
-          <SelectContent className="bg-brand-bright w-96 md:right-10 lg:right-12">
-            <SelectGroup>
-              <p className="text-xm font-bold p-2 justify-center flex">NOTIFICATION</p>
-              <div
-                className="max-h-96 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
-                {notifications.length > 0 ? (
-                  notifications.slice().reverse().map((item, index) => (
-                    <Link key={item.id} href={item.redirectUrl || '#'}>
-                      <div
-                        className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">
-                        <p className="text-xs text-black">
-                          {new Date(item.createdAt).toLocaleString()}
-                        </p>
-                        <p className="mt-1">{item.message}</p>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <p className="text-center p-2">No new notifications</p>
-                )}
-              </div>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        </Link>) : (<div></div>)}
+
+        {session ? (
+          <Select>
+            <SelectTrigger
+              className="text-primary bg-brand-mid hover:bg-brand-light h-10 w-10 px-3 focus:ring-0 focus:outline-none active:ring-0 active:outline-none focus-visible:ring-0 focus-visible:outline-none ring-0 [&_svg.h-4]:hidden">
+              <Bell className="w-6 h-6" />
+            </SelectTrigger>
+            <SelectContent className="bg-brand-bright w-96 md:right-10 lg:right-12">
+              <SelectGroup>
+                <p className="text-xm font-bold p-2 justify-center flex">NOTIFICATION</p>
+                <div
+                  className="max-h-96 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-brand-dark scrollbar-track-brand-mid">
+                  {notifications.length > 0 ? (
+                    notifications.slice().reverse().map((item, index) => (
+                      <Link key={item.id} href={item.redirectUrl || '#'}>
+                        <div
+                          className="overflow-hidden max-w-92 m-2 px-4 py-2 rounded-lg bg-brand-mid hover:bg-brand-dark hover:text-white cursor-pointer">
+                          <p className="text-xs text-black">
+                            {new Date(item.createdAt).toLocaleString()}
+                          </p>
+                          <p className="mt-1">{item.message}</p>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-center p-2">No new notifications</p>
+                  )}
+                </div>
+              </SelectGroup>
+            </SelectContent>
+          </Select>) : (<div></div>)}
 
 
         {session ? (
@@ -185,23 +187,19 @@ export function NavBar({ placeholder }: Props) {
               </Button>
             </SheetTrigger>
 
-            {/* The Sidebar content */}
             <AppSidebar />
           </Sheet>
         ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="custom" size="icon">
-                <User className="h-6 w-6" />
+          <div className="flex items-center gap-3">
+            <Link href="/auth/login" className="text-sm text-black hover:text-gray-300">
+              Log in
+            </Link>
+            <Link href="/auth/register">
+              <Button className="px-4 py-1 text-sm rounded-full bg-black text-white hover:bg-gray-200 ">
+                Sign up
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-2 text-center mt-0" style={{ marginTop: '-40px' }}>
-              <p className="mb-2">Log in first</p>
-              <Link href="/auth/login" className="text-black underline hover:text-brand-dark">
-                Go to Login
-              </Link>
-            </PopoverContent>
-          </Popover>
+            </Link>
+          </div>
         )}
 
       </div>

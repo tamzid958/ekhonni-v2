@@ -3,6 +3,14 @@ import Sidebar from '@/components/CategorySidebar';
 import { Separator } from '@/components/ui/separator';
 import CustomErrorBoundary from '@/components/ErrorBoundary';
 import { ProductSection } from '@/components/ProductSection';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import Link from 'next/link';
 
 interface Data {
   id: number;
@@ -22,15 +30,14 @@ interface Data {
   label: string;
 }
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
+interface categories {
   category: {
-    id: number;
     name: string;
   };
-  images: { imagePath: string }[];
+  subCategories: {
+    name: string;
+  }[];
+  chainCategories: string[];
 }
 
 interface Props {
@@ -38,24 +45,38 @@ interface Props {
 }
 
 export default async function CategoryProductPage({ searchParams }: Props) {
-  const selectedCategory = searchParams.category || 'All';
+  const selectedCategory = searchParams?.category || 'All';
 
-  const url = selectedCategory === 'All' ?
-    `http://localhost:8080/api/v2/product/filter`
+  const productUrl = selectedCategory === 'All'
+    ? `http://localhost:8080/api/v2/product/filter`
     : `http://localhost:8080/api/v2/product/filter?categoryName=${encodeURIComponent(selectedCategory)}`;
 
-  let products: Data[] = [];
-  try {
-    const response = await fetch(url, { cache: 'no-store' });
+  const categoryUrl = selectedCategory === 'All'
+    ? `http://localhost:8080/api/v2/category/all-v2`
+    : `http://localhost:8080/api/v2/category/${encodeURIComponent(selectedCategory)}/subcategories-v2`;
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
+  let products: Data[] = [];
+  let categories: categories = null;
+
+  try {
+    const [productRes, categoryRes] = await Promise.all([
+      fetch(productUrl, { cache: 'no-store' }),
+      fetch(categoryUrl, { cache: 'no-store' }),
+    ]);
+
+    if (!productRes.ok || !categoryRes.ok) {
+      throw new Error('Failed to fetch data');
     }
 
-    const json = await response.json();
-    products = json.data.content;
+    const productJson = await productRes.json();
+    const categoryJson = await categoryRes.json();
+
+    products = productJson.data.content;
+    categories = categoryJson.data;
+
+    // console.log(categories);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error fetching data:', error);
   }
 
   // const labels = ['Best Selling', 'Limited Time Deals', 'Top Rated'];
@@ -69,16 +90,32 @@ export default async function CategoryProductPage({ searchParams }: Props) {
       <div className="flex">
         {/* Sidebar */}
         <CustomErrorBoundary>
-          <Sidebar selectedCategory={selectedCategory} />
+          <Sidebar selectedCategory={selectedCategory} categories={categories} />
         </CustomErrorBoundary>
 
         {/* Main Content */}
         <div className="flex-1 ml-6">
           <div className="container mx-auto px-4 w-full space-y-6">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="text-xl">
+                  <BreadcrumbLink asChild>
+                    <Link href="/categoryProducts">..</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                {categories.chainCategories.slice().reverse().map((cat, index) => (
+                  <React.Fragment key={index}>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem className="text-xl">
+                      <BreadcrumbLink asChild>
+                        <Link href={`/categoryProducts?category=${encodeURIComponent(cat)}`}>{cat}</Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
             <Separator className="mt-4" />
-
-            {/* product view horizontal card, not slide box */}
-
             <ProductSection title={selectedCategory} products={products} selectedCategory={selectedCategory} />
           </div>
         </div>

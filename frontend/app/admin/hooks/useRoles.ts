@@ -1,5 +1,3 @@
-
-
 import useSWR from 'swr';
 import fetcher from '@/data/services/fetcher';
 import { Role } from '../roles/columns';
@@ -27,8 +25,8 @@ export const setAllRoles = (roles: { id: number; name: string; description: stri
 
 export const processRoles = (roles: any[]): Role[] => {
   return roles.map((role) => {
-    let status = "ACTIVE";
-    if (role.deletedAt) status = "ARCHIVED";
+    let status = 'ACTIVE';
+    if (role.deletedAt) status = 'ARCHIVED';
 
     const roleUsers = userGroups[role.id] || [];
     const totalUsers = roleUsers.length;
@@ -43,7 +41,7 @@ export const processRoles = (roles: any[]): Role[] => {
 export const useRoles = (userId: string, userToken: string) => {
   const { data: roleData, error, isLoading } = useSWR(
     userId ? `/api/v2/role/` : null,
-    (url) => fetcher(url, userToken)
+    (url) => fetcher(url, userToken),
   );
 
   const { allUsers } = useUsers(userId, userToken);
@@ -56,7 +54,7 @@ export const useRoles = (userId: string, userToken: string) => {
         id: role.id,
         name: role.name,
         description: role.description,
-      }))
+      })),
     );
   }
   userGroups = allRolesList.reduce((acc, role) => {
@@ -66,7 +64,7 @@ export const useRoles = (userId: string, userToken: string) => {
     return acc;
   }, {} as Record<number, any[]>);
 
-  const totalAdmins = allUsers.filter((user: any) => user.roleName === "ADMIN").length;
+  const totalAdmins = allUsers.filter((user: any) => user.roleName === 'ADMIN').length;
 
   return {
     processedRoles,

@@ -13,7 +13,6 @@ export function useFilterProducts(searchTerm: string, sortBy: string, divisions:
   divisions.forEach((division) => query.append('division', division));
   conditions.forEach((condition) => query.append('condition', condition));
 
-  console.log(query);
   const { data, error, isLoading } = useSWR(
     query.toString() ? `/api/v2/product/filter?${query.toString()}` : null,
     fetcher,

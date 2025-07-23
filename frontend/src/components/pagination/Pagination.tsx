@@ -10,10 +10,21 @@ interface PaginationProps {
 }
 
 export default function PaginationComponent({
-                                              totalPages,
+                                              totalPages = 1,
                                               currentPage,
                                             }: PaginationProps) {
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1) {
+    return (
+      <Pagination>
+        <PaginationContent>
+          {/* Display the single page */}
+          <PaginationItem>
+            <CustomPaginationItem page={1} currentPage={currentPage} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  }
 
   return (
     <Pagination>
